@@ -1,0 +1,1 @@
+Stubbles Webapp Core classes
