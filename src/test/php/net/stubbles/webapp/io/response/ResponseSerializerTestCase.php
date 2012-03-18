@@ -22,9 +22,9 @@ class ResponseSerializerTestCase extends \PHPUnit_Framework_TestCase
     /**
      * instance to test
      *
-     * @var  ResponseSerializer
+     * @type  ResponseSerializer
      */
-    protected $responseSerializer;
+    private $responseSerializer;
 
     /**
      * set up test environment

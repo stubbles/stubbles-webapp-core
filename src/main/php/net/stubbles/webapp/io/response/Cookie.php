@@ -26,43 +26,43 @@ class Cookie extends BaseObject
      *
      * @type  string
      */
-    protected $name     = '';
+    private $name     = '';
     /**
      * value of the cookie
      *
      * @type  string
      */
-    protected $value    = '';
+    private $value    = '';
     /**
      * timestamp when cookie expires
      *
      * @type  int
      */
-    protected $expires  = 0;
+    private $expires  = 0;
     /**
      * path for which the cookie should be available
      *
      * @type  string
      */
-    protected $path     = null;
+    private $path     = null;
     /**
      * domain where this cookie will be available
      *
      * @type  string
      */
-    protected $domain   = null;
+    private $domain   = null;
     /**
      * switch whether cookie should only be used in secure connections
      *
      * @type  bool
      */
-    protected $secure   = false;
+    private $secure   = false;
     /**
      * switch whether cookie should only be accessible through http
      *
      * @type  bool
      */
-    protected $httpOnly = true;
+    private $httpOnly = true;
 
     /**
      * constructor

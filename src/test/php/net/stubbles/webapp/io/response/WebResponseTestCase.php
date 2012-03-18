@@ -20,9 +20,9 @@ class WebResponseTestCase extends \PHPUnit_Framework_TestCase
     /**
      * instance to test
      *
-     * @var  WebResponse
+     * @type  WebResponse
      */
-    protected $response;
+    private $response;
 
     /**
      * set up test environment

@@ -24,43 +24,43 @@ class WebResponse extends BaseObject implements Response
      *
      * @type  string
      */
-    protected $sapi;
+    private $sapi;
     /**
      * http version to be used
      *
      * @type  string
      */
-    protected $version;
+    private $version;
     /**
      * status code to be send
      *
      * @type  int
      */
-    protected $statusCode   = 200;
+    private $statusCode   = 200;
     /**
      * status message to be send
      *
      * @type  string
      */
-    protected $reasonPhrase = 'OK';
+    private $reasonPhrase = 'OK';
     /**
      * list of headers for this response
      *
      * @type  array
      */
-    protected $headers      = array();
+    private $headers      = array();
     /**
      * list of cookies for this response
      *
      * @type  Cookie[]
      */
-    protected $cookies      = array();
+    private $cookies      = array();
     /**
      * data to send as body of response
      *
      * @type  string
      */
-    protected $body;
+    private $body;
 
     /**
      * constructor
