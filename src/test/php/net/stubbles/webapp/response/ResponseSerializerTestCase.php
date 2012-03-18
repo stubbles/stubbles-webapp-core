@@ -7,14 +7,13 @@
  *
  * @package  net\stubbles\webapp
  */
-namespace net\stubbles\webapp\io\response;
+namespace net\stubbles\webapp\response;
 /**
- * Test for net\stubbles\webapp\io\response\ResponseSerializer.
+ * Test for net\stubbles\webapp\response\ResponseSerializer.
  *
  * @since  1.7.0
  * @group  webapp
- * @group  webapp_io
- * @group  webapp_io_response
+ * @group  webapp_response
  * @group  bug262
  */
 class ResponseSerializerTestCase extends \PHPUnit_Framework_TestCase
@@ -95,7 +94,7 @@ class ResponseSerializerTestCase extends \PHPUnit_Framework_TestCase
      */
     public function unserializeReturnsResponseInstance()
     {
-        $this->assertInstanceOf('net\\stubbles\\webapp\\io\\response\\WebResponse',
+        $this->assertInstanceOf('net\\stubbles\\webapp\\response\\WebResponse',
                                 $this->responseSerializer->unserialize(serialize(new WebResponse()))
         );
     }

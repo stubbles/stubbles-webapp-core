@@ -7,7 +7,7 @@
  *
  * @package  net\stubbles\webapp
  */
-namespace net\stubbles\webapp\io\response;
+namespace net\stubbles\webapp\response;
 use net\stubbles\lang\BaseObject;
 use net\stubbles\lang\exception\IllegalArgumentException;
 /**

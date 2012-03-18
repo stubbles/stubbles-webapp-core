@@ -7,13 +7,12 @@
  *
  * @package  net\stubbles\webapp
  */
-namespace net\stubbles\webapp\io\response;
+namespace net\stubbles\webapp\response;
 /**
- * Tests for net\stubbles\webapp\io\response\Cookie.
+ * Tests for net\stubbles\webapp\response\Cookie.
  *
  * @group  webapp
- * @group  webapp_io
- * @group  webapp_io_response
+ * @group  webapp_response
  */
 class CookieTestCase extends \PHPUnit_Framework_TestCase
 {

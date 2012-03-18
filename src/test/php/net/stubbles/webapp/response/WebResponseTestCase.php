@@ -7,13 +7,12 @@
  *
  * @package  net\stubbles\webapp
  */
-namespace net\stubbles\webapp\io\response;
+namespace net\stubbles\webapp\response;
 /**
- * Tests for net\stubbles\webapp\io\response\WebResponse.
+ * Tests for net\stubbles\webapp\response\WebResponse.
  *
  * @group  webapp
- * @group  webapp_io
- * @group  webapp_io_response
+ * @group  webapp_response
  */
 class WebResponseTestCase extends \PHPUnit_Framework_TestCase
 {
@@ -29,7 +28,7 @@ class WebResponseTestCase extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->response = $this->getMock('net\\stubbles\\webapp\\io\\response\\WebResponse',
+        $this->response = $this->getMock('net\\stubbles\\webapp\\response\\WebResponse',
                                          array('header', 'sendBody')
                           );
     }
@@ -99,7 +98,7 @@ class WebResponseTestCase extends \PHPUnit_Framework_TestCase
      */
     public function statusCodeInCgiSapi()
     {
-        $this->response = $this->getMock('net\\stubbles\\webapp\\io\\response\\WebResponse',
+        $this->response = $this->getMock('net\\stubbles\\webapp\\response\\WebResponse',
                                          array('header', 'sendBody'),
                                          array('1.1', 'cgi')
                           );
@@ -115,7 +114,7 @@ class WebResponseTestCase extends \PHPUnit_Framework_TestCase
      */
     public function statusCodeChangedInCgiSapi()
     {
-        $this->response = $this->getMock('net\\stubbles\\webapp\\io\\response\\WebResponse',
+        $this->response = $this->getMock('net\\stubbles\\webapp\\response\\WebResponse',
                                          array('header', 'sendBody'),
                                          array('1.1', 'cgi')
                           );
@@ -272,7 +271,7 @@ class WebResponseTestCase extends \PHPUnit_Framework_TestCase
      */
     protected function createMockCookie()
     {
-        $mockCookie = $this->getMock('net\\stubbles\\webapp\\io\\response\\Cookie',
+        $mockCookie = $this->getMock('net\\stubbles\\webapp\\response\\Cookie',
                                      array(),
                                      array('foo', 'bar')
                       );

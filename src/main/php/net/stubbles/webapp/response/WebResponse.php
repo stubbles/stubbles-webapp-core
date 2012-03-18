@@ -7,9 +7,10 @@
  *
  * @package  net\stubbles\webapp
  */
-namespace net\stubbles\webapp\io\response;
+namespace net\stubbles\webapp\response;
 use net\stubbles\lang\BaseObject;
 use net\stubbles\peer\http\Http;
+use net\stubbles\peer\http\HttpUri;
 /**
  * Base class for a response to a request.
  *
@@ -311,14 +312,14 @@ class WebResponse extends BaseObject implements Response
      *
      * Status code is optional, default is 302.
      *
-     * @param   string  $url         url to redirect to
-     * @param   int     $statusCode  HTTP status code to redirect with (301, 302, ...)
+     * @param   string|HttpUri  $uri         http uri to redirect to
+     * @param   int             $statusCode  HTTP status code to redirect with (301, 302, ...)
      * @return  Response
      * @since   1.3.0
      */
-    public function redirect($url, $statusCode = 302)
+    public function redirect($uri, $statusCode = 302)
     {
-        $this->addHeader('Location', $url);
+        $this->addHeader('Location', (($uri instanceof HttpUri) ? ($uri->asStringWithNonDefaultPort()) : ($uri)));
         $this->setStatusCode($statusCode);
         return $this;
     }
