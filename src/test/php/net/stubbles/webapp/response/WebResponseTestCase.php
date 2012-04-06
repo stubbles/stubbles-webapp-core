@@ -296,6 +296,19 @@ class WebResponseTestCase extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @since  2.0.0
+     * @test
+     */
+    public function removedCookiesAreDatedForPast()
+    {
+        $this->assertLessThan(time(),
+                              $this->response->removeCookie('foo')
+                                             ->getCookie('foo')
+                                             ->getExpiration()
+        );
+    }
+
+    /**
      * @test
      */
     public function addingCookieWithSameNameReplacesExistingCookie()

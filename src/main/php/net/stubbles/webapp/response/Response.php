@@ -110,6 +110,14 @@ interface Response extends Object
     public function addCookie(Cookie $cookie);
 
     /**
+     * removes cookie with given name
+     *
+     * @return  Response
+     * @since   2.0.0
+     */
+    public function removeCookie($name);
+
+    /**
      * returns the list of cookies
      *
      * @return  Cookie[]

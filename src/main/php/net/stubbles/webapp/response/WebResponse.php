@@ -220,6 +220,20 @@ class WebResponse extends BaseObject implements Response
     }
 
     /**
+     * removes cookie with given name
+     *
+     * @return  Response
+     * @since   2.0.0
+     */
+    public function removeCookie($name)
+    {
+        $this->addCookie(Cookie::create($name, 'remove')
+                               ->expiringAt(time() - 86400)
+        );
+        return $this;
+    }
+
+    /**
      * returns the list of cookies
      *
      * @return  Cookie[]
