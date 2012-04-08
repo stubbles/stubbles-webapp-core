@@ -11,8 +11,7 @@ namespace net\stubbles\webapp\session;
 /**
  * Tests for net\stubbles\webapp\session\WebSession.
  *
- * @group  webapp
- * @group  webapp_session
+ * @group  session
  */
 class WebSessionTestCase extends \PHPUnit_Framework_TestCase
 {

@@ -11,8 +11,7 @@ namespace net\stubbles\webapp\response;
 /**
  * Tests for net\stubbles\webapp\response\Cookie.
  *
- * @group  webapp
- * @group  webapp_response
+ * @group  response
  */
 class CookieTestCase extends \PHPUnit_Framework_TestCase
 {

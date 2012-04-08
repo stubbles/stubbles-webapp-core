@@ -13,8 +13,7 @@ use net\stubbles\input\validator\ValueReader;
  * Tests for net\stubbles\webapp\session\WebBoundSessionId.
  *
  * @since  2.0.0
- * @group  webapp
- * @group  webapp_session
+ * @group  session
  */
 class WebBoundSessionIdTestCase extends \PHPUnit_Framework_TestCase
 {

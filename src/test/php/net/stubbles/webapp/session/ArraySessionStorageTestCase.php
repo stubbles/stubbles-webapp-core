@@ -12,8 +12,7 @@ namespace net\stubbles\webapp\session;
  * Tests for net\stubbles\webapp\session\ArraySessionStorage.
  *
  * @since  2.0.0
- * @group  webapp
- * @group  webapp_session
+ * @group  session
  */
 class ArraySessionStorageTestCase extends \PHPUnit_Framework_TestCase
 {

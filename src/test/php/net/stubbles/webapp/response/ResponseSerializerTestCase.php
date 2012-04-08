@@ -12,8 +12,7 @@ namespace net\stubbles\webapp\response;
  * Test for net\stubbles\webapp\response\ResponseSerializer.
  *
  * @since  1.7.0
- * @group  webapp
- * @group  webapp_response
+ * @group  response
  * @group  bug262
  */
 class ResponseSerializerTestCase extends \PHPUnit_Framework_TestCase

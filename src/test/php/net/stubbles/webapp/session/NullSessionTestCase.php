@@ -12,8 +12,7 @@ namespace net\stubbles\webapp\session;
  * Tests for net\stubbles\webapp\session\NullSession.
  *
  * @since  2.0.0
- * @group  webapp
- * @group  webapp_session
+ * @group  session
  */
 class NullSessionTestCase extends \PHPUnit_Framework_TestCase
 {

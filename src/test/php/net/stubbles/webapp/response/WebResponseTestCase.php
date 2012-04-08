@@ -11,8 +11,7 @@ namespace net\stubbles\webapp\response;
 /**
  * Tests for net\stubbles\webapp\response\WebResponse.
  *
- * @group  webapp
- * @group  webapp_response
+ * @group  response
  */
 class WebResponseTestCase extends \PHPUnit_Framework_TestCase
 {
