@@ -9,12 +9,11 @@
  */
 namespace net\stubbles\webapp;
 use net\stubbles\peer\http\HttpUri;
-use net\stubbles\webapp\processor\ProcessorException;
 /**
  * Tests for net\stubbles\webapp\WebAppFrontController.
  *
  * @since  1.7.0
- * @group  webapp
+ * @group  core
  */
 class WebAppFrontControllerTestCase extends \PHPUnit_Framework_TestCase
 {
@@ -43,6 +42,12 @@ class WebAppFrontControllerTestCase extends \PHPUnit_Framework_TestCase
      */
     private $mockInjector;
     /**
+     * mocked processor resolver
+     *
+     * @type  \PHPUnit_Framework_MockObject_MockObject
+     */
+    private $mockProcessorResolver;
+    /**
      * mocked uri configuration
      *
      * @type  \PHPUnit_Framework_MockObject_MockObject
@@ -65,15 +70,19 @@ class WebAppFrontControllerTestCase extends \PHPUnit_Framework_TestCase
         $this->mockInjector          = $this->getMockBuilder('net\\stubbles\\ioc\\Injector')
                                             ->disableOriginalConstructor()
                                             ->getMock();
+        $this->mockProcessorResolver = $this->getMockBuilder('net\\stubbles\\webapp\\ProcessorResolver')
+                                            ->disableOriginalConstructor()
+                                            ->getMock();
         $this->mockUriConfig         = $this->getMockBuilder('net\\stubbles\\webapp\\UriConfiguration')
                                             ->disableOriginalConstructor()
                                             ->getMock();
         $this->webAppFrontController = new WebAppFrontController($this->mockRequest,
                                                                  $this->mockResponse,
                                                                  $this->mockInjector,
+                                                                 $this->mockProcessorResolver,
                                                                  $this->mockUriConfig
                                        );
-        $this->mockProcessor         = $this->getMock('net\\stubbles\\webapp\\processor\\Processor');
+        $this->mockProcessor         = $this->getMock('net\\stubbles\\webapp\\Processor');
     }
 
     /**
@@ -100,7 +109,7 @@ class WebAppFrontControllerTestCase extends \PHPUnit_Framework_TestCase
         $this->mockUriConfig->expects($this->never())
                             ->method('getPreInterceptors');
         $this->mockUriConfig->expects($this->never())
-                            ->method('getProcessorName');
+                            ->method('getProcessorForUri');
         $this->mockUriConfig->expects($this->never())
                             ->method('getPostInterceptors');
         $this->mockInjector->expects($this->never())
@@ -143,7 +152,7 @@ class WebAppFrontControllerTestCase extends \PHPUnit_Framework_TestCase
                           ->will($this->returnValue(HttpUri::fromString('http://example.net/xml/Home')));
         $this->preparePreInterceptors();
         $this->mockUriConfig->expects($this->never())
-                            ->method('getProcessorName');
+                            ->method('getProcessorForUri');
         $this->mockUriConfig->expects($this->never())
                             ->method('getPostInterceptors');
         $this->mockResponse->expects($this->once())
@@ -157,14 +166,12 @@ class WebAppFrontControllerTestCase extends \PHPUnit_Framework_TestCase
     private function prepareProcessor()
     {
         $this->mockUriConfig->expects($this->once())
-                            ->method('getProcessorName')
-                            ->will($this->returnValue('example'));
-        $this->mockInjector->expects($this->at(2))
-                           ->method('getInstance')
-                           ->with($this->equalTo('net\\stubbles\\webapp\\processor\\Processor'),
-                                  $this->equalTo('example')
-                             )
-                           ->will($this->returnValue($this->mockProcessor));
+                            ->method('getProcessorForUri')
+                            ->will($this->returnValue('example\\MyProcessor'));
+        $this->mockProcessorResolver->expects($this->once())
+                                    ->method('resolve')
+                                    ->with($this->equalTo('example\\MyProcessor'))
+                                    ->will($this->returnValue($this->mockProcessor));
     }
 
     /**
@@ -233,7 +240,7 @@ class WebAppFrontControllerTestCase extends \PHPUnit_Framework_TestCase
         $this->mockProcessor->expects($this->once())
                             ->method('startup');
         $this->mockProcessor->expects($this->once())
-                            ->method('forceSsl')
+                            ->method('requiresSsl')
                             ->will($this->returnValue(true));
         $this->mockRequest->expects($this->once())
                           ->method('cancel');
@@ -265,7 +272,7 @@ class WebAppFrontControllerTestCase extends \PHPUnit_Framework_TestCase
                                                       )
                                    )
                               );
-        $this->mockInjector->expects($this->at(3))
+        $this->mockInjector->expects($this->at(2))
                            ->method('getInstance')
                            ->with($this->equalTo('my\\PostInterceptor'))
                            ->will($this->returnValue($this->getMock('net\\stubbles\\webapp\\interceptor\\PostInterceptor')));
@@ -300,11 +307,11 @@ class WebAppFrontControllerTestCase extends \PHPUnit_Framework_TestCase
                                                       )
                                    )
                               );
-        $this->mockInjector->expects($this->at(3))
+        $this->mockInjector->expects($this->at(2))
                            ->method('getInstance')
                            ->with($this->equalTo('my\\PostInterceptor'))
                            ->will($this->returnValue($this->getMock('net\\stubbles\\webapp\\interceptor\\PostInterceptor')));
-        $this->mockInjector->expects($this->at(4))
+        $this->mockInjector->expects($this->at(3))
                            ->method('getInstance')
                            ->with($this->equalTo('other\\PostInterceptor'))
                            ->will($this->returnValue($this->getMock('net\\stubbles\\webapp\\interceptor\\PostInterceptor')));

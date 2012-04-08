@@ -11,7 +11,6 @@ namespace net\stubbles\webapp;
 use net\stubbles\input\web\WebRequest;
 use net\stubbles\ioc\Injector;
 use net\stubbles\lang\BaseObject;
-use net\stubbles\webapp\processor\ProcessorException;
 use net\stubbles\webapp\response\Response;
 /**
  * Frontend controller for web applications.
@@ -33,11 +32,17 @@ class WebAppFrontController extends BaseObject
      */
     private $response;
     /**
-     * injector instance to createinterceptor and processor instances
+     * injector instance
      *
      * @type  Injector
      */
     private $injector;
+    /**
+     * resolves processor
+     *
+     * @type  ProcessorResolver
+     */
+    private $resolver;
     /**
      * config which interceptors and processors should respond to which uri
      *
@@ -48,20 +53,23 @@ class WebAppFrontController extends BaseObject
     /**
      * constructor
      *
-     * @param  WebRequest        $request    request data container
-     * @param  Response          $response   response container
-     * @param  Injector          $injector   injector instance to create interceptor and processor instances
-     * @param  UriConfiguration  $uriConfig  config which interceptors and processors should respond to which uri
+     * @param  WebRequest         $request    request data container
+     * @param  Response           $response   response container
+     * @param  Injector           $injector
+     * @param  ProcessorResolver  $resolver   injector instance to create interceptor and processor instances
+     * @param  UriConfiguration   $uriConfig  config which interceptors and processors should respond to which uri
      * @Inject
      */
     public function __construct(WebRequest $request,
                                 Response $response,
                                 Injector $injector,
+                                ProcessorResolver $resolver,
                                 UriConfiguration $uriConfig)
     {
         $this->request   = $request;
         $this->response  = $response;
         $this->injector  = $injector;
+        $this->resolver  = $resolver;
         $this->uriConfig = $uriConfig;
     }
 
@@ -116,9 +124,9 @@ class WebAppFrontController extends BaseObject
     {
         $processor = null;
         try {
-            $processor = $this->injector->getInstance('net\\stubbles\\webapp\\processor\\Processor', $this->uriConfig->getProcessorName($calledUri));
+            $processor = $this->resolver->resolve($this->uriConfig->getProcessorForUri($calledUri));
             $processor->startup($calledUri);
-            if ($processor->forceSsl() && !$calledUri->isSsl()) {
+            if (!$calledUri->isSsl() && $processor->requiresSsl($calledUri)) {
                 $this->response->redirect($calledUri->toHttps());
                 $this->request->cancel();
                 return false;
