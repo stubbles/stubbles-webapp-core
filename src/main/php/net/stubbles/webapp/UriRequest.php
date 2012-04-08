@@ -41,6 +41,18 @@ class UriRequest extends BaseObject
     }
 
     /**
+     * creates an instance from request uri string
+     *
+     * @param   string  $requestUri
+     * @return  UriRequest
+     * @since   2.0.0
+     */
+    public static function fromString($requestUri)
+    {
+        return new self(HttpUri::fromString($requestUri));
+    }
+
+    /**
      * checks if current uri satisfies given uri condition
      *
      * @param   string  $uriCondition  uri pattern to check

@@ -12,7 +12,7 @@ namespace net\stubbles\webapp;
  * Tests for net\stubbles\webapp\UriRequest.
  *
  * @since  1.7.0
- * @group  webapp
+ * @group  core
  */
 class UriRequestTestCase extends \PHPUnit_Framework_TestCase
 {
@@ -36,6 +36,17 @@ class UriRequestTestCase extends \PHPUnit_Framework_TestCase
     {
         $this->mockHttpUri = $this->getMock('net\stubbles\peer\http\HttpUri');
         $this->uriRequest  = new UriRequest($this->mockHttpUri);
+    }
+
+    /**
+     * @since  2.0.0
+     * @test
+     */
+    public function canCreateInstanceFromString()
+    {
+        $this->assertInstanceOf('net\\stubbles\\webapp\\UriRequest',
+                                UriRequest::fromString('http://example.net/')
+        );
     }
 
     /**
