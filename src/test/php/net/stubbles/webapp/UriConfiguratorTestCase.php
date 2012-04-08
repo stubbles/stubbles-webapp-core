@@ -179,11 +179,11 @@ class UriConfiguratorTestCase extends \PHPUnit_Framework_TestCase
      */
     public function returnsAddedResourceHandlers()
     {
-        $this->assertEquals(array('example\\ExampleResourceHandler' => '^/examples',
-                                  'example\\UserResourceHandler'    => '^/users'
+        $this->assertEquals(array('^/examples' => 'example\\ExampleResourceHandler',
+                                  '^/users'    => 'example\\UserResourceHandler'
                             ),
-                            $this->uriConfigurator->addResourceHandler('^/examples', 'example\\ExampleResourceHandler')
-                                                  ->addResourceHandler('^/users', 'example\\UserResourceHandler')
+                            $this->uriConfigurator->addResourceHandler('example\\ExampleResourceHandler', '^/examples')
+                                                  ->addResourceHandler('example\\UserResourceHandler', '^/users')
                                                   ->getResourceHandler()
         );
     }
