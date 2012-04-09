@@ -25,6 +25,12 @@ class NativeSessionStorage extends BaseObject implements SessionStorage, Session
      * @type  string
      */
     private $sessionName;
+    /**
+     * switch whether storage is already initialized or not
+     *
+     * @type  bool
+     */
+    private $initialized = false;
 
     /**
      * constructor
@@ -35,7 +41,19 @@ class NativeSessionStorage extends BaseObject implements SessionStorage, Session
     {
         $this->sessionName = $sessionName;
         session_name($this->sessionName);
-        session_start();
+    }
+
+    /**
+     * initialize storage
+     */
+    private function init()
+    {
+        if ($this->initialized) {
+            return;
+        }
+
+        @session_start();
+        $this->initialized = true;
     }
 
     /**
@@ -55,6 +73,7 @@ class NativeSessionStorage extends BaseObject implements SessionStorage, Session
      */
     public function get()
     {
+        $this->init();
         return session_id();
     }
 
@@ -65,7 +84,8 @@ class NativeSessionStorage extends BaseObject implements SessionStorage, Session
      */
     public function regenerate()
     {
-        session_regenerate_id(true);
+        $this->init();
+        @session_regenerate_id(true);
         return $this;
     }
 
@@ -76,7 +96,10 @@ class NativeSessionStorage extends BaseObject implements SessionStorage, Session
      */
     public function invalidate()
     {
-        session_destroy();
+        if ($this->initialized) {
+            session_destroy();
+        }
+
         return $this;
     }
 
@@ -87,7 +110,10 @@ class NativeSessionStorage extends BaseObject implements SessionStorage, Session
      */
     public function clear()
     {
-        $_SESSION = array();
+        if ($this->initialized) {
+            $_SESSION = array();
+        }
+
         return $this;
     }
 
@@ -99,6 +125,7 @@ class NativeSessionStorage extends BaseObject implements SessionStorage, Session
      */
     public function hasValue($key)
     {
+        $this->init();
         return isset($_SESSION[$key]);
     }
 
@@ -110,6 +137,7 @@ class NativeSessionStorage extends BaseObject implements SessionStorage, Session
      */
     public function getValue($key)
     {
+        $this->init();
         if (isset($_SESSION[$key])) {
             return $_SESSION[$key];
         }
@@ -126,6 +154,7 @@ class NativeSessionStorage extends BaseObject implements SessionStorage, Session
      */
     public function putValue($key, $value)
     {
+        $this->init();
         $_SESSION[$key] = $value;
         return $this;
     }
@@ -138,6 +167,7 @@ class NativeSessionStorage extends BaseObject implements SessionStorage, Session
      */
     public function removeValue($key)
     {
+        $this->init();
         unset($_SESSION[$key]);
         return $this;
     }
@@ -145,10 +175,11 @@ class NativeSessionStorage extends BaseObject implements SessionStorage, Session
     /**
      * return an array of all keys registered in this session
      *
-     * @return  array<string>
+     * @return  string[]
      */
     public function getValueKeys()
     {
+        $this->init();
         return array_keys($_SESSION);
     }
 }

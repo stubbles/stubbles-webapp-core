@@ -29,7 +29,7 @@ class NativeSessionStorageTestCase extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $_SESSION = array();
-        $this->nativeSessionStorage = @new NativeSessionStorage('foo');
+        $this->nativeSessionStorage = new NativeSessionStorage('foo');
     }
 
     /**
