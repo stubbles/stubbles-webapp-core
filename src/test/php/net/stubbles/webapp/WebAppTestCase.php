@@ -82,6 +82,26 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function canCreateIoBindingModuleWithSession()
+    {
+        $this->assertInstanceOf('net\\stubbles\\webapp\\ioc\\IoBindingModule',
+                                TestWebApp::callMethod('createIoBindingModuleWithSession')
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function canCreateIoBindingModuleWithoutSession()
+    {
+        $this->assertInstanceOf('net\\stubbles\\webapp\\ioc\\IoBindingModule',
+                                TestWebApp::callMethod('createIoBindingModuleWithoutSession')
+        );
+    }
+
+    /**
+     * @test
+     */
     public function canCreateWebAppBindingModule()
     {
         $this->assertInstanceOf('net\\stubbles\\webapp\\ioc\\WebAppBindingModule',

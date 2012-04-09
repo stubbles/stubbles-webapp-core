@@ -46,15 +46,25 @@ class WebApp extends App
     }
 
     /**
-     * creates ipo binding module
+     * creates io binding module with session
      *
      * @param   string  $sessionName
      * @return  IoBindingModule
      */
-    #protected static function createIoBindingModule($sessionName = 'PHPSESSID')
-    #{
-    #    return IoBindingModule::create($sessionName);
-    #}
+    protected static function createIoBindingModuleWithSession($sessionName = 'PHPSESSID')
+    {
+        return IoBindingModule::createWithSession($sessionName);
+    }
+
+    /**
+     * creates io binding module without session
+     *
+     * @return  IoBindingModule
+     */
+    protected static function createIoBindingModuleWithoutSession()
+    {
+        return IoBindingModule::createWithoutSession();
+    }
 
     /**
      * creates web app binding module
