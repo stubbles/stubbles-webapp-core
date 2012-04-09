@@ -71,6 +71,16 @@ class WebAppBindingModuleTestCase extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @since  2.0.0
+     * @test
+     */
+    public function bindsResourceMimeTypes()
+    {
+        $this->uriConfigurator->addResourceHandler('example\\ExampleResourceHandler', '^/examples', array('text/plain'));
+        $this->assertTrue($this->createInjector()->hasConstant('net.stubbles.webapp.resource.mime.types'));
+    }
+
+    /**
      * @test
      */
     public function bindsConfiguredResourceHandlers()
@@ -78,6 +88,18 @@ class WebAppBindingModuleTestCase extends \PHPUnit_Framework_TestCase
         $this->uriConfigurator->addResourceHandler('example\\ExampleResourceHandler', '^/examples');
         $this->assertEquals(array('^/examples' => 'example\\ExampleResourceHandler'),
                             $this->createInjector()->getConstant('net.stubbles.webapp.resource.handler')
+        );
+    }
+
+    /**
+     * @since  2.0.0
+     * @test
+     */
+    public function bindsConfiguredResourceMimeTypes()
+    {
+        $this->uriConfigurator->addResourceHandler('example\\ExampleResourceHandler', '^/examples', array('text/plain'));
+        $this->assertEquals(array('^/examples' => array('text/plain')),
+                            $this->createInjector()->getConstant('net.stubbles.webapp.resource.mime.types')
         );
     }
 
