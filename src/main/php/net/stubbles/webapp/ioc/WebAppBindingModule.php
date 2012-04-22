@@ -81,6 +81,8 @@ class WebAppBindingModule extends BaseObject implements BindingModule
                ->toInstance($this->uriConfigurator->getConfig());
         $binder->bindConstant('net.stubbles.webapp.resource.handler')
                ->to($this->uriConfigurator->getResourceHandler());
+        $binder->bindConstant('net.stubbles.webapp.resource.mime.types')
+               ->to($this->uriConfigurator->getResourceMimeTypes());
     }
 }
 ?>

@@ -3,10 +3,11 @@
     "type": "library",
     "homepage": "http://stubbles.net/",
     "version": "2.0.0",
-    "license": "BSD",
+    "license": "BSD-3",
+    "description": "Base classes for Stubbles based web applications.",
     "require": {
         "php": ">=5.3.0",
-        "stubbles/core": "2.0.*",
+        "stubbles/core": "dev-master",
         "stubbles/input": "dev-master"
     },
     "autoload": {
