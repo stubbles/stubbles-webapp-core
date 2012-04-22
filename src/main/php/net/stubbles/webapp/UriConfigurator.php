@@ -28,25 +28,31 @@ class UriConfigurator extends BaseObject
      *
      * @type  array
      */
-    private $preInterceptors  = array();
+    private $preInterceptors   = array();
     /**
      * list of processor names with their uri condition
      *
      * @type  array
      */
-    private $processors       = array();
+    private $processors        = array();
     /**
      * list of post interceptors with their uri condition
      *
      * @type  array
      */
-    private $postInterceptors = array();
+    private $postInterceptors  = array();
     /**
      * list of rest uri conditions and handlers
      *
      * @type  array
      */
-    private $resourceHandler = array();
+    private $resourceHandler   = array();
+    /**
+     * list of allowed mime types for given uri condition
+     *
+     * @type  array
+     */
+    private $resourceMimeTypes = array();
 
     /**
      * constructor
@@ -151,19 +157,21 @@ class UriConfigurator extends BaseObject
      * adds resource handler for given uri condition
      *
      * @api
-     * @param   string  $handlerClass  rest handler class to add for this uri pattern
-     * @param   string  $uriCondition  uri pattern under which handler should be executed
+     * @param   string    $handlerClass      rest handler class to add for this uri pattern
+     * @param   string    $uriCondition      uri pattern under which handler should be executed
+     * @param   string[]  $allowedMimeTypes  list of allowed mime types, if not set all configured are allowed
      * @return  UriConfigurator
      * @throws  IllegalArgumentException
      */
-    public function addResourceHandler($handlerClass, $uriCondition)
+    public function addResourceHandler($handlerClass, $uriCondition, array $allowedMimeTypes = array())
     {
         if (empty($uriCondition)) {
             throw new IllegalArgumentException('$uriCondition can not be empty.');
         }
 
         $this->process('net\\stubbles\\webapp\\rest\\RestProcessor', $uriCondition);
-        $this->resourceHandler[$uriCondition] = $handlerClass;
+        $this->resourceHandler[$uriCondition]   = $handlerClass;
+        $this->resourceMimeTypes[$uriCondition] = $allowedMimeTypes;
         return $this;
     }
 
@@ -175,6 +183,17 @@ class UriConfigurator extends BaseObject
     public function getResourceHandler()
     {
         return $this->resourceHandler;
+    }
+
+    /**
+     * returns list of rest uri conditions and handlers
+     *
+     * @return  array
+     * @since   2.0.0
+     */
+    public function getResourceMimeTypes()
+    {
+        return $this->resourceMimeTypes;
     }
 
     /**

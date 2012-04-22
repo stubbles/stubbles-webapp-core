@@ -183,10 +183,24 @@ class UriConfiguratorTestCase extends \PHPUnit_Framework_TestCase
                                   '^/users'    => 'example\\UserResourceHandler'
                             ),
                             $this->uriConfigurator->addResourceHandler('example\\ExampleResourceHandler', '^/examples')
-                                                  ->addResourceHandler('example\\UserResourceHandler', '^/users')
+                                                  ->addResourceHandler('example\\UserResourceHandler', '^/users', array('text/plain', 'application/xml'))
                                                   ->getResourceHandler()
         );
     }
 
+    /**
+     * @since  2.0.0
+     * @test
+     */
+    public function returnsAddedMimeTypes()
+    {
+        $this->assertEquals(array('^/examples' => array(),
+                                  '^/users'    => array('text/plain', 'application/xml')
+                            ),
+                            $this->uriConfigurator->addResourceHandler('example\\ExampleResourceHandler', '^/examples')
+                                                  ->addResourceHandler('example\\UserResourceHandler', '^/users', array('text/plain', 'application/xml'))
+                                                  ->getResourceMimeTypes()
+        );
+    }
 }
 ?>
