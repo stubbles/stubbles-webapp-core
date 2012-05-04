@@ -1,22 +1,19 @@
 {
-    "hash": "91538a7406697ad6dc93c97d50450559",
+    "hash": "7971347c52a96848a737b535d7cc60bf",
     "packages": [
         {
             "package": "stubbles/core",
-            "version": "dev-master",
-            "source-reference": "c62c079f64efabe61471375e16c195d08153b72b"
+            "version": "v2.0.0-beta8"
         },
         {
             "package": "stubbles/input",
-            "version": "dev-master",
-            "source-reference": "53766e69c7b1d8d3cc870d50b667df7cb5d559c7"
-        },
-        {
-            "package": "stubbles/scripts",
-            "version": "dev-master",
-            "source-reference": "432da2be37a0e71e929a98a14b4b0926be578898"
+            "version": "v2.0.0-beta1"
         }
     ],
-    "packages-dev": null,
-    "aliases": []
+    "packages-dev": [
+
+    ],
+    "aliases": [
+
+    ]
 }
