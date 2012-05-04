@@ -6,8 +6,8 @@
     "description": "Base classes for Stubbles based web applications.",
     "require": {
         "php": ">=5.3.0",
-        "stubbles/core": "dev-master",
-        "stubbles/input": "dev-master"
+        "stubbles/core": "2.0.*",
+        "stubbles/input": "2.0.*"
     },
     "autoload": {
         "psr-0": {

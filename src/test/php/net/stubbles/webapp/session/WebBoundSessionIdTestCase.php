@@ -8,7 +8,7 @@
  * @package  net\stubbles\webapp
  */
 namespace net\stubbles\webapp\session;
-use net\stubbles\input\validator\ValueReader;
+use net\stubbles\input\ValueReader;
 /**
  * Tests for net\stubbles\webapp\session\WebBoundSessionId.
  *
@@ -87,7 +87,7 @@ class WebBoundSessionIdTestCase extends \PHPUnit_Framework_TestCase
         $this->mockWebRequest->expects($this->once())
                              ->method('readParam')
                              ->with($this->equalTo('foo'))
-                             ->will($this->returnValue(ValueReader::mockForValue('invalid')));
+                             ->will($this->returnValue(ValueReader::forValue('invalid')));
         $this->assertRegExp('/^([a-zA-Z0-9]{32})$/D',
                             $this->webBoundSessionId->get()
         );
@@ -105,7 +105,7 @@ class WebBoundSessionIdTestCase extends \PHPUnit_Framework_TestCase
         $this->mockWebRequest->expects($this->once())
                              ->method('readParam')
                              ->with($this->equalTo('foo'))
-                             ->will($this->returnValue(ValueReader::mockForValue('abcdefghij1234567890abcdefghij12')));
+                             ->will($this->returnValue(ValueReader::forValue('abcdefghij1234567890abcdefghij12')));
         $this->assertEquals('abcdefghij1234567890abcdefghij12',
                             $this->webBoundSessionId->get()
         );
@@ -127,7 +127,7 @@ class WebBoundSessionIdTestCase extends \PHPUnit_Framework_TestCase
         $this->mockWebRequest->expects($this->once())
                              ->method('readCookie')
                              ->with($this->equalTo('foo'))
-                             ->will($this->returnValue(ValueReader::mockForValue('invalid')));
+                             ->will($this->returnValue(ValueReader::forValue('invalid')));
         $this->assertRegExp('/^([a-zA-Z0-9]{32})$/D',
                             $this->webBoundSessionId->get()
         );
@@ -149,7 +149,7 @@ class WebBoundSessionIdTestCase extends \PHPUnit_Framework_TestCase
         $this->mockWebRequest->expects($this->once())
                              ->method('readCookie')
                              ->with($this->equalTo('foo'))
-                             ->will($this->returnValue(ValueReader::mockForValue('abcdefghij1234567890abcdefghij12')));
+                             ->will($this->returnValue(ValueReader::forValue('abcdefghij1234567890abcdefghij12')));
         $this->assertEquals('abcdefghij1234567890abcdefghij12',
                             $this->webBoundSessionId->get()
         );
