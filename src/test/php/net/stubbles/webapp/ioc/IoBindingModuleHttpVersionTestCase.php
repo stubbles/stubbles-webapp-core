@@ -111,7 +111,8 @@ class IoBindingModuleHttpVersionTestCase extends \PHPUnit_Framework_TestCase
     {
         return array(array('HTTP/1.2'),
                      array('HTTP/0.9'),
-                     array('invalid')
+                     array('invalid'),
+                     array('src=a onload=alert(1) < "><iframe src=a onload=alert(1) <')
         );
     }
 

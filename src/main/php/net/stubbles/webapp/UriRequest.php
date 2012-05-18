@@ -53,6 +53,17 @@ class UriRequest extends BaseObject
     }
 
     /**
+     * returns path of request uri
+     *
+     * @return  string
+     * @since   2.0.0
+     */
+    public function getPath()
+    {
+        return $this->requestUri->getPath();
+    }
+
+    /**
      * checks if current uri satisfies given uri condition
      *
      * @param   string  $uriCondition  uri pattern to check
@@ -145,5 +156,15 @@ class UriRequest extends BaseObject
         return $this->requestUri->toHttps();
     }
 
+    /**
+     * returns string representation
+     *
+     * @return  string
+     * @since   2.0.0
+     */
+    public function __toString()
+    {
+        return (string) $this->requestUri;
+    }
 }
 ?>

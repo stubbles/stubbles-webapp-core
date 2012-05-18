@@ -62,6 +62,16 @@ class UriRequestTestCase extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @since  2.0.0
+     * @test
+     */
+    public function returnsUriPath()
+    {
+        $this->mockUriPath('/xml/Home');
+        $this->assertEquals('/xml/Home', $this->uriRequest->getPath());
+    }
+
+    /**
      * @test
      */
     public function alwaysSatisfiesNullCondition()
@@ -317,6 +327,18 @@ class UriRequestTestCase extends \PHPUnit_Framework_TestCase
                           ->method('toHttps')
                           ->will($this->returnValue($mockHttpUri));
         $this->assertSame($mockHttpUri, $this->uriRequest->toHttps());
+    }
+
+    /**
+     * @since  2.0.0
+     * @test
+     */
+    public function returnsStringRepresentationOfUri()
+    {
+        $this->mockHttpUri->expects($this->once())
+                          ->method('__toString')
+                          ->will($this->returnValue('http://example.net/foo/bar'));
+        $this->assertEquals('http://example.net/foo/bar', (string) $this->uriRequest);
     }
 }
 ?>
