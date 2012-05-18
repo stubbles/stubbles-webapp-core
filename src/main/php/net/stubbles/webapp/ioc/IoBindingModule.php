@@ -170,14 +170,13 @@ class IoBindingModule extends BaseObject implements BindingModule
      */
     private function createResponse(WebRequest $request)
     {
-        $httpVersion   = $request->readHeader('SERVER_PROTOCOL')->unsecure();
         $minor         = null;
-        $scanResult    = sscanf($httpVersion, 'HTTP/%*[1].%[01]', $minor);
+        $scanResult    = sscanf($request->readHeader('SERVER_PROTOCOL')->unsecure(), 'HTTP/%*[1].%[01]', $minor);
         $responseClass = $this->responseClass;
         if (2 != $scanResult) {
             $response = new $responseClass();
             $response->setStatusCode(505);
-            $response->write('Unsupported HTTP protocol version "' . $httpVersion . '", expected HTTP/1.0 or HTTP/1.1' . "\n");
+            $response->write('Unsupported HTTP protocol version, expected HTTP/1.0 or HTTP/1.1' . "\n");
             $request->cancel();
         } else {
             $response = new $responseClass('1.' . ((int) $minor));
