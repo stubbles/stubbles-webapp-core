@@ -41,6 +41,16 @@ class IoBindingModule extends BaseObject implements BindingModule
     private $sessionCreator;
 
     /**
+     * constructor
+     *
+     * @param  string  $sessionName
+     */
+    protected function __construct($sessionName = null)
+    {
+        $this->sessionName = $sessionName;
+    }
+
+    /**
      * factory method
      *
      * @return  IoBindingModule
@@ -48,8 +58,7 @@ class IoBindingModule extends BaseObject implements BindingModule
      */
     public static function createWithSession($sessionName = 'PHPSESSID')
     {
-        $self = new self();
-        $self->sessionName = $sessionName;
+        $self = new self($sessionName);
         return $self->useNativeSession();
     }
 
