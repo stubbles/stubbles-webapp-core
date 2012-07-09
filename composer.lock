@@ -3,17 +3,21 @@
     "packages": [
         {
             "package": "stubbles/core",
-            "version": "v2.0.0-beta8"
+            "version": "v2.0.0"
         },
         {
             "package": "stubbles/input",
-            "version": "v2.0.0-beta1"
+            "version": "v2.0.0"
         }
     ],
     "packages-dev": [
 
     ],
     "aliases": [
+
+    ],
+    "minimum-stability": "stable",
+    "stability-flags": [
 
     ]
 }
