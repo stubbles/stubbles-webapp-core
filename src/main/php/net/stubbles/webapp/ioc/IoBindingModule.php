@@ -14,6 +14,7 @@ use net\stubbles\ioc\Binder;
 use net\stubbles\ioc\module\BindingModule;
 use net\stubbles\lang\BaseObject;
 use net\stubbles\webapp\response\Response;
+use net\stubbles\webapp\response\ResponseCreator;
 /**
  * Module to configure the binder with default instances for request, session and response.
  *
@@ -26,7 +27,7 @@ class IoBindingModule extends BaseObject implements BindingModule
      *
      * @type  string
      */
-    private $responseClass  = 'net\\stubbles\\webapp\\response\\WebResponse';
+    private $responseClass  = 'net\stubbles\webapp\response\WebResponse';
     /**
      * name for the session
      *
@@ -156,16 +157,16 @@ class IoBindingModule extends BaseObject implements BindingModule
     {
         $request  = BaseWebRequest::fromRawSource();
         $response = $this->createResponse($request);
-        $binder->bind('net\\stubbles\\input\\web\\WebRequest')
+        $binder->bind('net\stubbles\input\web\WebRequest')
                ->toInstance($request);
-        $binder->bind('net\\stubbles\\input\\Request')
+        $binder->bind('net\stubbles\input\Request')
                ->toInstance($request);
-        $binder->bind('net\\stubbles\\webapp\\response\\Response')
+        $binder->bind('net\stubbles\webapp\response\Response')
                ->toInstance($response);
         if (null !== $this->sessionCreator) {
             $sessionCreator = $this->sessionCreator;
             $session        = $sessionCreator($request, $response, $this->sessionName);
-            $binder->bind('net\\stubbles\\webapp\\session\\Session')
+            $binder->bind('net\stubbles\webapp\session\Session')
                    ->toInstance($session);
             $binder->setSessionScope(new \net\stubbles\webapp\session\SessionBindingScope($session));
         }
@@ -179,16 +180,11 @@ class IoBindingModule extends BaseObject implements BindingModule
      */
     private function createResponse(WebRequest $request)
     {
-        $minor         = null;
-        $scanResult    = sscanf($request->readHeader('SERVER_PROTOCOL')->unsecure(), 'HTTP/%*[1].%[01]', $minor);
-        $responseClass = $this->responseClass;
-        if (2 != $scanResult) {
-            $response = new $responseClass();
-            $response->setStatusCode(505);
-            $response->write('Unsupported HTTP protocol version, expected HTTP/1.0 or HTTP/1.1' . "\n");
+        $response = ResponseCreator::create($request->readHeader('SERVER_PROTOCOL')->unsecure(),
+                                            $this->responseClass
+                    );
+        if ($response->getStatusCode() === 505) {
             $request->cancel();
-        } else {
-            $response = new $responseClass('1.' . ((int) $minor));
         }
 
         return $response;
