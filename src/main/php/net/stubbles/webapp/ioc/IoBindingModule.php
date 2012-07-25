@@ -180,14 +180,14 @@ class IoBindingModule extends BaseObject implements BindingModule
      */
     private function createResponse(WebRequest $request)
     {
-        $response = ResponseCreator::create($request->readHeader('SERVER_PROTOCOL')->unsecure(),
-                                            $this->responseClass
-                    );
-        if ($response->getStatusCode() === 505) {
+        $httpVersion = $request->getProtocolVersion();
+        if (null === $httpVersion) {
             $request->cancel();
         }
 
-        return $response;
+        return ResponseCreator::createForVersion($httpVersion,
+                                                 $this->responseClass
+        );
     }
 }
 ?>

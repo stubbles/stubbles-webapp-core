@@ -1,5 +1,5 @@
 {
-    "hash": "7971347c52a96848a737b535d7cc60bf",
+    "hash": "855b77b43f1f57f232bf097675b87840",
     "packages": [
         {
             "package": "stubbles/core",
@@ -7,17 +7,17 @@
         },
         {
             "package": "stubbles/input",
-            "version": "v2.0.0"
+            "version": "dev-master",
+            "source-reference": "286054c1e820748f9e5c87bbaf17c1432d54e644",
+            "commit-date": "1343227007"
         }
     ],
-    "packages-dev": [
-
-    ],
+    "packages-dev": null,
     "aliases": [
 
     ],
     "minimum-stability": "stable",
-    "stability-flags": [
-
-    ]
+    "stability-flags": {
+        "stubbles/input": 20
+    }
 }
