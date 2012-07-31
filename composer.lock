@@ -1,16 +1,18 @@
 {
-    "hash": "7971347c52a96848a737b535d7cc60bf",
+    "hash": "fd325272af2c92f04afed65d028b9fbc",
     "packages": [
         {
             "package": "stubbles/core",
-            "version": "v2.0.0"
+            "version": "v2.1.0"
         },
         {
             "package": "stubbles/input",
-            "version": "v2.0.2"
+            "version": "v2.1.0"
         }
     ],
-    "packages-dev": null,
+    "packages-dev": [
+
+    ],
     "aliases": [
 
     ],
