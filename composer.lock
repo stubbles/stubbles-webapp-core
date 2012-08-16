@@ -3,7 +3,7 @@
     "packages": [
         {
             "package": "stubbles/core",
-            "version": "v2.1.0"
+            "version": "v2.1.1"
         },
         {
             "package": "stubbles/input",
