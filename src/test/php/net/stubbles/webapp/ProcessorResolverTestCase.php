@@ -8,6 +8,8 @@
  * @package  net\stubbles\webapp
  */
 namespace net\stubbles\webapp;
+use net\stubbles\input\web\WebRequest;
+use net\stubbles\webapp\response\Response;
 /**
  * Tests for net\stubbles\webapp\ProcessorResolver.
  *
@@ -34,11 +36,12 @@ class ProcessorResolverTestCase extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->mockInjector      = $this->getMockBuilder('net\\stubbles\\ioc\\Injector')
+        $this->mockInjector      = $this->getMockBuilder('net\stubbles\ioc\Injector')
                                         ->disableOriginalConstructor()
                                         ->getMock();
         $this->processorResolver = new ProcessorResolver($this->mockInjector,
-                                                         $this->getMock('net\\stubbles\\webapp\\response\\Response')
+                                                         $this->getMock('net\stubbles\input\web\WebRequest'),
+                                                         $this->getMock('net\stubbles\webapp\response\Response')
                                    );
     }
 
@@ -67,9 +70,9 @@ class ProcessorResolverTestCase extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function doesNotDecorateWithAuthProcessorIfNoAuthConfigSet()
+    public function doesNotDecorateProcessorWithAuthProcessorIfNoAuthConfigSet()
     {
-        $mockProcessor      = $this->getMock('net\\stubbles\\webapp\\Processor');
+        $mockProcessor      = $this->getMock('net\stubbles\webapp\Processor');
         $mockProcessorClass = get_class($mockProcessor);
         $this->mockInjector->expects($this->once())
                            ->method('getInstance')
@@ -83,18 +86,53 @@ class ProcessorResolverTestCase extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function decoratesWithAuthProcessorIfAuthConfigSet()
+    public function doesNotDecorateClosureProcessorWithAuthProcessorIfNoAuthConfigSet()
     {
-        $mockProcessor = $this->getMock('net\\stubbles\\webapp\\Processor');
+        $this->mockInjector->expects($this->never())
+                           ->method('getInstance');
+        $this->assertInstanceOf('net\stubbles\webapp\ClosureProcessor',
+                                $this->processorResolver->resolve(function(WebRequest $request, Response $response)
+                                                                  {
+                                                                      $request->cancel();
+                                                                      $response->setStatusCode(418);
+                                                                  }
+                                )
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function decoratesProcessorWithAuthProcessorIfAuthConfigSet()
+    {
+        $mockProcessor = $this->getMock('net\stubbles\webapp\Processor');
         $this->mockInjector->expects($this->exactly(2))
                            ->method('getInstance')
                            ->will($this->onConsecutiveCalls($mockProcessor,
-                                                            $this->getMock('net\\stubbles\\webapp\\auth\\AuthHandler')
+                                                            $this->getMock('net\stubbles\webapp\auth\AuthHandler')
                                   )
                              );
         $this->assertInstanceOf('net\stubbles\webapp\auth\AuthProcessor',
-                                $this->processorResolver->setAuthConfig($this->getMock('net\\stubbles\\webapp\\auth\\AuthConfiguration'))
+                                $this->processorResolver->setAuthConfig($this->getMock('net\stubbles\webapp\auth\AuthConfiguration'))
                                                         ->resolve(get_class($mockProcessor))
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function decoratesClosureProcessorWithAuthProcessorIfAuthConfigSet()
+    {
+        $this->mockInjector->expects($this->once())
+                           ->method('getInstance')
+                           ->will($this->returnValue($this->getMock('net\stubbles\webapp\auth\AuthHandler')));
+        $this->assertInstanceOf('net\stubbles\webapp\auth\AuthProcessor',
+                                $this->processorResolver->setAuthConfig($this->getMock('net\stubbles\webapp\auth\AuthConfiguration'))
+                                                        ->resolve(function(WebRequest $request, Response $response)
+                                                                  {
+                                                                      $request->cancel();
+                                                                      $response->setStatusCode(418);
+                                                                  })
         );
     }
 }

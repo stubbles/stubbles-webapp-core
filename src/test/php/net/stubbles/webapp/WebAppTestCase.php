@@ -128,16 +128,6 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function canCreateXmlUriConfigurator()
-    {
-        $this->assertInstanceOf('net\\stubbles\\webapp\\UriConfigurator',
-                                TestWebApp::callMethod('createXmlUriConfigurator')
-        );
-    }
-
-    /**
-     * @test
-     */
     public function canCreateRestUriConfigurator()
     {
         $this->assertInstanceOf('net\\stubbles\\webapp\\UriConfigurator',

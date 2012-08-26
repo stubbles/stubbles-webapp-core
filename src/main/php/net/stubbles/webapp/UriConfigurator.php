@@ -20,7 +20,7 @@ class UriConfigurator extends BaseObject
     /**
      * fallback if none of the configured processors applies
      *
-     * @type  string
+     * @type  string|Closure
      */
     private $defaultProcessor;
     /**
@@ -57,7 +57,7 @@ class UriConfigurator extends BaseObject
     /**
      * constructor
      *
-     * @param   string  $defaultProcessor  class name of fallback processor
+     * @param   string|Closure  $defaultProcessor  class name of fallback processor
      */
     public function __construct($defaultProcessor)
     {
@@ -68,23 +68,12 @@ class UriConfigurator extends BaseObject
      * static constructor, see constructor above
      *
      * @api
-     * @param   string  $defaultProcessor  class name of fallback processor
+     * @param   string|Closure  $defaultProcessor  class name of fallback processor
      * @return  UriConfigurator
      */
     public static function create($defaultProcessor )
     {
         return new self($defaultProcessor);
-    }
-
-    /**
-     * creates configuration with stubbles' xml processor as default
-     *
-     * @api
-     * @return  UriConfigurator
-     */
-    public static function createWithXmlProcessorAsDefault()
-    {
-        return new self('net\\stubbles\\webapp\\xml\\XmlProcessor');
     }
 
     /**
@@ -105,13 +94,15 @@ class UriConfigurator extends BaseObject
      * condition set with the first registration.
      *
      * @api
-     * @param   string  $preInterceptorClassName  pre interceptor class to add
-     * @param   string  $uriCondition             uri pattern under which interceptor should be executed
+     * @param   string|Closure  $preInterceptor  pre interceptor class to add
+     * @param   string          $uriCondition    uri pattern under which interceptor should be executed
      * @return  UriConfigurator
      */
-    public function preIntercept($preInterceptorClassName, $uriCondition = null)
+    public function preIntercept($preInterceptor, $uriCondition = null)
     {
-        $this->preInterceptors[$preInterceptorClassName] = $uriCondition;
+        $this->preInterceptors[] = array('interceptor'  => $preInterceptor,
+                                         'uriCondition' => $uriCondition
+                                   );
         return $this;
     }
 
@@ -126,30 +117,18 @@ class UriConfigurator extends BaseObject
      * the first processor.
      *
      * @api
-     * @param   string  $processorClass  name of processor class
-     * @param   string  $uriCondition    uri pattern under which interceptor should be executed
+     * @param   string|Closure  $processor     name of processor class
+     * @param   string          $uriCondition  uri pattern under which interceptor should be executed
      * @return  UriConfigurator
      * @throws  IllegalArgumentException
      */
-    public function process($processorClass, $uriCondition)
+    public function process($processor, $uriCondition)
     {
         if (empty($uriCondition)) {
             throw new IllegalArgumentException('$uriCondition can not be empty.');
         }
 
-        $this->processors[$uriCondition] = $processorClass;
-        return $this;
-    }
-
-    /**
-     * process requests with stubbles' xml/xsl view engine
-     *
-     * @api
-     * @return  UriConfigurator
-     */
-    public function provideXml()
-    {
-        $this->process('net\\stubbles\\webapp\\xml\\XmlProcessor', '^/xml/');
+        $this->processors[$uriCondition] = $processor;
         return $this;
     }
 
@@ -203,27 +182,17 @@ class UriConfigurator extends BaseObject
      * condition set with the first registration.
      *
      * @api
-     * @param   string  $postInterceptorClassName  post interceptor class to add
-     * @param   string  $uriCondition              uri pattern under which post interceptor should be executed
+     * @param   string|Closure  $postInterceptor  post interceptor class to add
+     * @param   string          $uriCondition     uri pattern under which post interceptor should be executed
      * @return  UriConfiguration
      */
-    public function postIntercept($postInterceptorClassName, $uriCondition = null)
+    public function postIntercept($postInterceptor, $uriCondition = null)
     {
-        $this->postInterceptors[$postInterceptorClassName] = $uriCondition;
+        $this->postInterceptors[] = array('interceptor'  => $postInterceptor,
+                                          'uriCondition' => $uriCondition
+                                    );
         return $this;
     }
-
-    /**
-     * adds etag post interceptor to uri configuration
-     *
-     * @api
-     * @param   string  $uriCondition  uri pattern under which post interceptor should be executed
-     * @return  UriConfigurator
-     */
-    #public function addEtagPostInterceptor($uriCondition = null)
-    #{
-    #    return $this->postIntercept('net\\stubbles\\webapp\\interceptor\\EtagPostInterceptor', $uriCondition);
-    #}
 
     /**
      * returns finished configuration

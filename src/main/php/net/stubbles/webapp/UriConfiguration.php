@@ -65,7 +65,7 @@ class UriConfiguration extends BaseObject
      * returns class name list of pre interceptors applicable to called uri
      *
      * @param   UriRequest  $calledUri  current request uri
-     * @return  string[]
+     * @return  string[]|Closure[]
      */
     public function getPreInterceptors(UriRequest $calledUri)
     {
@@ -73,7 +73,7 @@ class UriConfiguration extends BaseObject
     }
 
     /**
-     * returns processor name applicable to called uri
+     * returns processor applicable to called uri
      *
      * Only one processor will be applied. If there is more than one processor
      * which is configured with an url condition which satifies the called uri
@@ -83,14 +83,14 @@ class UriConfiguration extends BaseObject
      * be returned.
      *
      * @param   UriRequest  $calledUri  current request uri
-     * @return  string
+     * @return  string|Closure
      */
     public function getProcessorForUri(UriRequest $calledUri)
     {
-        foreach ($this->processors as $uriCondition => $processorClass) {
+        foreach ($this->processors as $uriCondition => $processor) {
             if ($calledUri->satisfies($uriCondition)) {
                 $calledUri->setProcessorUriCondition($uriCondition);
-                return $processorClass;
+                return $processor;
             }
         }
 
@@ -101,7 +101,7 @@ class UriConfiguration extends BaseObject
      * returns class name list of post interceptors applicable to called uri
      *
      * @param   UriRequest  $calledUri  current request uri
-     * @return  string[]
+     * @return  string[]|Closure[]
      */
     public function getPostInterceptors(UriRequest $calledUri)
     {
@@ -113,14 +113,14 @@ class UriConfiguration extends BaseObject
      *
      * @param   UriRequest  $calledUri     current request uri
      * @param   array       $interceptors  map of pre/post interceptor classes to check
-     * @return  string[]
+     * @return  string[]|Closure[]
      */
     private function getApplicable(UriRequest $calledUri, array $interceptors)
     {
         $applicable = array();
-        foreach ($interceptors as  $className => $uriCondition) {
-            if ($calledUri->satisfies($uriCondition)) {
-                $applicable[] = $className;
+        foreach ($interceptors as  $interceptor) {
+            if ($calledUri->satisfies($interceptor['uriCondition'])) {
+                $applicable[] = $interceptor['interceptor'];
             }
         }
 

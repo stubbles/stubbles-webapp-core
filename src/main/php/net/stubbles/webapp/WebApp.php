@@ -80,22 +80,12 @@ class WebApp extends App
     /**
      * creates uri configurator with xml processor as default
      *
-     * @param   string  $defaultProcessor  class name of fallback processor
+     * @param   string|Closure  $defaultProcessor  class name of fallback processor
      * @return  UriConfigurator
      */
     protected static function createUriConfigurator($defaultProcessor)
     {
         return UriConfigurator::create($defaultProcessor);
-    }
-
-    /**
-     * creates uri configurator with xml processor as default
-     *
-     * @return  UriConfigurator
-     */
-    protected static function createXmlUriConfigurator()
-    {
-        return UriConfigurator::createWithXmlProcessorAsDefault();
     }
 
     /**

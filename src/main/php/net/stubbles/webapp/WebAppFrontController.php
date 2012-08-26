@@ -100,9 +100,14 @@ class WebAppFrontController extends BaseObject
      */
     private function applyPreInterceptors(UriRequest $calledUri)
     {
-        foreach ($this->uriConfig->getPreInterceptors($calledUri) as $interceptorClassName) {
-            $this->injector->getInstance($interceptorClassName)
-                           ->preProcess($this->request, $this->response);
+        foreach ($this->uriConfig->getPreInterceptors($calledUri) as $interceptor) {
+            if ($interceptor instanceof \Closure) {
+                $interceptor($this->request, $this->response);
+            } else {
+                $this->injector->getInstance($interceptor)
+                               ->preProcess($this->request, $this->response);
+            }
+
             if ($this->request->isCancelled()) {
                 return false;
             }
@@ -138,7 +143,7 @@ class WebAppFrontController extends BaseObject
             $this->request->cancel();
         }
 
-        if (null !== $processor) {
+        if ($processor instanceof Processor) {
             $processor->cleanup();
         }
 
@@ -156,9 +161,14 @@ class WebAppFrontController extends BaseObject
      */
     private function applyPostInterceptors(UriRequest $calledUri)
     {
-        foreach ($this->uriConfig->getPostInterceptors($calledUri) as $interceptorClassName) {
-            $this->injector->getInstance($interceptorClassName)
-                           ->postProcess($this->request, $this->response);
+        foreach ($this->uriConfig->getPostInterceptors($calledUri) as $interceptor) {
+            if ($interceptor instanceof \Closure) {
+                $interceptor($this->request, $this->response);
+            } else {
+                $this->injector->getInstance($interceptor)
+                               ->postProcess($this->request, $this->response);
+            }
+
             if ($this->request->isCancelled()) {
                 return;
             }

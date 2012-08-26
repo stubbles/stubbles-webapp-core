@@ -8,6 +8,7 @@
  * @package  net\stubbles\webapp
  */
 namespace net\stubbles\webapp;
+use net\stubbles\input\web\WebRequest;
 use net\stubbles\ioc\Injector;
 use net\stubbles\lang\BaseObject;
 use net\stubbles\webapp\auth\AuthConfiguration;
@@ -30,6 +31,12 @@ class ProcessorResolver extends BaseObject
      */
     private $injector;
     /**
+     * request instance
+     *
+     * @type  WebRequest
+     */
+    private $request;
+    /**
      * response
      *
      * @type  Response
@@ -45,13 +52,15 @@ class ProcessorResolver extends BaseObject
     /**
      * constructor
      *
-     * @param  Injector  $injector
-     * @param  Response  $response
+     * @param  Injector    $injector
+     * @param  WebRequest  $request
+     * @param  Response    $response
      * @Inject
      */
-    public function __construct(Injector $injector, Response $response)
+    public function __construct(Injector $injector, WebRequest $request, Response $response)
     {
         $this->injector = $injector;
+        $this->request  = $request;
         $this->response = $response;
     }
 
@@ -70,12 +79,27 @@ class ProcessorResolver extends BaseObject
     /**
      * returns the processor
      *
-     * @param   string  $processorClass
+     * @param   string|Closure  $processor
      * @return  mixed
      */
-    public function resolve($processorClass)
+    public function resolve($processor)
     {
-        return $this->decorateWithAuthProcessor($this->injector->getInstance($processorClass));
+        return $this->decorateWithAuthProcessor($this->createProcessor($processor));
+    }
+
+    /**
+     * creates processor instance
+     *
+     * @param   string|Closure  $processor
+     * @return  ClosureProcessor
+     */
+    private function createProcessor($processor)
+    {
+        if ($processor instanceof \Closure) {
+            return new ClosureProcessor($processor, $this->request, $this->response);
+        }
+
+        return $this->injector->getInstance($processor);
     }
 
     /**

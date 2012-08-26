@@ -8,6 +8,8 @@
  * @package  net\stubbles\webapp
  */
 namespace net\stubbles\webapp;
+use net\stubbles\input\web\WebRequest;
+use net\stubbles\webapp\response\Response;
 /**
  * Tests for net\stubbles\webapp\UriConfigurator.
  *
@@ -36,9 +38,14 @@ class UriConfiguratorTestCase extends \PHPUnit_Framework_TestCase
      */
     public function preInterceptAddsPreInterceptorClasses()
     {
-        $this->assertEquals(array('example\\SomePreInterceptor', 'example\\OtherPreInterceptor'),
+        $interceptor = function(WebRequest $request, Response $response)
+                       {
+                           $response->addHeader('X-Binford', '6100 (More power!)');
+                       };
+        $this->assertEquals(array('example\\SomePreInterceptor', 'example\\OtherPreInterceptor', $interceptor),
                             $this->uriConfigurator->preIntercept('example\\SomePreInterceptor')
                                                   ->preIntercept('example\\OtherPreInterceptor', '^/foo')
+                                                  ->preIntercept($interceptor)
                                                   ->getConfig()
                                                   ->getPreInterceptors(UriRequest::fromString('http://example.net/foo'))
         );
@@ -49,9 +56,14 @@ class UriConfiguratorTestCase extends \PHPUnit_Framework_TestCase
      */
     public function postInterceptAddsPostInterceptorClasses()
     {
-        $this->assertEquals(array('example\\SomePostInterceptor', 'example\\OtherPostInterceptor'),
+        $interceptor = function(WebRequest $request, Response $response)
+                       {
+                           $response->addHeader('X-Binford', '6100 (More power!)');
+                       };
+        $this->assertEquals(array('example\\SomePostInterceptor', 'example\\OtherPostInterceptor', $interceptor),
                             $this->uriConfigurator->postIntercept('example\\SomePostInterceptor')
                                                   ->postIntercept('example\\OtherPostInterceptor', '^/foo')
+                                                  ->postIntercept($interceptor)
                                                   ->getConfig()
                                                   ->getPostInterceptors(UriRequest::fromString('http://example.net/foo'))
         );
@@ -65,18 +77,6 @@ class UriConfiguratorTestCase extends \PHPUnit_Framework_TestCase
         $this->assertEquals('example\\DefaultProcessor',
                             $this->uriConfigurator->getConfig()
                                                   ->getProcessorForUri(UriRequest::fromString('http://example.net/'))
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function usesXmlProcessorWhenNoSpecificRequested()
-    {
-        $this->assertEquals('net\\stubbles\\webapp\\xml\\XmlProcessor',
-                            UriConfigurator::createWithXmlProcessorAsDefault()
-                                           ->getConfig()
-                                           ->getProcessorForUri(UriRequest::fromString('http://example.net/'))
         );
     }
 
@@ -125,12 +125,16 @@ class UriConfiguratorTestCase extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function provideXmlAddsXmlProcessor()
+    public function addProcessorClosure()
     {
-        $this->assertEquals('net\\stubbles\\webapp\\xml\\XmlProcessor',
-                            $this->uriConfigurator->provideXml()
+        $processor = function(UriRequest $calledUri, WebRequest $request, Response $response)
+                     {
+                         $response->addHeader('X-Binford', '6100 (More power!)');
+                     };
+        $this->assertEquals($processor,
+                            $this->uriConfigurator->process($processor, '^/new/')
                                                   ->getConfig()
-                                                  ->getProcessorForUri(UriRequest::fromString('http://example.net/xml/'))
+                                                  ->getProcessorForUri(UriRequest::fromString('http://example.net/new/'))
         );
     }
 

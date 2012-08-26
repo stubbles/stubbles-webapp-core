@@ -125,6 +125,7 @@ class WebAppFrontControllerTestCase extends \PHPUnit_Framework_TestCase
         $this->mockUriConfig->expects($this->once())
                             ->method('getPreInterceptors')
                             ->will($this->returnValue(array('my\\PreInterceptor',
+                                                            function() {}, // simulate functional pre interceptor
                                                             'other\\PreInterceptor'
                                                       )
                                    )
@@ -144,9 +145,9 @@ class WebAppFrontControllerTestCase extends \PHPUnit_Framework_TestCase
      */
     public function processStopsIfPreInterceptorCancelsRequest()
     {
-        $this->mockRequest->expects($this->exactly(3))
+        $this->mockRequest->expects($this->exactly(4))
                           ->method('isCancelled')
-                          ->will($this->onConsecutiveCalls(false, false, true));
+                          ->will($this->onConsecutiveCalls(false, false, false, true));
         $this->mockRequest->expects($this->once())
                           ->method('getUri')
                           ->will($this->returnValue(HttpUri::fromString('http://example.net/xml/Home')));
@@ -179,9 +180,9 @@ class WebAppFrontControllerTestCase extends \PHPUnit_Framework_TestCase
      */
     public function processStopsIfProcessorCancelsRequest()
     {
-        $this->mockRequest->expects($this->exactly(4))
+        $this->mockRequest->expects($this->exactly(5))
                           ->method('isCancelled')
-                          ->will($this->onConsecutiveCalls(false, false, false, true));
+                          ->will($this->onConsecutiveCalls(false, false, false, false, true));
         $this->mockRequest->expects($this->once())
                           ->method('getUri')
                           ->will($this->returnValue(HttpUri::fromString('http://example.net/xml/Home')));
@@ -199,9 +200,9 @@ class WebAppFrontControllerTestCase extends \PHPUnit_Framework_TestCase
      */
     public function processStopsIfProcessorThrowsException()
     {
-        $this->mockRequest->expects($this->exactly(4))
+        $this->mockRequest->expects($this->exactly(5))
                           ->method('isCancelled')
-                          ->will($this->onConsecutiveCalls(false, false, false, true));
+                          ->will($this->onConsecutiveCalls(false, false, false, false, true));
         $this->mockRequest->expects($this->once())
                           ->method('getUri')
                           ->will($this->returnValue(HttpUri::fromString('http://example.net/xml/Home')));
@@ -227,9 +228,9 @@ class WebAppFrontControllerTestCase extends \PHPUnit_Framework_TestCase
      */
     public function processStopsIfProcessorRequiresSslButIsNotSslAndRedirectsToSslVersion()
     {
-        $this->mockRequest->expects($this->exactly(3))
+        $this->mockRequest->expects($this->exactly(4))
                           ->method('isCancelled')
-                          ->will($this->onConsecutiveCalls(false, false, false));
+                          ->will($this->onConsecutiveCalls(false, false, false, false));
         $this->mockRequest->expects($this->once())
                           ->method('getUri')
                           ->will($this->returnValue(HttpUri::fromString('http://example.net/xml/Home')));
@@ -257,9 +258,9 @@ class WebAppFrontControllerTestCase extends \PHPUnit_Framework_TestCase
      */
     public function processStopsIfPostInterceptorCancelsRequest()
     {
-        $this->mockRequest->expects($this->exactly(5))
+        $this->mockRequest->expects($this->exactly(7))
                           ->method('isCancelled')
-                          ->will($this->onConsecutiveCalls(false, false, false, false, true));
+                          ->will($this->onConsecutiveCalls(false, false, false, false, false, false, true));
         $this->mockRequest->expects($this->once())
                           ->method('getUri')
                           ->will($this->returnValue(HttpUri::fromString('http://example.net/xml/Home')));
@@ -268,6 +269,7 @@ class WebAppFrontControllerTestCase extends \PHPUnit_Framework_TestCase
         $this->mockUriConfig->expects($this->once())
                             ->method('getPostInterceptors')
                             ->will($this->returnValue(array('my\\PostInterceptor',
+                                                            function() {}, // simulate functional post interceptor
                                                             'other\\PostInterceptor'
                                                       )
                                    )
@@ -303,6 +305,7 @@ class WebAppFrontControllerTestCase extends \PHPUnit_Framework_TestCase
         $this->mockUriConfig->expects($this->once())
                             ->method('getPostInterceptors')
                             ->will($this->returnValue(array('my\\PostInterceptor',
+                                                            function() {}, // simulate functional post interceptor
                                                             'other\\PostInterceptor'
                                                       )
                                    )

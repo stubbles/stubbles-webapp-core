@@ -29,17 +29,29 @@ class UriConfigurationTestCase extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->uriConfiguration = new UriConfiguration('example\\DefaultProcessor',
-                                                       array('example\\SomePreInterceptor'        => null,
-                                                             'example\\OtherPreInterceptor'       => '^/xml/?',
-                                                             'example\\UnavailablePreInterceptor' => '^/rest/'
+                                                       array(array('interceptor'  => 'example\\SomePreInterceptor',
+                                                                   'uriCondition' => null
+                                                             ),
+                                                             array('interceptor'  => 'example\\OtherPreInterceptor',
+                                                                   'uriCondition' => '^/xml/?'
+                                                             ),
+                                                             array('interceptor'  => 'example\\UnavailablePreInterceptor',
+                                                                   'uriCondition' => '^/rest/'
+                                                             )
                                                        ),
-                                                       array('^/xml/?'   => 'example\\XmlProcessor',
+                                                       array('^/xml/?'  => 'example\\XmlProcessor',
                                                              '^/users'  => 'example\\RestProcessor',
                                                              '^/admins' => 'example\\RestProcessor'
                                                        ),
-                                                       array('example\\SomePostInterceptor'        => null,
-                                                             'example\\OtherPostInterceptor'       => '^/xml/?',
-                                                             'example\\UnavailablePostInterceptor' => '^/rest/'
+                                                       array(array('interceptor'  => 'example\\SomePostInterceptor',
+                                                                   'uriCondition' => null
+                                                             ),
+                                                             array('interceptor'  => 'example\\OtherPostInterceptor',
+                                                                   'uriCondition' => '^/xml/?'
+                                                             ),
+                                                             array('interceptor'  => 'example\\UnavailablePostInterceptor',
+                                                                   'uriCondition' => '^/rest/'
+                                                             )
                                                        )
                                    );
     }
