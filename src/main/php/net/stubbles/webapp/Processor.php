@@ -23,7 +23,7 @@ interface Processor extends Object
      *
      * @param  WebRequest  $request        current request
      * @param  Response    $response       response to send
-     * @param  string[]    $pathArguments  any detected path arguments
+     * @param  string[]    $pathArguments  map of detected path arguments
      */
     public function process(WebRequest $request, Response $response, array $pathArguments);
 }
