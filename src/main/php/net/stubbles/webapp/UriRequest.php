@@ -76,13 +76,27 @@ class UriRequest extends BaseObject
      * @param   string  $path
      * @return  bool
      */
-    public function satisfiesPath($path)
+    public function satisfiesPath($pathPattern)
     {
-        if (preg_match('~' . $path . '~', $this->uri->getPath()) === 1) {
+        if (preg_match('/^' . $pathPattern . '$/', $this->uri->getPath()) >= 1) {
             return true;
         }
 
         return false;
+    }
+
+    /**
+     * gets path arguments from uri
+     *
+     * @param   string  $pathPattern
+     * @return  string[]
+     */
+    public function getPathArguments($pathPattern)
+    {
+        $matches = array();
+        preg_match('/^' . $pathPattern . '$/', $this->uri->getPath(), $matches);
+        array_shift($matches);
+        return $matches;
     }
 
     /**

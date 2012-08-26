@@ -98,39 +98,53 @@ class UriRequestTestCase extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @test
+     * data provider for satisfying path pattern tests
+     *
+     * @return  array
      */
-    public function alwaysSatisfiesNullCondition()
+    public function provideSatisfiedPathPattern()
     {
-        $this->mockUriPath('/press/Home');
-        $this->assertTrue($this->uriRequest->satisfiesPath(null));
+        return array(array('/hello/mikey', '\/hello\/([^\/]+)'),
+                     array('/hello', '\/hello'),
+                     array('/hello/world303', '\/hello\/[a-z0-9]+'),
+                     array('/', '\/')
+        );
     }
 
     /**
      * @test
+     * @dataProvider  provideSatisfiedPathPattern
      */
-    public function alwaysSatisfiesEmptyCondition()
+    public function returnsTrueForSatisfiedPathPattern($mockPath, $pathPattern)
     {
-        $this->mockUriPath('/press/Home');
-        $this->assertTrue($this->uriRequest->satisfiesPath(''));
+        $this->mockUriPath($mockPath);
+        $this->assertTrue($this->uriRequest->satisfiesPath($pathPattern));
+    }
+
+    /**
+     * data provider for non satisfying path pattern tests
+     *
+     * @return  array
+     */
+    public function provideNonSatisfiedPathPattern()
+    {
+        return array(array('/rss/articles', '\/hello\/([^\/]+)'),
+                     array('/hello/mikey', '\/hello'),
+                     array('/hello/', '\/hello\/([^\/]+)'),
+                     array('/hello/mikey', '\/'),
+                     array('/hello/mikey', ''),
+                     array('/hello/mikey', null)
+        );
     }
 
     /**
      * @test
+     * @dataProvider  provideNonSatisfiedPathPattern
      */
-    public function returnsTrueForSatisfiedCondition()
+    public function returnsFalseForNonSatisfiedCondition($mockPath, $pathPattern)
     {
-        $this->mockUriPath('/press/Home');
-        $this->assertTrue($this->uriRequest->satisfiesPath('^/press/'));
-    }
-
-    /**
-     * @test
-     */
-    public function returnsFalseForNonSatisfiedCondition()
-    {
-        $this->mockUriPath('/rss/articles');
-        $this->assertFalse($this->uriRequest->satisfiesPath('^/press/'));
+        $this->mockUriPath($mockPath);
+        $this->assertFalse($this->uriRequest->satisfiesPath($pathPattern));
     }
 
     /**

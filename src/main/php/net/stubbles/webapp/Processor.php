@@ -21,9 +21,10 @@ interface Processor extends Object
     /**
      * processes the request
      *
-     * @param  WebRequest  $request   current request
-     * @param  Response    $response  response to send
+     * @param  WebRequest  $request        current request
+     * @param  Response    $response       response to send
+     * @param  string[]    $pathArguments  any detected path arguments
      */
-    public function process(WebRequest $request, Response $response);
+    public function process(WebRequest $request, Response $response, array $pathArguments);
 }
 ?>

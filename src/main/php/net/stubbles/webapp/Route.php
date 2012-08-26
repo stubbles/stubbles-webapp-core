@@ -28,6 +28,12 @@ class Route extends BaseObject implements ConfigurableRoute
      */
     private $path;
     /**
+     * path this route is applicable for in pattern form
+     *
+     * @type  string
+     */
+    private $pathPattern;
+    /**
      * code to be executed when the route is active
      *
      * @type  string|callback
@@ -81,6 +87,7 @@ class Route extends BaseObject implements ConfigurableRoute
         }
 
         $this->path          = $path;
+        $this->pathPattern   = preg_replace('/[{][^}]*[}]/', '([^\/]+)', str_replace('/', '\/', $path));
         $this->callback      = $callback;
         $this->requestMethod = $requestMethod;
     }
@@ -118,31 +125,32 @@ class Route extends BaseObject implements ConfigurableRoute
      */
     public function matchesPath(UriRequest $calledUri)
     {
-        return $calledUri->satisfiesPath($this->path);
+        return $calledUri->satisfiesPath($this->pathPattern);
     }
 
     /**
      * creates processor instance
      *
+     * @param   UriRequest  $calledUri  current request uri
      * @param   Injector    $injector
-     * @param   WebRequest  $request   current request
-     * @param   Response    $response  response to send
+     * @param   WebRequest  $request    current request
+     * @param   Response    $response   response to send
      * @throws  RuntimeException
      */
-    public function process(Injector $injector, WebRequest $request, Response $response)
+    public function process(UriRequest $calledUri, Injector $injector, WebRequest $request, Response $response)
     {
         if ($this->callback instanceof \Closure) {
             $callback = $this->callback;
-            $callback($request, $response);
+            $callback($request, $response, $calledUri->getPathArguments($this->pathPattern));
         } elseif (is_callable($this->callback)) {
-            call_user_func_array($this->callback, array($request, $response));
+            call_user_func_array($this->callback, array($request, $response, $calledUri->getPathArguments($this->pathPattern)));
         } else {
             $processor = $injector->getInstance($this->callback);
             if (!($processor instanceof Processor)) {
                 throw new RuntimeException('Configured callback class ' . $this->callback . ' for route ' . $this->path . ' is not an instance of net\stubbles\webapp\Processor');
             }
 
-            $processor->process($request, $response);
+            $processor->process($request, $response, $calledUri->getPathArguments($this->pathPattern));
         }
     }
 

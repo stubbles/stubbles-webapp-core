@@ -35,11 +35,11 @@ class RouteTestCase extends \PHPUnit_Framework_TestCase
      */
     private function createRoute($method = 'GET')
     {
-        return new Route('/hello',
-                         function(WebRequest $request, Response $response)
+        return new Route('/hello/{name}',
+                         function(WebRequest $request, Response $response, array $pathArguments)
                          {
                              $response->setStatusCode(418)
-                                      ->write('Hello world!');
+                                      ->write('Hello ' . $pathArguments[0]);
                              $request->cancel();
                          },
                          $method
@@ -67,7 +67,7 @@ class RouteTestCase extends \PHPUnit_Framework_TestCase
      */
     public function doesNotMatchUriRequestIfRequestMethodsDiffer()
     {
-        $this->assertFalse($this->createRoute()->matches(UriRequest::fromString('http://example.com/hello', 'DELETE')));
+        $this->assertFalse($this->createRoute()->matches(UriRequest::fromString('http://example.com/hello/world', 'DELETE')));
     }
 
     /**
@@ -83,7 +83,7 @@ class RouteTestCase extends \PHPUnit_Framework_TestCase
      */
     public function matchesIfPathAndMethodAreOk()
     {
-        $this->assertTrue($this->createRoute()->matches(UriRequest::fromString('http://example.com/hello', 'GET')));
+        $this->assertTrue($this->createRoute()->matches(UriRequest::fromString('http://example.com/hello/world', 'GET')));
     }
 
     /**
@@ -99,7 +99,7 @@ class RouteTestCase extends \PHPUnit_Framework_TestCase
      */
     public function matchesPathIfPathOk()
     {
-        $this->assertTrue($this->createRoute()->matchesPath(UriRequest::fromString('http://example.com/hello', 'GET')));
+        $this->assertTrue($this->createRoute()->matchesPath(UriRequest::fromString('http://example.com/hello/world', 'GET')));
     }
 
     /**
@@ -117,13 +117,17 @@ class RouteTestCase extends \PHPUnit_Framework_TestCase
                      ->will($this->returnSelf());
         $mockResponse->expects($this->once())
                      ->method('write')
-                     ->with($this->equalTo('Hello world!'));
+                     ->with($this->equalTo('Hello world'));
         $mockInjector = $this->getMockBuilder('net\stubbles\ioc\Injector')
                              ->disableOriginalConstructor()
                              ->getMock();
         $mockInjector->expects($this->never())
                      ->method('getInstance');
-        $this->createRoute()->process($mockInjector, $mockRequest, $mockResponse);
+        $this->createRoute()->process(UriRequest::fromString('http://example.com/hello/world', 'GET'),
+                                      $mockInjector,
+                                      $mockRequest,
+                                      $mockResponse
+        );
     }
 
     /**
@@ -132,10 +136,10 @@ class RouteTestCase extends \PHPUnit_Framework_TestCase
      * @param  WebRequest  $request
      * @param  Response    $response
      */
-    public function theCallable(WebRequest $request, Response $response)
+    public function theCallable(WebRequest $request, Response $response, array $pathArguments)
     {
         $response->setStatusCode(418)
-                 ->write('Hello world!');
+                 ->write('Hello ' . $pathArguments[0]);
         $request->cancel();
     }
 
@@ -154,14 +158,18 @@ class RouteTestCase extends \PHPUnit_Framework_TestCase
                      ->will($this->returnSelf());
         $mockResponse->expects($this->once())
                      ->method('write')
-                     ->with($this->equalTo('Hello world!'));
+                     ->with($this->equalTo('Hello world'));
         $mockInjector = $this->getMockBuilder('net\stubbles\ioc\Injector')
                              ->disableOriginalConstructor()
                              ->getMock();
         $mockInjector->expects($this->never())
                      ->method('getInstance');
-        $route = new Route('/hello', array($this, 'theCallable'), 'GET');
-        $route->process($mockInjector, $mockRequest, $mockResponse);
+        $route = new Route('/hello/{name}', array($this, 'theCallable'), 'GET');
+        $route->process(UriRequest::fromString('http://example.com/hello/world', 'GET'),
+                        $mockInjector,
+                        $mockRequest,
+                        $mockResponse
+        );
     }
 
     /**
@@ -177,8 +185,12 @@ class RouteTestCase extends \PHPUnit_Framework_TestCase
                      ->method('getInstance')
                      ->with($this->equalTo('\stdClass'))
                      ->will($this->returnValue(new \stdClass()));
-        $route = new Route('/hello', '\stdClass', 'GET');
-        $route->process($mockInjector, $this->getMock('net\stubbles\input\web\WebRequest'), $this->getMock('net\stubbles\webapp\response\Response'));
+        $route = new Route('/hello/{name}', '\stdClass', 'GET');
+        $route->process(UriRequest::fromString('http://example.com/hello/world', 'GET'),
+                        $mockInjector,
+                        $this->getMock('net\stubbles\input\web\WebRequest'),
+                        $this->getMock('net\stubbles\webapp\response\Response')
+        );
     }
 
     /**
@@ -191,7 +203,10 @@ class RouteTestCase extends \PHPUnit_Framework_TestCase
         $mockProcessor = $this->getMock('net\stubbles\webapp\Processor');
         $mockProcessor->expects($this->once())
                       ->method('process')
-                      ->with($this->equalTo($mockRequest), $this->equalTo($mockResponse));
+                      ->with($this->equalTo($mockRequest),
+                             $this->equalTo($mockResponse),
+                             $this->equalTo(array('world'))
+                        );
         $mockInjector = $this->getMockBuilder('net\stubbles\ioc\Injector')
                              ->disableOriginalConstructor()
                              ->getMock();
@@ -199,8 +214,12 @@ class RouteTestCase extends \PHPUnit_Framework_TestCase
                      ->method('getInstance')
                      ->with($this->equalTo(get_class($mockProcessor)))
                      ->will($this->returnValue($mockProcessor));
-        $route = new Route('/hello', get_class($mockProcessor), 'GET');
-        $route->process($mockInjector, $mockRequest, $mockResponse);
+        $route = new Route('/hello/{name}', get_class($mockProcessor), 'GET');
+        $route->process(UriRequest::fromString('http://example.com/hello/world', 'GET'),
+                        $mockInjector,
+                        $mockRequest,
+                        $mockResponse
+        );
     }
 
     /**

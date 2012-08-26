@@ -111,7 +111,7 @@ abstract class WebApp extends App
                 $this->response->redirect($calledUri->toHttps());
                 $this->request->cancel();
             } elseif ($this->applyPreInterceptors($routing->getPreInterceptors())) {
-                $route->process($this->injector, $this->request, $this->response);
+                $route->process($calledUri, $this->injector, $this->request, $this->response);
                 if (!$this->request->isCancelled()) {
                     $this->applyPostInterceptors($routing->getPostInterceptors());
                 }
