@@ -104,10 +104,10 @@ class UriRequestTestCase extends \PHPUnit_Framework_TestCase
      */
     public function provideSatisfiedPathPattern()
     {
-        return array(array('/hello/mikey', '\/hello\/([^\/]+)'),
-                     array('/hello', '\/hello'),
-                     array('/hello/world303', '\/hello\/[a-z0-9]+'),
-                     array('/', '\/')
+        return array(array('/hello/mikey', '/hello/{name}'),
+                     array('/hello', '/hello'),
+                     array('/hello/world303', '/hello/[a-z0-9]+'),
+                     array('/', '/')
         );
     }
 
@@ -115,10 +115,32 @@ class UriRequestTestCase extends \PHPUnit_Framework_TestCase
      * @test
      * @dataProvider  provideSatisfiedPathPattern
      */
-    public function returnsTrueForSatisfiedPathPattern($mockPath, $pathPattern)
+    public function returnsTrueForSatisfiedPathPattern($mockPath, $path)
     {
         $this->mockUriPath($mockPath);
-        $this->assertTrue($this->uriRequest->satisfiesPath($pathPattern));
+        $this->assertTrue($this->uriRequest->satisfiesPath($path));
+    }
+
+    /**
+     * data provider for satisfying path pattern tests
+     *
+     * @return  array
+     */
+    public function providePathArguments()
+    {
+        return array(array('/hello/mikey', '/hello/{name}', array('name' => 'mikey')),
+                     array('/hello/303/mikey', '/hello/{id}/{name}', array('id' => '303', 'name' => 'mikey'))
+        );
+    }
+
+    /**
+     * @test
+     * @dataProvider  providePathArguments
+     */
+    public function returnsPathArguments($mockPath, $path, array $arguments)
+    {
+        $this->mockUriPath($mockPath);
+        $this->assertEquals($arguments, $this->uriRequest->getPathArguments($path));
     }
 
     /**
@@ -128,10 +150,10 @@ class UriRequestTestCase extends \PHPUnit_Framework_TestCase
      */
     public function provideNonSatisfiedPathPattern()
     {
-        return array(array('/rss/articles', '\/hello\/([^\/]+)'),
-                     array('/hello/mikey', '\/hello'),
-                     array('/hello/', '\/hello\/([^\/]+)'),
-                     array('/hello/mikey', '\/'),
+        return array(array('/rss/articles', '/hello/{name}'),
+                     array('/hello/mikey', '/hello'),
+                     array('/hello/', '/hello/{name}'),
+                     array('/hello/mikey', '/'),
                      array('/hello/mikey', ''),
                      array('/hello/mikey', null)
         );

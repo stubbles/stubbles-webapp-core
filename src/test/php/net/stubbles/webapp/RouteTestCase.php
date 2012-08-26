@@ -39,7 +39,7 @@ class RouteTestCase extends \PHPUnit_Framework_TestCase
                          function(WebRequest $request, Response $response, array $pathArguments)
                          {
                              $response->setStatusCode(418)
-                                      ->write('Hello ' . $pathArguments[0]);
+                                      ->write('Hello ' . $pathArguments['name']);
                              $request->cancel();
                          },
                          $method
@@ -139,7 +139,7 @@ class RouteTestCase extends \PHPUnit_Framework_TestCase
     public function theCallable(WebRequest $request, Response $response, array $pathArguments)
     {
         $response->setStatusCode(418)
-                 ->write('Hello ' . $pathArguments[0]);
+                 ->write('Hello ' . $pathArguments['name']);
         $request->cancel();
     }
 
@@ -205,7 +205,7 @@ class RouteTestCase extends \PHPUnit_Framework_TestCase
                       ->method('process')
                       ->with($this->equalTo($mockRequest),
                              $this->equalTo($mockResponse),
-                             $this->equalTo(array('world'))
+                             $this->equalTo(array('name' => 'world'))
                         );
         $mockInjector = $this->getMockBuilder('net\stubbles\ioc\Injector')
                              ->disableOriginalConstructor()

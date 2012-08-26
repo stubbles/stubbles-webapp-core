@@ -73,12 +73,12 @@ class UriRequest extends BaseObject
     /**
      * checks if given path is satisfied by request path
      *
-     * @param   string  $path
+     * @param   string  $expectedPath
      * @return  bool
      */
-    public function satisfiesPath($pathPattern)
+    public function satisfiesPath($expectedPath)
     {
-        if (preg_match('/^' . $pathPattern . '$/', $this->uri->getPath()) >= 1) {
+        if (preg_match($this->createPathPattern($expectedPath), $this->uri->getPath()) >= 1) {
             return true;
         }
 
@@ -88,15 +88,35 @@ class UriRequest extends BaseObject
     /**
      * gets path arguments from uri
      *
-     * @param   string  $pathPattern
+     * @param   string  $expectedPath
      * @return  string[]
      */
-    public function getPathArguments($pathPattern)
+    public function getPathArguments($expectedPath)
     {
-        $matches = array();
-        preg_match('/^' . $pathPattern . '$/', $this->uri->getPath(), $matches);
-        array_shift($matches);
-        return $matches;
+        $arguments = array();
+        preg_match($this->createPathPattern($expectedPath), $this->uri->getPath(), $arguments);
+        array_shift($arguments);
+        $names  = array();
+        $result = array();
+        preg_match_all('/[{][^}]*[}]/', str_replace('/', '\/', $expectedPath), $names);
+        foreach ($names[0] as $key => $name) {
+            if (isset($arguments[$key])) {
+                $result[str_replace(array('{', '}'), '', $name)] = $arguments[$key];
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * creates a pattern for given path
+     *
+     * @param   string  $path
+     * @return  string
+     */
+    private function createPathPattern($path)
+    {
+        return '/^' . preg_replace('/[{][^}]*[}]/', '([^\/]+)', str_replace('/', '\/', $path)) . '$/';
     }
 
     /**
