@@ -30,7 +30,7 @@ class TestWebApp extends WebApp
         return self::$methodName($param);
     }
 
-    public function callable(WebRequest $request, Response $response)
+    public function callableMethod(WebRequest $request, Response $response)
     {
         $response->addHeader('X-Binford', '6100 (More power!)');
     }
@@ -48,9 +48,9 @@ class TestWebApp extends WebApp
                             $response->write('Hello world!');
                         }
                   )
-                ->preIntercept(array($this, 'callable'))
+                ->preIntercept(array($this, 'callableMethod'))
                 ->postIntercept('some\PostInterceptor')
-                ->postIntercept(array($this, 'callable'))
+                ->postIntercept(array($this, 'callableMethod'))
                 ->postIntercept(function(WebRequest $request, Response $response)
                                 {
                                      $response->addCookie(Cookie::create('foo', 'bar'));
@@ -70,7 +70,7 @@ class TestWebApp extends WebApp
                         }
                   )
                 ->preIntercept('some\PreInterceptor')
-                ->preIntercept(array($this, 'callable'))
+                ->preIntercept(array($this, 'callableMethod'))
                 ->preIntercept(function(WebRequest $request, Response $response)
                                {
                                     $response->setStatusCode(508);
@@ -91,7 +91,7 @@ class TestWebApp extends WebApp
                         }
                   )
                 ->preIntercept('some\PreInterceptor')
-                ->preIntercept(array($this, 'callable'))
+                ->preIntercept(array($this, 'callableMethod'))
                 ->postIntercept(function(WebRequest $request, Response $response)
                                 {
                                      $response->setStatusCode(304);
@@ -103,7 +103,7 @@ class TestWebApp extends WebApp
                             $response->setStatusCode(418);
                         }
                   )
-                ->preIntercept(array($this, 'callable'))
+                ->preIntercept(array($this, 'callableMethod'))
                 ->postIntercept('some\PostInterceptor')
                 ->postIntercept(function(WebRequest $request, Response $response)
                                 {
