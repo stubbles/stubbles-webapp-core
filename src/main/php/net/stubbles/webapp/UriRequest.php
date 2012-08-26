@@ -22,56 +22,63 @@ class UriRequest extends BaseObject
      *
      * @type  HttpUri
      */
-    private $requestUri;
+    private $uri;
     /**
-     * condition which lead to selection of processor
+     * current request method
      *
      * @type  string
      */
-    private $processorUriCondition = "^/";
+    private $method;
 
     /**
      * constructor
      *
      * @param  HttpUri  $requestUri
+     * @param  string   $requestMethod
      */
-    public function __construct(HttpUri $requestUri)
+    public function __construct(HttpUri $requestUri, $requestMethod)
     {
-        $this->requestUri = $requestUri;
+        $this->uri    = $requestUri;
+        $this->method = $requestMethod;
     }
 
     /**
      * creates an instance from request uri string
      *
      * @param   string  $requestUri
+     * @param   string  $requestMethod
      * @return  UriRequest
      * @since   2.0.0
      */
-    public static function fromString($requestUri)
+    public static function fromString($requestUri, $requestMethod)
     {
-        return new self(HttpUri::fromString($requestUri));
+        return new self(HttpUri::fromString($requestUri), $requestMethod);
     }
 
     /**
-     * returns path of request uri
+     * checks if request method equals given method
      *
-     * @return  string
-     * @since   2.0.0
-     */
-    public function getPath()
-    {
-        return $this->requestUri->getPath();
-    }
-
-    /**
-     * checks if current uri satisfies given uri condition
-     *
-     * @param   string  $uriCondition  uri pattern to check
+     * @param   string  $method
      * @return  bool
      */
-    public function satisfies($uriCondition)
+    public function methodEquals($method)
     {
-        if (null == $uriCondition || preg_match('~' . $uriCondition . '~', $this->requestUri->getPath()) === 1) {
+        if (empty($method)) {
+            return true;
+        }
+
+        return $this->method === $method;
+    }
+
+    /**
+     * checks if given path is satisfied by request path
+     *
+     * @param   string  $path
+     * @return  bool
+     */
+    public function satisfiesPath($path)
+    {
+        if (preg_match('~' . $path . '~', $this->uri->getPath()) === 1) {
             return true;
         }
 
@@ -79,59 +86,14 @@ class UriRequest extends BaseObject
     }
 
     /**
-     * sets condition which lead to selection of processor
-     *
-     * @param   string  $uriCondition
-     * @return  UriRequest
-     */
-    public function setProcessorUriCondition($uriCondition)
-    {
-        $this->processorUriCondition = $uriCondition;
-        return $this;
-    }
-
-    /**
-     * returns part of the uri which was responsible for selection of processor
-     *
-     * @return  string
-     */
-    public function getProcessorUri()
-    {
-        $matches = array();
-        preg_match('~(' . $this->processorUriCondition . ')(.*)?~', $this->requestUri->getPath(), $matches);
-        if (isset($matches[1])) {
-            return $matches[1];
-        }
-
-        return '';
-    }
-
-    /**
-     * returns remaining uri which was not part of decision for selecting the processor
-     *
-     * @param   string  $fallback  optional  return this if no remaining uri present
-     * @return  string
-     */
-    public function getRemainingUri($fallback = '')
-    {
-        $matches = array();
-        preg_match('~(' . $this->processorUriCondition . ')([^?]*)?~', $this->requestUri->getPath(), $matches);
-        if (isset($matches[2]) && !empty($matches[2])) {
-            return $matches[2];
-        }
-
-        return $fallback;
-    }
-
-    /**
-     * checks whether request was made using ssl
+     * checks whether request was made using https
      *
      * @return  bool
      * @since   2.0.0
      */
-    public function isSsl()
+    public function isHttps()
     {
-        return $this->requestUri->isHttps();
+        return $this->uri->isHttps();
     }
 
     /**
@@ -142,7 +104,7 @@ class UriRequest extends BaseObject
      */
     public function toHttp()
     {
-        return $this->requestUri->toHttp();
+        return $this->uri->toHttp();
     }
 
     /**
@@ -153,7 +115,7 @@ class UriRequest extends BaseObject
      */
     public function toHttps()
     {
-        return $this->requestUri->toHttps();
+        return $this->uri->toHttps();
     }
 
     /**
@@ -164,7 +126,7 @@ class UriRequest extends BaseObject
      */
     public function __toString()
     {
-        return (string) $this->requestUri;
+        return (string) $this->uri;
     }
 }
 ?>

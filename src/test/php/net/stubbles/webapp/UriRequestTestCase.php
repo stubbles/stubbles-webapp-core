@@ -35,7 +35,7 @@ class UriRequestTestCase extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->mockHttpUri = $this->getMock('net\stubbles\peer\http\HttpUri');
-        $this->uriRequest  = new UriRequest($this->mockHttpUri);
+        $this->uriRequest  = new UriRequest($this->mockHttpUri, 'GET');
     }
 
     /**
@@ -45,7 +45,7 @@ class UriRequestTestCase extends \PHPUnit_Framework_TestCase
     public function canCreateInstanceFromString()
     {
         $this->assertInstanceOf('net\\stubbles\\webapp\\UriRequest',
-                                UriRequest::fromString('http://example.net/')
+                                UriRequest::fromString('http://example.net/', 'GET')
         );
     }
 
@@ -65,10 +65,36 @@ class UriRequestTestCase extends \PHPUnit_Framework_TestCase
      * @since  2.0.0
      * @test
      */
-    public function returnsUriPath()
+    public function methodAlwaysEqualsNullMethod()
     {
-        $this->mockUriPath('/xml/Home');
-        $this->assertEquals('/xml/Home', $this->uriRequest->getPath());
+        $this->assertTrue($this->uriRequest->methodEquals(null));
+    }
+
+    /**
+     * @since  2.0.0
+     * @test
+     */
+    public function methodAlwaysEqualsEmptyMethod()
+    {
+        $this->assertTrue($this->uriRequest->methodEquals(''));
+    }
+
+    /**
+     * @since  2.0.0
+     * @test
+     */
+    public function methodEqualsGivenMethod()
+    {
+        $this->assertTrue($this->uriRequest->methodEquals('GET'));
+    }
+
+    /**
+     * @since  2.0.0
+     * @test
+     */
+    public function methodDoesNotEqualsGivenMethod()
+    {
+        $this->assertFalse($this->uriRequest->methodEquals('POST'));
     }
 
     /**
@@ -76,8 +102,8 @@ class UriRequestTestCase extends \PHPUnit_Framework_TestCase
      */
     public function alwaysSatisfiesNullCondition()
     {
-        $this->mockUriPath('/xml/Home');
-        $this->assertTrue($this->uriRequest->satisfies(null));
+        $this->mockUriPath('/press/Home');
+        $this->assertTrue($this->uriRequest->satisfiesPath(null));
     }
 
     /**
@@ -85,8 +111,8 @@ class UriRequestTestCase extends \PHPUnit_Framework_TestCase
      */
     public function alwaysSatisfiesEmptyCondition()
     {
-        $this->mockUriPath('/xml/Home');
-        $this->assertTrue($this->uriRequest->satisfies(''));
+        $this->mockUriPath('/press/Home');
+        $this->assertTrue($this->uriRequest->satisfiesPath(''));
     }
 
     /**
@@ -94,8 +120,8 @@ class UriRequestTestCase extends \PHPUnit_Framework_TestCase
      */
     public function returnsTrueForSatisfiedCondition()
     {
-        $this->mockUriPath('/xml/Home');
-        $this->assertTrue($this->uriRequest->satisfies('^/xml/'));
+        $this->mockUriPath('/press/Home');
+        $this->assertTrue($this->uriRequest->satisfiesPath('^/press/'));
     }
 
     /**
@@ -104,203 +130,19 @@ class UriRequestTestCase extends \PHPUnit_Framework_TestCase
     public function returnsFalseForNonSatisfiedCondition()
     {
         $this->mockUriPath('/rss/articles');
-        $this->assertFalse($this->uriRequest->satisfies('^/xml/'));
-    }
-
-    /**
-     * @test
-     */
-    public function getProcessorUriReturnsSlashOnlyWhenNoProcessorUriConditionSet()
-    {
-        $this->mockUriPath('/xml/Home');
-        $this->assertEquals('/',
-                            $this->uriRequest->getProcessorUri()
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function getRemainingUriReturnsEverythingExceptSlashOnlyWhenNoProcessorUriConditionSet()
-    {
-        $this->mockUriPath('/Home');
-        $this->assertEquals('Home',
-                            $this->uriRequest->getRemainingUri()
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function getRemainingUriReturnsEverythingIncludingDotsExceptSlashOnlyWhenNoProcessorUriConditionSet()
-    {
-        $this->mockUriPath('/Home.html');
-        $this->assertEquals('Home.html',
-                            $this->uriRequest->getRemainingUri()
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function getRemainingUriReturnsEverythingExceptParametersOnlyWhenNoProcessorUriConditionSet()
-    {
-        $this->mockUriPath('/Home?foo=bar');
-        $this->assertEquals('Home',
-                            $this->uriRequest->getRemainingUri()
-        );
-    }
-
-    /**
-      * @test
-      */
-    public function getRemainingUriReturnsEmptyStringOnlyWhenNoProcessorUriConditionSetAndNoRemainingPartLeft()
-    {
-        $this->mockUriPath('/');
-        $this->assertEquals('',
-                            $this->uriRequest->getRemainingUri()
-        );
-    }
-
-    /**
-      * @test
-      */
-    public function getRemainingUriReturnsEmptyStringOnlyWhenNoProcessorUriConditionSetAndOnlyParametersLeft()
-    {
-        $this->mockUriPath('/?foo=bar');
-        $this->assertEquals('',
-                            $this->uriRequest->getRemainingUri()
-        );
-    }
-
-    /**
-      * @test
-      */
-    public function getRemainingUriReturnsFallbackOnlyWhenNoProcessorUriConditionSetAndNoRemainingPartLeft()
-    {
-        $this->mockUriPath('/');
-        $this->assertEquals('index',
-                            $this->uriRequest->getRemainingUri('index')
-        );
-    }
-
-    /**
-      * @test
-      */
-    public function getRemainingUriReturnsFallbackOnlyWhenNoProcessorUriConditionSetAndOnlyParametersLeft()
-    {
-        $this->mockUriPath('/?foo=bar');
-        $this->assertEquals('index',
-                            $this->uriRequest->getRemainingUri('index')
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function getProcessorUriReturnsEmptyStringOnNonMatch()
-    {
-        $this->mockUriPath('/other/Home');
-        $this->assertEquals('',
-                            $this->uriRequest->setProcessorUriCondition('^/xml/')
-                                             ->getProcessorUri()
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function getProcessorUriReturnsProcessorPartWhenProcessorUriConditionSet()
-    {
-        $this->mockUriPath('/xml/Home');
-        $this->assertEquals('/xml/',
-                            $this->uriRequest->setProcessorUriCondition('^/xml/')
-                                             ->getProcessorUri()
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function getRemainingUriReturnsNonProcessorPartWhenProcessorUriConditionSet()
-    {
-        $this->mockUriPath('/xml/Home');
-        $this->assertEquals('Home',
-                            $this->uriRequest->setProcessorUriCondition('^/xml/')
-                                             ->getRemainingUri()
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function getRemainingUriReturnsNonProcessorPartWithoutParametersWhenProcessorUriConditionSet()
-    {
-        $this->mockUriPath('/xml/Home?foo=bar');
-        $this->assertEquals('Home',
-                            $this->uriRequest->setProcessorUriCondition('^/xml/')
-                                             ->getRemainingUri()
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function getRemainingUriReturnsEmptyStringWhenProcessorUriConditionSetButUriDoesNotContainMore()
-    {
-        $this->mockUriPath('/xml/');
-        $this->assertEquals('',
-                            $this->uriRequest->setProcessorUriCondition('^/xml/')
-                                             ->getRemainingUri()
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function getRemainingUriReturnsEmptyStringWhenProcessorUriConditionSetButUriDoesContainOnlyParameters()
-    {
-        $this->mockUriPath('/xml/?foo=bar');
-        $this->assertEquals('',
-                            $this->uriRequest->setProcessorUriCondition('^/xml/')
-                                             ->getRemainingUri()
-        );
-    }
-
-    /**
-      * @test
-      */
-    public function getRemainingUriReturnsFallbackWhenProcessorUriConditionSetButUriDoesNotContainMore()
-    {
-        $this->mockUriPath('/xml/');
-        $this->assertEquals('index',
-                             $this->uriRequest->setProcessorUriCondition('^/xml/')
-                                              ->getRemainingUri('index')
-         );
-    }
-
-    /**
-      * @test
-      */
-    public function getRemainingUriReturnsFallbackWhenProcessorUriConditionSetButUriDoesContainOnlyParameters()
-    {
-        $this->mockUriPath('/xml/?foo=bar');
-        $this->assertEquals('index',
-                             $this->uriRequest->setProcessorUriCondition('^/xml/')
-                                              ->getRemainingUri('index')
-         );
+        $this->assertFalse($this->uriRequest->satisfiesPath('^/press/'));
     }
 
     /**
      * @since  2.0.0
      * @test
      */
-    public function isSslWhenRequestUriHasHttps()
+    public function isHttpsWhenRequestUriHasHttps()
     {
         $this->mockHttpUri->expects($this->once())
                           ->method('isHttps')
                           ->will($this->returnValue(true));
-        $this->assertTrue($this->uriRequest->isSsl());
+        $this->assertTrue($this->uriRequest->isHttps());
     }
 
     /**

@@ -7,7 +7,7 @@
  *
  * @package  net\stubbles\webapp
  */
-namespace net\stubbles\webapp\auth;
+namespace net\stubbles\webapp;
 use net\stubbles\lang\Object;
 /**
  * Interface for authentication handlers.
@@ -16,14 +16,6 @@ use net\stubbles\lang\Object;
  */
 interface AuthHandler extends Object
 {
-    /**
-     * checks if given role required login
-     *
-     * @param   string  $role
-     * @return  bool
-     */
-    public function requiresLogin($role);
-
     /**
      * returns login uri
      *
