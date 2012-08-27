@@ -8,7 +8,9 @@
  * @package  net\stubbles\webapp
  */
 namespace net\stubbles\webapp;
+use net\stubbles\input\web\WebRequest;
 use net\stubbles\lang\Object;
+use net\stubbles\webapp\response\Response;
 /**
  * Interface for processors.
  *
@@ -17,33 +19,12 @@ use net\stubbles\lang\Object;
 interface Processor extends Object
 {
     /**
-     * operations to be done before the request is processed
-     *
-     * @param   UriRequest  $uriRequest  called uri in this request
-     * @return  Processor
-     */
-    public function startup(UriRequest $uriRequest);
-
-    /**
-     * checks whether the current request requires ssl or not
-     *
-     * @param   UriRequest  $uriRequest
-     * @return  bool
-     */
-    public function requiresSsl(UriRequest $uriRequest);
-
-    /**
      * processes the request
      *
-     * @return  Processor
+     * @param  WebRequest  $request        current request
+     * @param  Response    $response       response to send
+     * @param  string[]    $pathArguments  map of detected path arguments
      */
-    public function process();
-
-    /**
-     * operations to be done after the request was processed
-     *
-     * @return  Processor
-     */
-    public function cleanup();
+    public function process(WebRequest $request, Response $response, array $pathArguments);
 }
 ?>
