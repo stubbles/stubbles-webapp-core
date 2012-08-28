@@ -132,18 +132,22 @@ class Route extends BaseObject implements ConfigurableRoute
      */
     public function process(UriRequest $calledUri, Injector $injector, WebRequest $request, Response $response)
     {
+        $uriPath = new UriPath($this->path,
+                               $calledUri->getPathArguments($this->path),
+                               $calledUri->getRemainingPath($this->path)
+                   );
         if ($this->callback instanceof \Closure) {
             $callback = $this->callback;
-            $callback($request, $response, $calledUri->getPathArguments($this->path));
+            $callback($request, $response, $uriPath);
         } elseif (is_callable($this->callback)) {
-            call_user_func_array($this->callback, array($request, $response, $calledUri->getPathArguments($this->path)));
+            call_user_func_array($this->callback, array($request, $response, $uriPath));
         } else {
             $processor = $injector->getInstance($this->callback);
             if (!($processor instanceof Processor)) {
                 throw new RuntimeException('Configured callback class ' . $this->callback . ' for route ' . $this->path . ' is not an instance of net\stubbles\webapp\Processor');
             }
 
-            $processor->process($request, $response, $calledUri->getPathArguments($this->path));
+            $processor->process($request, $response, $uriPath);
         }
     }
 

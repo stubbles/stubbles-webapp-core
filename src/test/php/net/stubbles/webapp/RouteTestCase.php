@@ -36,10 +36,10 @@ class RouteTestCase extends \PHPUnit_Framework_TestCase
     private function createRoute($method = 'GET')
     {
         return new Route('/hello/{name}',
-                         function(WebRequest $request, Response $response, array $pathArguments)
+                         function(WebRequest $request, Response $response, UriPath $uriPath)
                          {
                              $response->setStatusCode(418)
-                                      ->write('Hello ' . $pathArguments['name']);
+                                      ->write('Hello ' . $uriPath->getArgument('name'));
                              $request->cancel();
                          },
                          $method
@@ -136,10 +136,10 @@ class RouteTestCase extends \PHPUnit_Framework_TestCase
      * @param  WebRequest  $request
      * @param  Response    $response
      */
-    public function theCallable(WebRequest $request, Response $response, array $pathArguments)
+    public function theCallable(WebRequest $request, Response $response, UriPath $uriPath)
     {
         $response->setStatusCode(418)
-                 ->write('Hello ' . $pathArguments['name']);
+                 ->write('Hello ' . $uriPath->getArgument('name'));
         $request->cancel();
     }
 
@@ -205,7 +205,7 @@ class RouteTestCase extends \PHPUnit_Framework_TestCase
                       ->method('process')
                       ->with($this->equalTo($mockRequest),
                              $this->equalTo($mockResponse),
-                             $this->equalTo(array('name' => 'world'))
+                             $this->equalTo(new UriPath('/hello/{name}', array('name' => 'world'), null))
                         );
         $mockInjector = $this->getMockBuilder('net\stubbles\ioc\Injector')
                              ->disableOriginalConstructor()

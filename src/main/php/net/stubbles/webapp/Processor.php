@@ -21,10 +21,10 @@ interface Processor extends Object
     /**
      * processes the request
      *
-     * @param  WebRequest  $request        current request
-     * @param  Response    $response       response to send
-     * @param  string[]    $pathArguments  map of detected path arguments
+     * @param  WebRequest  $request   current request
+     * @param  Response    $response  response to send
+     * @param  UriPath     $uriPath   information about called uri path
      */
-    public function process(WebRequest $request, Response $response, array $pathArguments);
+    public function process(WebRequest $request, Response $response, UriPath $uriPath);
 }
 ?>

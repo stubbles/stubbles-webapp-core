@@ -43,7 +43,7 @@ class TestWebApp extends WebApp
     protected function configureRouting(RoutingConfigurator $routing)
     {
         $routing->onGet('/hello',
-                        function(WebRequest $request, Response $response)
+                        function(WebRequest $request, Response $response, UriPath $uriPath)
                         {
                             $response->write('Hello world!');
                         }
@@ -64,7 +64,7 @@ class TestWebApp extends WebApp
         $routing->onGet('/login', function() {})
                 ->httpsOnly();
         $routing->onGet('/precancel',
-                        function(WebRequest $request, Response $response)
+                        function(WebRequest $request, Response $response, UriPath $uriPath)
                         {
                             $response->setStatusCode(418);
                         }
@@ -84,7 +84,7 @@ class TestWebApp extends WebApp
                                 }
                   );
         $routing->onGet('/cancel',
-                        function(WebRequest $request, Response $response)
+                        function(WebRequest $request, Response $response, UriPath $uriPath)
                         {
                             $response->setStatusCode(418);
                             $request->cancel();
@@ -98,7 +98,7 @@ class TestWebApp extends WebApp
                                 }
                   );
         $routing->onGet('/postcancel',
-                        function(WebRequest $request, Response $response)
+                        function(WebRequest $request, Response $response, UriPath $uriPath)
                         {
                             $response->setStatusCode(418);
                         }
