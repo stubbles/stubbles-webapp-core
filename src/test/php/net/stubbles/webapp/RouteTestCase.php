@@ -389,5 +389,42 @@ class RouteTestCase extends \PHPUnit_Framework_TestCase
                         ->will($this->returnValue(false));
         $this->assertTrue($this->createRoute()->withRoleOnly('admin')->requiresLogin($mockAuthHandler));
     }
+
+    /**
+     * @test
+     */
+    public function supportHtmlMimeTypeByDefault()
+    {
+        $this->assertEquals(array('text/html'),
+                            $this->createRoute()->getSupportedMimeTypes()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function returnsListOfAddedSupportedMimeTypes()
+    {
+        $this->assertEquals(array('text/html', 'application/json', 'application/xml'),
+                            $this->createRoute()
+                                 ->supportsMimeType('application/json')
+                                 ->supportsMimeType('application/xml')
+                                 ->getSupportedMimeTypes()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function canDisableHtmlMimeType()
+    {
+        $this->assertEquals(array('application/json', 'application/xml'),
+                            $this->createRoute()
+                                 ->supportsMimeType('application/json')
+                                 ->disableDefaultHtmlMimeType()
+                                 ->supportsMimeType('application/xml')
+                                 ->getSupportedMimeTypes()
+        );
+    }
 }
 ?>

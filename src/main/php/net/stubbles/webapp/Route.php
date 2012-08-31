@@ -63,6 +63,12 @@ class Route extends BaseObject implements ConfigurableRoute
      * @type  string
      */
     private $requiredRole;
+    /**
+     * list of mime types supported by this route
+     *
+     * @type  string[]
+     */
+    private $mimeTypes        = array('text/html');
 
     /**
      * constructor
@@ -270,6 +276,42 @@ class Route extends BaseObject implements ConfigurableRoute
         }
 
         return false;
+    }
+
+    /**
+     * add a mime type which this route supports
+     *
+     * @param   string  $mimeType
+     * @return  Route
+     */
+    public function supportsMimeType($mimeType)
+    {
+        $this->mimeTypes[] = $mimeType;
+        return $this;
+    }
+
+    /**
+     * disable text/html mime type support
+     *
+     * @return  Routing
+     */
+    public function disableDefaultHtmlMimeType()
+    {
+        if (isset($this->mimeTypes[0]) && 'text/html' === $this->mimeTypes[0]) {
+            array_shift($this->mimeTypes);
+        }
+
+        return $this;
+    }
+
+    /**
+     * returns list of mime types supported by this route
+     *
+     * @return  string[]
+     */
+    public function getSupportedMimeTypes()
+    {
+        return $this->mimeTypes;
     }
 }
 ?>

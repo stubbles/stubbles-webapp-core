@@ -47,5 +47,20 @@ interface ConfigurableRoute
      * @return  ConfigurableRoute
      */
     public function withRoleOnly($role);
+
+    /**
+     * add a mime type which this route supports
+     *
+     * @param   string  $mimeType
+     * @return  ConfigurableRoute
+     */
+    public function supportsMimeType($mimeType);
+
+    /**
+     * disable text/html mime type support
+     *
+     * @return  ConfigurableRoute
+     */
+    public function disableDefaultHtmlMimeType();
 }
 ?>
