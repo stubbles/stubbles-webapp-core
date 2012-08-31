@@ -14,7 +14,6 @@ use net\stubbles\ioc\Binder;
 use net\stubbles\ioc\module\BindingModule;
 use net\stubbles\lang\BaseObject;
 use net\stubbles\webapp\response\Response;
-use net\stubbles\webapp\response\ResponseCreator;
 /**
  * Module to configure the binder with default instances for request, session and response.
  *
@@ -180,14 +179,9 @@ class IoBindingModule extends BaseObject implements BindingModule
      */
     private function createResponse(WebRequest $request)
     {
-        $httpVersion = $request->getProtocolVersion();
-        if (null === $httpVersion) {
-            $request->cancel();
-        }
-
-        return ResponseCreator::createForVersion($httpVersion,
-                                                 $this->responseClass
-        );
+        $httpVersion   = $request->getProtocolVersion();
+        $responseClass = $this->responseClass;
+        return new $responseClass((null !== $httpVersion) ? ($httpVersion) : ('1.1'));
     }
 }
 ?>

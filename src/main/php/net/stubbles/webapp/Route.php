@@ -68,7 +68,7 @@ class Route extends BaseObject implements ConfigurableRoute
      *
      * @type  string[]
      */
-    private $mimeTypes        = array('text/html');
+    private $mimeTypes        = array();
 
     /**
      * constructor
@@ -239,7 +239,7 @@ class Route extends BaseObject implements ConfigurableRoute
      *
      * @return  bool
      */
-    public function requiresAuth()
+    public function requiresRole()
     {
         return null !== $this->requiredRole;
     }
@@ -247,35 +247,11 @@ class Route extends BaseObject implements ConfigurableRoute
     /**
      * checks whether this is an authorized request to this route
      *
-     * @param   AuthHandler  $authHandler
      * @return  bool
      */
-    public function isAuthorized(AuthHandler $authHandler)
+    public function getRequiredRole()
     {
-        if (!$this->requiresAuth() || $authHandler->userHasRole($this->requiredRole)) {
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * checks whether route requires login
-     *
-     * @param   AuthHandler  $authHandler
-     * @return  bool
-     */
-    public function requiresLogin(AuthHandler $authHandler)
-    {
-        if (!$this->requiresAuth() || $authHandler->userHasRole($this->requiredRole)) {
-            return false;
-        }
-
-        if (!$authHandler->hasUser()) {
-            return true;
-        }
-
-        return false;
+        return $this->requiredRole;
     }
 
     /**
@@ -287,20 +263,6 @@ class Route extends BaseObject implements ConfigurableRoute
     public function supportsMimeType($mimeType)
     {
         $this->mimeTypes[] = $mimeType;
-        return $this;
-    }
-
-    /**
-     * disable text/html mime type support
-     *
-     * @return  Routing
-     */
-    public function disableDefaultHtmlMimeType()
-    {
-        if (isset($this->mimeTypes[0]) && 'text/html' === $this->mimeTypes[0]) {
-            array_shift($this->mimeTypes);
-        }
-
         return $this;
     }
 

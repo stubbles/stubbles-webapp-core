@@ -55,12 +55,5 @@ interface ConfigurableRoute
      * @return  ConfigurableRoute
      */
     public function supportsMimeType($mimeType);
-
-    /**
-     * disable text/html mime type support
-     *
-     * @return  ConfigurableRoute
-     */
-    public function disableDefaultHtmlMimeType();
 }
 ?>

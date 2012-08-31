@@ -256,12 +256,23 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
     {
         $this->routing->onGet('/hello', function() {})
                       ->supportsMimeType('application/json');
-        $this->assertEquals(array('text/html',
-                                  'application/json',
+        $this->assertEquals(array('application/json',
                                   'application/xml'
                             ),
                             $this->routing->supportsMimeType('application/xml')
                                           ->getSupportedMimeTypes()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function returnsHtmlMimeTypeFromRouteWhenAcceptHeaderIsEmptyAndNoMimeTypeConfigured()
+    {
+
+        $this->routing->onGet('/hello', function() {});
+        $this->assertEquals('text/html',
+                            $this->routing->negotiateMimeType(new AcceptHeader())
         );
     }
 
@@ -284,11 +295,22 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
     public function returnsFirstMimeTypeFromRouteWhenAcceptHeaderIsEmpty()
     {
 
+        $this->routing->onGet('/hello', function() {})
+                      ->supportsMimeType('application/xml');
+        $this->assertEquals('application/xml',
+                            $this->routing->supportsMimeType('application/json')
+                                          ->negotiateMimeType(new AcceptHeader())
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function returnsHtmlMimeTypeWithGreatesPriorityAccordingToAcceptHeader()
+    {
         $this->routing->onGet('/hello', function() {});
         $this->assertEquals('text/html',
-                            $this->routing->supportsMimeType('application/json')
-                                          ->supportsMimeType('application/xml')
-                                          ->negotiateMimeType(new AcceptHeader())
+                            $this->routing->negotiateMimeType(AcceptHeader::parse('text/*;q=0.3, text/html;q=0.7, application/json;q=0.4, */*;q=0.5'))
         );
     }
 
@@ -301,6 +323,8 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
         $this->assertEquals('text/html',
                             $this->routing->supportsMimeType('application/json')
                                           ->supportsMimeType('application/xml')
+                                          ->supportsMimeType('text/html')
+                                          ->supportsMimeType('text/plain')
                                           ->negotiateMimeType(AcceptHeader::parse('text/*;q=0.3, text/html;q=0.7, application/json;q=0.4, */*;q=0.5'))
         );
     }
@@ -310,8 +334,7 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
      */
     public function returnsBestMatchMimeTypeAccordingToAcceptHeader()
     {
-        $this->routing->onGet('/hello', function() {})
-                      ->disableDefaultHtmlMimeType();
+        $this->routing->onGet('/hello', function() {});
         $this->assertEquals('application/json',
                             $this->routing->supportsMimeType('application/json')
                                           ->supportsMimeType('application/xml')

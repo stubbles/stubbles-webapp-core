@@ -402,6 +402,10 @@ class Routing extends BaseObject implements RoutingConfigurator
     public function negotiateMimeType(AcceptHeader $acceptedMimeTypes)
     {
         $supportedMimeTypes = $this->getSupportedMimeTypes();
+        if (count($supportedMimeTypes) === 0) {
+            return 'text/html';
+        }
+
         if (count($acceptedMimeTypes) === 0) {
             return array_shift($supportedMimeTypes);
         }
