@@ -235,22 +235,24 @@ class FormatterResponse extends BaseObject implements FormattingResponse
     /**
      * writes a Forbidden message into response body
      *
-     * @return  Response
+     * @return  FormattingResponse
      */
-    public function writeForbiddenError()
+    public function forbidden()
     {
-        $this->write($this->formatter->formatForbiddenError());
+        $this->response->setStatusCode(403)
+                       ->write($this->formatter->formatForbiddenError());
         return $this;
     }
 
     /**
      * writes a Not Found message into response body
      *
-     * @return  Response
+     * @return  FormattingResponse
      */
-    public function writeNotFoundError()
+    public function notFound()
     {
-        $this->write($this->formatter->formatNotFoundError());
+        $this->response->setStatusCode(404)
+                       ->write($this->formatter->formatNotFoundError());
         return $this;
     }
 
@@ -259,12 +261,13 @@ class FormatterResponse extends BaseObject implements FormattingResponse
      *
      * @param   string    $requestMethod
      * @param   string[]  $allowedMethods
-     * @return  Response
+     * @return  FormattingResponse
      */
-    public function writeMethodNotAllowedError($requestMethod, array $allowedMethods)
+    public function methodNotAllowed($requestMethod, array $allowedMethods)
     {
-        $this->addHeader('Allow', join(', ', $allowedMethods))
-             ->write($this->formatter->formatMethodNotAllowedError($requestMethod, $allowedMethods));
+        $this->response->setStatusCode(405)
+                       ->addHeader('Allow', join(', ', $allowedMethods))
+                       ->write($this->formatter->formatMethodNotAllowedError($requestMethod, $allowedMethods));
         return $this;
     }
 
@@ -272,11 +275,12 @@ class FormatterResponse extends BaseObject implements FormattingResponse
      * writes an Internal Server Error message into response body
      *
      * @param   string  $errorMessage
-     * @return  Response
+     * @return  FormattingResponse
      */
-    public function writeInternalServerError($errorMessage)
+    public function internalServerError($errorMessage)
     {
-        $this->write($this->formatter->formatInternalServerError($errorMessage));
+        $this->response->setStatusCode(500)
+                       ->write($this->formatter->formatInternalServerError($errorMessage));
         return $this;
     }
 

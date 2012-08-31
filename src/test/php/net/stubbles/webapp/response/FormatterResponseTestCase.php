@@ -273,10 +273,14 @@ class FormatterResponseTestCase extends \PHPUnit_Framework_TestCase
                             ->method('formatForbiddenError')
                             ->will($this->returnValue('No access granted here'));
         $this->decoratedResponse->expects($this->once())
+                                ->method('setStatusCode')
+                                ->with($this->equalTo(403))
+                                ->will($this->returnSelf());
+        $this->decoratedResponse->expects($this->once())
                                 ->method('write')
                                 ->with($this->equalTo('No access granted here'));
         $this->assertSame($this->formatterResponse,
-                          $this->formatterResponse->writeForbiddenError()
+                          $this->formatterResponse->forbidden()
         );
     }
 
@@ -289,10 +293,14 @@ class FormatterResponseTestCase extends \PHPUnit_Framework_TestCase
                             ->method('formatNotFoundError')
                             ->will($this->returnValue('Not found'));
         $this->decoratedResponse->expects($this->once())
+                                ->method('setStatusCode')
+                                ->with($this->equalTo(404))
+                                ->will($this->returnSelf());
+        $this->decoratedResponse->expects($this->once())
                                 ->method('write')
                                 ->with($this->equalTo('Not found'));
         $this->assertSame($this->formatterResponse,
-                          $this->formatterResponse->writeNotFoundError()
+                          $this->formatterResponse->notFound()
         );
     }
 
@@ -302,8 +310,13 @@ class FormatterResponseTestCase extends \PHPUnit_Framework_TestCase
     public function writeMethodNotAllowedErrorUsingFormatterOnDecoratedResponse()
     {
         $this->decoratedResponse->expects($this->once())
+                                ->method('setStatusCode')
+                                ->with($this->equalTo(405))
+                                ->will($this->returnSelf());
+        $this->decoratedResponse->expects($this->once())
                                 ->method('addHeader')
-                                ->with($this->equalTo('Allow'), $this->equalTo('GET, HEAD'));
+                                ->with($this->equalTo('Allow'), $this->equalTo('GET, HEAD'))
+                                ->will($this->returnSelf());
         $this->mockFormatter->expects($this->once())
                             ->method('formatMethodNotAllowedError')
                             ->with($this->equalTo('POST'), $this->equalTo(array('GET', 'HEAD')))
@@ -312,7 +325,7 @@ class FormatterResponseTestCase extends \PHPUnit_Framework_TestCase
                                 ->method('write')
                                 ->with($this->equalTo('No way to POST here, use GET or HEAD'));
         $this->assertSame($this->formatterResponse,
-                          $this->formatterResponse->writeMethodNotAllowedError('POST', array('GET', 'HEAD'))
+                          $this->formatterResponse->methodNotAllowed('POST', array('GET', 'HEAD'))
         );
     }
 
@@ -321,6 +334,10 @@ class FormatterResponseTestCase extends \PHPUnit_Framework_TestCase
      */
     public function writeInternalServerErrorUsingFormatterOnDecoratedResponse()
     {
+        $this->decoratedResponse->expects($this->once())
+                                ->method('setStatusCode')
+                                ->with($this->equalTo(500))
+                                ->will($this->returnSelf());
         $this->mockFormatter->expects($this->once())
                             ->method('formatInternalServerError')
                             ->with($this->equalTo('Ups!'))
@@ -329,7 +346,7 @@ class FormatterResponseTestCase extends \PHPUnit_Framework_TestCase
                                 ->method('write')
                                 ->with($this->equalTo('Something wrent wrong: Ups!'));
         $this->assertSame($this->formatterResponse,
-                          $this->formatterResponse->writeInternalServerError('Ups!')
+                          $this->formatterResponse->internalServerError('Ups!')
         );
     }
 

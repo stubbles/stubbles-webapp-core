@@ -20,14 +20,14 @@ interface FormattingResponse extends Response
      *
      * @return  FormattingResponse
      */
-    public function writeForbiddenError();
+    public function forbidden();
 
     /**
      * writes a Not Found message into response body
      *
      * @return  FormattingResponse
      */
-    public function writeNotFoundError();
+    public function notFound();
 
     /**
      * writes a Method Not Allowed message into response body
@@ -36,7 +36,7 @@ interface FormattingResponse extends Response
      * @param   string[]  $allowedMethods
      * @return  FormattingResponse
      */
-    public function writeMethodNotAllowedError($requestMethod, array $allowedMethods);
+    public function methodNotAllowed($requestMethod, array $allowedMethods);
 
     /**
      * writes an Internal Server Error message into response body
@@ -44,6 +44,6 @@ interface FormattingResponse extends Response
      * @param   string  $errorMessage
      * @return  FormattingResponse
      */
-    public function writeInternalServerError($errorMessage);
+    public function internalServerError($errorMessage);
 }
 ?>

@@ -252,11 +252,7 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
                                      ->method('negotiate')
                                      ->will($this->returnValue($this->mockResponse));
         $this->mockResponse->expects($this->once())
-                           ->method('setStatusCode')
-                           ->with($this->equalTo(404))
-                           ->will($this->returnSelf());
-        $this->mockResponse->expects($this->once())
-                           ->method('writeNotFoundError');
+                           ->method('notFound');
         $this->mockResponse->expects($this->once())
                            ->method('send');
         $this->webApp->run();
@@ -272,11 +268,7 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
                                      ->method('negotiate')
                                      ->will($this->returnValue($this->mockResponse));
         $this->mockResponse->expects($this->once())
-                           ->method('setStatusCode')
-                           ->with($this->equalTo(405))
-                           ->will($this->returnSelf());
-        $this->mockResponse->expects($this->once())
-                           ->method('writeMethodNotAllowedError')
+                           ->method('methodNotAllowed')
                            ->with($this->equalTo('GET'), $this->equalTo(array('POST', 'PUT')));
         $this->mockResponse->expects($this->once())
                            ->method('send');
@@ -310,11 +302,7 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
                                      ->method('negotiate')
                                      ->will($this->returnValue($this->mockResponse));
         $this->mockResponse->expects($this->once())
-                           ->method('setStatusCode')
-                           ->with($this->equalTo(500))
-                           ->will($this->returnSelf());
-        $this->mockResponse->expects($this->once())
-                           ->method('writeInternalServerError')
+                           ->method('internalServerError')
                            ->with($this->equalTo('Requested route requires authorization, but no auth handler defined for application'));
         $this->mockResponse->expects($this->once())
                            ->method('send');
@@ -371,11 +359,7 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
         $mockAuthHandler->expects($this->never())
                         ->method('getLoginUri');
         $this->mockResponse->expects($this->once())
-                           ->method('setStatusCode')
-                           ->with($this->equalTo(403))
-                           ->will($this->returnSelf());
-        $this->mockResponse->expects($this->once())
-                           ->method('writeForbiddenError');
+                           ->method('forbidden');
         $this->mockResponse->expects($this->once())
                            ->method('send');
         $this->webApp->setAuthHandler($mockAuthHandler)->run();

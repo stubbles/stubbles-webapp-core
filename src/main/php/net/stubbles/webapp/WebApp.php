@@ -122,11 +122,9 @@ abstract class WebApp extends App
         if (!$routing->canFindRoute()) {
             $allowedMethods = $routing->getAllowedMethods();
             if (count($allowedMethods) === 0) {
-                $response->setStatusCode(404)
-                         ->writeNotFoundError();
+                $response->notFound();
             } else {
-                $response->setStatusCode(405)
-                         ->writeMethodNotAllowedError($this->request->getMethod(), $allowedMethods);
+                $response->methodNotAllowed($this->request->getMethod(), $allowedMethods);
             }
 
             return null;
@@ -159,8 +157,7 @@ abstract class WebApp extends App
         }
 
         if (null === $this->authHandler) {
-            $response->setStatusCode(500)
-                     ->writeInternalServerError('Requested route requires authorization, but no auth handler defined for application');
+            $response->internalServerError('Requested route requires authorization, but no auth handler defined for application');
             return false;
         }
 
@@ -171,8 +168,7 @@ abstract class WebApp extends App
         if ($this->authHandler->requiresLogin($route->getRequiredRole())) {
             $response->redirect($this->authHandler->getLoginUri());
         } else {
-            $response->setStatusCode(403)
-                     ->writeForbiddenError();
+            $response->forbidden();
         }
 
         return false;
