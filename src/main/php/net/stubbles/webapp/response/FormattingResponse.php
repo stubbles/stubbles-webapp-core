@@ -15,7 +15,7 @@ use net\stubbles\webapp\response\format\Formatter;
  *
  * @since  2.0.0
  */
-class FormattingResponse extends BaseObject
+class FormattingResponse extends BaseObject implements Response
 {
     /**
      * decorated response
