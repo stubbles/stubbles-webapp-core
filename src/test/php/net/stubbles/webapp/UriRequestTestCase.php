@@ -104,7 +104,8 @@ class UriRequestTestCase extends \PHPUnit_Framework_TestCase
      */
     public function provideSatisfiedPathPattern()
     {
-        return array(array('/hello/mikey', '/hello/{name}'),
+        return array(array('/hello/mikey', '/hello/{name}$'),
+                     array('/hello/mikey/foo', '/hello/{name}'),
                      array('/hello', '/hello'),
                      array('/hello/world303', '/hello/[a-z0-9]+'),
                      array('/', '/')
@@ -151,11 +152,10 @@ class UriRequestTestCase extends \PHPUnit_Framework_TestCase
     public function provideNonSatisfiedPathPattern()
     {
         return array(array('/rss/articles', '/hello/{name}'),
-                     array('/hello/mikey', '/hello'),
-                     array('/hello/', '/hello/{name}'),
-                     array('/hello/mikey', '/'),
-                     array('/hello/mikey', ''),
-                     array('/hello/mikey', null)
+                     array('/hello/mikey', '/hello$'),
+                     array('/hello/', '/hello/{name}$'),
+                     array('/hello/mikey', '/$'),
+                     array('/hello/mikey', '$')
         );
     }
 
@@ -167,6 +167,35 @@ class UriRequestTestCase extends \PHPUnit_Framework_TestCase
     {
         $this->mockUriPath($mockPath);
         $this->assertFalse($this->uriRequest->satisfiesPath($pathPattern));
+    }
+
+    /**
+     * data provider for remaining uri tests
+     *
+     * @return  array
+     */
+    public function provideRemainingUris()
+    {
+        return array(array('/hello/mikey', '/hello/{name}', ''),
+                     array('/hello/303/mikey', '/hello/{id}/{name}', ''),
+                     array('/hello/303/mikey/foo', '/hello/{id}/{name}', '/foo'),
+                     array('/hello', '/hello', ''),
+                     array('/hello/world;name', '/hello/[a-z0-9]+;?', 'name'),
+                     array('/hello/world', '/hello/?', 'world'),
+                     array('/', '/', '')
+        );
+    }
+
+    /**
+     * @test
+     * @dataProvider  provideRemainingUris
+     */
+    public function returnsRemainingUri($mockPath, $pathPattern, $expected)
+    {
+        $this->mockUriPath($mockPath);
+        $this->assertEquals($expected,
+                            $this->uriRequest->getRemainingPath($pathPattern)
+        );
     }
 
     /**

@@ -9,6 +9,7 @@
  */
 namespace net\stubbles\webapp;
 use net\stubbles\lang\BaseObject;
+use net\stubbles\peer\http\AcceptHeader;
 /**
  * Contains routing information and decides which route is applicable for given request.
  *
@@ -46,6 +47,12 @@ class Routing extends BaseObject implements RoutingConfigurator
      * @type  array
      */
     private $postInterceptors = array();
+    /**
+     * list of route-independent supported mime types
+     *
+     * @type  string[]
+     */
+    private $mimeTypes        = array();
 
     /**
      * constructor
@@ -143,23 +150,31 @@ class Routing extends BaseObject implements RoutingConfigurator
             }
         }
 
+        if (in_array('GET', $allowedMethods) && !in_array('HEAD', $allowedMethods)) {
+            $allowedMethods[] = 'HEAD';
+        }
+
         return $allowedMethods;
     }
 
     /**
-     * checks if there is any route at all
+     * checks whether there is a route at all
      *
      * @return  bool
      */
-    public function hasRouteForPath()
+    public function canFindRouteWithAnyMethod()
     {
-        foreach ($this->routes as $route) {
-            if ($route->matchesPath($this->calledUri)) {
-                return true;
-            }
-        }
+        return count($this->getAllowedMethods()) > 0;
+    }
 
-        return false;
+    /**
+     * checks whether there is a route
+     *
+     * @return  bool
+     */
+    public function canFindRoute()
+    {
+        return null !== $this->findRoute();
     }
 
     /**
@@ -167,7 +182,7 @@ class Routing extends BaseObject implements RoutingConfigurator
      *
      * @return  Route
      */
-    public function getRoute()
+    public function findRoute()
     {
         if (null === $this->selectedRoute) {
             foreach ($this->routes as $route) {
@@ -328,7 +343,7 @@ class Routing extends BaseObject implements RoutingConfigurator
     public function getPreInterceptors()
     {
         $global = $this->getApplicable($this->preInterceptors);
-        $route  = $this->getRoute();
+        $route  = $this->findRoute();
         if (null === $route) {
             return $global;
         }
@@ -344,12 +359,12 @@ class Routing extends BaseObject implements RoutingConfigurator
     public function getPostInterceptors()
     {
         $global = $this->getApplicable($this->postInterceptors);
-        $route  = $this->getRoute();
+        $route  = $this->findRoute();
         if (null === $route) {
             return $global;
         }
 
-        return array_merge($global, $route->getPostInterceptors());
+        return array_merge($route->getPostInterceptors(), $global);
     }
 
     /**
@@ -368,6 +383,57 @@ class Routing extends BaseObject implements RoutingConfigurator
         }
 
         return $applicable;
+    }
+
+    /**
+     * add a supported mime type
+     *
+     * @param   string  $mimeType
+     * @return  Routing
+     */
+    public function supportsMimeType($mimeType)
+    {
+        $this->mimeTypes[] = $mimeType;
+        return $this;
+    }
+
+    /**
+     * negotiates best mime type based on accept header
+     *
+     * @param   AcceptHeader  $acceptedMimeTypes
+     * @return  string
+     */
+    public function negotiateMimeType(AcceptHeader $acceptedMimeTypes)
+    {
+        $supportedMimeTypes = $this->getSupportedMimeTypes();
+        if (count($supportedMimeTypes) === 0) {
+            return 'text/html';
+        }
+
+        if (count($acceptedMimeTypes) === 0) {
+            return array_shift($supportedMimeTypes);
+        }
+
+        if ($acceptedMimeTypes->hasSharedAcceptables($supportedMimeTypes)) {
+            return $acceptedMimeTypes->findMatchWithGreatestPriority($supportedMimeTypes);
+        }
+
+        return null;
+    }
+
+    /**
+     * returns list of supported mime types
+     *
+     * @return  string[]
+     */
+    public function getSupportedMimeTypes()
+    {
+        $route = $this->findRoute();
+        if (null === $route) {
+            return $this->mimeTypes;
+        }
+
+        return array_merge($route->getSupportedMimeTypes(), $this->mimeTypes);
     }
 }
 ?>

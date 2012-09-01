@@ -63,6 +63,12 @@ class Route extends BaseObject implements ConfigurableRoute
      * @type  string
      */
     private $requiredRole;
+    /**
+     * list of mime types supported by this route
+     *
+     * @type  string[]
+     */
+    private $mimeTypes        = array();
 
     /**
      * constructor
@@ -103,11 +109,19 @@ class Route extends BaseObject implements ConfigurableRoute
      */
     public function matches(UriRequest $calledUri)
     {
-        if (!$calledUri->methodEquals($this->requestMethod)) {
+        if (!$this->matchesPath($calledUri)) {
             return false;
         }
 
-        return $this->matchesPath($calledUri);
+        if ($calledUri->methodEquals($this->requestMethod)) {
+            return true;
+        }
+
+        if ('GET' === $this->requestMethod) {
+            return $calledUri->methodEquals('HEAD');
+        }
+
+        return false;
     }
 
     /**
@@ -132,18 +146,22 @@ class Route extends BaseObject implements ConfigurableRoute
      */
     public function process(UriRequest $calledUri, Injector $injector, WebRequest $request, Response $response)
     {
+        $uriPath = new UriPath($this->path,
+                               $calledUri->getPathArguments($this->path),
+                               $calledUri->getRemainingPath($this->path)
+                   );
         if ($this->callback instanceof \Closure) {
             $callback = $this->callback;
-            $callback($request, $response, $calledUri->getPathArguments($this->path));
+            $callback($request, $response, $uriPath);
         } elseif (is_callable($this->callback)) {
-            call_user_func_array($this->callback, array($request, $response, $calledUri->getPathArguments($this->path)));
+            call_user_func_array($this->callback, array($request, $response, $uriPath));
         } else {
             $processor = $injector->getInstance($this->callback);
             if (!($processor instanceof Processor)) {
                 throw new RuntimeException('Configured callback class ' . $this->callback . ' for route ' . $this->path . ' is not an instance of net\stubbles\webapp\Processor');
             }
 
-            $processor->process($request, $response, $calledUri->getPathArguments($this->path));
+            $processor->process($request, $response, $uriPath);
         }
     }
 
@@ -229,7 +247,7 @@ class Route extends BaseObject implements ConfigurableRoute
      *
      * @return  bool
      */
-    public function requiresAuth()
+    public function requiresRole()
     {
         return null !== $this->requiredRole;
     }
@@ -237,35 +255,33 @@ class Route extends BaseObject implements ConfigurableRoute
     /**
      * checks whether this is an authorized request to this route
      *
-     * @param   AuthHandler  $authHandler
      * @return  bool
      */
-    public function isAuthorized(AuthHandler $authHandler)
+    public function getRequiredRole()
     {
-        if (!$this->requiresAuth() || $authHandler->userHasRole($this->requiredRole)) {
-            return true;
-        }
-
-        return false;
+        return $this->requiredRole;
     }
 
     /**
-     * checks whether route requires login
+     * add a mime type which this route supports
      *
-     * @param   AuthHandler  $authHandler
-     * @return  bool
+     * @param   string  $mimeType
+     * @return  Route
      */
-    public function requiresLogin(AuthHandler $authHandler)
+    public function supportsMimeType($mimeType)
     {
-        if (!$this->requiresAuth() || $authHandler->userHasRole($this->requiredRole)) {
-            return false;
-        }
+        $this->mimeTypes[] = $mimeType;
+        return $this;
+    }
 
-        if (!$authHandler->hasUser()) {
-            return true;
-        }
-
-        return false;
+    /**
+     * returns list of mime types supported by this route
+     *
+     * @return  string[]
+     */
+    public function getSupportedMimeTypes()
+    {
+        return $this->mimeTypes;
     }
 }
 ?>
