@@ -9,146 +9,172 @@
  */
 namespace net\stubbles\webapp\response\format;
 /**
- * Helper class for the test.
- */
-class StringConversionTestHelper
-{
-    /**
-     * returns string conversion of this class
-     *
-     * @return  string
-     */
-    public function __toString()
-    {
-        return 'converted to string';
-    }
-}
-/**
- * Tests for net\stubbles\webapp\response\format\PlainTextFormatter.
+ * Tests for net\stubbles\webapp\response\format\HtmlFormatter.
  *
- * @since  1.1.2
+ * @since  2.0.0
  * @group  response
  * @group  format
  */
-class PlainTextFormatterTestCase extends \PHPUnit_Framework_TestCase
+class HtmlFormatterTestCase extends \PHPUnit_Framework_TestCase
 {
     /**
      * instance to test
      *
-     * @type  PlainTextFormatter
+     * @type  HtmlFormatter
      */
-    private $plainTextFormatter;
+    private $htmlFormatter;
 
     /**
      * set up test environment
      */
     public function setUp()
     {
-        $this->plainTextFormatter = new PlainTextFormatter();
+        $this->htmlFormatter = new HtmlFormatter();
     }
 
     /**
      * @test
      */
-    public function returnsPlainText()
+    public function annotationsPresentOnSetTemplateMethod()
     {
-        $this->assertEquals('This is a response',
-                            $this->plainTextFormatter->format('This is a response')
+        $method = $this->htmlFormatter->getClass()->getMethod('setTemplate');
+        $this->assertTrue($method->hasAnnotation('Inject'));
+        $this->assertTrue($method->getAnnotation('Inject')->isOptional());
+        $this->assertTrue($method->hasAnnotation('Named'));
+        $this->assertEquals('net.stubbles.webapp.response.format.html.template',
+                            $method->getAnnotation('Named')->getName()
         );
     }
 
     /**
      * @test
      */
-    public function returnsPlainTextForNumbers()
+    public function annotationsPresentOnSetBaseTitleMethod()
     {
-        $this->assertEquals('303',
-                            $this->plainTextFormatter->format(303)
+        $method = $this->htmlFormatter->getClass()->getMethod('setBaseTitle');
+        $this->assertTrue($method->hasAnnotation('Inject'));
+        $this->assertTrue($method->getAnnotation('Inject')->isOptional());
+        $this->assertTrue($method->hasAnnotation('Named'));
+        $this->assertEquals('net.stubbles.webapp.response.format.html.title',
+                            $method->getAnnotation('Named')->getName()
         );
     }
 
     /**
      * @test
      */
-    public function returnsPlainTextForBoolean()
+    public function formatArrayWithoutTitle()
     {
-        $this->assertEquals('true',
-                            $this->plainTextFormatter->format(true)
-        );
-        $this->assertEquals('false',
-                            $this->plainTextFormatter->format(false)
+        $this->assertEquals('<!DOCTYPE html><html><head><title></title></head><body><h1>Hello</h1><p>Hello world!</p></body></html>',
+                            $this->htmlFormatter->format(array('content' => '<h1>Hello</h1><p>Hello world!</p>'))
         );
     }
 
     /**
      * @test
      */
-    public function usesVarExportForArrays()
+    public function formatArrayWithBaseTitleWithoutTitle()
     {
-        $this->assertEquals("array (\n  303 => 'cool',\n)",
-                            $this->plainTextFormatter->format(array(303 => 'cool'))
+        $this->assertEquals('<!DOCTYPE html><html><head><title>Cool Web App</title></head><body><h1>Hello</h1><p>Hello world!</p></body></html>',
+                            $this->htmlFormatter->setBaseTitle('Cool Web App')
+                                                ->format(array('content' => '<h1>Hello</h1><p>Hello world!</p>'))
         );
     }
 
     /**
      * @test
      */
-    public function usesVarExportForObjectWithoutToStringMethod()
+    public function formatArrayWithTitle()
     {
-        $stdClass = new \stdClass();
-        $stdClass->foo = 'bar';
-        $this->assertEquals("stdClass::__set_state(array(\n   'foo' => 'bar',\n))",
-                            $this->plainTextFormatter->format($stdClass)
+        $this->assertEquals('<!DOCTYPE html><html><head><title>Hello world</title><meta name="robots" content="index, follow"/></head><body><h1>Hello</h1><p>Hello world!</p></body></html>',
+                            $this->htmlFormatter->format(array('title'   => 'Hello world',
+                                                               'meta'    => '<meta name="robots" content="index, follow"/>',
+                                                               'content' => '<h1>Hello</h1><p>Hello world!</p>'))
         );
     }
 
     /**
      * @test
      */
-    public function castsObjectWithToStringMethod()
+    public function formatArrayWithBaseTitleAndTitle()
     {
-        $this->assertEquals('converted to string',
-                            $this->plainTextFormatter->format(new StringConversionTestHelper())
+        $this->assertEquals('<!DOCTYPE html><html><head><title>Cool Web App Hello world</title><meta name="robots" content="index, follow"/></head><body><h1>Hello</h1><p>Hello world!</p></body></html>',
+                            $this->htmlFormatter->setBaseTitle('Cool Web App')
+                                                ->format(array('title'   => 'Hello world',
+                                                               'meta'    => '<meta name="robots" content="index, follow"/>',
+                                                               'content' => '<h1>Hello</h1><p>Hello world!</p>'))
         );
     }
 
     /**
      * @test
      */
-    public function formatForbiddenError()
+    public function formatOtherWithoutBaseTitle()
     {
-        $this->assertEquals('You are not allowed to access this resource.',
-                            $this->plainTextFormatter->formatForbiddenError()
+        $this->assertEquals('<!DOCTYPE html><html><head><title></title></head><body>foo bar baz</body></html>',
+                            $this->htmlFormatter->format('foo bar baz')
         );
     }
 
     /**
      * @test
      */
-    public function formatNotFoundError()
+    public function formatOtherWithBaseTitle()
     {
-        $this->assertEquals('Given resource could not be found.',
-                            $this->plainTextFormatter->formatNotFoundError()
+        $this->assertEquals('<!DOCTYPE html><html><head><title>Cool Web App</title></head><body>foo bar baz</body></html>',
+                            $this->htmlFormatter->setBaseTitle('Cool Web App')
+                                                ->format('foo bar baz')
         );
     }
 
     /**
      * @test
      */
-    public function formatMethodNotAllowedError()
+    public function forbiddenWithDefaultTemplate()
     {
-        $this->assertEquals('The given request method PUT is not valid. Please use GET, POST, DELETE.',
-                            $this->plainTextFormatter->formatMethodNotAllowedError('PUT', array('GET', 'POST', 'DELETE'))
+        $this->assertEquals('<!DOCTYPE html><html><head><title>403 Forbidden</title><meta name="robots" content="noindex"/></head><body><h1>403 Forbidden</h1><p>You are not allowed to access this resource.</p></body></html>',
+                            $this->htmlFormatter->formatForbiddenError()
         );
     }
 
     /**
      * @test
      */
-    public function formatInternalServerError()
+    public function forbiddenWithDifferentTemplate()
     {
-        $this->assertEquals('Internal Server Error: Error message',
-                            $this->plainTextFormatter->formatInternalServerError('Error message')
+        $this->assertEquals('<html><head><title>403 Forbidden</title><meta author="me"/></head><body><h1>403 Forbidden</h1><p>You are not allowed to access this resource.</p></body></html>',
+                            $this->htmlFormatter->setTemplate('<html><head><title>{TITLE}</title><meta author="me"/></head><body>{CONTENT}</body></html>')
+                                                ->formatForbiddenError()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function notFoundWithDefaultTemplate()
+    {
+        $this->assertEquals('<!DOCTYPE html><html><head><title>404 Not Found</title><meta name="robots" content="noindex"/></head><body><h1>404 Not Found</h1><p>The requested resource could not be found.</p></body></html>',
+                            $this->htmlFormatter->formatNotFoundError()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function methodNotAllowedWithDefaultTemplate()
+    {
+        $this->assertEquals('<!DOCTYPE html><html><head><title>405 Method Not Allowed</title><meta name="robots" content="noindex"/></head><body><h1>405 Method Not Allowed</h1><p>The given request method POST is not valid. Please use one of GET, HEAD.</p></body></html>',
+                            $this->htmlFormatter->formatMethodNotAllowedError('POST', array('GET', 'HEAD'))
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function internalServerErrorWithDefaultTemplate()
+    {
+        $this->assertEquals('<!DOCTYPE html><html><head><title>500 Internal Server Error</title><meta name="robots" content="noindex"/></head><body><h1>500 Internal Server Error</h1><p>Ups!</p></body></html>',
+                            $this->htmlFormatter->formatInternalServerError('Ups!')
         );
     }
 }
