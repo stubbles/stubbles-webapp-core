@@ -180,11 +180,12 @@ class IoBindingModuleTestCase extends \PHPUnit_Framework_TestCase
      */
     public function bindResponseToDifferentResponseClass()
     {
+        $otherResponseClass = get_class($this->getMock('net\stubbles\webapp\response\Response'));
         $injector = $this->createInjector(IoBindingModule::createWithoutSession()
-                                                         ->setResponseClass('org\stubbles\webapp\response\DummyResponse')
+                                                         ->setResponseClass($otherResponseClass)
                     );
         $this->assertTrue($injector->hasBinding('net\stubbles\webapp\response\Response'));
-        $this->assertInstanceOf('org\stubbles\webapp\response\DummyResponse',
+        $this->assertInstanceOf($otherResponseClass,
                                 $injector->getInstance('net\stubbles\webapp\response\Response')
         );
     }
