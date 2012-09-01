@@ -29,25 +29,17 @@ class FormattingResponse extends BaseObject
      * @type  Formatter
      */
     private $formatter;
-    /**
-     * mime type for response
-     *
-     * @type  string
-     */
-    private $mimeType;
 
     /**
      * constructor
      *
      * @param  Response   $response
      * @param  Formatter  $formatter
-     * @param  string     $mimeType
      */
-    public function __construct(Response $response, Formatter $formatter, $mimeType)
+    public function __construct(Response $response, Formatter $formatter)
     {
         $this->response  = $response;
         $this->formatter = $formatter;
-        $this->mimeType  = $mimeType;
     }
 
     /**
@@ -222,10 +214,6 @@ class FormattingResponse extends BaseObject
      */
     public function send()
     {
-        if (null !== $this->mimeType) {
-            $this->response->addHeader('Content-type', $this->mimeType);
-        }
-
         $this->response->send();
         return $this;
     }

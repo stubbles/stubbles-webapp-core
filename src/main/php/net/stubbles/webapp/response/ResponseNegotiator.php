@@ -77,9 +77,12 @@ class ResponseNegotiator extends BaseObject
             return $this->response;
         }
 
+        if (null !== $mimeType) {
+            $this->response->addHeader('Content-type', $mimeType);
+        }
+
         return new FormattingResponse($this->response,
-                                      $formatter,
-                                      $mimeType
+                                      $formatter
         );
     }
 

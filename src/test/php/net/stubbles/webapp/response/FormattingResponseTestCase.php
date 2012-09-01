@@ -42,8 +42,7 @@ class FormattingResponseTestCase extends \PHPUnit_Framework_TestCase
         $this->decoratedResponse  = $this->getMock('net\stubbles\webapp\response\WebResponse');
         $this->mockFormatter      = $this->getMock('net\stubbles\webapp\response\format\Formatter');
         $this->formattingResponse = new FormattingResponse($this->decoratedResponse,
-                                                           $this->mockFormatter,
-                                                           'text/plain'
+                                                           $this->mockFormatter
                                     );
     }
 
@@ -274,29 +273,8 @@ class FormattingResponseTestCase extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function sendsAddsContentTypeHeaderToDecoratedResponseWhenMimeTypeNotNull()
+    public function sendsDecoratedResponse()
     {
-        $this->decoratedResponse->expects($this->once())
-                                ->method('addHeader')
-                                ->with($this->equalTo('Content-type'), $this->equalTo('text/plain'));
-        $this->decoratedResponse->expects($this->once())
-                                ->method('send');
-        $this->assertSame($this->formattingResponse,
-                          $this->formattingResponse->send()
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function sendsDoesNotAddContentTypeHeaderToDecoratedResponseWhenMimeTypeIsNull()
-    {
-        $this->formattingResponse = new FormattingResponse($this->decoratedResponse,
-                                                           $this->mockFormatter,
-                                                           null
-                                   );
-        $this->decoratedResponse->expects($this->never())
-                                ->method('addHeader');
         $this->decoratedResponse->expects($this->once())
                                 ->method('send');
         $this->assertSame($this->formattingResponse,

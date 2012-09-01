@@ -184,12 +184,11 @@ class ResponseNegotiatorTestCase extends \PHPUnit_Framework_TestCase
                                   $this->equalTo('application/json')
                              )
                            ->will($this->returnValue($this->getMock('net\stubbles\webapp\response\format\Formatter')));
-        $this->mockResponse->expects($this->never())
-                           ->method('setStatusCode');
-        $this->mockResponse->expects($this->never())
-                           ->method('write');
-        $this->mockResponse->expects($this->never())
-                           ->method('send');
+        $this->mockResponse->expects($this->once())
+                           ->method('addHeader')
+                           ->with($this->equalTo('Content-type'), $this->equalTo('application/json'));
+        $this->mockRequest->expects($this->never())
+                          ->method('cancel');
         $this->assertInstanceOf('net\stubbles\webapp\response\FormattingResponse',
                                 $this->responseNegotiator->negotiate($this->mockRequest, $this->mockRouting));
     }
@@ -214,11 +213,9 @@ class ResponseNegotiatorTestCase extends \PHPUnit_Framework_TestCase
         $this->mockInjector->expects($this->never())
                            ->method('getInstance');
         $this->mockResponse->expects($this->never())
-                           ->method('setStatusCode');
-        $this->mockResponse->expects($this->never())
-                           ->method('write');
-        $this->mockResponse->expects($this->never())
-                           ->method('send');
+                           ->method('addHeader');
+        $this->mockRequest->expects($this->never())
+                          ->method('cancel');
         $this->assertInstanceOf('net\stubbles\webapp\response\FormattingResponse',
                                 $this->responseNegotiator->negotiate($this->mockRequest, $this->mockRouting));
     }
