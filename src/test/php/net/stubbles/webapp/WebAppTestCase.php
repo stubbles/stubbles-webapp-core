@@ -216,15 +216,16 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
      * mocks request uri according to parameters
      *
      * @param  string  $uri
+     * @param  string  $method
      */
-    private function mockRequestUri($uri)
+    private function mockRequestUri($uri, $method = 'GET')
     {
         $this->mockRequest->expects($this->once())
                           ->method('getUri')
                           ->will($this->returnValue(HttpUri::fromString($uri)));
         $this->mockRequest->expects($this->any())
                           ->method('getMethod')
-                          ->will($this->returnValue('GET'));
+                          ->will($this->returnValue($method));
     }
 
     /**
@@ -471,6 +472,36 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
                           ->method('cancel');
         $this->mockResponse->expects($this->once())
                            ->method('send');
+        $this->webApp->run();
+    }
+
+    /**
+     * @test
+     */
+    public function executesGetWithHeadRequestForSameUri()
+    {
+        $this->mockRequestUri('http://example.net/hello', 'HEAD');
+        $this->mockRequest->expects($this->exactly(6))
+                          ->method('isCancelled')
+                          ->will($this->returnValue(false));
+        $this->mockInjector->expects($this->once())
+                           ->method('getInstance')
+                           ->with($this->equalTo('some\PostInterceptor'))
+                           ->will($this->returnValue($this->getMock('net\stubbles\webapp\interceptor\PostInterceptor')));
+        $this->mockResponse->expects($this->exactly(2))
+                           ->method('addHeader')
+                           ->with($this->equalTo('X-Binford'));
+        $this->mockResponse->expects($this->never())
+                           ->method('setStatusCode');
+        $this->mockResponse->expects($this->once())
+                           ->method('write')
+                           ->with($this->equalTo('Hello world!'));
+        $this->mockResponse->expects($this->once())
+                           ->method('addCookie');
+        $this->mockRequest->expects($this->never())
+                          ->method('cancel');
+        $this->mockResponse->expects($this->once())
+                           ->method('sendHead');
         $this->webApp->run();
     }
 }

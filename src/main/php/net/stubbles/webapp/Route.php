@@ -109,11 +109,19 @@ class Route extends BaseObject implements ConfigurableRoute
      */
     public function matches(UriRequest $calledUri)
     {
-        if (!$calledUri->methodEquals($this->requestMethod)) {
+        if (!$this->matchesPath($calledUri)) {
             return false;
         }
 
-        return $this->matchesPath($calledUri);
+        if ($calledUri->methodEquals($this->requestMethod)) {
+            return true;
+        }
+
+        if ('GET' === $this->requestMethod) {
+            return $calledUri->methodEquals('HEAD');
+        }
+
+        return false;
     }
 
     /**

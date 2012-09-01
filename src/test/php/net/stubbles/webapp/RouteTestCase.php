@@ -105,6 +105,14 @@ class RouteTestCase extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function matchesForHeadIfPathOkAndAllowedMethodIsGet()
+    {
+        $this->assertTrue($this->createRoute()->matches(UriRequest::fromString('http://example.com/hello/world', 'HEAD')));
+    }
+
+    /**
+     * @test
+     */
     public function processCallsClosureGivenAsCallback()
     {
         $mockRequest = $this->getMock('net\stubbles\input\web\WebRequest');

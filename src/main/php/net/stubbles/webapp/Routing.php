@@ -150,6 +150,10 @@ class Routing extends BaseObject implements RoutingConfigurator
             }
         }
 
+        if (in_array('GET', $allowedMethods) && !in_array('HEAD', $allowedMethods)) {
+            $allowedMethods[] = 'HEAD';
+        }
+
         return $allowedMethods;
     }
 

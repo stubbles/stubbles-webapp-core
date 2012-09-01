@@ -97,7 +97,11 @@ abstract class WebApp extends App
             }
         }
 
-        $response->send();
+        if ($this->request->getMethod() === 'HEAD') {
+            $response->sendHead();
+        } else {
+            $response->send();
+        }
     }
 
     /**

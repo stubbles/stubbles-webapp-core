@@ -106,7 +106,34 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
         $this->routing->onGet('/foo', function() {});
         $this->routing->onPut('/foo', function() {});
         $this->routing->onDelete('/foo', function() {});
-        $this->assertEquals(array('HEAD', 'POST'), $this->routing->getAllowedMethods());
+        $this->assertEquals(array('HEAD', 'POST'),
+                            $this->routing->getAllowedMethods()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function listOfAllowedMethodsIncludesHeadWhenGetIsAvailable()
+    {
+        $this->routing->onGet('/hello', function() {});
+        $this->routing->onPut('/hello', function() {});
+        $this->assertEquals(array('GET', 'PUT', 'HEAD'),
+                            $this->routing->getAllowedMethods()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function listOfAllowedMethodsDoesNotIncludeHeadTwiceWhenHeadExplicitlySet()
+    {
+        $this->routing->onHead('/hello', function() {});
+        $this->routing->onGet('/hello', function() {});
+        $this->routing->onPut('/hello', function() {});
+        $this->assertEquals(array('HEAD', 'GET', 'PUT'),
+                            $this->routing->getAllowedMethods()
+        );
     }
 
     /**
