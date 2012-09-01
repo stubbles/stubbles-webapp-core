@@ -51,23 +51,6 @@ class FormatterResponse extends BaseObject implements FormattingResponse
     }
 
     /**
-     * merges other response into this instance
-     *
-     * All values of the current instance will be overwritten by the other
-     * instance. However, merging does not change the http version of this
-     * response instance. Cookies and headers which are present in this instance
-     * but not in the other instance will be kept.
-     *
-     * @param   Response  $other
-     * @return  Response
-     */
-    public function merge(Response $other)
-    {
-        $this->response->merge($other);
-        return $this;
-    }
-
-    /**
      * clears the response
      *
      * @return  Response
@@ -76,16 +59,6 @@ class FormatterResponse extends BaseObject implements FormattingResponse
     {
         $this->response->clear();
         return $this;
-    }
-
-    /**
-     * returns the http version
-     *
-     * @return  string
-     */
-    public function getVersion()
-    {
-        return $this->response->getVersion();
     }
 
     /**
@@ -104,18 +77,6 @@ class FormatterResponse extends BaseObject implements FormattingResponse
     }
 
     /**
-     * returns status code to be send
-     *
-     * If return value is <null> the default one will be send.
-     *
-     * @return  int
-     */
-    public function getStatusCode()
-    {
-        return $this->response->getStatusCode();
-    }
-
-    /**
      * add a header to the response
      *
      * @param   string  $name   the name of the header
@@ -126,40 +87,6 @@ class FormatterResponse extends BaseObject implements FormattingResponse
     {
         $this->response->addHeader($name, $value);
         return $this;
-    }
-
-    /**
-     * returns the list of headers
-     *
-     * @return  array
-     */
-    public function getHeaders()
-    {
-        return $this->response->getHeaders();
-    }
-
-    /**
-     * checks if header with given name is set
-     *
-     * @param   string  $name
-     * @return  bool
-     */
-    public function hasHeader($name)
-    {
-        return $this->response->hasHeader($name);
-    }
-
-    /**
-     * returns header with given name
-     *
-     * If header with given name does not exist return value is null.
-     *
-     * @param   string  $name
-     * @return  string
-     */
-    public function getHeader($name)
-    {
-        return $this->response->getHeader($name);
     }
 
     /**
@@ -186,40 +113,6 @@ class FormatterResponse extends BaseObject implements FormattingResponse
     }
 
     /**
-     * returns the list of cookies
-     *
-     * @return  Cookie[]
-     */
-    public function getCookies()
-    {
-        return $this->response->getCookies();
-    }
-
-    /**
-     * checks if cookie with given name is set
-     *
-     * @param   string  $name
-     * @return  bool
-     */
-    public function hasCookie($name)
-    {
-        return $this->response->hasCookie($name);
-    }
-
-    /**
-     * returns cookie with given name
-     *
-     * If cookie with given name does not exist return value is null.
-     *
-     * @param   string  $name
-     * @return  Cookie
-     */
-    public function getCookie($name)
-    {
-        return $this->response->getCookie($name);
-    }
-
-    /**
      * write body into the response
      *
      * @param   string  $body
@@ -229,6 +122,21 @@ class FormatterResponse extends BaseObject implements FormattingResponse
     {
         $result = ((is_string($body)) ? ($body): ($this->formatter->format($body)));
         $this->response->write($result);
+        return $this;
+    }
+
+    /**
+     * creates a Location header which causes a redirect when the response is send
+     *
+     * Status code is optional, default is 302.
+     *
+     * @param   string  $url           url to redirect to
+     * @param   int     $statusCode    HTTP status code to redirect with (301, 302, ...)
+     * @return  Response
+     */
+    public function redirect($url, $statusCode = 302)
+    {
+        $this->response->redirect($url, $statusCode);
         return $this;
     }
 
@@ -285,55 +193,6 @@ class FormatterResponse extends BaseObject implements FormattingResponse
     }
 
     /**
-     * returns the data written so far
-     *
-     * @return  string
-     */
-    public function getBody()
-    {
-        return $this->response->getBody();
-    }
-
-    /**
-     * replaces the data written so far with the new data
-     *
-     * @param   string  $data
-     * @return  Response
-     */
-    public function replaceBody($body)
-    {
-        $this->response->clearBody();
-        $this->write($body);
-        return $this;
-    }
-
-    /**
-     * removes data completely
-     *
-     * @return  Response
-     */
-    public function clearBody()
-    {
-        $this->response->clearBody();
-        return $this;
-    }
-
-    /**
-     * creates a Location header which causes a redirect when the response is send
-     *
-     * Status code is optional, default is 302.
-     *
-     * @param   string  $url           url to redirect to
-     * @param   int     $statusCode    HTTP status code to redirect with (301, 302, ...)
-     * @return  Response
-     */
-    public function redirect($url, $statusCode = 302)
-    {
-        $this->response->redirect($url, $statusCode);
-        return $this;
-    }
-
-    /**
      * send the response out
      *
      * @return  Response
@@ -341,8 +200,7 @@ class FormatterResponse extends BaseObject implements FormattingResponse
     public function send()
     {
         if (null !== $this->mimeType) {
-            $this->response->addHeader('Content-type', $this->mimeType)
-                           ->addHeader('Content-Length', strlen($this->response->getBody()));
+            $this->response->addHeader('Content-type', $this->mimeType);
         }
 
         $this->response->send();

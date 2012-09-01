@@ -50,39 +50,12 @@ class FormatterResponseTestCase extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function mergesDecoratedResponse()
-    {
-        $mockResponse = $this->getMock('net\stubbles\webapp\response\WebResponse');
-        $this->decoratedResponse->expects($this->once())
-                                ->method('merge')
-                                ->with($this->equalTo($mockResponse));
-        $this->assertSame($this->formatterResponse,
-                          $this->formatterResponse->merge($mockResponse)
-        );
-    }
-
-    /**
-     * @test
-     */
     public function clearsDataFromDecoratedResponse()
     {
         $this->decoratedResponse->expects($this->once())
                                 ->method('clear');
         $this->assertSame($this->formatterResponse,
                           $this->formatterResponse->clear()
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function returnsVersionFromDecoratedResponse()
-    {
-        $this->decoratedResponse->expects($this->once())
-                                ->method('getVersion')
-                                ->will($this->returnValue('1.1'));
-        $this->assertEquals('1.1',
-                            $this->formatterResponse->getVersion()
         );
     }
 
@@ -102,19 +75,6 @@ class FormatterResponseTestCase extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function returnsStatusCodeFromDecoratedResponse()
-    {
-        $this->decoratedResponse->expects($this->once())
-                                ->method('getStatusCode')
-                                ->will($this->returnValue(418));
-        $this->assertEquals(418,
-                            $this->formatterResponse->getStatusCode()
-        );
-    }
-
-    /**
-     * @test
-     */
     public function addsHeaderOnDecoratedResponse()
     {
         $this->decoratedResponse->expects($this->once())
@@ -122,45 +82,6 @@ class FormatterResponseTestCase extends \PHPUnit_Framework_TestCase
                                 ->with($this->equalTo('X-Binford'), $this->equalTo('6100'));
         $this->assertSame($this->formatterResponse,
                           $this->formatterResponse->addHeader('X-Binford', '6100')
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function returnsListOfHeadersFromDecoratedResponse()
-    {
-        $this->decoratedResponse->expects($this->once())
-                                ->method('getHeaders')
-                                ->will($this->returnValue(array('X-Binford' => '6100')));
-        $this->assertEquals(array('X-Binford' => '6100'),
-                            $this->formatterResponse->getHeaders()
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function checksHeaderOnDecoratedResponse()
-    {
-        $this->decoratedResponse->expects($this->once())
-                                ->method('hasHeader')
-                                ->with($this->equalTo('X-Binford'))
-                                ->will($this->returnValue(true));
-        $this->assertTrue($this->formatterResponse->hasHeader('X-Binford'));
-    }
-
-    /**
-     * @test
-     */
-    public function returnsHeaderFromDecoratedResponse()
-    {
-        $this->decoratedResponse->expects($this->once())
-                                ->method('getHeader')
-                                ->with($this->equalTo('X-Binford'))
-                                ->will($this->returnValue('6100'));
-        $this->assertEquals('6100',
-                            $this->formatterResponse->getHeader('X-Binford')
         );
     }
 
@@ -188,47 +109,6 @@ class FormatterResponseTestCase extends \PHPUnit_Framework_TestCase
                                 ->with($this->equalTo('foo'));
         $this->assertSame($this->formatterResponse,
                           $this->formatterResponse->removeCookie('foo')
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function returnsListOfCookiesFromDecoratedResponse()
-    {
-        $cookie = Cookie::create('foo', 'bar');
-        $this->decoratedResponse->expects($this->once())
-                                ->method('getCookies')
-                                ->will($this->returnValue(array('foo' => $cookie)));
-        $this->assertEquals(array('foo' => $cookie),
-                            $this->formatterResponse->getCookies()
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function checksCookieOnDecoratedResponse()
-    {
-        $this->decoratedResponse->expects($this->once())
-                                ->method('hasCookie')
-                                ->with($this->equalTo('foo'))
-                                ->will($this->returnValue(true));
-        $this->assertTrue($this->formatterResponse->hasCookie('foo'));
-    }
-
-    /**
-     * @test
-     */
-    public function returnsCookieFromDecoratedResponse()
-    {
-        $cookie = Cookie::create('foo', 'bar');
-        $this->decoratedResponse->expects($this->once())
-                                ->method('getCookie')
-                                ->with($this->equalTo('foo'))
-                                ->will($this->returnValue($cookie));
-        $this->assertEquals($cookie,
-                            $this->formatterResponse->getCookie('foo')
         );
     }
 
@@ -353,46 +233,6 @@ class FormatterResponseTestCase extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function returnsBodyFromDecoratedResponse()
-    {
-        $this->decoratedResponse->expects($this->once())
-                                ->method('getBody')
-                                ->will($this->returnValue('Hello world!'));
-        $this->assertEquals('Hello world!',
-                            $this->formatterResponse->getBody()
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function replacesBodyOnDecoratedResponse()
-    {
-        $this->decoratedResponse->expects($this->once())
-                                ->method('clearBody');
-        $this->decoratedResponse->expects($this->once())
-                                ->method('write')
-                                ->will($this->returnValue('Hello world!'));
-        $this->assertSame($this->formatterResponse,
-                          $this->formatterResponse->replaceBody('Hello world!')
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function clearsBodyOnDecoratedResponse()
-    {
-        $this->decoratedResponse->expects($this->once())
-                                ->method('clearBody');
-        $this->assertSame($this->formatterResponse,
-                          $this->formatterResponse->clearBody()
-        );
-    }
-
-    /**
-     * @test
-     */
     public function addsRedirectOnDecoratedResponseWithDefaultStatusCode()
     {
         $this->decoratedResponse->expects($this->once())
@@ -419,19 +259,12 @@ class FormatterResponseTestCase extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function sendsAddsContentHeaderToDecoratedResponseWhenMimeTypeNotNull()
+    public function sendsAddsContentTypeHeaderToDecoratedResponseWhenMimeTypeNotNull()
     {
-        $this->decoratedResponse->expects($this->at(0))
+        $this->decoratedResponse->expects($this->once())
                                 ->method('addHeader')
-                                ->with($this->equalTo('Content-type'), $this->equalTo('text/plain'))
-                                ->will($this->returnSelf());
-        $this->decoratedResponse->expects($this->at(1))
-                                ->method('getBody')
-                                ->will($this->returnValue('foo'));
-        $this->decoratedResponse->expects($this->at(2))
-                                ->method('addHeader')
-                                ->with($this->equalTo('Content-Length'), $this->equalTo(3));
-        $this->decoratedResponse->expects($this->at(3))
+                                ->with($this->equalTo('Content-type'), $this->equalTo('text/plain'));
+        $this->decoratedResponse->expects($this->once())
                                 ->method('send');
         $this->assertSame($this->formatterResponse,
                           $this->formatterResponse->send()
@@ -441,7 +274,7 @@ class FormatterResponseTestCase extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function sendsDoesNotAddContentHeaderToDecoratedResponseWhenMimeTypeIsNull()
+    public function sendsDoesNotAddContentTypeHeaderToDecoratedResponseWhenMimeTypeIsNull()
     {
         $this->formatterResponse = new FormatterResponse($this->decoratedResponse,
                                                          $this->mockFormatter,
@@ -449,8 +282,6 @@ class FormatterResponseTestCase extends \PHPUnit_Framework_TestCase
                                    );
         $this->decoratedResponse->expects($this->never())
                                 ->method('addHeader');
-        $this->decoratedResponse->expects($this->never())
-                                ->method('getBody');
         $this->decoratedResponse->expects($this->once())
                                 ->method('send');
         $this->assertSame($this->formatterResponse,

@@ -76,33 +76,6 @@ class WebResponse extends BaseObject implements Response
     }
 
     /**
-     * merges other response into this instance
-     *
-     * All values of the current instance will be overwritten by the other
-     * instance. However, merging does not change the http version of this
-     * response instance. Cookies and headers which are present in this instance
-     * but not in the other instance will be kept.
-     *
-     * @param   Response  $other
-     * @return  Response
-     * @since   1.7.0
-     */
-    public function merge(Response $other)
-    {
-        $this->setStatusCode($other->getStatusCode());
-        foreach ($other->getHeaders() as $name => $value) {
-            $this->addHeader($name, $value);
-        }
-
-        foreach ($other->getCookies() as $cookie) {
-            $this->addCookie($cookie);
-        }
-
-        $this->clearBody()->write($other->getBody());
-        return $this;
-    }
-
-    /**
      * clears the response
      *
      * @return  Response
@@ -114,16 +87,6 @@ class WebResponse extends BaseObject implements Response
         $this->cookies = array();
         $this->body    = null;
         return $this;
-    }
-
-    /**
-     * returns the http version
-     *
-     * @return  string
-     */
-    public function getVersion()
-    {
-        return $this->version;
     }
 
     /**
@@ -143,18 +106,6 @@ class WebResponse extends BaseObject implements Response
     }
 
     /**
-     * returns status code to be send
-     *
-     * If return value is <null> the default one will be send.
-     *
-     * @return  int
-     */
-    public function getStatusCode()
-    {
-        return $this->statusCode;
-    }
-
-    /**
      * add a header to the response
      *
      * @param   string  $name   the name of the header
@@ -165,46 +116,6 @@ class WebResponse extends BaseObject implements Response
     {
         $this->headers[$name] = $value;
         return $this;
-    }
-
-    /**
-     * returns the list of headers
-     *
-     * @return  array
-     */
-    public function getHeaders()
-    {
-        return $this->headers;
-    }
-
-    /**
-     * checks if header with given name is set
-     *
-     * @param   string  $name
-     * @return  bool
-     * @since   1.5.0
-     */
-    public function hasHeader($name)
-    {
-        return isset($this->headers[$name]);
-    }
-
-    /**
-     * returns header with given name
-     *
-     * If header with given name does not exist return value is null.
-     *
-     * @param   string  $name
-     * @return  string
-     * @since   1.5.0
-     */
-    public function getHeader($name)
-    {
-        if ($this->hasHeader($name) === true) {
-            return $this->headers[$name];
-        }
-
-        return null;
     }
 
     /**
@@ -234,46 +145,6 @@ class WebResponse extends BaseObject implements Response
     }
 
     /**
-     * returns the list of cookies
-     *
-     * @return  Cookie[]
-     */
-    public function getCookies()
-    {
-        return $this->cookies;
-    }
-
-    /**
-     * checks if cookie with given name is set
-     *
-     * @param   string  $name
-     * @return  bool
-     * @since   1.5.0
-     */
-    public function hasCookie($name)
-    {
-        return isset($this->cookies[$name]);
-    }
-
-    /**
-     * returns cookie with given name
-     *
-     * If cookie with given name does not exist return value is null.
-     *
-     * @param   string  $name
-     * @return  Cookie
-     * @since   1.5.0
-     */
-    public function getCookie($name)
-    {
-        if ($this->hasCookie($name) === true) {
-            return $this->cookies[$name];
-        }
-
-        return null;
-    }
-
-    /**
      * write data into the response
      *
      * @param   string  $body
@@ -282,42 +153,6 @@ class WebResponse extends BaseObject implements Response
     public function write($body)
     {
         $this->body .= $body;
-        return $this;
-    }
-
-    /**
-     * returns the data written so far
-     *
-     * @return  string
-     * @since   1.7.0
-     */
-    public function getBody()
-    {
-        return $this->body;
-    }
-
-    /**
-     * replaces the data written so far with the new data
-     *
-     * @param   string  $body
-     * @return  Response
-     * @since   1.7.0
-     */
-    public function replaceBody($body)
-    {
-        $this->body = $body;
-        return $this;
-    }
-
-    /**
-     * removes data completely
-     *
-     * @return  Response
-     * @since   1.7.0
-     */
-    public function clearBody()
-    {
-        $this->body = null;
         return $this;
     }
 
@@ -360,6 +195,7 @@ class WebResponse extends BaseObject implements Response
         }
 
         if (null != $this->body) {
+            $this->header('Content-Length: ' . strlen($this->body));
             $this->sendBody($this->body);
         }
 

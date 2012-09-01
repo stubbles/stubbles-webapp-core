@@ -18,32 +18,11 @@ use net\stubbles\lang\Object;
 interface Response extends Object
 {
     /**
-     * merges other response into this instance
-     *
-     * All values of the current instance will be overwritten by the other
-     * instance. However, merging does not change the http version of this
-     * response instance. Cookies and headers which are present in this instance
-     * but not in the other instance will be kept.
-     *
-     * @param   Response  $other
-     * @return  Response
-     * @since   1.7.0
-     */
-    public function merge(Response $other);
-
-    /**
      * clears the response
      *
      * @return  Response
      */
     public function clear();
-
-    /**
-     * returns the http version
-     *
-     * @return  string
-     */
-    public function getVersion();
 
     /**
      * sets the status code to be send
@@ -57,15 +36,6 @@ interface Response extends Object
     public function setStatusCode($statusCode);
 
     /**
-     * returns status code to be send
-     *
-     * If return value is <null> the default one will be send.
-     *
-     * @return  int
-     */
-    public function getStatusCode();
-
-    /**
      * add a header to the response
      *
      * @param   string  $name   the name of the header
@@ -73,33 +43,6 @@ interface Response extends Object
      * @return  Response
      */
     public function addHeader($name, $value);
-
-    /**
-     * returns the list of headers
-     *
-     * @return  array
-     */
-    public function getHeaders();
-
-    /**
-     * checks if header with given name is set
-     *
-     * @param   string  $name
-     * @return  bool
-     * @since   1.5.0
-     */
-    public function hasHeader($name);
-
-    /**
-     * returns header with given name
-     *
-     * If header with given name does not exist return value is null.
-     *
-     * @param   string  $name
-     * @return  string
-     * @since   1.5.0
-     */
-    public function getHeader($name);
 
     /**
      * add a cookie to the response
@@ -118,64 +61,12 @@ interface Response extends Object
     public function removeCookie($name);
 
     /**
-     * returns the list of cookies
-     *
-     * @return  Cookie[]
-     */
-    public function getCookies();
-
-    /**
-     * checks if cookie with given name is set
-     *
-     * @param   string  $name
-     * @return  bool
-     * @since   1.5.0
-     */
-    public function hasCookie($name);
-
-    /**
-     * returns cookie with given name
-     *
-     * If cookie with given name does not exist return value is null.
-     *
-     * @param   string  $name
-     * @return  Cookie
-     * @since   1.5.0
-     */
-    public function getCookie($name);
-
-    /**
      * write body into the response
      *
      * @param   string  $body
      * @return  Response
      */
     public function write($body);
-
-    /**
-     * returns the data written so far
-     *
-     * @return  string
-     * @since   1.7.0
-     */
-    public function getBody();
-
-    /**
-     * replaces the data written so far with the new data
-     *
-     * @param   string  $data
-     * @return  Response
-     * @since   1.7.0
-     */
-    public function replaceBody($body);
-
-    /**
-     * removes data completely
-     *
-     * @return  Response
-     * @since   1.7.0
-     */
-    public function clearBody();
 
     /**
      * creates a Location header which causes a redirect when the response is send
