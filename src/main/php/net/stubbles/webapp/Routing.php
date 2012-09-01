@@ -414,11 +414,7 @@ class Routing extends BaseObject implements RoutingConfigurator
             return array_shift($supportedMimeTypes);
         }
 
-        if ($acceptedMimeTypes->hasSharedAcceptables($supportedMimeTypes)) {
-            return $acceptedMimeTypes->findMatchWithGreatestPriority($supportedMimeTypes);
-        }
-
-        return null;
+        return $acceptedMimeTypes->findMatchWithGreatestPriority($supportedMimeTypes);
     }
 
     /**
