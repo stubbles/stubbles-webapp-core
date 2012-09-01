@@ -233,7 +233,7 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
         $this->routing->onGet('/hello', function() {})
                       ->postIntercept('other\PostInterceptor');
         $postInterceptor = function() {};
-        $this->assertEquals(array('some\PostInterceptor', $postInterceptor, 'other\PostInterceptor'),
+        $this->assertEquals(array('other\PostInterceptor', 'some\PostInterceptor', $postInterceptor),
                             $this->routing->postIntercept('some\PostInterceptor')
                                           ->postInterceptOnGet($postInterceptor)
                                           ->getPostInterceptors());

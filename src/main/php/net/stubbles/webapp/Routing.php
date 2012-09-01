@@ -360,7 +360,7 @@ class Routing extends BaseObject implements RoutingConfigurator
             return $global;
         }
 
-        return array_merge($global, $route->getPostInterceptors());
+        return array_merge($route->getPostInterceptors(), $global);
     }
 
     /**
