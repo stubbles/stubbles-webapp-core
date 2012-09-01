@@ -56,9 +56,9 @@ class IoBindingModuleTestCase extends \PHPUnit_Framework_TestCase
     public function bindsRequestAndResponseWhenCreatedWithoutSession()
     {
         $injector = $this->createInjector(IoBindingModule::createWithoutSession());
-        $this->assertTrue($injector->hasExplicitBinding('net\\stubbles\\input\\Request'));
-        $this->assertTrue($injector->hasExplicitBinding('net\\stubbles\\input\\web\\WebRequest'));
-        $this->assertTrue($injector->hasExplicitBinding('net\\stubbles\\webapp\\response\\Response'));
+        $this->assertTrue($injector->hasExplicitBinding('net\stubbles\input\Request'));
+        $this->assertTrue($injector->hasExplicitBinding('net\stubbles\input\web\WebRequest'));
+        $this->assertTrue($injector->hasExplicitBinding('net\stubbles\webapp\response\Response'));
     }
 
     /**
@@ -67,7 +67,7 @@ class IoBindingModuleTestCase extends \PHPUnit_Framework_TestCase
     public function doesNotBindSessionWhenCreatedWithoutSession()
     {
         $injector = $this->createInjector(IoBindingModule::createWithoutSession());
-        $this->assertFalse($injector->hasExplicitBinding('net\\stubbles\\webapp\\session\\Session'));
+        $this->assertFalse($injector->hasExplicitBinding('net\stubbles\webapp\session\Session'));
     }
 
     /**
@@ -78,8 +78,8 @@ class IoBindingModuleTestCase extends \PHPUnit_Framework_TestCase
     {
         $binder   = new Binder();
         $this->createInjector(IoBindingModule::createWithoutSession(), $binder);
-        $binder->bind('\\stdClass')
-               ->to('\\stdClass')
+        $binder->bind('\stdClass')
+               ->to('\stdClass')
                ->inSession();
 
     }
@@ -90,9 +90,9 @@ class IoBindingModuleTestCase extends \PHPUnit_Framework_TestCase
     public function bindsRequestAndResponseWhenCreatedWithSession()
     {
         $injector = $this->createInjector(IoBindingModule::createWithSession());
-        $this->assertTrue($injector->hasExplicitBinding('net\\stubbles\\input\\Request'));
-        $this->assertTrue($injector->hasExplicitBinding('net\\stubbles\\input\\web\\WebRequest'));
-        $this->assertTrue($injector->hasExplicitBinding('net\\stubbles\\webapp\\response\\Response'));
+        $this->assertTrue($injector->hasExplicitBinding('net\stubbles\input\Request'));
+        $this->assertTrue($injector->hasExplicitBinding('net\stubbles\input\web\WebRequest'));
+        $this->assertTrue($injector->hasExplicitBinding('net\stubbles\webapp\response\Response'));
     }
 
     /**
@@ -101,7 +101,7 @@ class IoBindingModuleTestCase extends \PHPUnit_Framework_TestCase
     public function bindSessionWhenCreatedWithSession()
     {
         $injector = $this->createInjector(IoBindingModule::createWithSession());
-        $this->assertTrue($injector->hasExplicitBinding('net\\stubbles\\webapp\\session\\Session'));
+        $this->assertTrue($injector->hasExplicitBinding('net\stubbles\webapp\session\Session'));
     }
 
     /**
@@ -112,8 +112,8 @@ class IoBindingModuleTestCase extends \PHPUnit_Framework_TestCase
         $binder = new Binder();
         $this->createInjector(IoBindingModule::createWithSession(), $binder);
         try {
-            $binder->bind('\\stdClass')
-                   ->to('\\stdClass')
+            $binder->bind('\stdClass')
+                   ->to('\stdClass')
                    ->inSession();
         } catch (\net\stubbles\lang\exception\RuntimeException $re) {
             $this->fail($re->getMessage());
@@ -127,8 +127,8 @@ class IoBindingModuleTestCase extends \PHPUnit_Framework_TestCase
     public function bindsSessionToNativeByDefault()
     {
         $injector = $this->createInjector(IoBindingModule::createWithSession());
-        $this->assertInstanceOf('net\\stubbles\\webapp\\session\\WebSession',
-                                $injector->getInstance('net\\stubbles\\webapp\\session\\Session'));
+        $this->assertInstanceOf('net\stubbles\webapp\session\WebSession',
+                                $injector->getInstance('net\stubbles\webapp\session\Session'));
     }
 
     /**
@@ -140,8 +140,8 @@ class IoBindingModuleTestCase extends \PHPUnit_Framework_TestCase
         $injector = $this->createInjector(IoBindingModule::createWithSession()
                                                          ->useNoneDurableSession()
                     );
-        $this->assertInstanceOf('net\\stubbles\\webapp\\session\\NullSession',
-                                $injector->getInstance('net\\stubbles\\webapp\\session\\Session'));
+        $this->assertInstanceOf('net\stubbles\webapp\session\NullSession',
+                                $injector->getInstance('net\stubbles\webapp\session\Session'));
     }
 
     /**
@@ -153,8 +153,8 @@ class IoBindingModuleTestCase extends \PHPUnit_Framework_TestCase
         $injector = $this->createInjector(IoBindingModule::createWithSession()
                                                          ->useNoneStoringSession()
                     );
-        $this->assertInstanceOf('net\\stubbles\\webapp\\session\\NullSession',
-                                $injector->getInstance('net\\stubbles\\webapp\\session\\Session'));
+        $this->assertInstanceOf('net\stubbles\webapp\session\NullSession',
+                                $injector->getInstance('net\stubbles\webapp\session\Session'));
     }
 
     /**
@@ -163,7 +163,7 @@ class IoBindingModuleTestCase extends \PHPUnit_Framework_TestCase
      */
     public function bindsSessionToInstanceCreatedByClosure()
     {
-        $mockSession = $this->getMock('net\\stubbles\\webapp\\session\\Session');
+        $mockSession = $this->getMock('net\stubbles\webapp\session\Session');
         $injector = $this->createInjector(IoBindingModule::createWithSession()
                                                          ->setSessionCreator(function() use($mockSession)
                                                                              {
@@ -172,22 +172,90 @@ class IoBindingModuleTestCase extends \PHPUnit_Framework_TestCase
                                                            )
                     );
         $this->assertSame($mockSession,
-                          $injector->getInstance('net\\stubbles\\webapp\\session\\Session'));
+                          $injector->getInstance('net\stubbles\webapp\session\Session'));
     }
 
     /**
-     * @since  1.1.0
      * @test
      */
     public function bindResponseToDifferentResponseClass()
     {
         $injector = $this->createInjector(IoBindingModule::createWithoutSession()
-                                                         ->setResponseClass('org\\stubbles\\webapp\\response\\DummyResponse')
+                                                         ->setResponseClass('org\stubbles\webapp\response\DummyResponse')
                     );
-        $this->assertTrue($injector->hasBinding('net\\stubbles\\webapp\\response\\Response'));
-        $this->assertInstanceOf('org\\stubbles\\webapp\\response\\DummyResponse',
-                                $injector->getInstance('net\\stubbles\\webapp\\response\\Response')
+        $this->assertTrue($injector->hasBinding('net\stubbles\webapp\response\Response'));
+        $this->assertInstanceOf('org\stubbles\webapp\response\DummyResponse',
+                                $injector->getInstance('net\stubbles\webapp\response\Response')
         );
+    }
+
+    /**
+     * @since  2.0.0
+     * @test
+     */
+    public function bindsListOfMimeTypes()
+    {
+        $injector = $this->createInjector(IoBindingModule::createWithoutSession());
+        $this->assertTrue($injector->hasConstant('net.stubbles.webapp.response.format.mimetypes'));
+        $this->assertEquals(array('application/json',
+                                  'text/json',
+                                  'text/html',
+                                  'text/plain',
+                                  'text/xml',
+                                  'application/xml',
+                                  'application/rss+xml'
+                            ),
+                            $injector->getConstant('net.stubbles.webapp.response.format.mimetypes')
+        );
+    }
+
+    /**
+     * @since  2.0.0
+     * @test
+     */
+    public function bindsListOfMimeTypesWithAdditionalMimeTypes()
+    {
+        $injector = $this->createInjector(IoBindingModule::createWithoutSession()
+                                                         ->addFormatter('foo/bar', 'foo\BarFormatter')
+                    );
+        $this->assertTrue($injector->hasConstant('net.stubbles.webapp.response.format.mimetypes'));
+        $this->assertEquals(array('application/json',
+                                  'text/json',
+                                  'text/html',
+                                  'text/plain',
+                                  'text/xml',
+                                  'application/xml',
+                                  'application/rss+xml',
+                                  'foo/bar'
+                            ),
+                            $injector->getConstant('net.stubbles.webapp.response.format.mimetypes')
+        );
+    }
+
+    /**
+     * @since  2.0.0
+     * @test
+     */
+    public function bindsFormattersForAllMimeTypes()
+    {
+        $injector = $this->createInjector(IoBindingModule::createWithoutSession());
+        foreach ($injector->getConstant('net.stubbles.webapp.response.format.mimetypes') as $mimeType) {
+            $this->assertTrue($injector->hasExplicitBinding('net\stubbles\webapp\response\format\Formatter', $mimeType));
+        }
+    }
+
+    /**
+     * @since  2.0.0
+     * @test
+     */
+    public function bindsFormattersForAllMimeTypesWithAdditionalMimeTypes()
+    {
+        $injector = $this->createInjector(IoBindingModule::createWithoutSession()
+                                                         ->addFormatter('foo/bar', 'foo\BarFormatter')
+                    );
+        foreach ($injector->getConstant('net.stubbles.webapp.response.format.mimetypes') as $mimeType) {
+            $this->assertTrue($injector->hasExplicitBinding('net\stubbles\webapp\response\format\Formatter', $mimeType));
+        }
     }
 }
 ?>

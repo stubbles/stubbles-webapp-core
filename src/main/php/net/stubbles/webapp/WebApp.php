@@ -13,6 +13,7 @@ use net\stubbles\ioc\App;
 use net\stubbles\ioc\Injector;
 use net\stubbles\webapp\ioc\IoBindingModule;
 use net\stubbles\webapp\response\Response;
+use net\stubbles\webapp\response\ResponseNegotiator;
 /**
  * Abstract base class for web applications.
  *
@@ -27,11 +28,11 @@ abstract class WebApp extends App
      */
     private $request;
     /**
-     * response container
+     * response negotiator
      *
-     * @type  Response
+     * @type  ResponseNegotiator
      */
-    private $response;
+    private $responseNegotiator;
     /**
      * injector instance
      *
@@ -48,20 +49,19 @@ abstract class WebApp extends App
     /**
      * constructor
      *
-     * @param  WebRequest  $request    request data container
-     * @param  Response    $response   response container
-     * @param  Injector    $injector
+     * @param  WebRequest          $request    request data container
+     * @param  ResponseNegotiator  $response   response container
+     * @param  Injector            $injector
      * @Inject
      */
     public function __construct(WebRequest $request,
-                                Response $response,
+                                ResponseNegotiator $response,
                                 Injector $injector)
     {
-        $this->request   = $request;
-        $this->response  = $response;
-        $this->injector  = $injector;
+        $this->request            = $request;
+        $this->responseNegotiator = $response;
+        $this->injector           = $injector;
     }
-
 
     /**
      * sets auth handler
@@ -81,44 +81,27 @@ abstract class WebApp extends App
      */
     public function run()
     {
+        $calledUri = new UriRequest($this->request->getUri(), $this->request->getMethod());
+        $routing   = new Routing($calledUri);
+        $this->configureRouting($routing);
+        $response = $this->responseNegotiator->negotiate($this->request, $routing);
         if (!$this->request->isCancelled()) {
-            $calledUri = new UriRequest($this->request->getUri(), $this->request->getMethod());
-            $routing   = new Routing($calledUri);
-            $this->configureRouting($routing);
-            $route = $routing->getRoute();
-            if (null === $route) {
-                if (!$routing->hasRouteForPath()) {
-                    $this->response->setStatusCode(404);
-                } else {
-                    $this->response->setStatusCode(405)
-                                   ->addHeader('Allow', join(', ', $routing->getAllowedMethods()));
-                }
-
-                $this->request->cancel();
-            } elseif ($route->requiresAuth() && null === $this->authHandler) {
-                $this->response->setStatusCode(500)
-                               ->write('Requested route requires a role, but no auth handler defined for application');
-                $this->request->cancel();
-            } elseif ($route->requiresAuth() && !$route->isAuthorized($this->authHandler)) {
-                if ($route->requiresLogin($this->authHandler)) {
-                    $this->response->redirect($this->authHandler->getLoginUri());
-                } else {
-                    $this->response->setStatusCode(403);
-                }
-
-                $this->request->cancel();
-            } elseif (!$calledUri->isHttps() && $route->requiresHttps()) {
-                $this->response->redirect($calledUri->toHttps());
-                $this->request->cancel();
-            } elseif ($this->applyPreInterceptors($routing->getPreInterceptors())) {
-                $route->process($calledUri, $this->injector, $this->request, $this->response);
-                if (!$this->request->isCancelled()) {
-                    $this->applyPostInterceptors($routing->getPostInterceptors());
+            $route = $this->detectRoute($routing, $calledUri, $response);
+            if (null !== $route) {
+                if ($this->applyPreInterceptors($routing->getPreInterceptors(), $response)) {
+                    $route->process($calledUri, $this->injector, $this->request, $response);
+                    if (!$this->request->isCancelled()) {
+                        $this->applyPostInterceptors($routing->getPostInterceptors(), $response);
+                    }
                 }
             }
         }
 
-        $this->response->send();
+        if ($this->request->getMethod() === 'HEAD') {
+            $response->sendHead();
+        } else {
+            $response->send();
+        }
     }
 
     /**
@@ -129,23 +112,89 @@ abstract class WebApp extends App
     protected abstract function configureRouting(RoutingConfigurator $routing);
 
     /**
+     * retrieves route
+     *
+     * @param   Routing     $routing
+     * @param   UriRequest  $calledUri
+     * @param   Response    $response
+     * @return  Route
+     */
+    private function detectRoute(Routing $routing, UriRequest $calledUri, Response $response)
+    {
+        if (!$routing->canFindRoute()) {
+            $allowedMethods = $routing->getAllowedMethods();
+            if (count($allowedMethods) === 0) {
+                $response->notFound();
+            } else {
+                $response->methodNotAllowed($this->request->getMethod(), $allowedMethods);
+            }
+
+            return null;
+        }
+
+        $route = $routing->findRoute();
+        if (!$calledUri->isHttps() && $route->requiresHttps()) {
+            $response->redirect($calledUri->toHttps());
+            return null;
+        }
+
+        if ($this->isAuthorized($route, $response)) {
+            return $route;
+        }
+
+        return null;
+    }
+
+    /**
+     * checks if request to given route is authorized
+     *
+     * @param   Route     $route
+     * @param   Response  $response
+     * @return  bool
+     */
+    private function isAuthorized(Route $route, Response $response)
+    {
+        if (!$route->requiresRole()) {
+            return true;
+        }
+
+        if (null === $this->authHandler) {
+            $response->internalServerError('Requested route requires authorization, but no auth handler defined for application');
+            return false;
+        }
+
+        if ($this->authHandler->isAuthorized($route->getRequiredRole())) {
+            return true;
+        }
+
+        if ($this->authHandler->requiresLogin($route->getRequiredRole())) {
+            $response->redirect($this->authHandler->getLoginUri());
+        } else {
+            $response->forbidden();
+        }
+
+        return false;
+    }
+
+    /**
      * apply pre interceptors
      *
      * Returns false if one of the pre interceptors cancels the request.
      *
      * @param   string|Closure  $preInterceptors
+     * @param   Response        $response
      * @return  bool
      */
-    private function applyPreInterceptors(array $preInterceptors)
+    private function applyPreInterceptors(array $preInterceptors, Response $response)
     {
         foreach ($preInterceptors as $interceptor) {
             if ($interceptor instanceof \Closure) {
-                $interceptor($this->request, $this->response);
+                $interceptor($this->request, $response);
             } elseif (is_callable($interceptor)) {
-                call_user_func_array($interceptor, array($this->request, $this->response));
+                call_user_func_array($interceptor, array($this->request, $response));
             } else {
                 $this->injector->getInstance($interceptor)
-                               ->preProcess($this->request, $this->response);
+                               ->preProcess($this->request, $response);
             }
 
             if ($this->request->isCancelled()) {
@@ -160,17 +209,18 @@ abstract class WebApp extends App
      * apply post interceptors
      *
      * @param   string|Closure  $postInterceptors
+     * @param   Response        $response
      */
-    private function applyPostInterceptors(array $postInterceptors)
+    private function applyPostInterceptors(array $postInterceptors, Response $response)
     {
         foreach ($postInterceptors as $interceptor) {
             if ($interceptor instanceof \Closure) {
-                $interceptor($this->request, $this->response);
+                $interceptor($this->request, $response);
             } elseif (is_callable($interceptor)) {
-                call_user_func_array($interceptor, array($this->request, $this->response));
+                call_user_func_array($interceptor, array($this->request, $response));
             } else {
                 $this->injector->getInstance($interceptor)
-                               ->postProcess($this->request, $this->response);
+                               ->postProcess($this->request, $response);
             }
 
             if ($this->request->isCancelled()) {

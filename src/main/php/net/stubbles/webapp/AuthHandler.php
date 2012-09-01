@@ -17,25 +17,26 @@ use net\stubbles\lang\Object;
 interface AuthHandler extends Object
 {
     /**
+     * checks whether expected role is given
+     *
+     * @param   string  $expectedRole
+     * @return  bool
+     */
+    public function isAuthorized($expectedRole);
+
+    /**
+     * checks whether role requires login
+     *
+     * @param   string  $role
+     * @return  bool
+     */
+    public function requiresLogin($role);
+
+    /**
      * returns login uri
      *
      * @return  string
      */
     public function getLoginUri();
-
-    /**
-     * checks whether the auth handler has a user
-     *
-     * @return  bool
-     */
-    public function hasUser();
-
-    /**
-     * checks if user has a specific role
-     *
-     * @param   string  $role
-     * @return  bool
-     */
-    public function userHasRole($role);
 }
 ?>

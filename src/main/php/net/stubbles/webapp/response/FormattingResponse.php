@@ -7,15 +7,41 @@
  *
  * @package  net\stubbles\webapp
  */
-namespace org\stubbles\webapp\response;
+namespace net\stubbles\webapp\response;
 use net\stubbles\lang\BaseObject;
-use net\stubbles\webapp\response\Cookie;
-use net\stubbles\webapp\response\Response;
+use net\stubbles\webapp\response\format\Formatter;
 /**
- * Dummy response implementation which does nothing.
+ * Response which is able to format the response body if it is not a string.
+ *
+ * @since  2.0.0
  */
-class DummyResponse extends BaseObject implements Response
+class FormattingResponse extends BaseObject
 {
+    /**
+     * decorated response
+     *
+     * @type  Response
+     */
+    private $response;
+    /**
+     * formatter to be used
+     *
+     * @type  Formatter
+     */
+    private $formatter;
+
+    /**
+     * constructor
+     *
+     * @param  Response   $response
+     * @param  Formatter  $formatter
+     */
+    public function __construct(Response $response, Formatter $formatter)
+    {
+        $this->response  = $response;
+        $this->formatter = $formatter;
+    }
+
     /**
      * clears the response
      *
@@ -23,6 +49,7 @@ class DummyResponse extends BaseObject implements Response
      */
     public function clear()
     {
+        $this->response->clear();
         return $this;
     }
 
@@ -37,6 +64,7 @@ class DummyResponse extends BaseObject implements Response
      */
     public function setStatusCode($statusCode)
     {
+        $this->response->setStatusCode($statusCode);
         return $this;
     }
 
@@ -49,6 +77,7 @@ class DummyResponse extends BaseObject implements Response
      */
     public function addHeader($name, $value)
     {
+        $this->response->addHeader($name, $value);
         return $this;
     }
 
@@ -60,6 +89,7 @@ class DummyResponse extends BaseObject implements Response
      */
     public function addCookie(Cookie $cookie)
     {
+        $this->response->addCookie($cookie);
         return $this;
     }
 
@@ -67,10 +97,10 @@ class DummyResponse extends BaseObject implements Response
      * removes cookie with given name
      *
      * @return  Response
-     * @since   2.0.0
      */
     public function removeCookie($name)
     {
+        $this->response->removeCookie($name);
         return $this;
     }
 
@@ -82,6 +112,8 @@ class DummyResponse extends BaseObject implements Response
      */
     public function write($body)
     {
+        $result = ((is_string($body)) ? ($body): ($this->formatter->format($body)));
+        $this->response->write($result);
         return $this;
     }
 
@@ -92,12 +124,11 @@ class DummyResponse extends BaseObject implements Response
      *
      * @param   string  $url           url to redirect to
      * @param   int     $statusCode    HTTP status code to redirect with (301, 302, ...)
-     * @param   string  $reasonPhrase  HTTP status code reason phrase
      * @return  Response
-     * @since   1.3.0
      */
     public function redirect($url, $statusCode = 302)
     {
+        $this->response->redirect($url, $statusCode);
         return $this;
     }
 
@@ -105,10 +136,11 @@ class DummyResponse extends BaseObject implements Response
      * creates a 403 Forbidden message
      *
      * @return  Response
-     * @since   2.0.0
      */
     public function forbidden()
     {
+        $this->response->forbidden()
+                       ->write($this->formatter->formatForbiddenError());
         return $this;
     }
 
@@ -116,10 +148,11 @@ class DummyResponse extends BaseObject implements Response
      * creates a 404 Not Found message
      *
      * @return  Response
-     * @since   2.0.0
      */
     public function notFound()
     {
+        $this->response->notFound()
+                       ->write($this->formatter->formatNotFoundError());
         return $this;
     }
 
@@ -129,10 +162,11 @@ class DummyResponse extends BaseObject implements Response
      * @param   string    $requestMethod
      * @param   string[]  $allowedMethods
      * @return  Response
-     * @since   2.0.0
      */
     public function methodNotAllowed($requestMethod, array $allowedMethods)
     {
+        $this->response->methodNotAllowed($requestMethod, $allowedMethods)
+                       ->write($this->formatter->formatMethodNotAllowedError($requestMethod, $allowedMethods));
         return $this;
     }
 
@@ -150,14 +184,14 @@ class DummyResponse extends BaseObject implements Response
     }
 
     /**
-     * creates a 500 Internal Server Error
+     * creates a 500 Internal Server Error message
      *
      * @param   string  $errorMessage
      * @return  Response
-     * @since   2.0.0
      */
     public function internalServerError($errorMessage)
     {
+        $this->response->internalServerError($this->formatter->formatInternalServerError($errorMessage));
         return $this;
     }
 
@@ -169,6 +203,7 @@ class DummyResponse extends BaseObject implements Response
      */
     public function httpVersionNotSupported()
     {
+        $this->response->httpVersionNotSupported();
         return $this;
     }
 
@@ -179,6 +214,7 @@ class DummyResponse extends BaseObject implements Response
      */
     public function send()
     {
+        $this->response->send();
         return $this;
     }
 
@@ -190,6 +226,7 @@ class DummyResponse extends BaseObject implements Response
      */
     public function sendHead()
     {
+        $this->response->sendHead();
         return $this;
     }
 }

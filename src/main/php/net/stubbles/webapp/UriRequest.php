@@ -78,7 +78,7 @@ class UriRequest extends BaseObject
      */
     public function satisfiesPath($expectedPath)
     {
-        if (preg_match($this->createPathPattern($expectedPath), $this->uri->getPath()) >= 1) {
+        if (preg_match('/^' . $this->createPathPattern($expectedPath) . '/', $this->uri->getPath()) >= 1) {
             return true;
         }
 
@@ -94,7 +94,7 @@ class UriRequest extends BaseObject
     public function getPathArguments($expectedPath)
     {
         $arguments = array();
-        preg_match($this->createPathPattern($expectedPath), $this->uri->getPath(), $arguments);
+        preg_match('/^' . $this->createPathPattern($expectedPath) . '/', $this->uri->getPath(), $arguments);
         array_shift($arguments);
         $names  = array();
         $result = array();
@@ -109,6 +109,28 @@ class UriRequest extends BaseObject
     }
 
     /**
+     * returns remaining path if there is any
+     *
+     * @param   string  $expectedPath
+     * @return  string
+     */
+    public function getRemainingPath($expectedPath)
+    {
+        $matches = array();
+        preg_match('/(' . $this->createPathPattern($expectedPath) . ')([^?]*)?/', $this->uri->getPath(), $matches);
+        $last = count($matches) - 1;
+        if (2 > $last) {
+            return null;
+        }
+
+        if (isset($matches[$last]) && !empty($matches[$last])) {
+            return $matches[$last];
+        }
+
+        return null;
+    }
+
+    /**
      * creates a pattern for given path
      *
      * @param   string  $path
@@ -116,7 +138,7 @@ class UriRequest extends BaseObject
      */
     private function createPathPattern($path)
     {
-        return '/^' . preg_replace('/[{][^}]*[}]/', '([^\/]+)', str_replace('/', '\/', $path)) . '$/';
+        return preg_replace('/[{][^}]*[}]/', '([^\/]+)', str_replace('/', '\/', $path));
     }
 
     /**

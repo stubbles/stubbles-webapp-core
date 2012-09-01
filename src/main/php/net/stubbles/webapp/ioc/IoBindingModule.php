@@ -14,9 +14,8 @@ use net\stubbles\ioc\Binder;
 use net\stubbles\ioc\module\BindingModule;
 use net\stubbles\lang\BaseObject;
 use net\stubbles\webapp\response\Response;
-use net\stubbles\webapp\response\ResponseCreator;
 /**
- * Module to configure the binder with default instances for request, session and response.
+ * Module to configure the binder with instances for request, session and response.
  *
  * @since  1.7.0
  */
@@ -28,6 +27,19 @@ class IoBindingModule extends BaseObject implements BindingModule
      * @type  string
      */
     private $responseClass  = 'net\stubbles\webapp\response\WebResponse';
+    /**
+     * map of formatters for mime types
+     *
+     * @type  array
+     */
+    private $formatter      = array('application/json'    => 'net\stubbles\webapp\response\format\JsonFormatter',
+                                    'text/json'           => 'net\stubbles\webapp\response\format\JsonFormatter',
+                                    'text/html'           => 'net\stubbles\webapp\response\format\HtmlFormatter',
+                                    'text/plain'          => 'net\stubbles\webapp\response\format\PlainTextFormatter',
+                                    'text/xml'            => 'net\stubbles\webapp\response\format\XmlFormatter',
+                                    'application/xml'     => 'net\stubbles\webapp\response\format\XmlFormatter',
+                                    'application/rss+xml' => 'net\stubbles\webapp\response\format\XmlFormatter'
+                              );
     /**
      * name for the session
      *
@@ -83,6 +95,19 @@ class IoBindingModule extends BaseObject implements BindingModule
     public function setResponseClass($responseClass)
     {
         $this->responseClass = $responseClass;
+        return $this;
+    }
+
+    /**
+     * adds formatter class for given mime type
+     *
+     * @param   string  $mimeType   mime type that should be handled by given formatter class
+     * @param   string  $formatter  class to handle given mime type
+     * @return  IoBindingModule
+     */
+    public function addFormatter($mimeType, $formatter)
+    {
+        $this->formatter[$mimeType] = $formatter;
         return $this;
     }
 
@@ -163,6 +188,14 @@ class IoBindingModule extends BaseObject implements BindingModule
                ->toInstance($request);
         $binder->bind('net\stubbles\webapp\response\Response')
                ->toInstance($response);
+        $binder->bindConstant('net.stubbles.webapp.response.format.mimetypes')
+               ->to(array_keys($this->formatter));
+        foreach ($this->formatter as $mimeType => $formatter) {
+            $binder->bind('net\stubbles\webapp\response\format\Formatter')
+                   ->named($mimeType)
+                   ->to($formatter);
+        }
+
         if (null !== $this->sessionCreator) {
             $sessionCreator = $this->sessionCreator;
             $session        = $sessionCreator($request, $response, $this->sessionName);
@@ -180,14 +213,9 @@ class IoBindingModule extends BaseObject implements BindingModule
      */
     private function createResponse(WebRequest $request)
     {
-        $httpVersion = $request->getProtocolVersion();
-        if (null === $httpVersion) {
-            $request->cancel();
-        }
-
-        return ResponseCreator::createForVersion($httpVersion,
-                                                 $this->responseClass
-        );
+        $httpVersion   = $request->getProtocolVersion();
+        $responseClass = $this->responseClass;
+        return new $responseClass((null !== $httpVersion) ? ($httpVersion) : ('1.1'));
     }
 }
 ?>
