@@ -12,7 +12,7 @@ use net\stubbles\input\web\WebRequest;
 use net\stubbles\ioc\App;
 use net\stubbles\ioc\Injector;
 use net\stubbles\webapp\ioc\IoBindingModule;
-use net\stubbles\webapp\response\FormattingResponse;
+use net\stubbles\webapp\response\Response;
 use net\stubbles\webapp\response\ResponseNegotiator;
 /**
  * Abstract base class for web applications.
@@ -85,16 +85,14 @@ abstract class WebApp extends App
         $routing   = new Routing($calledUri);
         $this->configureRouting($routing);
         $response = $this->responseNegotiator->negotiate($this->request, $routing);
-        if (null === $response) {
-            return;
-        }
-
-        $route = $this->detectRoute($routing, $calledUri, $response);
-        if (null !== $route) {
-            if ($this->applyPreInterceptors($routing->getPreInterceptors(), $response)) {
-                $route->process($calledUri, $this->injector, $this->request, $response);
-                if (!$this->request->isCancelled()) {
-                    $this->applyPostInterceptors($routing->getPostInterceptors(), $response);
+        if (!$this->request->isCancelled()) {
+            $route = $this->detectRoute($routing, $calledUri, $response);
+            if (null !== $route) {
+                if ($this->applyPreInterceptors($routing->getPreInterceptors(), $response)) {
+                    $route->process($calledUri, $this->injector, $this->request, $response);
+                    if (!$this->request->isCancelled()) {
+                        $this->applyPostInterceptors($routing->getPostInterceptors(), $response);
+                    }
                 }
             }
         }
@@ -112,12 +110,12 @@ abstract class WebApp extends App
     /**
      * retrieves route
      *
-     * @param   Routing             $routing
-     * @param   UriRequest          $calledUri
-     * @param   FormattingResponse  $response
+     * @param   Routing     $routing
+     * @param   UriRequest  $calledUri
+     * @param   Response    $response
      * @return  Route
      */
-    private function detectRoute(Routing $routing, UriRequest $calledUri, FormattingResponse $response)
+    private function detectRoute(Routing $routing, UriRequest $calledUri, Response $response)
     {
         if (!$routing->canFindRoute()) {
             $allowedMethods = $routing->getAllowedMethods();
@@ -146,11 +144,11 @@ abstract class WebApp extends App
     /**
      * checks if request to given route is authorized
      *
-     * @param   Route               $route
-     * @param   FormattingResponse  $response
+     * @param   Route     $route
+     * @param   Response  $response
      * @return  bool
      */
-    private function isAuthorized(Route $route, FormattingResponse $response)
+    private function isAuthorized(Route $route, Response $response)
     {
         if (!$route->requiresRole()) {
             return true;
@@ -179,11 +177,11 @@ abstract class WebApp extends App
      *
      * Returns false if one of the pre interceptors cancels the request.
      *
-     * @param   string|Closure      $preInterceptors
-     * @param   FormattingResponse  $response
+     * @param   string|Closure  $preInterceptors
+     * @param   Response        $response
      * @return  bool
      */
-    private function applyPreInterceptors(array $preInterceptors, FormattingResponse $response)
+    private function applyPreInterceptors(array $preInterceptors, Response $response)
     {
         foreach ($preInterceptors as $interceptor) {
             if ($interceptor instanceof \Closure) {
@@ -206,10 +204,10 @@ abstract class WebApp extends App
     /**
      * apply post interceptors
      *
-     * @param   string|Closure      $postInterceptors
-     * @param   FormattingResponse  $response
+     * @param   string|Closure  $postInterceptors
+     * @param   Response        $response
      */
-    private function applyPostInterceptors(array $postInterceptors, FormattingResponse $response)
+    private function applyPostInterceptors(array $postInterceptors, Response $response)
     {
         foreach ($postInterceptors as $interceptor) {
             if ($interceptor instanceof \Closure) {

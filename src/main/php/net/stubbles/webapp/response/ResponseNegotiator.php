@@ -12,8 +12,6 @@ use net\stubbles\input\web\WebRequest;
 use net\stubbles\ioc\Injector;
 use net\stubbles\lang\BaseObject;
 use net\stubbles\webapp\Routing;
-use net\stubbles\webapp\response\Response;
-use net\stubbles\webapp\response\FormatterResponse;
 /**
  * Negotiates correct response for request.
  *
@@ -53,15 +51,15 @@ class ResponseNegotiator extends BaseObject
      *
      * @param   WebRequest  $request
      * @param   Routing     $routing
-     * @return  FormattingResponse
+     * @return  Response
      */
     public function negotiate(WebRequest $request, Routing $routing)
     {
         if (null === $request->getProtocolVersion()) {
             $this->response->setStatusCode(505)
-                           ->write('Unsupported HTTP protocol version, expected HTTP/1.0 or HTTP/1.1')
-                           ->send();
-            return null;
+                           ->write('Unsupported HTTP protocol version, expected HTTP/1.0 or HTTP/1.1');
+            $request->cancel();
+            return $this->response;
         }
 
         $mimeType = $routing->negotiateMimeType($request->readHeader('HTTP_ACCEPT')
@@ -71,22 +69,22 @@ class ResponseNegotiator extends BaseObject
             $this->response->setStatusCode(406)
                            ->addHeader('X-Acceptable',
                                        join(', ', $routing->getSupportedMimeTypes())
-                             )
-                           ->send();
-            return null;
+                             );
+            $request->cancel();
+            return $this->response;
         }
 
         $formatter = $this->createFormatter($mimeType);
         if (null === $formatter) {
             $this->response->setStatusCode(506)
-                           ->write('No formatter defined for negotiated content type ' . $mimeType)
-                           ->send();
-            return null;
+                           ->write('No formatter defined for negotiated content type ' . $mimeType);
+            $request->cancel();
+            return $this->response;
         }
 
-        return new FormatterResponse($this->response,
-                                     $formatter,
-                                     $mimeType
+        return new FormattingResponse($this->response,
+                                      $formatter,
+                                      $mimeType
         );
     }
 

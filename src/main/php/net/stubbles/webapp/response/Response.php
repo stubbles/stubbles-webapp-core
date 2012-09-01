@@ -82,6 +82,41 @@ interface Response extends Object
     public function redirect($url, $statusCode = 302);
 
     /**
+     * writes a Forbidden message into response body
+     *
+     * @return  Response
+     * @since   2.0.0
+     */
+    public function forbidden();
+
+    /**
+     * writes a Not Found message into response body
+     *
+     * @return  Response
+     * @since   2.0.0
+     */
+    public function notFound();
+
+    /**
+     * writes a Method Not Allowed message into response body
+     *
+     * @param   string    $requestMethod
+     * @param   string[]  $allowedMethods
+     * @return  Response
+     * @since   2.0.0
+     */
+    public function methodNotAllowed($requestMethod, array $allowedMethods);
+
+    /**
+     * writes an Internal Server Error message into response body
+     *
+     * @param   string  $errorMessage
+     * @return  Response
+     * @since   2.0.0
+     */
+    public function internalServerError($errorMessage);
+
+    /**
      * send the response out
      *
      * @return  Response

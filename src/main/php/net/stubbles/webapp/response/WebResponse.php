@@ -152,7 +152,7 @@ class WebResponse extends BaseObject implements Response
      */
     public function write($body)
     {
-        $this->body .= $body;
+        $this->body = $body;
         return $this;
     }
 
@@ -170,6 +170,59 @@ class WebResponse extends BaseObject implements Response
     {
         $this->addHeader('Location', (($uri instanceof HttpUri) ? ($uri->asStringWithNonDefaultPort()) : ($uri)));
         $this->setStatusCode($statusCode);
+        return $this;
+    }
+
+    /**
+     * writes a Forbidden message into response body
+     *
+     * @return  Response
+     * @since   2.0.0
+     */
+    public function forbidden()
+    {
+        $this->setStatusCode(403);
+        return $this;
+    }
+
+    /**
+     * writes a Not Found message into response body
+     *
+     * @return  Response
+     * @since   2.0.0
+     */
+    public function notFound()
+    {
+        $this->setStatusCode(404);
+        return $this;
+    }
+
+    /**
+     * writes a Method Not Allowed message into response body
+     *
+     * @param   string    $requestMethod
+     * @param   string[]  $allowedMethods
+     * @return  Response
+     * @since   2.0.0
+     */
+    public function methodNotAllowed($requestMethod, array $allowedMethods)
+    {
+        $this->setStatusCode(405)
+             ->addHeader('Allow', join(', ', $allowedMethods));
+        return $this;
+    }
+
+    /**
+     * writes an Internal Server Error message into response body
+     *
+     * @param   string  $errorMessage
+     * @return  Response
+     * @since   2.0.0
+     */
+    public function internalServerError($errorMessage)
+    {
+        $this->setStatusCode(500)
+             ->write($errorMessage);
         return $this;
     }
 

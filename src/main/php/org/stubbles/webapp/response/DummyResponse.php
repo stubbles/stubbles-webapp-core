@@ -102,6 +102,53 @@ class DummyResponse extends BaseObject implements Response
     }
 
     /**
+     * writes a Forbidden message into response body
+     *
+     * @return  Response
+     * @since   2.0.0
+     */
+    public function forbidden()
+    {
+        return $this;
+    }
+
+    /**
+     * writes a Not Found message into response body
+     *
+     * @return  Response
+     * @since   2.0.0
+     */
+    public function notFound()
+    {
+        return $this;
+    }
+
+    /**
+     * writes a Method Not Allowed message into response body
+     *
+     * @param   string    $requestMethod
+     * @param   string[]  $allowedMethods
+     * @return  Response
+     * @since   2.0.0
+     */
+    public function methodNotAllowed($requestMethod, array $allowedMethods)
+    {
+        return $this;
+    }
+
+    /**
+     * writes an Internal Server Error message into response body
+     *
+     * @param   string  $errorMessage
+     * @return  Response
+     * @since   2.0.0
+     */
+    public function internalServerError($errorMessage)
+    {
+        return $this;
+    }
+
+    /**
      * send the response out
      *
      * @return  Response

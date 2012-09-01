@@ -77,7 +77,7 @@ class ResponseNegotiatorTestCase extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function createWithUnsupportedProtocolSendsResponseWithStatusCode505()
+    public function createWithUnsupportedProtocolSetsStatusCode505()
     {
         $this->mockRequest->expects($this->once())
                           ->method('getProtocolVersion')
@@ -88,11 +88,12 @@ class ResponseNegotiatorTestCase extends \PHPUnit_Framework_TestCase
                            ->will($this->returnSelf());
         $this->mockResponse->expects($this->once())
                            ->method('write')
-                           ->with($this->equalTo('Unsupported HTTP protocol version, expected HTTP/1.0 or HTTP/1.1'))
-                           ->will($this->returnSelf());
-        $this->mockResponse->expects($this->once())
-                           ->method('send');
-        $this->assertNull($this->responseNegotiator->negotiate($this->mockRequest, $this->mockRouting));
+                           ->with($this->equalTo('Unsupported HTTP protocol version, expected HTTP/1.0 or HTTP/1.1'));
+        $this->mockRequest->expects($this->once())
+                          ->method('cancel');
+        $this->assertSame($this->mockResponse,
+                          $this->responseNegotiator->negotiate($this->mockRequest, $this->mockRouting)
+        );
     }
 
     /**
@@ -111,7 +112,7 @@ class ResponseNegotiatorTestCase extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function failedMimeTypeNegotiationForExistingRouteSendsResponseWithStatusCode406()
+    public function failedMimeTypeNegotiationForExistingRouteSetsStatusCode406()
     {
         $this->mockRequest->expects($this->once())
                           ->method('getProtocolVersion')
@@ -132,17 +133,18 @@ class ResponseNegotiatorTestCase extends \PHPUnit_Framework_TestCase
                            ->will($this->returnSelf());
         $this->mockResponse->expects($this->once())
                            ->method('addHeader')
-                           ->with($this->equalTo('X-Acceptable'), $this->equalTo('application/json, application/xml'))
-                           ->will($this->returnSelf());
-        $this->mockResponse->expects($this->once())
-                           ->method('send');
-        $this->assertNull($this->responseNegotiator->negotiate($this->mockRequest, $this->mockRouting));
+                           ->with($this->equalTo('X-Acceptable'), $this->equalTo('application/json, application/xml'));
+        $this->mockRequest->expects($this->once())
+                          ->method('cancel');
+        $this->assertSame($this->mockResponse,
+                          $this->responseNegotiator->negotiate($this->mockRequest, $this->mockRouting)
+        );
     }
 
     /**
      * @test
      */
-    public function missingFormatterForNegotiatedMimeTypeSendsResponseWithStatusCode506()
+    public function missingFormatterForNegotiatedMimeTypeSetsStatusCode506()
     {
         $this->mockRequest->expects($this->once())
                           ->method('getProtocolVersion')
@@ -163,11 +165,12 @@ class ResponseNegotiatorTestCase extends \PHPUnit_Framework_TestCase
                            ->will($this->returnSelf());
         $this->mockResponse->expects($this->once())
                            ->method('write')
-                           ->with($this->equalTo('No formatter defined for negotiated content type application/json'))
-                           ->will($this->returnSelf());
-        $this->mockResponse->expects($this->once())
-                           ->method('send');
-        $this->assertNull($this->responseNegotiator->negotiate($this->mockRequest, $this->mockRouting));
+                           ->with($this->equalTo('No formatter defined for negotiated content type application/json'));
+        $this->mockRequest->expects($this->once())
+                          ->method('cancel');
+        $this->assertSame($this->mockResponse,
+                          $this->responseNegotiator->negotiate($this->mockRequest, $this->mockRouting)
+        );
     }
 
     /**

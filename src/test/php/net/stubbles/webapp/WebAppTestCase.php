@@ -140,12 +140,6 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
      */
     private $mockRequest;
     /**
-     * mocked response negotiator
-     *
-     * @type  \PHPUnit_Framework_MockObject_MockObject
-     */
-    private $mockResponseNegotiator;
-    /**
      * mocked response instance
      *
      * @type  \PHPUnit_Framework_MockObject_MockObject
@@ -163,15 +157,18 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->mockRequest            = $this->getMock('net\stubbles\input\web\WebRequest');
-        $this->mockResponseNegotiator = $this->getMockBuilder('net\stubbles\webapp\response\ResponseNegotiator')
-                                             ->disableOriginalConstructor()
-                                             ->getMock();
-        $this->mockResponse           = $this->getMock('net\stubbles\webapp\response\FormattingResponse');
+        $this->mockRequest      = $this->getMock('net\stubbles\input\web\WebRequest');
+        $this->mockResponse     = $this->getMock('net\stubbles\webapp\response\Response');
+        $mockResponseNegotiator = $this->getMockBuilder('net\stubbles\webapp\response\ResponseNegotiator')
+                                       ->disableOriginalConstructor()
+                                       ->getMock();
+        $mockResponseNegotiator->expects($this->any())
+                               ->method('negotiate')
+                               ->will($this->returnValue($this->mockResponse));
         $this->mockInjector           = $this->getMockBuilder('net\stubbles\ioc\Injector')
                                              ->disableOriginalConstructor()
                                              ->getMock();
-        $this->webApp                 = new TestWebApp($this->mockRequest, $this->mockResponseNegotiator, $this->mockInjector);
+        $this->webApp                 = new TestWebApp($this->mockRequest, $mockResponseNegotiator, $this->mockInjector);
     }
 
     /**
@@ -236,9 +233,11 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
     public function doesNothingIfResponseNegotiationFails()
     {
         $this->mockRequestUri('http://example.net/hello');
-        $this->mockResponseNegotiator->expects($this->once())
-                                     ->method('negotiate')
-                                     ->will($this->returnValue(null));
+        $this->mockRequest->expects($this->once())
+                          ->method('isCancelled')
+                          ->will($this->returnValue(true));
+        $this->mockResponse->expects($this->once())
+                           ->method('send');
         $this->webApp->run();
     }
 
@@ -248,9 +247,9 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
     public function respondsWithError404IfNoRouteFound()
     {
         $this->mockRequestUri('http://example.net/notFound');
-        $this->mockResponseNegotiator->expects($this->once())
-                                     ->method('negotiate')
-                                     ->will($this->returnValue($this->mockResponse));
+        $this->mockRequest->expects($this->once())
+                          ->method('isCancelled')
+                          ->will($this->returnValue(false));
         $this->mockResponse->expects($this->once())
                            ->method('notFound');
         $this->mockResponse->expects($this->once())
@@ -264,9 +263,9 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
     public function respondsWithError405IfPathNotApplicableForGivenRequestMethod()
     {
         $this->mockRequestUri('http://example.net/update');
-        $this->mockResponseNegotiator->expects($this->once())
-                                     ->method('negotiate')
-                                     ->will($this->returnValue($this->mockResponse));
+        $this->mockRequest->expects($this->once())
+                          ->method('isCancelled')
+                          ->will($this->returnValue(false));
         $this->mockResponse->expects($this->once())
                            ->method('methodNotAllowed')
                            ->with($this->equalTo('GET'), $this->equalTo(array('POST', 'PUT')));
@@ -281,9 +280,9 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
     public function respondsWithRedirectHttpsUriIfRequiresHttps()
     {
         $this->mockRequestUri('http://example.net/admin');
-        $this->mockResponseNegotiator->expects($this->once())
-                                     ->method('negotiate')
-                                     ->will($this->returnValue($this->mockResponse));
+        $this->mockRequest->expects($this->once())
+                          ->method('isCancelled')
+                          ->will($this->returnValue(false));
         $this->mockResponse->expects($this->once())
                            ->method('redirect')
                            ->with($this->equalTo('https://example.net/admin'));
@@ -298,9 +297,9 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
     public function respondsWithError500IfPathRequiresAuthButNoAuthHandlerSet()
     {
         $this->mockRequestUri('https://example.net/admin');
-        $this->mockResponseNegotiator->expects($this->once())
-                                     ->method('negotiate')
-                                     ->will($this->returnValue($this->mockResponse));
+        $this->mockRequest->expects($this->once())
+                          ->method('isCancelled')
+                          ->will($this->returnValue(false));
         $this->mockResponse->expects($this->once())
                            ->method('internalServerError')
                            ->with($this->equalTo('Requested route requires authorization, but no auth handler defined for application'));
@@ -315,9 +314,9 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
     public function respondsWithRedirectToLoginUriIfRequiresAuthAndNoUserLoggedIn()
     {
         $this->mockRequestUri('https://example.net/admin');
-        $this->mockResponseNegotiator->expects($this->once())
-                                     ->method('negotiate')
-                                     ->will($this->returnValue($this->mockResponse));
+        $this->mockRequest->expects($this->once())
+                          ->method('isCancelled')
+                          ->will($this->returnValue(false));
         $mockAuthHandler = $this->getMock('net\stubbles\webapp\AuthHandler');
         $mockAuthHandler->expects($this->once())
                         ->method('isAuthorized')
@@ -344,9 +343,9 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
     public function respondsWithError403IfRequiresAuthAndUserHasNoSufficientRights()
     {
         $this->mockRequestUri('https://example.net/admin');
-        $this->mockResponseNegotiator->expects($this->once())
-                                     ->method('negotiate')
-                                     ->will($this->returnValue($this->mockResponse));
+        $this->mockRequest->expects($this->once())
+                          ->method('isCancelled')
+                          ->will($this->returnValue(false));
         $mockAuthHandler = $this->getMock('net\stubbles\webapp\AuthHandler');
         $mockAuthHandler->expects($this->any())
                         ->method('isAuthorized')
@@ -371,12 +370,9 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
     public function doesNotExecuteRouteAndPostInterceptorsIfPreInterceptorCancelsRequest()
     {
         $this->mockRequestUri('http://example.net/precancel');
-        $this->mockResponseNegotiator->expects($this->once())
-                                     ->method('negotiate')
-                                     ->will($this->returnValue($this->mockResponse));
-        $this->mockRequest->expects($this->exactly(3))
+        $this->mockRequest->expects($this->exactly(4))
                           ->method('isCancelled')
-                          ->will($this->onConsecutiveCalls(false, false, true));
+                          ->will($this->onConsecutiveCalls(false, false, false, true));
         $this->mockInjector->expects($this->once())
                            ->method('getInstance')
                            ->with($this->equalTo('some\PreInterceptor'))
@@ -400,12 +396,9 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
     public function doesNotExecutePostInterceptorsIfRouteCancelsRequest()
     {
         $this->mockRequestUri('http://example.net/cancel');
-        $this->mockResponseNegotiator->expects($this->once())
-                                     ->method('negotiate')
-                                     ->will($this->returnValue($this->mockResponse));
-        $this->mockRequest->expects($this->exactly(3))
+        $this->mockRequest->expects($this->exactly(4))
                           ->method('isCancelled')
-                          ->will($this->onConsecutiveCalls(false, false, true));
+                          ->will($this->onConsecutiveCalls(false, false, false, true));
         $this->mockInjector->expects($this->once())
                            ->method('getInstance')
                            ->with($this->equalTo('some\PreInterceptor'))
@@ -429,12 +422,9 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
     public function doesNotExecuteAllPostInterceptorsIfPostInterceptorCancelsRequest()
     {
         $this->mockRequestUri('http://example.net/postcancel');
-        $this->mockResponseNegotiator->expects($this->once())
-                                     ->method('negotiate')
-                                     ->will($this->returnValue($this->mockResponse));
-        $this->mockRequest->expects($this->exactly(4))
+        $this->mockRequest->expects($this->exactly(5))
                           ->method('isCancelled')
-                          ->will($this->onConsecutiveCalls(false, false, false, true));
+                          ->will($this->onConsecutiveCalls(false, false, false, false, true));
         $this->mockInjector->expects($this->once())
                            ->method('getInstance')
                            ->with($this->equalTo('some\PostInterceptor'))
@@ -460,10 +450,7 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
     public function doesExecuteEverythingIfRequestNotCancelled()
     {
         $this->mockRequestUri('http://example.net/hello');
-        $this->mockResponseNegotiator->expects($this->once())
-                                     ->method('negotiate')
-                                     ->will($this->returnValue($this->mockResponse));
-        $this->mockRequest->expects($this->exactly(5))
+        $this->mockRequest->expects($this->exactly(6))
                           ->method('isCancelled')
                           ->will($this->returnValue(false));
         $this->mockInjector->expects($this->once())

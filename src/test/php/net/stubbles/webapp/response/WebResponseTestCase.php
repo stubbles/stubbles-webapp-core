@@ -294,5 +294,63 @@ class WebResponseTestCase extends \PHPUnit_Framework_TestCase
     {
         $this->assertSame($this->response, $this->response->send());
     }
+
+    /**
+     * @since  2.0.0
+     * @test
+     */
+    public function forbiddenSetsStatusCodeTo403()
+    {
+        $this->response->expects($this->at(0))
+                       ->method('header')
+                       ->with($this->equalTo('HTTP/1.1 403 Forbidden'));
+        $this->response->forbidden()
+                       ->send();
+    }
+
+    /**
+     * @since  2.0.0
+     * @test
+     */
+    public function notFoundSetsStatusCodeTo404()
+    {
+        $this->response->expects($this->at(0))
+                       ->method('header')
+                       ->with($this->equalTo('HTTP/1.1 404 Not Found'));
+        $this->response->notFound()
+                       ->send();
+    }
+
+    /**
+     * @since  2.0.0
+     * @test
+     */
+    public function methodNotAllowedSetsStatusCodeTo405()
+    {
+        $this->response->expects($this->at(0))
+                       ->method('header')
+                       ->with($this->equalTo('HTTP/1.1 405 Method Not Allowed'));
+        $this->response->expects($this->at(1))
+                       ->method('header')
+                       ->with($this->equalTo('Allow: GET, HEAD'));
+        $this->response->methodNotAllowed('POST', array('GET', 'HEAD'))
+                       ->send();
+    }
+
+    /**
+     * @since  2.0.0
+     * @test
+     */
+    public function internalServerErrorSetsStatusCodeTo500()
+    {
+        $this->response->expects($this->at(0))
+                       ->method('header')
+                       ->with($this->equalTo('HTTP/1.1 500 Internal Server Error'));
+        $this->response->expects($this->once())
+                       ->method('sendBody')
+                       ->with($this->equalTo('ups!'));
+        $this->response->internalServerError('ups!')
+                       ->send();
+    }
 }
 ?>
