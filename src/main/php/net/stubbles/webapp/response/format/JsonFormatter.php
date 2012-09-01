@@ -56,7 +56,7 @@ class JsonFormatter extends BaseObject implements Formatter
      */
     public function formatMethodNotAllowedError($requestMethod, array $allowedMethods)
     {
-        return json_encode(array('error' => 'The given request method ' . strtoupper($requestMethod) . ' is not valid. Please use ' . join(', ', $allowedMethods) . '.'));
+        return json_encode(array('error' => 'The given request method ' . strtoupper($requestMethod) . ' is not valid. Please use one of ' . join(', ', $allowedMethods) . '.'));
     }
 
     /**

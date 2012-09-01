@@ -137,7 +137,7 @@ class PlainTextFormatterTestCase extends \PHPUnit_Framework_TestCase
      */
     public function formatMethodNotAllowedError()
     {
-        $this->assertEquals('The given request method PUT is not valid. Please use one of GET, POST, DELETE.',
+        $this->assertEquals('The given request method PUT is not valid. Please use GET, POST, DELETE.',
                             $this->plainTextFormatter->formatMethodNotAllowedError('PUT', array('GET', 'POST', 'DELETE'))
         );
     }

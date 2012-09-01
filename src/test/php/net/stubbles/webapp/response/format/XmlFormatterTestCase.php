@@ -100,7 +100,7 @@ class XmlFormatterTestCase extends \PHPUnit_Framework_TestCase
     {
         $this->mockXmlSerializerFacade->expects($this->once())
                                       ->method('serializeToXml')
-                                      ->with($this->equalTo(array('error' => 'The given request method PUT is not valid. Please use GET, POST, DELETE.')))
+                                      ->with($this->equalTo(array('error' => 'The given request method PUT is not valid. Please use one of GET, POST, DELETE.')))
                                       ->will($this->returnValue('<xml/>'));
         $this->assertEquals('<xml/>',
                             $this->xmlFormatter->formatMethodNotAllowedError('put', array('GET', 'POST', 'DELETE'))

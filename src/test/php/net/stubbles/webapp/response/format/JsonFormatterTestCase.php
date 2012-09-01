@@ -67,7 +67,7 @@ class JsonFormatterTestCase extends \PHPUnit_Framework_TestCase
      */
     public function formatMethodNotAllowedError()
     {
-        $this->assertEquals(json_encode(array('error' => 'The given request method PUT is not valid. Please use GET, POST, DELETE.')),
+        $this->assertEquals(json_encode(array('error' => 'The given request method PUT is not valid. Please use one of GET, POST, DELETE.')),
                             $this->jsonFormatter->formatMethodNotAllowedError('PUT', array('GET', 'POST', 'DELETE'))
         );
     }
