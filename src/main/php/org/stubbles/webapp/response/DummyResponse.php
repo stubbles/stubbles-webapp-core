@@ -181,5 +181,16 @@ class DummyResponse extends BaseObject implements Response
     {
         return $this;
     }
+
+    /**
+     * sends head only
+     *
+     * @return  Response
+     * @since   2.0.0
+     */
+    public function sendHead()
+    {
+        return $this;
+    }
 }
 ?>

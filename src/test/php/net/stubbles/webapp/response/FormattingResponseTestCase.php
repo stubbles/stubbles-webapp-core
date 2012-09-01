@@ -281,5 +281,19 @@ class FormattingResponseTestCase extends \PHPUnit_Framework_TestCase
                           $this->formattingResponse->send()
         );
     }
+
+    /**
+     * @test
+     */
+    public function sendsHeadOfDecoratedResponse()
+    {
+        $this->decoratedResponse->expects($this->once())
+                                ->method('sendHead');
+        $this->decoratedResponse->expects($this->never())
+                                ->method('send');
+        $this->assertSame($this->formattingResponse,
+                          $this->formattingResponse->sendHead()
+        );
+    }
 }
 ?>

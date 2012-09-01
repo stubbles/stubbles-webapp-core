@@ -263,6 +263,22 @@ class WebResponse extends BaseObject implements Response
      */
     public function send()
     {
+        $this->sendHead();
+        if (null != $this->body) {
+            $this->sendBody($this->body);
+        }
+
+        return $this;
+    }
+
+    /**
+     * sends head only
+     *
+     * @return  Response
+     * @since   2.0.0
+     */
+    public function sendHead()
+    {
         if ('cgi' === $this->sapi) {
             $this->header('Status: ' . $this->statusCode . ' ' . $this->reasonPhrase);
         } else {
@@ -279,7 +295,6 @@ class WebResponse extends BaseObject implements Response
 
         if (null != $this->body) {
             $this->header('Content-Length: ' . strlen($this->body));
-            $this->sendBody($this->body);
         }
 
         return $this;

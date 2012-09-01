@@ -217,5 +217,17 @@ class FormattingResponse extends BaseObject
         $this->response->send();
         return $this;
     }
+
+    /**
+     * sends head only
+     *
+     * @return  Response
+     * @since   2.0.0
+     */
+    public function sendHead()
+    {
+        $this->response->sendHead();
+        return $this;
+    }
 }
 ?>

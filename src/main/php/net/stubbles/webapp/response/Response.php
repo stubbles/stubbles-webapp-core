@@ -139,5 +139,13 @@ interface Response extends Object
      * @return  Response
      */
     public function send();
+
+    /**
+     * sends head only
+     *
+     * @return  Response
+     * @since   2.0.0
+     */
+    public function sendHead();
 }
 ?>

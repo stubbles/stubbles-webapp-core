@@ -397,5 +397,22 @@ class WebResponseTestCase extends \PHPUnit_Framework_TestCase
         $this->response->httpVersionNotSupported()
                        ->send();
     }
+
+    /**
+     * @since  2.0.0
+     * @test
+     */
+    public function sendHeadDoesNotSendBody()
+    {
+        $this->response->expects($this->at(0))
+                       ->method('header')
+                       ->with($this->equalTo('HTTP/1.1 200 OK'));
+        $this->response->expects($this->at(1))
+                       ->method('header')
+                       ->with($this->equalTo('Content-Length: 3'));
+        $this->response->expects($this->never())
+                       ->method('sendBody');
+        $this->response->write('foo')->sendHead();
+    }
 }
 ?>
