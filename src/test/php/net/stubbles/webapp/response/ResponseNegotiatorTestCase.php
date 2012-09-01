@@ -77,18 +77,13 @@ class ResponseNegotiatorTestCase extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function createWithUnsupportedProtocolSetsStatusCode505()
+    public function createWithUnsupportedProtocolRespondsWithHttpVersionNotSupported()
     {
         $this->mockRequest->expects($this->once())
                           ->method('getProtocolVersion')
                           ->will($this->returnValue(null));
         $this->mockResponse->expects($this->once())
-                           ->method('setStatusCode')
-                           ->with($this->equalTo(505))
-                           ->will($this->returnSelf());
-        $this->mockResponse->expects($this->once())
-                           ->method('write')
-                           ->with($this->equalTo('Unsupported HTTP protocol version, expected HTTP/1.0 or HTTP/1.1'));
+                           ->method('httpVersionNotSupported');
         $this->mockRequest->expects($this->once())
                           ->method('cancel');
         $this->assertSame($this->mockResponse,
@@ -112,7 +107,7 @@ class ResponseNegotiatorTestCase extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function failedMimeTypeNegotiationForExistingRouteSetsStatusCode406()
+    public function failedMimeTypeNegotiationForExistingRouteRespondsWithNotAcceptable()
     {
         $this->mockRequest->expects($this->once())
                           ->method('getProtocolVersion')
@@ -128,12 +123,8 @@ class ResponseNegotiatorTestCase extends \PHPUnit_Framework_TestCase
                           ->method('getSupportedMimeTypes')
                           ->will($this->returnValue(array('application/json', 'application/xml')));
         $this->mockResponse->expects($this->once())
-                           ->method('setStatusCode')
-                           ->with($this->equalTo(406))
-                           ->will($this->returnSelf());
-        $this->mockResponse->expects($this->once())
-                           ->method('addHeader')
-                           ->with($this->equalTo('X-Acceptable'), $this->equalTo('application/json, application/xml'));
+                           ->method('notAcceptable')
+                           ->with($this->equalTo(array('application/json', 'application/xml')));
         $this->mockRequest->expects($this->once())
                           ->method('cancel');
         $this->assertSame($this->mockResponse,
@@ -144,7 +135,7 @@ class ResponseNegotiatorTestCase extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function missingFormatterForNegotiatedMimeTypeSetsStatusCode506()
+    public function missingFormatterForNegotiatedMimeTypeRespondsWithInternalServerError()
     {
         $this->mockRequest->expects($this->once())
                           ->method('getProtocolVersion')
@@ -160,11 +151,7 @@ class ResponseNegotiatorTestCase extends \PHPUnit_Framework_TestCase
                              )
                            ->will($this->returnValue(false));
         $this->mockResponse->expects($this->once())
-                           ->method('setStatusCode')
-                           ->with($this->equalTo(506))
-                           ->will($this->returnSelf());
-        $this->mockResponse->expects($this->once())
-                           ->method('write')
+                           ->method('internalServerError')
                            ->with($this->equalTo('No formatter defined for negotiated content type application/json'));
         $this->mockRequest->expects($this->once())
                           ->method('cancel');

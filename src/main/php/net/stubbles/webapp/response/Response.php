@@ -108,6 +108,15 @@ interface Response extends Object
     public function methodNotAllowed($requestMethod, array $allowedMethods);
 
     /**
+     * creates a 406 Not Acceptable message
+     *
+     * @param   string[]  $supportedMimeTypes  list of supported mime types
+     * @return  Response
+     * @since   2.0.0
+     */
+    public function notAcceptable(array $supportedMimeTypes = array());
+
+    /**
      * creates a 500 Internal Server Error message
      *
      * @param   string  $errorMessage
@@ -115,6 +124,14 @@ interface Response extends Object
      * @since   2.0.0
      */
     public function internalServerError($errorMessage);
+
+    /**
+     * creates a 505 HTTP Version Not Supported message
+     *
+     * @return  Response
+     * @since   2.0.0
+     */
+    public function httpVersionNotSupported();
 
     /**
      * send the response out

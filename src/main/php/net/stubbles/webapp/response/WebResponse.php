@@ -213,6 +213,23 @@ class WebResponse extends BaseObject implements Response
     }
 
     /**
+     * creates a 406 Not Acceptable message
+     *
+     * @param   string[]  $supportedMimeTypes  list of supported mime types
+     * @return  Response
+     * @since   2.0.0
+     */
+    public function notAcceptable(array $supportedMimeTypes = array())
+    {
+        $this->setStatusCode(406);
+        if (count($supportedMimeTypes) > 0) {
+            $this->addHeader('X-Acceptable', join(', ', $supportedMimeTypes));
+        }
+
+        return $this;
+    }
+
+    /**
      * creates a 500 Internal Server Error message
      *
      * @param   string  $errorMessage
@@ -223,6 +240,19 @@ class WebResponse extends BaseObject implements Response
     {
         $this->setStatusCode(500)
              ->write($errorMessage);
+        return $this;
+    }
+
+    /**
+     * creates a 505 HTTP Version Not Supported message
+     *
+     * @return  Response
+     * @since   2.0.0
+     */
+    public function httpVersionNotSupported()
+    {
+        $this->setStatusCode(505)
+             ->write('Unsupported HTTP protocol version, expected HTTP/1.0 or HTTP/1.1');
         return $this;
     }
 

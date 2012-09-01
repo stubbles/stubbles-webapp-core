@@ -232,6 +232,19 @@ class FormattingResponseTestCase extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function notAcceptablePassesToDecoratedResponse()
+    {
+        $this->decoratedResponse->expects($this->once())
+                                ->method('notAcceptable')
+                                ->with($this->equalTo(array('application/json', 'application/xml')));
+        $this->assertSame($this->formattingResponse,
+                          $this->formattingResponse->notAcceptable(array('application/json', 'application/xml'))
+        );
+    }
+
+    /**
+     * @test
+     */
     public function internalServerErrorUsesFormatterOnDecoratedResponse()
     {
         $this->mockFormatter->expects($this->once())
@@ -243,6 +256,18 @@ class FormattingResponseTestCase extends \PHPUnit_Framework_TestCase
                                 ->with($this->equalTo('Something wrent wrong: Ups!'));
         $this->assertSame($this->formattingResponse,
                           $this->formattingResponse->internalServerError('Ups!')
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function httpVersionNotSupportedPassesToDecoratedResponse()
+    {
+        $this->decoratedResponse->expects($this->once())
+                                ->method('httpVersionNotSupported');
+        $this->assertSame($this->formattingResponse,
+                          $this->formattingResponse->httpVersionNotSupported()
         );
     }
 

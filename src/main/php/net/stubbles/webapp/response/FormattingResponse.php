@@ -179,6 +179,19 @@ class FormattingResponse extends BaseObject
     }
 
     /**
+     * creates a 406 Not Acceptable message
+     *
+     * @param   string[]  $supportedMimeTypes  list of supported mime types
+     * @return  Response
+     * @since   2.0.0
+     */
+    public function notAcceptable(array $supportedMimeTypes = array())
+    {
+        $this->response->notAcceptable($supportedMimeTypes);
+        return $this;
+    }
+
+    /**
      * creates a 500 Internal Server Error message
      *
      * @param   string  $errorMessage
@@ -187,6 +200,18 @@ class FormattingResponse extends BaseObject
     public function internalServerError($errorMessage)
     {
         $this->response->internalServerError($this->formatter->formatInternalServerError($errorMessage));
+        return $this;
+    }
+
+    /**
+     * creates a 505 HTTP Version Not Supported message
+     *
+     * @return  Response
+     * @since   2.0.0
+     */
+    public function httpVersionNotSupported()
+    {
+        $this->response->httpVersionNotSupported();
         return $this;
     }
 

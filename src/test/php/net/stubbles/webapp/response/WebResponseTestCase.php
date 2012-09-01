@@ -341,6 +341,35 @@ class WebResponseTestCase extends \PHPUnit_Framework_TestCase
      * @since  2.0.0
      * @test
      */
+    public function notAcceptableSetsStatusCodeTo406()
+    {
+        $this->response->expects($this->at(0))
+                       ->method('header')
+                       ->with($this->equalTo('HTTP/1.1 406 Not Acceptable'));
+        $this->response->notAcceptable()
+                       ->send();
+    }
+
+    /**
+     * @since  2.0.0
+     * @test
+     */
+    public function notAcceptableWithSupportedMimeTypesSetsStatusCodeTo406()
+    {
+        $this->response->expects($this->at(0))
+                       ->method('header')
+                       ->with($this->equalTo('HTTP/1.1 406 Not Acceptable'));
+        $this->response->expects($this->at(1))
+                       ->method('header')
+                       ->with($this->equalTo('X-Acceptable: application/json, application/xml'));
+        $this->response->notAcceptable(array('application/json', 'application/xml'))
+                       ->send();
+    }
+
+    /**
+     * @since  2.0.0
+     * @test
+     */
     public function internalServerErrorSetsStatusCodeTo500()
     {
         $this->response->expects($this->at(0))
@@ -350,6 +379,22 @@ class WebResponseTestCase extends \PHPUnit_Framework_TestCase
                        ->method('sendBody')
                        ->with($this->equalTo('ups!'));
         $this->response->internalServerError('ups!')
+                       ->send();
+    }
+
+    /**
+     * @since  2.0.0
+     * @test
+     */
+    public function httpVersionNotSupportedSetsStatusCodeTo505()
+    {
+        $this->response->expects($this->at(0))
+                       ->method('header')
+                       ->with($this->equalTo('HTTP/1.1 505 HTTP Version Not Supported'));
+        $this->response->expects($this->once())
+                       ->method('sendBody')
+                       ->with($this->equalTo('Unsupported HTTP protocol version, expected HTTP/1.0 or HTTP/1.1'));
+        $this->response->httpVersionNotSupported()
                        ->send();
     }
 }

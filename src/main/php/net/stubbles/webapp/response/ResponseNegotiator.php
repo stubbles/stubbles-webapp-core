@@ -56,8 +56,7 @@ class ResponseNegotiator extends BaseObject
     public function negotiate(WebRequest $request, Routing $routing)
     {
         if (null === $request->getProtocolVersion()) {
-            $this->response->setStatusCode(505)
-                           ->write('Unsupported HTTP protocol version, expected HTTP/1.0 or HTTP/1.1');
+            $this->response->httpVersionNotSupported();
             $request->cancel();
             return $this->response;
         }
@@ -66,18 +65,14 @@ class ResponseNegotiator extends BaseObject
                                                         ->applyFilter(new \net\stubbles\input\filter\AcceptFilter())
                         );
         if (null === $mimeType && $routing->canFindRouteWithAnyMethod()) {
-            $this->response->setStatusCode(406)
-                           ->addHeader('X-Acceptable',
-                                       join(', ', $routing->getSupportedMimeTypes())
-                             );
+            $this->response->notAcceptable($routing->getSupportedMimeTypes());
             $request->cancel();
             return $this->response;
         }
 
         $formatter = $this->createFormatter($mimeType);
         if (null === $formatter) {
-            $this->response->setStatusCode(506)
-                           ->write('No formatter defined for negotiated content type ' . $mimeType);
+            $this->response->internalServerError('No formatter defined for negotiated content type ' . $mimeType);
             $request->cancel();
             return $this->response;
         }

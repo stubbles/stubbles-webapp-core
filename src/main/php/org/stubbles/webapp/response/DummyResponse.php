@@ -102,7 +102,7 @@ class DummyResponse extends BaseObject implements Response
     }
 
     /**
-     * writes a Forbidden message into response body
+     * creates a 403 Forbidden message
      *
      * @return  Response
      * @since   2.0.0
@@ -113,7 +113,7 @@ class DummyResponse extends BaseObject implements Response
     }
 
     /**
-     * writes a Not Found message into response body
+     * creates a 404 Not Found message
      *
      * @return  Response
      * @since   2.0.0
@@ -124,7 +124,7 @@ class DummyResponse extends BaseObject implements Response
     }
 
     /**
-     * writes a Method Not Allowed message into response body
+     * creates a 405 Method Not Allowed message
      *
      * @param   string    $requestMethod
      * @param   string[]  $allowedMethods
@@ -137,13 +137,37 @@ class DummyResponse extends BaseObject implements Response
     }
 
     /**
-     * writes an Internal Server Error message into response body
+     * creates a 406 Not Acceptable message
+     *
+     * @param   string[]  $supportedMimeTypes  list of supported mime types
+     * @return  Response
+     * @since   2.0.0
+     */
+    public function notAcceptable(array $supportedMimeTypes = array())
+    {
+        $this->response->notAcceptable($supportedMimeTypes);
+        return $this;
+    }
+
+    /**
+     * creates a 500 Internal Server Error
      *
      * @param   string  $errorMessage
      * @return  Response
      * @since   2.0.0
      */
     public function internalServerError($errorMessage)
+    {
+        return $this;
+    }
+
+    /**
+     * creates a 505 HTTP Version Not Supported message
+     *
+     * @return  Response
+     * @since   2.0.0
+     */
+    public function httpVersionNotSupported()
     {
         return $this;
     }
