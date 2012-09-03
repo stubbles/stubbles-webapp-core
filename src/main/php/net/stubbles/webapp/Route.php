@@ -8,12 +8,8 @@
  * @package  net\stubbles\webapp
  */
 namespace net\stubbles\webapp;
-use net\stubbles\input\web\WebRequest;
-use net\stubbles\ioc\Injector;
 use net\stubbles\lang\BaseObject;
 use net\stubbles\lang\exception\IllegalArgumentException;
-use net\stubbles\lang\exception\RuntimeException;
-use net\stubbles\webapp\response\Response;
 /**
  * Represents information about a route that can be called.
  *
@@ -136,35 +132,27 @@ class Route extends BaseObject implements ConfigurableRoute
     }
 
     /**
-     * creates processor instance
+     * returns uri path for this route on given request uri
      *
-     * @param   UriRequest  $calledUri  current request uri
-     * @param   Injector    $injector
-     * @param   WebRequest  $request    current request
-     * @param   Response    $response   response to send
-     * @throws  RuntimeException
+     * @param   UriRequest  $calledUri
+     * @return  UriPath
      */
-    public function process(UriRequest $calledUri, Injector $injector, WebRequest $request, Response $response)
+    public function getUriPath(UriRequest $calledUri)
     {
-        $uriPath = new UriPath($this->path,
-                               $calledUri->getPathArguments($this->path),
-                               $calledUri->getRemainingPath($this->path)
-                   );
-        if ($this->callback instanceof \Closure) {
-            $callback = $this->callback;
-            $callback($request, $response, $uriPath);
-        } elseif (is_callable($this->callback)) {
-            call_user_func_array($this->callback, array($request, $response, $uriPath));
-        } elseif ($this->callback instanceof Processor) {
-            $this->callback->process($request, $response, $uriPath);
-        } else {
-            $processor = $injector->getInstance($this->callback);
-            if (!($processor instanceof Processor)) {
-                throw new RuntimeException('Configured callback class ' . $this->callback . ' for route ' . $this->path . ' is not an instance of net\stubbles\webapp\Processor');
-            }
+        return new UriPath($this->path,
+                           $calledUri->getPathArguments($this->path),
+                           $calledUri->getRemainingPath($this->path)
+        );
+    }
 
-            $processor->process($request, $response, $uriPath);
-        }
+    /**
+     * returns callback for this route
+     *
+     * @return  string|callable|Processor
+     */
+    public function getCallback()
+    {
+        return $this->callback;
     }
 
     /**
@@ -176,9 +164,9 @@ class Route extends BaseObject implements ConfigurableRoute
      */
     public function preIntercept($preInterceptor)
     {
-     #   if (!is_callable($preInterceptor) && !($preInterceptor instanceof interceptor\PreInterceptor) && !class_exists($preInterceptor)) {
-     #       throw new IllegalArgumentException('Given pre interceptor must be a callable, an instance of net\stubbles\webapp\interceptor\PreInterceptor or a class name of an existing pre interceptor class');
-     #   }
+    #    if (!is_callable($preInterceptor) && !($preInterceptor instanceof interceptor\PreInterceptor) && !class_exists($preInterceptor)) {
+    #        throw new IllegalArgumentException('Given pre interceptor must be a callable, an instance of net\stubbles\webapp\interceptor\PreInterceptor or a class name of an existing pre interceptor class');
+    #    }
 
         $this->preInterceptors[] = $preInterceptor;
         return $this;
@@ -203,9 +191,9 @@ class Route extends BaseObject implements ConfigurableRoute
      */
     public function postIntercept($postInterceptor)
     {
-     #   if (!is_callable($postInterceptor) && !($postInterceptor instanceof interceptor\PostInterceptor) && !class_exists($postInterceptor)) {
-     #       throw new IllegalArgumentException('Given pre interceptor must be a callable, an instance of net\stubbles\webapp\interceptor\PostInterceptor or a class name of an existing post interceptor class');
-     #   }
+    #    if (!is_callable($postInterceptor) && !($postInterceptor instanceof interceptor\PostInterceptor) && !class_exists($postInterceptor)) {
+    #        throw new IllegalArgumentException('Given pre interceptor must be a callable, an instance of net\stubbles\webapp\interceptor\PostInterceptor or a class name of an existing post interceptor class');
+    #    }
 
         $this->postInterceptors[] = $postInterceptor;
         return $this;

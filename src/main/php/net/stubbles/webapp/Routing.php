@@ -8,12 +8,11 @@
  * @package  net\stubbles\webapp
  */
 namespace net\stubbles\webapp;
-use net\stubbles\input\web\WebRequest;
 use net\stubbles\lang\BaseObject;
 use net\stubbles\lang\exception\IllegalArgumentException;
 use net\stubbles\peer\http\AcceptHeader;
-use net\stubbles\webapp\interceptor\InterceptorHandler;
-use net\stubbles\webapp\response\Response;
+use net\stubbles\webapp\interceptor\PreInterceptor;
+use net\stubbles\webapp\interceptor\PostInterceptor;
 /**
  * Contains routing information and decides which route is applicable for given request.
  *
@@ -28,12 +27,6 @@ class Routing extends BaseObject implements RoutingConfigurator
      */
     private $calledUri;
     /**
-     * handler to call interceptors
-     *
-     * @type  InterceptorHandler
-     */
-    private $interceptorHandler;
-    /**
      * list of routes for the web app
      *
      * @type  Route[]
@@ -45,6 +38,12 @@ class Routing extends BaseObject implements RoutingConfigurator
      * @type  Route
      */
     private $selectedRoute;
+    /**
+     * selected route
+     *
+     * @type  ProcessableRoute
+     */
+    private $processableRoute;
     /**
      * list of global pre interceptors and to which request method they respond
      *
@@ -67,13 +66,11 @@ class Routing extends BaseObject implements RoutingConfigurator
     /**
      * constructor
      *
-     * @param  UriRequest          $calledUri
-     * @param  InterceptorHandler  $interceptorHandler
+     * @param  UriRequest  $calledUri
      */
-    public function __construct(UriRequest $calledUri, InterceptorHandler $interceptorHandler)
+    public function __construct(UriRequest $calledUri)
     {
-        $this->calledUri          = $calledUri;
-        $this->interceptorHandler = $interceptorHandler;
+        $this->calledUri = $calledUri;
     }
 
     /**
@@ -192,14 +189,36 @@ class Routing extends BaseObject implements RoutingConfigurator
     /**
      * returns route qhich is applicable for given request
      *
-     * @return  Route
+     * @return  ProcessableRoute
      */
     public function findRoute()
+    {
+        if (null === $this->processableRoute) {
+            $route = $this->findRouteConfig();
+            if (null !== $route) {
+                $this->processableRoute = new ProcessableRoute($route,
+                                                               $this->calledUri,
+                                                               $this->getPreInterceptors($route),
+                                                               $this->getPostInterceptors($route)
+                                          );
+            }
+        }
+
+        return $this->processableRoute;
+    }
+
+    /**
+     * finds route based on called uri
+     *
+     * @return  Route
+     */
+    private function findRouteConfig()
     {
         if (null === $this->selectedRoute) {
             foreach ($this->routes as $route) {
                 if ($route->matches($this->calledUri)) {
-                    $this->selectedRoute = $route;
+                    $this->selectedRoute    = $route;
+                    return $this->selectedRoute;
                 }
             }
         }
@@ -265,14 +284,14 @@ class Routing extends BaseObject implements RoutingConfigurator
     /**
      * pre intercept with given class or callable on all requests
      *
-     * @param   string|Closure  $preInterceptor  pre interceptor to add
-     * @param   string          $requestMethod   request method for which interceptor should be executed
+     * @param   string|callable|PreInterceptor  $preInterceptor  pre interceptor to add
+     * @param   string                          $requestMethod   request method for which interceptor should be executed
      * @return  RoutingConfigurator
      * @throws  IllegalArgumentException
      */
     public function preIntercept($preInterceptor, $requestMethod = null)
     {
-        if (!is_callable($preInterceptor) && !($preInterceptor instanceof interceptor\PreInterceptor) && !class_exists($preInterceptor)) {
+        if (!is_callable($preInterceptor) && !($preInterceptor instanceof PreInterceptor) && !class_exists($preInterceptor)) {
             throw new IllegalArgumentException('Given pre interceptor must be a callable, an instance of net\stubbles\webapp\interceptor\PreInterceptor or a class name of an existing pre interceptor class');
         }
 
@@ -340,14 +359,14 @@ class Routing extends BaseObject implements RoutingConfigurator
     /**
      * post intercept with given class or callable on all requests
      *
-     * @param   string|Closure  $postInterceptor  post interceptor to add
-     * @param   string          $requestMethod    request method for which interceptor should be executed
+     * @param   string|callable|PostInterceptor  $postInterceptor  post interceptor to add
+     * @param   string                           $requestMethod    request method for which interceptor should be executed
      * @return  RoutingConfigurator
      * @throws  IllegalArgumentException
      */
     public function postIntercept($postInterceptor, $requestMethod = null)
     {
-        if (!is_callable($postInterceptor) && !($postInterceptor instanceof interceptor\PostInterceptor) && !class_exists($postInterceptor)) {
+        if (!is_callable($postInterceptor) && !($postInterceptor instanceof PostInterceptor) && !class_exists($postInterceptor)) {
             throw new IllegalArgumentException('Given pre interceptor must be a callable, an instance of net\stubbles\webapp\interceptor\PostInterceptor or a class name of an existing post interceptor class');
         }
 
@@ -360,24 +379,12 @@ class Routing extends BaseObject implements RoutingConfigurator
     /**
      * returns list of applicable pre interceptors for this request
      *
-     * @param   WebRequest      $request
-     * @param   Response        $response
-     * @return  bool
+     * @param   Route  $route
+     * @return  array
      */
-    public function applyPreInterceptors(WebRequest $request, Response $response)
-    {
-        return $this->interceptorHandler->applyPreInterceptors($this->getPreInterceptors(), $request, $response);
-    }
-
-    /**
-     * returns list of applicable pre interceptors for this request
-     *
-     * @return  string|callable|PreInterceptor[]
-     */
-    private function getPreInterceptors()
+    private function getPreInterceptors(Route $route = null)
     {
         $global = $this->getApplicable($this->preInterceptors);
-        $route  = $this->findRoute();
         if (null === $route) {
             return $global;
         }
@@ -386,26 +393,14 @@ class Routing extends BaseObject implements RoutingConfigurator
     }
 
     /**
-     * returns list of applicable pre interceptors for this request
-     *
-     * @param   WebRequest      $request
-     * @param   Response        $response
-     * @return  bool
-     */
-    public function applyPostInterceptors(WebRequest $request, Response $response)
-    {
-        return $this->interceptorHandler->applyPostInterceptors($this->getPostInterceptors(), $request, $response);
-    }
-
-    /**
      * returns list of applicable post interceptors for this request
      *
-     * @return  string|callable|PostInterceptor[]
+     * @param   Route  $route
+     * @return  array
      */
-    private function getPostInterceptors()
+    private function getPostInterceptors(Route $route = null)
     {
         $global = $this->getApplicable($this->postInterceptors);
-        $route  = $this->findRoute();
         if (null === $route) {
             return $global;
         }
@@ -416,8 +411,8 @@ class Routing extends BaseObject implements RoutingConfigurator
     /**
      * calculates which interceptors are applicable for given request method
      *
-     * @param   string[]|Closure[]  $interceptors   list of pre/post interceptors to check
-     * @return  string[]|Closure[]
+     * @param   array[]  $interceptors   list of pre/post interceptors to check
+     * @return  array
      */
     private function getApplicable(array $interceptors)
     {
@@ -470,7 +465,7 @@ class Routing extends BaseObject implements RoutingConfigurator
      */
     public function getSupportedMimeTypes()
     {
-        $route = $this->findRoute();
+        $route = $this->findRouteConfig();
         if (null === $route) {
             return $this->mimeTypes;
         }

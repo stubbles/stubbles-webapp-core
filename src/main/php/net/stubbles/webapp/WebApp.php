@@ -81,17 +81,15 @@ abstract class WebApp extends App
      */
     public function run()
     {
-        $calledUri = new UriRequest($this->request->getUri(), $this->request->getMethod());
-        $routing   = new Routing($calledUri, new interceptor\InterceptorHandler($this->injector));
+        $routing   = new Routing(new UriRequest($this->request->getUri(), $this->request->getMethod()));
         $this->configureRouting($routing);
         $response = $this->responseNegotiator->negotiate($this->request, $routing);
         if (!$this->request->isCancelled()) {
-            $route = $this->detectRoute($routing, $calledUri, $response);
+            $route = $this->detectRoute($routing, $response);
             if (null !== $route) {
-                if ($routing->applyPreInterceptors($this->request, $response)) {
-                    $route->process($calledUri, $this->injector, $this->request, $response);
-                    if (!$this->request->isCancelled()) {
-                        $routing->applyPostInterceptors($this->request, $response);
+                if ($route->applyPreInterceptors($this->injector, $this->request, $response)) {
+                    if ($route->process($this->injector, $this->request, $response)) {
+                        $route->applyPostInterceptors($this->injector, $this->request, $response);
                     }
                 }
             }
@@ -115,11 +113,10 @@ abstract class WebApp extends App
      * retrieves route
      *
      * @param   Routing     $routing
-     * @param   UriRequest  $calledUri
      * @param   Response    $response
-     * @return  Route
+     * @return  ProcessableRoute
      */
-    private function detectRoute(Routing $routing, UriRequest $calledUri, Response $response)
+    private function detectRoute(Routing $routing, Response $response)
     {
         if (!$routing->canFindRoute()) {
             $allowedMethods = $routing->getAllowedMethods();
@@ -133,8 +130,8 @@ abstract class WebApp extends App
         }
 
         $route = $routing->findRoute();
-        if (!$calledUri->isHttps() && $route->requiresHttps()) {
-            $response->redirect($calledUri->toHttps());
+        if ($route->switchToHttps()) {
+            $response->redirect($route->getHttpsUri());
             return null;
         }
 
@@ -148,11 +145,11 @@ abstract class WebApp extends App
     /**
      * checks if request to given route is authorized
      *
-     * @param   Route     $route
-     * @param   Response  $response
+     * @param   ProcessableRoute  $route
+     * @param   Response          $response
      * @return  bool
      */
-    private function isAuthorized(Route $route, Response $response)
+    private function isAuthorized(ProcessableRoute $route, Response $response)
     {
         if (!$route->requiresRole()) {
             return true;
