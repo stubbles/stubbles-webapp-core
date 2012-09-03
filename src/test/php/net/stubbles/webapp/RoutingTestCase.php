@@ -23,13 +23,23 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
      * @type  Routing
      */
     private $routing;
+    /**
+     * mocked interceptor handler
+     * @type  \PHPUnit_Framework_MockObject_MockObject
+     */
+    private $mockInterceptorHandler;
 
     /**
      * set up test environment
      */
     public function setUp()
     {
-        $this->routing = new Routing(UriRequest::fromString('http://example.net/hello', 'GET'));
+        $this->mockInterceptorHandler = $this->getMockBuilder('net\stubbles\webapp\interceptor\InterceptorHandler')
+                                             ->disableOriginalConstructor()
+                                             ->getMock();
+        $this->routing                = new Routing(UriRequest::fromString('http://example.net/hello', 'GET'),
+                                                    $this->mockInterceptorHandler
+                                        );
     }
 
     /**
@@ -151,7 +161,25 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
      */
     public function hasNoGlobalPreInterceptorsByDefault()
     {
-        $this->assertEquals(array(), $this->routing->getPreInterceptors());
+        $mockRequest  = $this->getMock('net\stubbles\input\web\WebRequest');
+        $mockResponse = $this->getMock('net\stubbles\webapp\response\Response');
+        $this->mockInterceptorHandler->expects($this->once())
+                                     ->method('applyPreInterceptors')
+                                     ->with($this->equalTo(array()),
+                                            $this->equalTo($mockRequest),
+                                            $this->equalTo($mockResponse)
+                                       )
+                                     ->will($this->returnValue(true));
+        $this->assertTrue($this->routing->applyPreInterceptors($mockRequest, $mockResponse));
+    }
+
+    /**
+     * @test
+     * @expectedException  net\stubbles\lang\exception\IllegalArgumentException
+     */
+    public function addInvalidPreInterceptorThrowsIllegalArgumentException()
+    {
+        $this->routing->preIntercept(303);
     }
 
     /**
@@ -159,12 +187,22 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
      */
     public function hasNoGlobalPreInterceptorsForDifferentMethod()
     {
-        $this->assertEquals(array(),
-                            $this->routing->preInterceptOnHead('some\PreInterceptor')
-                                          ->preInterceptOnPost('some\PreInterceptor')
-                                          ->preInterceptOnPut('some\PreInterceptor')
-                                          ->preInterceptOnDelete('some\PreInterceptor')
-                                          ->getPreInterceptors());
+        $preInterceptor = function() {};
+        $mockRequest  = $this->getMock('net\stubbles\input\web\WebRequest');
+        $mockResponse = $this->getMock('net\stubbles\webapp\response\Response');
+        $this->mockInterceptorHandler->expects($this->once())
+                                     ->method('applyPreInterceptors')
+                                     ->with($this->equalTo(array()),
+                                            $this->equalTo($mockRequest),
+                                            $this->equalTo($mockResponse)
+                                       )
+                                     ->will($this->returnValue(true));
+        $this->assertTrue($this->routing->preInterceptOnHead($preInterceptor)
+                                        ->preInterceptOnPost($preInterceptor)
+                                        ->preInterceptOnPut($preInterceptor)
+                                        ->preInterceptOnDelete($preInterceptor)
+                                        ->applyPreInterceptors($mockRequest, $mockResponse)
+        );
     }
 
     /**
@@ -173,10 +211,19 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
     public function hasGlobalPreInterceptorsEvenWhenNoRouteSelected()
     {
         $preInterceptor = function() {};
-        $this->assertEquals(array('some\PreInterceptor', $preInterceptor),
-                            $this->routing->preIntercept('some\PreInterceptor')
-                                          ->preInterceptOnGet($preInterceptor)
-                                          ->getPreInterceptors());
+        $mockRequest  = $this->getMock('net\stubbles\input\web\WebRequest');
+        $mockResponse = $this->getMock('net\stubbles\webapp\response\Response');
+        $this->mockInterceptorHandler->expects($this->once())
+                                     ->method('applyPreInterceptors')
+                                     ->with($this->equalTo(array('array_map', $preInterceptor)),
+                                            $this->equalTo($mockRequest),
+                                            $this->equalTo($mockResponse)
+                                       )
+                                     ->will($this->returnValue(true));
+        $this->assertTrue($this->routing->preIntercept('array_map')
+                                        ->preInterceptOnGet($preInterceptor)
+                                        ->applyPreInterceptors($mockRequest, $mockResponse)
+        );
     }
 
     /**
@@ -185,11 +232,29 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
     public function hasGlobalPreInterceptorsEvenWhenRouteSelected()
     {
         $this->routing->onGet('/hello', function() {});
-        $preInterceptor = function() {};
-        $this->assertEquals(array('some\PreInterceptor', $preInterceptor),
-                            $this->routing->preIntercept('some\PreInterceptor')
-                                          ->preInterceptOnGet($preInterceptor)
-                                          ->getPreInterceptors());
+        $preInterceptor     = function() {};
+        $mockPreInterceptor = $this->getMock('net\stubbles\webapp\interceptor\PreInterceptor');
+        $mockPreFunction    = 'array_map';
+        $mockRequest  = $this->getMock('net\stubbles\input\web\WebRequest');
+        $mockResponse = $this->getMock('net\stubbles\webapp\response\Response');
+        $this->mockInterceptorHandler->expects($this->once())
+                                     ->method('applyPreInterceptors')
+                                     ->with($this->equalTo(array(get_class($mockPreInterceptor),
+                                                                 $preInterceptor,
+                                                                 $mockPreInterceptor,
+                                                                 $mockPreFunction
+                                                           )
+                                            ),
+                                            $this->equalTo($mockRequest),
+                                            $this->equalTo($mockResponse)
+                                       )
+                                     ->will($this->returnValue(true));
+        $this->assertTrue($this->routing->preIntercept(get_class($mockPreInterceptor))
+                                        ->preIntercept($preInterceptor)
+                                        ->preIntercept($mockPreInterceptor)
+                                        ->preIntercept($mockPreFunction)
+                                        ->applyPreInterceptors($mockRequest, $mockResponse)
+        );
     }
 
     /**
@@ -198,12 +263,23 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
     public function mergesGlobalAndRoutePreInterceptors()
     {
         $this->routing->onGet('/hello', function() {})
-                      ->preIntercept('other\PreInterceptor');
+                      ->preIntercept('array_map');
         $preInterceptor = function() {};
-        $this->assertEquals(array('some\PreInterceptor', $preInterceptor, 'other\PreInterceptor'),
-                            $this->routing->preIntercept('some\PreInterceptor')
-                                          ->preInterceptOnGet($preInterceptor)
-                                          ->getPreInterceptors());
+        $mockRequest  = $this->getMock('net\stubbles\input\web\WebRequest');
+        $mockResponse = $this->getMock('net\stubbles\webapp\response\Response');
+        $this->mockInterceptorHandler->expects($this->once())
+                                     ->method('applyPreInterceptors')
+                                     ->with($this->equalTo(array($preInterceptor,
+                                                                 'array_map'
+                                                           )
+                                            ),
+                                            $this->equalTo($mockRequest),
+                                            $this->equalTo($mockResponse)
+                                       )
+                                     ->will($this->returnValue(true));
+        $this->assertTrue($this->routing->preInterceptOnGet($preInterceptor)
+                                        ->applyPreInterceptors($mockRequest, $mockResponse)
+        );
     }
 
     /**
@@ -211,7 +287,25 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
      */
     public function hasNoGlobalPostInterceptorsByDefault()
     {
-        $this->assertEquals(array(), $this->routing->getPostInterceptors());
+        $mockRequest  = $this->getMock('net\stubbles\input\web\WebRequest');
+        $mockResponse = $this->getMock('net\stubbles\webapp\response\Response');
+        $this->mockInterceptorHandler->expects($this->once())
+                                     ->method('applyPostInterceptors')
+                                     ->with($this->equalTo(array()),
+                                            $this->equalTo($mockRequest),
+                                            $this->equalTo($mockResponse)
+                                       )
+                                     ->will($this->returnValue(true));
+        $this->assertTrue($this->routing->applyPostInterceptors($mockRequest, $mockResponse));
+    }
+
+    /**
+     * @test
+     * @expectedException  net\stubbles\lang\exception\IllegalArgumentException
+     */
+    public function addInvalidPostInterceptorThrowsIllegalArgumentException()
+    {
+        $this->routing->postIntercept(303);
     }
 
     /**
@@ -219,12 +313,22 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
      */
     public function hasNoGlobalPostInterceptorsForDifferentMethod()
     {
-        $this->assertEquals(array(),
-                            $this->routing->postInterceptOnHead('some\PostInterceptor')
-                                          ->postInterceptOnPost('some\PostInterceptor')
-                                          ->postInterceptOnPut('some\PostInterceptor')
-                                          ->postInterceptOnDelete('some\PostInterceptor')
-                                          ->getPostInterceptors());
+        $postInterceptor = function() {};
+        $mockRequest  = $this->getMock('net\stubbles\input\web\WebRequest');
+        $mockResponse = $this->getMock('net\stubbles\webapp\response\Response');
+        $this->mockInterceptorHandler->expects($this->once())
+                                     ->method('applyPostInterceptors')
+                                     ->with($this->equalTo(array()),
+                                            $this->equalTo($mockRequest),
+                                            $this->equalTo($mockResponse)
+                                       )
+                                     ->will($this->returnValue(true));
+        $this->assertTrue($this->routing->postInterceptOnHead($postInterceptor)
+                                        ->postInterceptOnPost($postInterceptor)
+                                        ->postInterceptOnPut($postInterceptor)
+                                        ->postInterceptOnDelete($postInterceptor)
+                                        ->applyPostInterceptors($mockRequest, $mockResponse)
+        );
     }
 
     /**
@@ -233,10 +337,19 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
     public function hasGlobalPostInterceptorsEvenWhenNoRouteSelected()
     {
         $postInterceptor = function() {};
-        $this->assertEquals(array('some\PostInterceptor', $postInterceptor),
-                            $this->routing->postIntercept('some\PostInterceptor')
-                                          ->postInterceptOnGet($postInterceptor)
-                                          ->getPostInterceptors());
+        $mockRequest  = $this->getMock('net\stubbles\input\web\WebRequest');
+        $mockResponse = $this->getMock('net\stubbles\webapp\response\Response');
+        $this->mockInterceptorHandler->expects($this->once())
+                                     ->method('applyPostInterceptors')
+                                     ->with($this->equalTo(array('array_map', $postInterceptor)),
+                                            $this->equalTo($mockRequest),
+                                            $this->equalTo($mockResponse)
+                                       )
+                                     ->will($this->returnValue(true));
+        $this->assertTrue($this->routing->postIntercept('array_map')
+                                        ->postInterceptOnGet($postInterceptor)
+                                        ->applyPostInterceptors($mockRequest, $mockResponse)
+        );
     }
 
     /**
@@ -245,11 +358,29 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
     public function hasGlobalPostInterceptorsEvenWhenRouteSelected()
     {
         $this->routing->onGet('/hello', function() {});
-        $postInterceptor = function() {};
-        $this->assertEquals(array('some\PostInterceptor', $postInterceptor),
-                            $this->routing->postIntercept('some\PostInterceptor')
-                                          ->postInterceptOnGet($postInterceptor)
-                                          ->getPostInterceptors());
+        $postInterceptor     = function() {};
+        $mockPostInterceptor = $this->getMock('net\stubbles\webapp\interceptor\PostInterceptor');
+        $mockPostFunction    = 'array_map';
+        $mockRequest  = $this->getMock('net\stubbles\input\web\WebRequest');
+        $mockResponse = $this->getMock('net\stubbles\webapp\response\Response');
+        $this->mockInterceptorHandler->expects($this->once())
+                                     ->method('applyPostInterceptors')
+                                     ->with($this->equalTo(array(get_class($mockPostInterceptor),
+                                                                 $postInterceptor,
+                                                                 $mockPostInterceptor,
+                                                                 $mockPostFunction
+                                                           )
+                                            ),
+                                            $this->equalTo($mockRequest),
+                                            $this->equalTo($mockResponse)
+                                       )
+                                     ->will($this->returnValue(true));
+        $this->assertTrue($this->routing->postIntercept(get_class($mockPostInterceptor))
+                                        ->postIntercept($postInterceptor)
+                                        ->postIntercept($mockPostInterceptor)
+                                        ->postIntercept($mockPostFunction)
+                                        ->applyPostInterceptors($mockRequest, $mockResponse)
+        );
     }
 
     /**
@@ -258,12 +389,20 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
     public function mergesGlobalAndRoutePostInterceptors()
     {
         $this->routing->onGet('/hello', function() {})
-                      ->postIntercept('other\PostInterceptor');
+                      ->postIntercept('array_map');
         $postInterceptor = function() {};
-        $this->assertEquals(array('other\PostInterceptor', 'some\PostInterceptor', $postInterceptor),
-                            $this->routing->postIntercept('some\PostInterceptor')
-                                          ->postInterceptOnGet($postInterceptor)
-                                          ->getPostInterceptors());
+        $mockRequest  = $this->getMock('net\stubbles\input\web\WebRequest');
+        $mockResponse = $this->getMock('net\stubbles\webapp\response\Response');
+        $this->mockInterceptorHandler->expects($this->once())
+                                     ->method('applyPostInterceptors')
+                                     ->with($this->equalTo(array('array_map', $postInterceptor)),
+                                            $this->equalTo($mockRequest),
+                                            $this->equalTo($mockResponse)
+                                       )
+                                     ->will($this->returnValue(true));
+        $this->assertTrue($this->routing->postInterceptOnGet($postInterceptor)
+                                        ->applyPostInterceptors($mockRequest, $mockResponse)
+        );
     }
 
     /**

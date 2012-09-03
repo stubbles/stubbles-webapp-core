@@ -233,6 +233,33 @@ class RouteTestCase extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function processCallsGivenProcessorInstance()
+    {
+        $mockRequest   = $this->getMock('net\stubbles\input\web\WebRequest');
+        $mockResponse  = $this->getMock('net\stubbles\webapp\response\Response');
+        $mockProcessor = $this->getMock('net\stubbles\webapp\Processor');
+        $mockProcessor->expects($this->once())
+                      ->method('process')
+                      ->with($this->equalTo($mockRequest),
+                             $this->equalTo($mockResponse),
+                             $this->equalTo(new UriPath('/hello/{name}', array('name' => 'world'), null))
+                        );
+        $mockInjector = $this->getMockBuilder('net\stubbles\ioc\Injector')
+                             ->disableOriginalConstructor()
+                             ->getMock();
+        $mockInjector->expects($this->never())
+                     ->method('getInstance');
+        $route = new Route('/hello/{name}', $mockProcessor, 'GET');
+        $route->process(UriRequest::fromString('http://example.com/hello/world', 'GET'),
+                        $mockInjector,
+                        $mockRequest,
+                        $mockResponse
+        );
+    }
+
+    /**
+     * @test
+     */
     public function hasNoPreInterceptorsByDefault()
     {
         $this->assertEquals(array(),
@@ -242,13 +269,31 @@ class RouteTestCase extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
+     * @expectedException  net\stubbles\lang\exception\IllegalArgumentException
+     */
+    public function addInvalidPreInterceptorThrowsIllegalArgumentException()
+    {
+        $this->markTestIncomplete('Finish further refactoring first');
+        $this->createRoute()->preIntercept(303);
+    }
+
+    /**
+     * @test
      */
     public function hasGivenListOfPreInterceptors()
     {
-        $preInterceptor = function() {};
-        $this->assertEquals(array('my\PreInterceptor', $preInterceptor),
-                            $this->createRoute()->preIntercept('my\PreInterceptor')
+        $preInterceptor     = function() {};
+        $mockPreInterceptor = $this->getMock('net\stubbles\webapp\interceptor\PreInterceptor');
+        $mockPreFunction    = 'array_map';
+        $this->assertEquals(array(get_class($mockPreInterceptor),
+                                  $preInterceptor,
+                                  $mockPreInterceptor,
+                                  $mockPreFunction
+                            ),
+                            $this->createRoute()->preIntercept(get_class($mockPreInterceptor))
                                                 ->preIntercept($preInterceptor)
+                                                ->preIntercept($mockPreInterceptor)
+                                                ->preIntercept($mockPreFunction)
                                                 ->getPreInterceptors()
         );
     }
@@ -265,13 +310,31 @@ class RouteTestCase extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
+     * @expectedException  net\stubbles\lang\exception\IllegalArgumentException
+     */
+    public function addInvalidPostInterceptorThrowsIllegalArgumentException()
+    {
+        $this->markTestIncomplete('Finish further refactoring first');
+        $this->createRoute()->postIntercept(303);
+    }
+
+    /**
+     * @test
      */
     public function hasGivenListOfPostInterceptors()
     {
-        $postInterceptor = function() {};
-        $this->assertEquals(array('my\PostInterceptor', $postInterceptor),
-                            $this->createRoute()->postIntercept('my\PostInterceptor')
+        $postInterceptor     = function() {};
+        $mockPostInterceptor = $this->getMock('net\stubbles\webapp\interceptor\PostInterceptor');
+        $mockPostFunction    = 'array_map';
+        $this->assertEquals(array(get_class($mockPostInterceptor),
+                                  $postInterceptor,
+                                  $mockPostInterceptor,
+                                  $mockPostFunction
+                            ),
+                            $this->createRoute()->postIntercept(get_class($mockPostInterceptor))
                                                 ->postIntercept($postInterceptor)
+                                                ->postIntercept($mockPostInterceptor)
+                                                ->postIntercept($mockPostFunction)
                                                 ->getPostInterceptors()
         );
     }

@@ -82,16 +82,16 @@ abstract class WebApp extends App
     public function run()
     {
         $calledUri = new UriRequest($this->request->getUri(), $this->request->getMethod());
-        $routing   = new Routing($calledUri);
+        $routing   = new Routing($calledUri, new interceptor\InterceptorHandler($this->injector));
         $this->configureRouting($routing);
         $response = $this->responseNegotiator->negotiate($this->request, $routing);
         if (!$this->request->isCancelled()) {
             $route = $this->detectRoute($routing, $calledUri, $response);
             if (null !== $route) {
-                if ($this->applyPreInterceptors($routing->getPreInterceptors(), $response)) {
+                if ($routing->applyPreInterceptors($this->request, $response)) {
                     $route->process($calledUri, $this->injector, $this->request, $response);
                     if (!$this->request->isCancelled()) {
-                        $this->applyPostInterceptors($routing->getPostInterceptors(), $response);
+                        $routing->applyPostInterceptors($this->request, $response);
                     }
                 }
             }
@@ -174,59 +174,6 @@ abstract class WebApp extends App
         }
 
         return false;
-    }
-
-    /**
-     * apply pre interceptors
-     *
-     * Returns false if one of the pre interceptors cancels the request.
-     *
-     * @param   string|Closure  $preInterceptors
-     * @param   Response        $response
-     * @return  bool
-     */
-    private function applyPreInterceptors(array $preInterceptors, Response $response)
-    {
-        foreach ($preInterceptors as $interceptor) {
-            if ($interceptor instanceof \Closure) {
-                $interceptor($this->request, $response);
-            } elseif (is_callable($interceptor)) {
-                call_user_func_array($interceptor, array($this->request, $response));
-            } else {
-                $this->injector->getInstance($interceptor)
-                               ->preProcess($this->request, $response);
-            }
-
-            if ($this->request->isCancelled()) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * apply post interceptors
-     *
-     * @param   string|Closure  $postInterceptors
-     * @param   Response        $response
-     */
-    private function applyPostInterceptors(array $postInterceptors, Response $response)
-    {
-        foreach ($postInterceptors as $interceptor) {
-            if ($interceptor instanceof \Closure) {
-                $interceptor($this->request, $response);
-            } elseif (is_callable($interceptor)) {
-                call_user_func_array($interceptor, array($this->request, $response));
-            } else {
-                $this->injector->getInstance($interceptor)
-                               ->postProcess($this->request, $response);
-            }
-
-            if ($this->request->isCancelled()) {
-                return;
-            }
-        }
     }
 
     /**

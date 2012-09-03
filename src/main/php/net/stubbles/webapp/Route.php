@@ -75,15 +75,15 @@ class Route extends BaseObject implements ConfigurableRoute
      *
      * If no request method is provided this route matches all request methods.
      *
-     * @param   string           $path           path this route is applicable for
-     * @param   string|callback  $callback       code to be executed when the route is active
-     * @param   string           $requestMethod  request method this route is applicable for
+     * @param   string                     $path           path this route is applicable for
+     * @param   string|callback|Processor  $callback       code to be executed when the route is active
+     * @param   string                     $requestMethod  request method this route is applicable for
      * @throws  IllegalArgumentException
      */
     public function __construct($path, $callback, $requestMethod = null)
     {
-        if (!is_callable($callback) && !class_exists($callback)) {
-            throw new IllegalArgumentException('Given callback must be a callable or a class name of an existing class');
+        if (!is_callable($callback) && !($callback instanceof Processor) && !class_exists($callback)) {
+            throw new IllegalArgumentException('Given callback must be a callable, an instance of net\stubbles\webapp\Processor or a class name of an existing processor class');
         }
 
         $this->path          = $path;
@@ -155,6 +155,8 @@ class Route extends BaseObject implements ConfigurableRoute
             $callback($request, $response, $uriPath);
         } elseif (is_callable($this->callback)) {
             call_user_func_array($this->callback, array($request, $response, $uriPath));
+        } elseif ($this->callback instanceof Processor) {
+            $this->callback->process($request, $response, $uriPath);
         } else {
             $processor = $injector->getInstance($this->callback);
             if (!($processor instanceof Processor)) {
@@ -168,11 +170,16 @@ class Route extends BaseObject implements ConfigurableRoute
     /**
      * add a pre interceptor for this route
      *
-     * @param   string|Closure  $preInterceptor
+     * @param   string|callback|interceptor\PreInterceptor  $preInterceptor
      * @return  Route
+     * @throws  IllegalArgumentException
      */
     public function preIntercept($preInterceptor)
     {
+     #   if (!is_callable($preInterceptor) && !($preInterceptor instanceof interceptor\PreInterceptor) && !class_exists($preInterceptor)) {
+     #       throw new IllegalArgumentException('Given pre interceptor must be a callable, an instance of net\stubbles\webapp\interceptor\PreInterceptor or a class name of an existing pre interceptor class');
+     #   }
+
         $this->preInterceptors[] = $preInterceptor;
         return $this;
     }
@@ -190,11 +197,16 @@ class Route extends BaseObject implements ConfigurableRoute
     /**
      * add a post interceptor for this route
      *
-     * @param   string|Closure  $preInterceptor
+     * @param   string|callback|interceptor\PostInterceptor  $preInterceptor
      * @return  Route
+     * @throws  IllegalArgumentException
      */
     public function postIntercept($postInterceptor)
     {
+     #   if (!is_callable($postInterceptor) && !($postInterceptor instanceof interceptor\PostInterceptor) && !class_exists($postInterceptor)) {
+     #       throw new IllegalArgumentException('Given pre interceptor must be a callable, an instance of net\stubbles\webapp\interceptor\PostInterceptor or a class name of an existing post interceptor class');
+     #   }
+
         $this->postInterceptors[] = $postInterceptor;
         return $this;
     }
