@@ -81,7 +81,7 @@ abstract class WebApp extends App
      */
     public function run()
     {
-        $routing   = new Routing(new UriRequest($this->request->getUri(), $this->request->getMethod()));
+        $routing = new Routing(new UriRequest($this->request->getUri(), $this->request->getMethod()));
         $this->configureRouting($routing);
         $response = $this->responseNegotiator->negotiate($this->request, $routing);
         if (!$this->request->isCancelled()) {
