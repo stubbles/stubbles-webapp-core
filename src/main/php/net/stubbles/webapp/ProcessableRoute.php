@@ -44,6 +44,12 @@ class ProcessableRoute extends BaseObject
      * @type  array
      */
     private $postInterceptors;
+    /**
+     * injector instance
+     *
+     * @type  Injector
+     */
+    private $injector;
 
     /**
      * constructor
@@ -52,16 +58,19 @@ class ProcessableRoute extends BaseObject
      * @param  UriRequest  $calledUri         actual called uri
      * @param  array       $preInterceptors   list of pre interceptors to be processed
      * @param  array       $postInterceptors  list of post interceptors to be processed
+     * @param  Injector    $injector
      */
     public function __construct(Route $route,
                                 UriRequest $calledUri,
                                 array $preInterceptors,
-                                array $postInterceptors)
+                                array $postInterceptors,
+                                Injector $injector)
     {
         $this->route            = $route;
         $this->calledUri        = $calledUri;
         $this->preInterceptors  = $preInterceptors;
         $this->postInterceptors = $postInterceptors;
+        $this->injector         = $injector;
     }
 
     /**
@@ -109,12 +118,11 @@ class ProcessableRoute extends BaseObject
      *
      * Returns false if one of the pre interceptors cancels the request.
      *
-     * @param   Injector    $injector   creates pre interceptor instances when only class is given
      * @param   WebRequest  $request    current request
      * @param   Response    $response   response to send
      * @return  bool
      */
-    public function applyPreInterceptors(Injector $injector, WebRequest $request, Response $response)
+    public function applyPreInterceptors(WebRequest $request, Response $response)
     {
         foreach ($this->preInterceptors as $interceptor) {
             if ($interceptor instanceof \Closure) {
@@ -124,8 +132,8 @@ class ProcessableRoute extends BaseObject
             } elseif ($interceptor instanceof interceptor\PreInterceptor) {
                 $interceptor->preProcess($request, $response);
             } else {
-                $injector->getInstance($interceptor)
-                         ->preProcess($request, $response);
+                $this->injector->getInstance($interceptor)
+                               ->preProcess($request, $response);
             }
 
             if ($request->isCancelled()) {
@@ -139,13 +147,12 @@ class ProcessableRoute extends BaseObject
     /**
      * creates processor instance
      *
-     * @param   Injector    $injector   creates processor instances when only class is given
      * @param   WebRequest  $request    current request
      * @param   Response    $response   response to send
      * @return  bool
      * @throws  RuntimeException
      */
-    public function process(Injector $injector, WebRequest $request, Response $response)
+    public function process(WebRequest $request, Response $response)
     {
 
         $uriPath  = $this->route->getUriPath($this->calledUri);
@@ -157,7 +164,7 @@ class ProcessableRoute extends BaseObject
         } elseif ($callback instanceof Processor) {
             $callback->process($request, $response, $uriPath);
         } else {
-            $processor = $injector->getInstance($callback);
+            $processor = $this->injector->getInstance($callback);
             if (!($processor instanceof Processor)) {
                 throw new RuntimeException('Configured callback class ' . $callback . ' for route ' . $uriPath->getMatched() . ' is not an instance of net\stubbles\webapp\Processor');
             }
@@ -171,12 +178,11 @@ class ProcessableRoute extends BaseObject
     /**
      * apply post interceptors
      *
-     * @param   Injector    $injector   creates post interceptor instances when only class is given
      * @param   WebRequest  $request    current request
      * @param   Response    $response   response to send
      * @return  bool
      */
-    public function applyPostInterceptors(Injector $injector, WebRequest $request, Response $response)
+    public function applyPostInterceptors(WebRequest $request, Response $response)
     {
         foreach ($this->postInterceptors as $interceptor) {
             if ($interceptor instanceof \Closure) {
@@ -186,8 +192,8 @@ class ProcessableRoute extends BaseObject
             } elseif ($interceptor instanceof interceptor\PostInterceptor) {
                 $interceptor->postProcess($request, $response);
             } else {
-                $injector->getInstance($interceptor)
-                         ->postProcess($request, $response);
+                $this->injector->getInstance($interceptor)
+                               ->postProcess($request, $response);
             }
 
             if ($request->isCancelled()) {

@@ -10,6 +10,7 @@
 namespace net\stubbles\webapp\ioc;
 use net\stubbles\input\web\WebRequest;
 use net\stubbles\ioc\InjectionProvider;
+use net\stubbles\ioc\Injector;
 use net\stubbles\lang\BaseObject;
 use net\stubbles\webapp\Routing;
 use net\stubbles\webapp\UriRequest;
@@ -26,16 +27,24 @@ class RoutingProvider extends BaseObject implements InjectionProvider
      * @type  WebRequest
      */
     private $request;
+    /**
+     * injector instance
+     *
+     * @type  Injector
+     */
+    private $injector;
 
     /**
      * constructor
      *
      * @param  WebRequest  $request
+     * @param  Injector    $injector
      * @Inject
      */
-    public function __construct(WebRequest $request)
+    public function __construct(WebRequest $request, Injector $injector)
     {
-        $this->request = $request;
+        $this->request  = $request;
+        $this->injector = $injector;
     }
 
     /**
@@ -46,7 +55,11 @@ class RoutingProvider extends BaseObject implements InjectionProvider
      */
     public function get($name = null)
     {
-        return new Routing(new UriRequest($this->request->getUri(), $this->request->getMethod()));
+        return new Routing(new UriRequest($this->request->getUri(),
+                                          $this->request->getMethod()
+                           ),
+                           $this->injector
+        );
     }
 }
 ?>

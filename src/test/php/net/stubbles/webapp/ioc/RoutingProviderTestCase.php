@@ -30,7 +30,11 @@ class RoutingProviderTestCase extends \PHPUnit_Framework_TestCase
         $mockRequest->expects($this->any())
                     ->method('getMethod')
                     ->will($this->returnValue('GET'));
-        $routingProvider = new RoutingProvider($mockRequest);
+        $routingProvider = new RoutingProvider($mockRequest,
+                                               $this->getMockBuilder('net\stubbles\ioc\Injector')
+                                                    ->disableOriginalConstructor()
+                                                    ->getMock()
+                           );
         $this->assertInstanceOf('net\stubbles\webapp\Routing',
                                 $routingProvider->get()
         );

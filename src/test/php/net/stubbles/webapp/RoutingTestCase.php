@@ -29,7 +29,11 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->routing = new Routing(UriRequest::fromString('http://example.net/hello', 'GET'));
+        $this->routing = new Routing(UriRequest::fromString('http://example.net/hello', 'GET'),
+                                     $this->getMockBuilder('net\stubbles\ioc\Injector')
+                                          ->disableOriginalConstructor()
+                                          ->getMock()
+                         );
     }
 
     /**
@@ -148,7 +152,10 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
         return new ProcessableRoute($route,
                                     UriRequest::fromString('http://example.net/hello', 'GET'),
                                     $preInterceptors,
-                                    $postInterceptors
+                                    $postInterceptors,
+                                    $this->getMockBuilder('net\stubbles\ioc\Injector')
+                                         ->disableOriginalConstructor()
+                                         ->getMock()
         );
     }
 

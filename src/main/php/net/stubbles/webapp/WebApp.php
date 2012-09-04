@@ -34,12 +34,6 @@ abstract class WebApp extends App
      */
     private $responseNegotiator;
     /**
-     * injector instance
-     *
-     * @type  Injector
-     */
-    private $injector;
-    /**
      * build and contains routing information
      *
      * @type  Routing
@@ -57,18 +51,15 @@ abstract class WebApp extends App
      *
      * @param  WebRequest          $request             request data container
      * @param  ResponseNegotiator  $responseNegotiator  negoatiates based on request
-     * @param  Injector            $injector
      * @param  Routing             $routing
      * @Inject
      */
     public function __construct(WebRequest $request,
                                 ResponseNegotiator $responseNegotiator,
-                                Injector $injector,
                                 Routing $routing)
     {
         $this->request            = $request;
         $this->responseNegotiator = $responseNegotiator;
-        $this->injector           = $injector;
         $this->routing            = $routing;
     }
 
@@ -95,9 +86,9 @@ abstract class WebApp extends App
         if (!$this->request->isCancelled()) {
             $route = $this->detectRoute($response);
             if (null !== $route) {
-                if ($route->applyPreInterceptors($this->injector, $this->request, $response)) {
-                    if ($route->process($this->injector, $this->request, $response)) {
-                        $route->applyPostInterceptors($this->injector, $this->request, $response);
+                if ($route->applyPreInterceptors($this->request, $response)) {
+                    if ($route->process($this->request, $response)) {
+                        $route->applyPostInterceptors($this->request, $response);
                     }
                 }
             }

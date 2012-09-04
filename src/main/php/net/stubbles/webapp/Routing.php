@@ -8,6 +8,7 @@
  * @package  net\stubbles\webapp
  */
 namespace net\stubbles\webapp;
+use net\stubbles\ioc\Injector;
 use net\stubbles\lang\BaseObject;
 use net\stubbles\lang\exception\IllegalArgumentException;
 use net\stubbles\peer\http\AcceptHeader;
@@ -63,15 +64,23 @@ class Routing extends BaseObject implements RoutingConfigurator
      * @type  string[]
      */
     private $mimeTypes        = array();
+    /**
+     * injector instance
+     *
+     * @type  Injector
+     */
+    private $injector;
 
     /**
      * constructor
      *
      * @param  UriRequest  $calledUri
+     * @param  Injector    $injector
      */
-    public function __construct(UriRequest $calledUri)
+    public function __construct(UriRequest $calledUri, Injector $injector)
     {
         $this->calledUri = $calledUri;
+        $this->injector  = $injector;
     }
 
     /**
@@ -200,7 +209,8 @@ class Routing extends BaseObject implements RoutingConfigurator
                 $this->processableRoute = new ProcessableRoute($route,
                                                                $this->calledUri,
                                                                $this->getPreInterceptors($route),
-                                                               $this->getPostInterceptors($route)
+                                                               $this->getPostInterceptors($route),
+                                                               $this->injector
                                           );
             }
         }

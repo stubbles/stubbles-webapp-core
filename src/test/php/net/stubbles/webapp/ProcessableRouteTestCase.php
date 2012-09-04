@@ -61,7 +61,8 @@ class ProcessableRouteTestCase extends \PHPUnit_Framework_TestCase
         $processableRoute = new ProcessableRoute($route->httpsOnly(),
                                                  UriRequest::fromString('http://example.com/hello/world', 'GET'),
                                                  array(),
-                                                 array()
+                                                 array(),
+                                                 $this->mockInjector
                             );
         $this->assertTrue($processableRoute->switchToHttps());
     }
@@ -86,7 +87,8 @@ class ProcessableRouteTestCase extends \PHPUnit_Framework_TestCase
         $processableRoute = new ProcessableRoute($route->httpsOnly(),
                                                  UriRequest::fromString('https://example.com/hello/world', 'GET'),
                                                  array(),
-                                                 array()
+                                                 array(),
+                                                 $this->mockInjector
                             );
         $this->assertFalse($processableRoute->switchToHttps());
     }
@@ -113,7 +115,8 @@ class ProcessableRouteTestCase extends \PHPUnit_Framework_TestCase
         $processableRoute = new ProcessableRoute($route->withRoleOnly('admin'),
                                                  UriRequest::fromString('https://example.com/hello/world', 'GET'),
                                                  array(),
-                                                 array()
+                                                 array(),
+                                                 $this->mockInjector
                             );
         $this->assertTrue($processableRoute->requiresRole());
     }
@@ -130,7 +133,8 @@ class ProcessableRouteTestCase extends \PHPUnit_Framework_TestCase
         $processableRoute = new ProcessableRoute($route->withRoleOnly('admin'),
                                                  UriRequest::fromString('https://example.com/hello/world', 'GET'),
                                                  array(),
-                                                 array()
+                                                 array(),
+                                                 $this->mockInjector
                             );
         $this->assertEquals('admin', $processableRoute->getRequiredRole());
     }
@@ -151,7 +155,9 @@ class ProcessableRouteTestCase extends \PHPUnit_Framework_TestCase
                                     ),
                                     UriRequest::fromString('http://example.com/hello/world', 'GET'),
                                     $preInterceptors,
-                                    $postInterceptors
+                                    $postInterceptors,
+
+                $this->mockInjector
         );
     }
 
@@ -178,10 +184,7 @@ class ProcessableRouteTestCase extends \PHPUnit_Framework_TestCase
                                $request->cancel();
                            }
                )
-             ->process($this->mockInjector,
-                       $this->mockRequest,
-                       $this->mockResponse
-        );
+             ->process($this->mockRequest, $this->mockResponse);
     }
 
     /**
@@ -214,10 +217,7 @@ class ProcessableRouteTestCase extends \PHPUnit_Framework_TestCase
         $this->mockInjector->expects($this->never())
                            ->method('getInstance');
         $this->createRoute(array($this, 'theCallable'))
-             ->process($this->mockInjector,
-                       $this->mockRequest,
-                       $this->mockResponse
-        );
+             ->process($this->mockRequest, $this->mockResponse);
     }
 
     /**
@@ -231,10 +231,7 @@ class ProcessableRouteTestCase extends \PHPUnit_Framework_TestCase
                            ->with($this->equalTo('\stdClass'))
                            ->will($this->returnValue(new \stdClass()));
         $this->createRoute('\stdClass')
-             ->process($this->mockInjector,
-                       $this->mockRequest,
-                       $this->mockResponse
-        );
+             ->process($this->mockRequest, $this->mockResponse);
     }
 
     /**
@@ -254,10 +251,7 @@ class ProcessableRouteTestCase extends \PHPUnit_Framework_TestCase
                            ->with($this->equalTo(get_class($mockProcessor)))
                            ->will($this->returnValue($mockProcessor));
         $this->createRoute(get_class($mockProcessor))
-             ->process($this->mockInjector,
-                       $this->mockRequest,
-                       $this->mockResponse
-        );
+             ->process($this->mockRequest, $this->mockResponse);
     }
 
     /**
@@ -275,10 +269,7 @@ class ProcessableRouteTestCase extends \PHPUnit_Framework_TestCase
         $this->mockInjector->expects($this->never())
                            ->method('getInstance');
         $this->createRoute($mockProcessor)
-             ->process($this->mockInjector,
-                       $this->mockRequest,
-                       $this->mockResponse
-        );
+             ->process($this->mockRequest, $this->mockResponse);
     }
 
 
@@ -310,8 +301,7 @@ class ProcessableRouteTestCase extends \PHPUnit_Framework_TestCase
                                                     'other\PreInterceptor'
                                               )
                                   )
-                                ->applyPreInterceptors($this->mockInjector,
-                                                       $this->mockRequest,
+                                ->applyPreInterceptors($this->mockRequest,
                                                        $this->mockResponse
                                   )
         );
@@ -347,8 +337,7 @@ class ProcessableRouteTestCase extends \PHPUnit_Framework_TestCase
                                                    array($this, 'callableMethod')
                                              )
                                   )
-                                ->applyPreInterceptors($this->mockInjector,
-                                                       $this->mockRequest,
+                                ->applyPreInterceptors($this->mockRequest,
                                                        $this->mockResponse
                                   )
         );
@@ -372,9 +361,8 @@ class ProcessableRouteTestCase extends \PHPUnit_Framework_TestCase
                                                     'other\PostInterceptor'
                                               )
                                   )
-                                ->applyPostInterceptors($this->mockInjector,
-                                                       $this->mockRequest,
-                                                       $this->mockResponse
+                                ->applyPostInterceptors($this->mockRequest,
+                                                        $this->mockResponse
                                   )
         );
     }
@@ -410,9 +398,8 @@ class ProcessableRouteTestCase extends \PHPUnit_Framework_TestCase
                                                    array($this, 'callableMethod')
                                              )
                                   )
-                                ->applyPostInterceptors($this->mockInjector,
-                                                       $this->mockRequest,
-                                                       $this->mockResponse
+                                ->applyPostInterceptors($this->mockRequest,
+                                                        $this->mockResponse
                                   )
         );
     }

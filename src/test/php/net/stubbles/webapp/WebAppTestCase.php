@@ -78,9 +78,6 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
         $mockResponseNegotiator->expects($this->any())
                                ->method('negotiate')
                                ->will($this->returnValue($this->mockResponse));
-        $this->mockInjector = $this->getMockBuilder('net\stubbles\ioc\Injector')
-                                   ->disableOriginalConstructor()
-                                   ->getMock();
         $this->routing = $this->getMockBuilder('net\stubbles\webapp\Routing')
                               ->disableOriginalConstructor()
                               ->getMock();
@@ -89,7 +86,6 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
                                         array('configureRouting'),
                                         array($this->mockRequest,
                                               $mockResponseNegotiator,
-                                              $this->mockInjector,
                                               $this->routing
                                         )
                          );
@@ -338,8 +334,7 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
                   ->will($this->returnValue(false));
         $mockRoute->expects($this->once())
                   ->method('applyPreInterceptors')
-                  ->with($this->equalTo($this->mockInjector),
-                         $this->equalTo($this->mockRequest),
+                  ->with($this->equalTo($this->mockRequest),
                          $this->equalTo($this->mockResponse)
                     )
                   ->will($this->returnValue(false));
@@ -366,15 +361,13 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
                   ->will($this->returnValue(false));
         $mockRoute->expects($this->once())
                   ->method('applyPreInterceptors')
-                  ->with($this->equalTo($this->mockInjector),
-                         $this->equalTo($this->mockRequest),
+                  ->with($this->equalTo($this->mockRequest),
                          $this->equalTo($this->mockResponse)
                     )
                   ->will($this->returnValue(true));
         $mockRoute->expects($this->once())
                   ->method('process')
-                  ->with($this->equalTo($this->mockInjector),
-                         $this->equalTo($this->mockRequest),
+                  ->with($this->equalTo($this->mockRequest),
                          $this->equalTo($this->mockResponse)
                     )
                   ->will($this->returnValue(false));
@@ -399,22 +392,19 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
                   ->will($this->returnValue(false));
         $mockRoute->expects($this->once())
                   ->method('applyPreInterceptors')
-                  ->with($this->equalTo($this->mockInjector),
-                         $this->equalTo($this->mockRequest),
+                  ->with($this->equalTo($this->mockRequest),
                          $this->equalTo($this->mockResponse)
                     )
                   ->will($this->returnValue(true));
         $mockRoute->expects($this->once())
                   ->method('process')
-                  ->with($this->equalTo($this->mockInjector),
-                         $this->equalTo($this->mockRequest),
+                  ->with($this->equalTo($this->mockRequest),
                          $this->equalTo($this->mockResponse)
                     )
                   ->will($this->returnValue(true));
         $mockRoute->expects($this->once())
                   ->method('applyPostInterceptors')
-                  ->with($this->equalTo($this->mockInjector),
-                         $this->equalTo($this->mockRequest),
+                  ->with($this->equalTo($this->mockRequest),
                          $this->equalTo($this->mockResponse)
                     );
         $this->mockResponse->expects($this->once())
@@ -436,22 +426,19 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
                   ->will($this->returnValue(false));
         $mockRoute->expects($this->once())
                   ->method('applyPreInterceptors')
-                  ->with($this->equalTo($this->mockInjector),
-                         $this->equalTo($this->mockRequest),
+                  ->with($this->equalTo($this->mockRequest),
                          $this->equalTo($this->mockResponse)
                     )
                   ->will($this->returnValue(true));
         $mockRoute->expects($this->once())
                   ->method('process')
-                  ->with($this->equalTo($this->mockInjector),
-                         $this->equalTo($this->mockRequest),
+                  ->with($this->equalTo($this->mockRequest),
                          $this->equalTo($this->mockResponse)
                     )
                   ->will($this->returnValue(true));
         $mockRoute->expects($this->once())
                   ->method('applyPostInterceptors')
-                  ->with($this->equalTo($this->mockInjector),
-                         $this->equalTo($this->mockRequest),
+                  ->with($this->equalTo($this->mockRequest),
                          $this->equalTo($this->mockResponse)
                     );
         $this->mockRequest->expects($this->once())
