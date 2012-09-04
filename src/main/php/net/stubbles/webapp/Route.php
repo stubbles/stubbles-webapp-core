@@ -164,9 +164,9 @@ class Route extends BaseObject implements ConfigurableRoute
      */
     public function preIntercept($preInterceptor)
     {
-    #    if (!is_callable($preInterceptor) && !($preInterceptor instanceof interceptor\PreInterceptor) && !class_exists($preInterceptor)) {
-    #        throw new IllegalArgumentException('Given pre interceptor must be a callable, an instance of net\stubbles\webapp\interceptor\PreInterceptor or a class name of an existing pre interceptor class');
-    #    }
+        if (!is_callable($preInterceptor) && !($preInterceptor instanceof interceptor\PreInterceptor) && !class_exists($preInterceptor)) {
+            throw new IllegalArgumentException('Given pre interceptor must be a callable, an instance of net\stubbles\webapp\interceptor\PreInterceptor or a class name of an existing pre interceptor class');
+        }
 
         $this->preInterceptors[] = $preInterceptor;
         return $this;
@@ -191,9 +191,9 @@ class Route extends BaseObject implements ConfigurableRoute
      */
     public function postIntercept($postInterceptor)
     {
-    #    if (!is_callable($postInterceptor) && !($postInterceptor instanceof interceptor\PostInterceptor) && !class_exists($postInterceptor)) {
-    #        throw new IllegalArgumentException('Given pre interceptor must be a callable, an instance of net\stubbles\webapp\interceptor\PostInterceptor or a class name of an existing post interceptor class');
-    #    }
+        if (!is_callable($postInterceptor) && !($postInterceptor instanceof interceptor\PostInterceptor) && !class_exists($postInterceptor)) {
+            throw new IllegalArgumentException('Given pre interceptor must be a callable, an instance of net\stubbles\webapp\interceptor\PostInterceptor or a class name of an existing post interceptor class');
+        }
 
         $this->postInterceptors[] = $postInterceptor;
         return $this;

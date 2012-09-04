@@ -40,6 +40,12 @@ abstract class WebApp extends App
      */
     private $injector;
     /**
+     * build and contains routing information
+     *
+     * @type  Routing
+     */
+    private $routing;
+    /**
      * auth handler to handle authorization requests
      *
      * @type  AuthHandler
@@ -49,18 +55,21 @@ abstract class WebApp extends App
     /**
      * constructor
      *
-     * @param  WebRequest          $request    request data container
-     * @param  ResponseNegotiator  $response   response container
+     * @param  WebRequest          $request             request data container
+     * @param  ResponseNegotiator  $responseNegotiator  negoatiates based on request
      * @param  Injector            $injector
+     * @param  Routing             $routing
      * @Inject
      */
     public function __construct(WebRequest $request,
-                                ResponseNegotiator $response,
-                                Injector $injector)
+                                ResponseNegotiator $responseNegotiator,
+                                Injector $injector,
+                                Routing $routing)
     {
         $this->request            = $request;
-        $this->responseNegotiator = $response;
+        $this->responseNegotiator = $responseNegotiator;
         $this->injector           = $injector;
+        $this->routing            = $routing;
     }
 
     /**
@@ -81,11 +90,10 @@ abstract class WebApp extends App
      */
     public function run()
     {
-        $routing = new Routing(new UriRequest($this->request->getUri(), $this->request->getMethod()));
-        $this->configureRouting($routing);
-        $response = $this->responseNegotiator->negotiate($this->request, $routing);
+        $this->configureRouting($this->routing);
+        $response = $this->responseNegotiator->negotiate($this->request, $this->routing);
         if (!$this->request->isCancelled()) {
-            $route = $this->detectRoute($routing, $response);
+            $route = $this->detectRoute($response);
             if (null !== $route) {
                 if ($route->applyPreInterceptors($this->injector, $this->request, $response)) {
                     if ($route->process($this->injector, $this->request, $response)) {
@@ -112,14 +120,13 @@ abstract class WebApp extends App
     /**
      * retrieves route
      *
-     * @param   Routing     $routing
-     * @param   Response    $response
+     * @param   Response  $response
      * @return  ProcessableRoute
      */
-    private function detectRoute(Routing $routing, Response $response)
+    private function detectRoute(Response $response)
     {
-        if (!$routing->canFindRoute()) {
-            $allowedMethods = $routing->getAllowedMethods();
+        if (!$this->routing->canFindRoute()) {
+            $allowedMethods = $this->routing->getAllowedMethods();
             if (count($allowedMethods) === 0) {
                 $response->notFound();
             } else {
@@ -129,7 +136,7 @@ abstract class WebApp extends App
             return null;
         }
 
-        $route = $routing->findRoute();
+        $route = $this->routing->findRoute();
         if ($route->switchToHttps()) {
             $response->redirect($route->getHttpsUri());
             return null;

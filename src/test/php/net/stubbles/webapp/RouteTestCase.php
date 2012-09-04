@@ -141,7 +141,6 @@ class RouteTestCase extends \PHPUnit_Framework_TestCase
      */
     public function addInvalidPreInterceptorThrowsIllegalArgumentException()
     {
-        $this->markTestIncomplete('Finish further refactoring first');
         $this->createRoute()->preIntercept(303);
     }
 
@@ -182,7 +181,6 @@ class RouteTestCase extends \PHPUnit_Framework_TestCase
      */
     public function addInvalidPostInterceptorThrowsIllegalArgumentException()
     {
-        $this->markTestIncomplete('Finish further refactoring first');
         $this->createRoute()->postIntercept(303);
     }
 

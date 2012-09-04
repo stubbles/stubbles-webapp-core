@@ -17,6 +17,7 @@ use net\stubbles\webapp\interceptor\PostInterceptor;
  * Contains routing information and decides which route is applicable for given request.
  *
  * @since  2.0.0
+ * @ProvidedBy(net\stubbles\webapp\ioc\RoutingProvider.class)
  */
 class Routing extends BaseObject implements RoutingConfigurator
 {
@@ -183,7 +184,7 @@ class Routing extends BaseObject implements RoutingConfigurator
      */
     public function canFindRoute()
     {
-        return null !== $this->findRoute();
+        return null !== $this->findRouteConfig();
     }
 
     /**
