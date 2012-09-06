@@ -47,23 +47,49 @@ class ResponseNegotiator extends BaseObject
     }
 
     /**
+     * negotiates http response for http version
+     *
+     * Forces 505 HTTP Version Not Supported response in case the request
+     * has a non-supported protocol version and cancels the request.
+     *
+     * @param   WebRequest  $request
+     * @param   string      $responseClass
+     * @return  Response
+     */
+    public static function negotiateHttpVersion(WebRequest $request, $responseClass = 'net\stubbles\webapp\response\WebResponse')
+    {
+        $httpVersion = $request->getProtocolVersion();
+        if (null === $httpVersion) {
+            $response = new $responseClass();
+            $response->httpVersionNotSupported();
+            $request->cancel();
+            return $response;
+        }
+
+        return new $responseClass($httpVersion);
+    }
+
+    /**
      * negotiates mime type based on accept header and configured mime types
+     *
+     * In case the request was already cancelled no negotation takes place.
+     * Forces a 406 Not Acceptable response in case none of the accepted user
+     * agent mime types is supported. Forces a 500 Internal Server Error
+     * response in case a mime type but no suitable formatter was found.
      *
      * @param   WebRequest  $request
      * @param   Routing     $routing
      * @return  Response
      */
-    public function negotiate(WebRequest $request, Routing $routing)
+    public function negotiateMimeType(WebRequest $request, Routing $routing)
     {
-        if (null === $request->getProtocolVersion()) {
-            $this->response->httpVersionNotSupported();
-            $request->cancel();
+        if ($request->isCancelled()) {
             return $this->response;
         }
 
         $mimeType = $routing->negotiateMimeType($request->readHeader('HTTP_ACCEPT')
                                                         ->applyFilter(new \net\stubbles\input\filter\AcceptFilter())
-                        );
+                    );
         if (null === $mimeType && $routing->canFindRouteWithAnyMethod()) {
             $this->response->notAcceptable($routing->getSupportedMimeTypes());
             $request->cancel();

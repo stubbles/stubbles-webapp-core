@@ -89,11 +89,16 @@ class UriPath extends BaseObject
     /**
      * returns remaining path that was not matched by original path
      *
+     * @param   string  $default
      * @return  string
      */
-    public function getRemaining()
+    public function getRemaining($default = null)
     {
-        return $this->remaining;
+        if (null !== $this->remaining) {
+            return $this->remaining;
+        }
+
+        return $default;
     }
 }
 ?>
