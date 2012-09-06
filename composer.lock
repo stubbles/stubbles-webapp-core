@@ -1,5 +1,5 @@
 {
-    "hash": "95a218afcf04afbd8de73aef30600485",
+    "hash": "8df7dfb48bff1b3bf0dfe5465b31cc5b",
     "packages": [
         {
             "package": "stubbles/core",
@@ -11,9 +11,7 @@
         },
         {
             "package": "stubbles/xml",
-            "version": "dev-master",
-            "source-reference": "09bce6d32d5dffe940095c1557a0ce78714f9905",
-            "commit-date": "1343743996"
+            "version": "2.0.0"
         }
     ],
     "packages-dev": null,
@@ -21,7 +19,7 @@
 
     ],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "stubbles/xml": 20
-    }
+    "stability-flags": [
+
+    ]
 }
