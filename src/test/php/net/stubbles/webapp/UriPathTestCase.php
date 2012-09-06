@@ -86,5 +86,23 @@ class UriPathTestCase extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals('/foo', $this->uriPath->getRemaining());
     }
+
+    /**
+     * @test
+     */
+    public function returnsNullIfRemainingPathIsNull()
+    {
+        $this->uriPath = new UriPath('/hello/{name}', array('name' => 'world'), null);
+        $this->assertNull($this->uriPath->getRemaining());
+    }
+
+    /**
+     * @test
+     */
+    public function returnsDefaultIfRemainingPathIsNull()
+    {
+        $this->uriPath = new UriPath('/hello/{name}', array('name' => 'world'), null);
+        $this->assertEquals('index.html', $this->uriPath->getRemaining('index.html'));
+    }
 }
 ?>
