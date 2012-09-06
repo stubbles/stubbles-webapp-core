@@ -81,7 +81,7 @@ abstract class WebApp extends App
     public function run()
     {
         $this->configureRouting($this->routing);
-        $response = $this->responseNegotiator->negotiate($this->request, $this->routing);
+        $response = $this->responseNegotiator->negotiateMimeType($this->request, $this->routing);
         if (!$this->request->isCancelled()) {
             $route = $this->detectRoute($response);
             if (null !== $route) {

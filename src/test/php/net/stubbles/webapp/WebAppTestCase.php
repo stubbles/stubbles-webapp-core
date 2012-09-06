@@ -76,7 +76,7 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
                                        ->disableOriginalConstructor()
                                        ->getMock();
         $mockResponseNegotiator->expects($this->any())
-                               ->method('negotiate')
+                               ->method('negotiateMimeType')
                                ->will($this->returnValue($this->mockResponse));
         $this->routing = $this->getMockBuilder('net\stubbles\webapp\Routing')
                               ->disableOriginalConstructor()
