@@ -14,6 +14,7 @@ use net\stubbles\ioc\Binder;
 use net\stubbles\ioc\module\BindingModule;
 use net\stubbles\lang\BaseObject;
 use net\stubbles\webapp\response\Response;
+use net\stubbles\webapp\response\ResponseNegotiator;
 /**
  * Module to configure the binder with instances for request, session and response.
  *
@@ -181,7 +182,7 @@ class IoBindingModule extends BaseObject implements BindingModule
     public function configure(Binder $binder)
     {
         $request  = BaseWebRequest::fromRawSource();
-        $response = $this->createResponse($request);
+        $response = ResponseNegotiator::negotiateHttpVersion($request, $this->responseClass);
         $binder->bind('net\stubbles\input\web\WebRequest')
                ->toInstance($request);
         $binder->bind('net\stubbles\input\Request')
@@ -203,19 +204,6 @@ class IoBindingModule extends BaseObject implements BindingModule
                    ->toInstance($session);
             $binder->setSessionScope(new \net\stubbles\webapp\session\SessionBindingScope($session));
         }
-    }
-
-    /**
-     * creates response instance
-     *
-     * @param   WebRequest  $request
-     * @return  Response
-     */
-    private function createResponse(WebRequest $request)
-    {
-        $httpVersion   = $request->getProtocolVersion();
-        $responseClass = $this->responseClass;
-        return new $responseClass((null !== $httpVersion) ? ($httpVersion) : ('1.1'));
     }
 }
 ?>

@@ -29,7 +29,11 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->routing = new Routing(UriRequest::fromString('http://example.net/hello', 'GET'));
+        $this->routing = new Routing(UriRequest::fromString('http://example.net/hello', 'GET'),
+                                     $this->getMockBuilder('net\stubbles\ioc\Injector')
+                                          ->disableOriginalConstructor()
+                                          ->getMock()
+                         );
     }
 
     /**
@@ -137,21 +141,40 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @test
+     * creates processable route with given list of pre and post interceptors
+     *
+     * @param   array  $preInterceptors
+     * @param   array  $postInterceptors
+     * @return  ProcessableRoute
      */
-    public function returnsRouteWhichFitsMethodAndPath()
+    private function createProcessableRoute(Route $route, array $preInterceptors = array(), array $postInterceptors = array())
     {
-        $route = $this->routing->onGet('/hello', function() {});
-        $this->routing->onGet('/foo', function() {});
-        $this->assertSame($route, $this->routing->findRoute());
+        return new ProcessableRoute($route,
+                                    UriRequest::fromString('http://example.net/hello', 'GET'),
+                                    $preInterceptors,
+                                    $postInterceptors,
+                                    $this->getMockBuilder('net\stubbles\ioc\Injector')
+                                         ->disableOriginalConstructor()
+                                         ->getMock()
+        );
     }
 
     /**
      * @test
      */
-    public function hasNoGlobalPreInterceptorsByDefault()
+    public function returnsRouteWhichFitsMethodAndPath()
     {
-        $this->assertEquals(array(), $this->routing->getPreInterceptors());
+        $route = $this->createProcessableRoute($this->routing->onGet('/hello', function() {}));
+        $this->assertEquals($route, $this->routing->findRoute());
+    }
+
+    /**
+     * @test
+     * @expectedException  net\stubbles\lang\exception\IllegalArgumentException
+     */
+    public function addInvalidPreInterceptorThrowsIllegalArgumentException()
+    {
+        $this->routing->preIntercept(303);
     }
 
     /**
@@ -159,12 +182,15 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
      */
     public function hasNoGlobalPreInterceptorsForDifferentMethod()
     {
-        $this->assertEquals(array(),
-                            $this->routing->preInterceptOnHead('some\PreInterceptor')
-                                          ->preInterceptOnPost('some\PreInterceptor')
-                                          ->preInterceptOnPut('some\PreInterceptor')
-                                          ->preInterceptOnDelete('some\PreInterceptor')
-                                          ->getPreInterceptors());
+        $preInterceptor = function() {};
+        $route = $this->createProcessableRoute($this->routing->onGet('/hello', function() {}));
+        $this->assertEquals($route,
+                            $this->routing->preInterceptOnHead($preInterceptor)
+                                          ->preInterceptOnPost($preInterceptor)
+                                          ->preInterceptOnPut($preInterceptor)
+                                          ->preInterceptOnDelete($preInterceptor)
+                                          ->findRoute()
+        );
     }
 
     /**
@@ -173,10 +199,14 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
     public function hasGlobalPreInterceptorsEvenWhenNoRouteSelected()
     {
         $preInterceptor = function() {};
-        $this->assertEquals(array('some\PreInterceptor', $preInterceptor),
-                            $this->routing->preIntercept('some\PreInterceptor')
+        $route = $this->createProcessableRoute($this->routing->onGet('/hello', function() {}),
+                                               array('array_map', $preInterceptor)
+        );
+        $this->assertEquals($route,
+                            $this->routing->preIntercept('array_map')
                                           ->preInterceptOnGet($preInterceptor)
-                                          ->getPreInterceptors());
+                                          ->findRoute()
+        );
     }
 
     /**
@@ -184,12 +214,18 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
      */
     public function hasGlobalPreInterceptorsEvenWhenRouteSelected()
     {
-        $this->routing->onGet('/hello', function() {});
-        $preInterceptor = function() {};
-        $this->assertEquals(array('some\PreInterceptor', $preInterceptor),
-                            $this->routing->preIntercept('some\PreInterceptor')
-                                          ->preInterceptOnGet($preInterceptor)
-                                          ->getPreInterceptors());
+        $preInterceptor     = function() {};
+        $mockPreFunction    = 'array_map';
+        $route = $this->createProcessableRoute($this->routing->onGet('/hello', function() {}),
+                                               array($preInterceptor,
+                                                     $mockPreFunction
+                                               )
+                 );
+        $this->assertEquals($route,
+                            $this->routing->preIntercept($preInterceptor)
+                                          ->preIntercept($mockPreFunction)
+                                          ->findRoute()
+        );
     }
 
     /**
@@ -197,21 +233,24 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
      */
     public function mergesGlobalAndRoutePreInterceptors()
     {
-        $this->routing->onGet('/hello', function() {})
-                      ->preIntercept('other\PreInterceptor');
         $preInterceptor = function() {};
-        $this->assertEquals(array('some\PreInterceptor', $preInterceptor, 'other\PreInterceptor'),
-                            $this->routing->preIntercept('some\PreInterceptor')
-                                          ->preInterceptOnGet($preInterceptor)
-                                          ->getPreInterceptors());
+        $route = $this->createProcessableRoute($this->routing->onGet('/hello', function() {})
+                                                             ->preIntercept('array_map'),
+                                               array($preInterceptor, 'array_map')
+                 );
+        $this->assertEquals($route,
+                            $this->routing->preInterceptOnGet($preInterceptor)
+                                          ->findRoute()
+        );
     }
 
     /**
      * @test
+     * @expectedException  net\stubbles\lang\exception\IllegalArgumentException
      */
-    public function hasNoGlobalPostInterceptorsByDefault()
+    public function addInvalidPostInterceptorThrowsIllegalArgumentException()
     {
-        $this->assertEquals(array(), $this->routing->getPostInterceptors());
+        $this->routing->postIntercept(303);
     }
 
     /**
@@ -219,12 +258,15 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
      */
     public function hasNoGlobalPostInterceptorsForDifferentMethod()
     {
-        $this->assertEquals(array(),
-                            $this->routing->postInterceptOnHead('some\PostInterceptor')
-                                          ->postInterceptOnPost('some\PostInterceptor')
-                                          ->postInterceptOnPut('some\PostInterceptor')
-                                          ->postInterceptOnDelete('some\PostInterceptor')
-                                          ->getPostInterceptors());
+        $postInterceptor = function() {};
+        $route = $this->createProcessableRoute($this->routing->onGet('/hello', function() {}));
+        $this->assertEquals($route,
+                            $this->routing->postInterceptOnHead($postInterceptor)
+                                          ->postInterceptOnPost($postInterceptor)
+                                          ->postInterceptOnPut($postInterceptor)
+                                          ->postInterceptOnDelete($postInterceptor)
+                                          ->findRoute()
+        );
     }
 
     /**
@@ -233,10 +275,15 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
     public function hasGlobalPostInterceptorsEvenWhenNoRouteSelected()
     {
         $postInterceptor = function() {};
-        $this->assertEquals(array('some\PostInterceptor', $postInterceptor),
-                            $this->routing->postIntercept('some\PostInterceptor')
+        $route = $this->createProcessableRoute($this->routing->onGet('/hello', function() {}),
+                                               array(),
+                                               array('array_map', $postInterceptor)
+                 );
+        $this->assertEquals($route,
+                            $this->routing->postIntercept('array_map')
                                           ->postInterceptOnGet($postInterceptor)
-                                          ->getPostInterceptors());
+                                          ->findRoute()
+        );
     }
 
     /**
@@ -244,12 +291,19 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
      */
     public function hasGlobalPostInterceptorsEvenWhenRouteSelected()
     {
-        $this->routing->onGet('/hello', function() {});
-        $postInterceptor = function() {};
-        $this->assertEquals(array('some\PostInterceptor', $postInterceptor),
-                            $this->routing->postIntercept('some\PostInterceptor')
-                                          ->postInterceptOnGet($postInterceptor)
-                                          ->getPostInterceptors());
+        $postInterceptor  = function() {};
+        $mockPostFunction = 'array_map';
+        $route = $this->createProcessableRoute($this->routing->onGet('/hello', function() {}),
+                                               array(),
+                                               array($postInterceptor,
+                                                     $mockPostFunction
+                                               )
+                 );
+        $this->assertEquals($route,
+                            $this->routing->postIntercept($postInterceptor)
+                                          ->postIntercept($mockPostFunction)
+                                          ->findRoute()
+        );
     }
 
     /**
@@ -257,13 +311,16 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
      */
     public function mergesGlobalAndRoutePostInterceptors()
     {
-        $this->routing->onGet('/hello', function() {})
-                      ->postIntercept('other\PostInterceptor');
         $postInterceptor = function() {};
-        $this->assertEquals(array('other\PostInterceptor', 'some\PostInterceptor', $postInterceptor),
-                            $this->routing->postIntercept('some\PostInterceptor')
-                                          ->postInterceptOnGet($postInterceptor)
-                                          ->getPostInterceptors());
+        $route = $this->createProcessableRoute($this->routing->onGet('/hello', function() {})
+                                                             ->postIntercept('array_map'),
+                                               array(),
+                                               array('array_map', $postInterceptor)
+                 );
+        $this->assertEquals($route,
+                            $this->routing->postInterceptOnGet($postInterceptor)
+                                          ->findRoute()
+        );
     }
 
     /**

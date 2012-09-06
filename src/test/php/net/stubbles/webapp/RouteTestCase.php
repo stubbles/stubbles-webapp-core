@@ -113,121 +113,16 @@ class RouteTestCase extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function processCallsClosureGivenAsCallback()
+    public function returnsUriPath()
     {
-        $mockRequest = $this->getMock('net\stubbles\input\web\WebRequest');
-        $mockRequest->expects($this->once())
-                    ->method('cancel');
-        $mockResponse = $this->getMock('net\stubbles\webapp\response\Response');
-        $mockResponse->expects($this->once())
-                     ->method('setStatusCode')
-                     ->with($this->equalTo(418))
-                     ->will($this->returnSelf());
-        $mockResponse->expects($this->once())
-                     ->method('write')
-                     ->with($this->equalTo('Hello world'));
-        $mockInjector = $this->getMockBuilder('net\stubbles\ioc\Injector')
-                             ->disableOriginalConstructor()
-                             ->getMock();
-        $mockInjector->expects($this->never())
-                     ->method('getInstance');
-        $this->createRoute()->process(UriRequest::fromString('http://example.com/hello/world', 'GET'),
-                                      $mockInjector,
-                                      $mockRequest,
-                                      $mockResponse
+        $this->assertEquals(new UriPath('/hello/{name}', array('name' => 'world'), null),
+                            $this->createRoute()->getUriPath(UriRequest::fromString('http://example.com/hello/world', 'GET'))
         );
     }
 
-    /**
-     * helper method for the test
-     *
-     * @param  WebRequest  $request
-     * @param  Response    $response
-     */
-    public function theCallable(WebRequest $request, Response $response, UriPath $uriPath)
+    public function returnsGivenCallback()
     {
-        $response->setStatusCode(418)
-                 ->write('Hello ' . $uriPath->getArgument('name'));
-        $request->cancel();
-    }
-
-    /**
-     * @test
-     */
-    public function processCallsGivenCallback()
-    {
-        $mockRequest = $this->getMock('net\stubbles\input\web\WebRequest');
-        $mockRequest->expects($this->once())
-                    ->method('cancel');
-        $mockResponse = $this->getMock('net\stubbles\webapp\response\Response');
-        $mockResponse->expects($this->once())
-                     ->method('setStatusCode')
-                     ->with($this->equalTo(418))
-                     ->will($this->returnSelf());
-        $mockResponse->expects($this->once())
-                     ->method('write')
-                     ->with($this->equalTo('Hello world'));
-        $mockInjector = $this->getMockBuilder('net\stubbles\ioc\Injector')
-                             ->disableOriginalConstructor()
-                             ->getMock();
-        $mockInjector->expects($this->never())
-                     ->method('getInstance');
-        $route = new Route('/hello/{name}', array($this, 'theCallable'), 'GET');
-        $route->process(UriRequest::fromString('http://example.com/hello/world', 'GET'),
-                        $mockInjector,
-                        $mockRequest,
-                        $mockResponse
-        );
-    }
-
-    /**
-     * @test
-     * @expectedException  net\stubbles\lang\exception\RuntimeException
-     */
-    public function processThrowsRuntimeExceptionWhenGivenProcessorClassIsNoProcessor()
-    {
-        $mockInjector = $this->getMockBuilder('net\stubbles\ioc\Injector')
-                             ->disableOriginalConstructor()
-                             ->getMock();
-        $mockInjector->expects($this->once())
-                     ->method('getInstance')
-                     ->with($this->equalTo('\stdClass'))
-                     ->will($this->returnValue(new \stdClass()));
-        $route = new Route('/hello/{name}', '\stdClass', 'GET');
-        $route->process(UriRequest::fromString('http://example.com/hello/world', 'GET'),
-                        $mockInjector,
-                        $this->getMock('net\stubbles\input\web\WebRequest'),
-                        $this->getMock('net\stubbles\webapp\response\Response')
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function processCreatesAndCallsGivenProcessorClass()
-    {
-        $mockRequest   = $this->getMock('net\stubbles\input\web\WebRequest');
-        $mockResponse  = $this->getMock('net\stubbles\webapp\response\Response');
-        $mockProcessor = $this->getMock('net\stubbles\webapp\Processor');
-        $mockProcessor->expects($this->once())
-                      ->method('process')
-                      ->with($this->equalTo($mockRequest),
-                             $this->equalTo($mockResponse),
-                             $this->equalTo(new UriPath('/hello/{name}', array('name' => 'world'), null))
-                        );
-        $mockInjector = $this->getMockBuilder('net\stubbles\ioc\Injector')
-                             ->disableOriginalConstructor()
-                             ->getMock();
-        $mockInjector->expects($this->once())
-                     ->method('getInstance')
-                     ->with($this->equalTo(get_class($mockProcessor)))
-                     ->will($this->returnValue($mockProcessor));
-        $route = new Route('/hello/{name}', get_class($mockProcessor), 'GET');
-        $route->process(UriRequest::fromString('http://example.com/hello/world', 'GET'),
-                        $mockInjector,
-                        $mockRequest,
-                        $mockResponse
-        );
+        $this->assertEquals($this->createRoute()->getCallback());
     }
 
     /**
@@ -242,13 +137,30 @@ class RouteTestCase extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
+     * @expectedException  net\stubbles\lang\exception\IllegalArgumentException
+     */
+    public function addInvalidPreInterceptorThrowsIllegalArgumentException()
+    {
+        $this->createRoute()->preIntercept(303);
+    }
+
+    /**
+     * @test
      */
     public function hasGivenListOfPreInterceptors()
     {
-        $preInterceptor = function() {};
-        $this->assertEquals(array('my\PreInterceptor', $preInterceptor),
-                            $this->createRoute()->preIntercept('my\PreInterceptor')
+        $preInterceptor     = function() {};
+        $mockPreInterceptor = $this->getMock('net\stubbles\webapp\interceptor\PreInterceptor');
+        $mockPreFunction    = 'array_map';
+        $this->assertEquals(array(get_class($mockPreInterceptor),
+                                  $preInterceptor,
+                                  $mockPreInterceptor,
+                                  $mockPreFunction
+                            ),
+                            $this->createRoute()->preIntercept(get_class($mockPreInterceptor))
                                                 ->preIntercept($preInterceptor)
+                                                ->preIntercept($mockPreInterceptor)
+                                                ->preIntercept($mockPreFunction)
                                                 ->getPreInterceptors()
         );
     }
@@ -265,13 +177,30 @@ class RouteTestCase extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
+     * @expectedException  net\stubbles\lang\exception\IllegalArgumentException
+     */
+    public function addInvalidPostInterceptorThrowsIllegalArgumentException()
+    {
+        $this->createRoute()->postIntercept(303);
+    }
+
+    /**
+     * @test
      */
     public function hasGivenListOfPostInterceptors()
     {
-        $postInterceptor = function() {};
-        $this->assertEquals(array('my\PostInterceptor', $postInterceptor),
-                            $this->createRoute()->postIntercept('my\PostInterceptor')
+        $postInterceptor     = function() {};
+        $mockPostInterceptor = $this->getMock('net\stubbles\webapp\interceptor\PostInterceptor');
+        $mockPostFunction    = 'array_map';
+        $this->assertEquals(array(get_class($mockPostInterceptor),
+                                  $postInterceptor,
+                                  $mockPostInterceptor,
+                                  $mockPostFunction
+                            ),
+                            $this->createRoute()->postIntercept(get_class($mockPostInterceptor))
                                                 ->postIntercept($postInterceptor)
+                                                ->postIntercept($mockPostInterceptor)
+                                                ->postIntercept($mockPostFunction)
                                                 ->getPostInterceptors()
         );
     }

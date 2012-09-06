@@ -8,14 +8,10 @@
  * @package  net\stubbles\webapp
  */
 namespace net\stubbles\webapp;
-use net\stubbles\input\web\WebRequest;
-use net\stubbles\peer\http\HttpUri;
-use net\stubbles\webapp\response\Cookie;
-use net\stubbles\webapp\response\Response;
 /**
  * Helper class for the test.
  */
-class TestWebApp extends WebApp
+abstract class TestWebApp extends WebApp
 {
     /**
      * call method with given name and parameters and return its return value
@@ -29,95 +25,6 @@ class TestWebApp extends WebApp
     {
         return self::$methodName($param);
     }
-
-    /**
-     * a callback
-     *
-     * @param  WebRequest  $request
-     * @param  Response    $response
-     */
-    public function callableMethod(WebRequest $request, Response $response)
-    {
-        $response->addHeader('X-Binford', '6100 (More power!)');
-    }
-
-    /**
-     * configures routing for this web app
-     *
-     * @param  RoutingConfigurator  $routing
-     */
-    protected function configureRouting(RoutingConfigurator $routing)
-    {
-        $routing->onGet('/hello',
-                        function(WebRequest $request, Response $response, UriPath $uriPath)
-                        {
-                            $response->write('Hello world!');
-                        }
-                  )
-                ->preIntercept(array($this, 'callableMethod'))
-                ->postIntercept('some\PostInterceptor')
-                ->postIntercept(array($this, 'callableMethod'))
-                ->postIntercept(function(WebRequest $request, Response $response)
-                                {
-                                     $response->addCookie(Cookie::create('foo', 'bar'));
-                                }
-                  );
-        $routing->onPost('/update', function() {});
-        $routing->onPut('/update', function() {});
-        $routing->onGet('/admin', function() {})
-                ->httpsOnly()
-                ->withRoleOnly('administrator');
-        $routing->onGet('/precancel',
-                        function(WebRequest $request, Response $response, UriPath $uriPath)
-                        {
-                            $response->setStatusCode(418);
-                        }
-                  )
-                ->preIntercept('some\PreInterceptor')
-                ->preIntercept(array($this, 'callableMethod'))
-                ->preIntercept(function(WebRequest $request, Response $response)
-                               {
-                                    $response->setStatusCode(508);
-                                    $request->cancel();
-                               }
-                  )
-                ->preIntercept('other\PreInterceptor')
-                ->postIntercept(function(WebRequest $request, Response $response)
-                                {
-                                     $response->setStatusCode(304);
-                                }
-                  );
-        $routing->onGet('/cancel',
-                        function(WebRequest $request, Response $response, UriPath $uriPath)
-                        {
-                            $response->setStatusCode(418);
-                            $request->cancel();
-                        }
-                  )
-                ->preIntercept('some\PreInterceptor')
-                ->preIntercept(array($this, 'callableMethod'))
-                ->postIntercept(function(WebRequest $request, Response $response)
-                                {
-                                     $response->setStatusCode(304);
-                                }
-                  );
-        $routing->onGet('/postcancel',
-                        function(WebRequest $request, Response $response, UriPath $uriPath)
-                        {
-                            $response->setStatusCode(418);
-                        }
-                  )
-                ->preIntercept(array($this, 'callableMethod'))
-                ->postIntercept('some\PostInterceptor')
-                ->postIntercept(function(WebRequest $request, Response $response)
-                                {
-                                     $response->addCookie(Cookie::create('foo', 'bar'));
-                                     $request->cancel();
-                                }
-                  )
-                ->postIntercept('other\PostInterceptor');
-    }
-
 }
 /**
  * Tests for net\stubbles\webapp\WebApp.
@@ -151,6 +58,12 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
      * @type  \PHPUnit_Framework_MockObject_MockObject
      */
     private $mockInjector;
+    /**
+     * partially mocked routing
+     *
+     * @type  Routing
+     */
+    private $routing;
 
     /**
      * set up test environment
@@ -163,12 +76,19 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
                                        ->disableOriginalConstructor()
                                        ->getMock();
         $mockResponseNegotiator->expects($this->any())
-                               ->method('negotiate')
+                               ->method('negotiateMimeType')
                                ->will($this->returnValue($this->mockResponse));
-        $this->mockInjector           = $this->getMockBuilder('net\stubbles\ioc\Injector')
-                                             ->disableOriginalConstructor()
-                                             ->getMock();
-        $this->webApp                 = new TestWebApp($this->mockRequest, $mockResponseNegotiator, $this->mockInjector);
+        $this->routing = $this->getMockBuilder('net\stubbles\webapp\Routing')
+                              ->disableOriginalConstructor()
+                              ->getMock();
+
+        $this->webApp  = $this->getMock('net\stubbles\webapp\TestWebApp',
+                                        array('configureRouting'),
+                                        array($this->mockRequest,
+                                              $mockResponseNegotiator,
+                                              $this->routing
+                                        )
+                         );
     }
 
     /**
@@ -213,27 +133,10 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * mocks request uri according to parameters
-     *
-     * @param  string  $uri
-     * @param  string  $method
-     */
-    private function mockRequestUri($uri, $method = 'GET')
-    {
-        $this->mockRequest->expects($this->once())
-                          ->method('getUri')
-                          ->will($this->returnValue(HttpUri::fromString($uri)));
-        $this->mockRequest->expects($this->any())
-                          ->method('getMethod')
-                          ->will($this->returnValue($method));
-    }
-
-    /**
      * @test
      */
     public function doesNothingIfResponseNegotiationFails()
     {
-        $this->mockRequestUri('http://example.net/hello');
         $this->mockRequest->expects($this->once())
                           ->method('isCancelled')
                           ->will($this->returnValue(true));
@@ -247,7 +150,12 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
      */
     public function respondsWithError404IfNoRouteFound()
     {
-        $this->mockRequestUri('http://example.net/notFound');
+        $this->routing->expects($this->once())
+                      ->method('canFindRoute')
+                      ->will($this->returnValue(false));
+        $this->routing->expects($this->once())
+                      ->method('getAllowedMethods')
+                      ->will($this->returnValue(array()));
         $this->mockRequest->expects($this->once())
                           ->method('isCancelled')
                           ->will($this->returnValue(false));
@@ -263,10 +171,15 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
      */
     public function respondsWithError405IfPathNotApplicableForGivenRequestMethod()
     {
-        $this->mockRequestUri('http://example.net/update');
-        $this->mockRequest->expects($this->once())
-                          ->method('isCancelled')
-                          ->will($this->returnValue(false));
+        $this->routing->expects($this->once())
+                      ->method('canFindRoute')
+                      ->will($this->returnValue(false));
+        $this->routing->expects($this->once())
+                      ->method('getAllowedMethods')
+                      ->will($this->returnValue(array('POST', 'PUT')));
+        $this->mockRequest->expects($this->any())
+                          ->method('getMethod')
+                          ->will($this->returnValue('GET'));
         $this->mockResponse->expects($this->once())
                            ->method('methodNotAllowed')
                            ->with($this->equalTo('GET'), $this->equalTo(array('POST', 'PUT')));
@@ -276,14 +189,35 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     *
+     * @param type $mockRoute
+     */
+    private function createMockRoute()
+    {
+        $mockRoute = $this->getMockBuilder('net\stubbles\webapp\ProcessableRoute')
+                          ->disableOriginalConstructor()
+                          ->getMock();
+        $this->routing->expects($this->once())
+                      ->method('canFindRoute')
+                      ->will($this->returnValue(true));
+        $this->routing->expects($this->once())
+                      ->method('findRoute')
+                      ->will($this->returnValue($mockRoute));
+        return $mockRoute;
+    }
+
+    /**
      * @test
      */
     public function respondsWithRedirectHttpsUriIfRequiresHttps()
     {
-        $this->mockRequestUri('http://example.net/admin');
-        $this->mockRequest->expects($this->once())
-                          ->method('isCancelled')
-                          ->will($this->returnValue(false));
+        $mockRoute = $this->createMockRoute();
+        $mockRoute->expects($this->once())
+                  ->method('switchToHttps')
+                  ->will($this->returnValue(true));
+        $mockRoute->expects($this->once())
+                  ->method('getHttpsUri')
+                  ->will($this->returnValue('https://example.net/admin'));
         $this->mockResponse->expects($this->once())
                            ->method('redirect')
                            ->with($this->equalTo('https://example.net/admin'));
@@ -297,10 +231,13 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
      */
     public function respondsWithError500IfPathRequiresAuthButNoAuthHandlerSet()
     {
-        $this->mockRequestUri('https://example.net/admin');
-        $this->mockRequest->expects($this->once())
-                          ->method('isCancelled')
-                          ->will($this->returnValue(false));
+        $mockRoute = $this->createMockRoute();
+        $mockRoute->expects($this->once())
+                  ->method('switchToHttps')
+                  ->will($this->returnValue(false));
+        $mockRoute->expects($this->once())
+                  ->method('requiresRole')
+                  ->will($this->returnValue(true));
         $this->mockResponse->expects($this->once())
                            ->method('internalServerError')
                            ->with($this->equalTo('Requested route requires authorization, but no auth handler defined for application'));
@@ -314,7 +251,16 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
      */
     public function respondsWithRedirectToLoginUriIfRequiresAuthAndNoUserLoggedIn()
     {
-        $this->mockRequestUri('https://example.net/admin');
+        $mockRoute = $this->createMockRoute();
+        $mockRoute->expects($this->once())
+                  ->method('switchToHttps')
+                  ->will($this->returnValue(false));
+        $mockRoute->expects($this->once())
+                  ->method('requiresRole')
+                  ->will($this->returnValue(true));
+        $mockRoute->expects($this->exactly(2))
+                  ->method('getRequiredRole')
+                  ->will($this->returnValue('administrator'));
         $this->mockRequest->expects($this->once())
                           ->method('isCancelled')
                           ->will($this->returnValue(false));
@@ -329,10 +275,10 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
                         ->will($this->returnValue(true));
         $mockAuthHandler->expects($this->once())
                         ->method('getLoginUri')
-                        ->will($this->returnValue('http://example.net/login'));
+                        ->will($this->returnValue('https://example.net/login'));
         $this->mockResponse->expects($this->once())
                            ->method('redirect')
-                           ->with($this->equalTo('http://example.net/login'));
+                           ->with($this->equalTo('https://example.net/login'));
         $this->mockResponse->expects($this->once())
                            ->method('send');
         $this->webApp->setAuthHandler($mockAuthHandler)->run();
@@ -343,7 +289,16 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
      */
     public function respondsWithError403IfRequiresAuthAndUserHasNoSufficientRights()
     {
-        $this->mockRequestUri('https://example.net/admin');
+        $mockRoute = $this->createMockRoute();
+        $mockRoute->expects($this->once())
+                  ->method('switchToHttps')
+                  ->will($this->returnValue(false));
+        $mockRoute->expects($this->once())
+                  ->method('requiresRole')
+                  ->will($this->returnValue(true));
+        $mockRoute->expects($this->exactly(2))
+                  ->method('getRequiredRole')
+                  ->will($this->returnValue('administrator'));
         $this->mockRequest->expects($this->once())
                           ->method('isCancelled')
                           ->will($this->returnValue(false));
@@ -370,22 +325,23 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
      */
     public function doesNotExecuteRouteAndPostInterceptorsIfPreInterceptorCancelsRequest()
     {
-        $this->mockRequestUri('http://example.net/precancel');
-        $this->mockRequest->expects($this->exactly(4))
-                          ->method('isCancelled')
-                          ->will($this->onConsecutiveCalls(false, false, false, true));
-        $this->mockInjector->expects($this->once())
-                           ->method('getInstance')
-                           ->with($this->equalTo('some\PreInterceptor'))
-                           ->will($this->returnValue($this->getMock('net\stubbles\webapp\interceptor\PreInterceptor')));
-        $this->mockResponse->expects($this->once())
-                           ->method('addHeader')
-                           ->with($this->equalTo('X-Binford'));
-        $this->mockResponse->expects($this->once())
-                           ->method('setStatusCode')
-                           ->with($this->equalTo(508));
-        $this->mockRequest->expects($this->once())
-                          ->method('cancel');
+        $mockRoute = $this->createMockRoute();
+        $mockRoute->expects($this->once())
+                  ->method('switchToHttps')
+                  ->will($this->returnValue(false));
+        $mockRoute->expects($this->once())
+                  ->method('requiresRole')
+                  ->will($this->returnValue(false));
+        $mockRoute->expects($this->once())
+                  ->method('applyPreInterceptors')
+                  ->with($this->equalTo($this->mockRequest),
+                         $this->equalTo($this->mockResponse)
+                    )
+                  ->will($this->returnValue(false));
+        $mockRoute->expects($this->never())
+                  ->method('process');
+        $mockRoute->expects($this->never())
+                  ->method('applyPostInterceptors');
         $this->mockResponse->expects($this->once())
                            ->method('send');
         $this->webApp->run();
@@ -396,50 +352,27 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
      */
     public function doesNotExecutePostInterceptorsIfRouteCancelsRequest()
     {
-        $this->mockRequestUri('http://example.net/cancel');
-        $this->mockRequest->expects($this->exactly(4))
-                          ->method('isCancelled')
-                          ->will($this->onConsecutiveCalls(false, false, false, true));
-        $this->mockInjector->expects($this->once())
-                           ->method('getInstance')
-                           ->with($this->equalTo('some\PreInterceptor'))
-                           ->will($this->returnValue($this->getMock('net\stubbles\webapp\interceptor\PreInterceptor')));
-        $this->mockResponse->expects($this->once())
-                           ->method('addHeader')
-                           ->with($this->equalTo('X-Binford'));
-        $this->mockResponse->expects($this->once())
-                           ->method('setStatusCode')
-                           ->with($this->equalTo(418));
-        $this->mockRequest->expects($this->once())
-                          ->method('cancel');
-        $this->mockResponse->expects($this->once())
-                           ->method('send');
-        $this->webApp->run();
-    }
-
-    /**
-     * @test
-     */
-    public function doesNotExecuteAllPostInterceptorsIfPostInterceptorCancelsRequest()
-    {
-        $this->mockRequestUri('http://example.net/postcancel');
-        $this->mockRequest->expects($this->exactly(5))
-                          ->method('isCancelled')
-                          ->will($this->onConsecutiveCalls(false, false, false, false, true));
-        $this->mockInjector->expects($this->once())
-                           ->method('getInstance')
-                           ->with($this->equalTo('some\PostInterceptor'))
-                           ->will($this->returnValue($this->getMock('net\stubbles\webapp\interceptor\PostInterceptor')));
-        $this->mockResponse->expects($this->once())
-                           ->method('addHeader')
-                           ->with($this->equalTo('X-Binford'));
-        $this->mockResponse->expects($this->once())
-                           ->method('setStatusCode')
-                           ->with($this->equalTo(418));
-        $this->mockResponse->expects($this->once())
-                           ->method('addCookie');
-        $this->mockRequest->expects($this->once())
-                          ->method('cancel');
+        $mockRoute = $this->createMockRoute();
+        $mockRoute->expects($this->once())
+                  ->method('switchToHttps')
+                  ->will($this->returnValue(false));
+        $mockRoute->expects($this->once())
+                  ->method('requiresRole')
+                  ->will($this->returnValue(false));
+        $mockRoute->expects($this->once())
+                  ->method('applyPreInterceptors')
+                  ->with($this->equalTo($this->mockRequest),
+                         $this->equalTo($this->mockResponse)
+                    )
+                  ->will($this->returnValue(true));
+        $mockRoute->expects($this->once())
+                  ->method('process')
+                  ->with($this->equalTo($this->mockRequest),
+                         $this->equalTo($this->mockResponse)
+                    )
+                  ->will($this->returnValue(false));
+        $mockRoute->expects($this->never())
+                  ->method('applyPostInterceptors');
         $this->mockResponse->expects($this->once())
                            ->method('send');
         $this->webApp->run();
@@ -450,26 +383,30 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
      */
     public function doesExecuteEverythingIfRequestNotCancelled()
     {
-        $this->mockRequestUri('http://example.net/hello');
-        $this->mockRequest->expects($this->exactly(6))
-                          ->method('isCancelled')
-                          ->will($this->returnValue(false));
-        $this->mockInjector->expects($this->once())
-                           ->method('getInstance')
-                           ->with($this->equalTo('some\PostInterceptor'))
-                           ->will($this->returnValue($this->getMock('net\stubbles\webapp\interceptor\PostInterceptor')));
-        $this->mockResponse->expects($this->exactly(2))
-                           ->method('addHeader')
-                           ->with($this->equalTo('X-Binford'));
-        $this->mockResponse->expects($this->never())
-                           ->method('setStatusCode');
-        $this->mockResponse->expects($this->once())
-                           ->method('write')
-                           ->with($this->equalTo('Hello world!'));
-        $this->mockResponse->expects($this->once())
-                           ->method('addCookie');
-        $this->mockRequest->expects($this->never())
-                          ->method('cancel');
+        $mockRoute = $this->createMockRoute();
+        $mockRoute->expects($this->once())
+                  ->method('switchToHttps')
+                  ->will($this->returnValue(false));
+        $mockRoute->expects($this->once())
+                  ->method('requiresRole')
+                  ->will($this->returnValue(false));
+        $mockRoute->expects($this->once())
+                  ->method('applyPreInterceptors')
+                  ->with($this->equalTo($this->mockRequest),
+                         $this->equalTo($this->mockResponse)
+                    )
+                  ->will($this->returnValue(true));
+        $mockRoute->expects($this->once())
+                  ->method('process')
+                  ->with($this->equalTo($this->mockRequest),
+                         $this->equalTo($this->mockResponse)
+                    )
+                  ->will($this->returnValue(true));
+        $mockRoute->expects($this->once())
+                  ->method('applyPostInterceptors')
+                  ->with($this->equalTo($this->mockRequest),
+                         $this->equalTo($this->mockResponse)
+                    );
         $this->mockResponse->expects($this->once())
                            ->method('send');
         $this->webApp->run();
@@ -480,26 +417,33 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
      */
     public function executesGetWithHeadRequestForSameUri()
     {
-        $this->mockRequestUri('http://example.net/hello', 'HEAD');
-        $this->mockRequest->expects($this->exactly(6))
-                          ->method('isCancelled')
-                          ->will($this->returnValue(false));
-        $this->mockInjector->expects($this->once())
-                           ->method('getInstance')
-                           ->with($this->equalTo('some\PostInterceptor'))
-                           ->will($this->returnValue($this->getMock('net\stubbles\webapp\interceptor\PostInterceptor')));
-        $this->mockResponse->expects($this->exactly(2))
-                           ->method('addHeader')
-                           ->with($this->equalTo('X-Binford'));
-        $this->mockResponse->expects($this->never())
-                           ->method('setStatusCode');
-        $this->mockResponse->expects($this->once())
-                           ->method('write')
-                           ->with($this->equalTo('Hello world!'));
-        $this->mockResponse->expects($this->once())
-                           ->method('addCookie');
-        $this->mockRequest->expects($this->never())
-                          ->method('cancel');
+        $mockRoute = $this->createMockRoute();
+        $mockRoute->expects($this->once())
+                  ->method('switchToHttps')
+                  ->will($this->returnValue(false));
+        $mockRoute->expects($this->once())
+                  ->method('requiresRole')
+                  ->will($this->returnValue(false));
+        $mockRoute->expects($this->once())
+                  ->method('applyPreInterceptors')
+                  ->with($this->equalTo($this->mockRequest),
+                         $this->equalTo($this->mockResponse)
+                    )
+                  ->will($this->returnValue(true));
+        $mockRoute->expects($this->once())
+                  ->method('process')
+                  ->with($this->equalTo($this->mockRequest),
+                         $this->equalTo($this->mockResponse)
+                    )
+                  ->will($this->returnValue(true));
+        $mockRoute->expects($this->once())
+                  ->method('applyPostInterceptors')
+                  ->with($this->equalTo($this->mockRequest),
+                         $this->equalTo($this->mockResponse)
+                    );
+        $this->mockRequest->expects($this->once())
+                          ->method('getMethod')
+                          ->will($this->returnValue('HEAD'));
         $this->mockResponse->expects($this->once())
                            ->method('sendHead');
         $this->webApp->run();

@@ -82,12 +82,56 @@ class ResponseNegotiatorTestCase extends \PHPUnit_Framework_TestCase
         $this->mockRequest->expects($this->once())
                           ->method('getProtocolVersion')
                           ->will($this->returnValue(null));
-        $this->mockResponse->expects($this->once())
-                           ->method('httpVersionNotSupported');
         $this->mockRequest->expects($this->once())
                           ->method('cancel');
-        $this->assertSame($this->mockResponse,
-                          $this->responseNegotiator->negotiate($this->mockRequest, $this->mockRouting)
+        $mockResponseClass = get_class($this->getMockBuilder('net\stubbles\webapp\response\WebResponse')
+                                            ->setMethods(array('header', 'sendBody'))
+                                            ->getMock()
+                             );
+        $response = ResponseNegotiator::negotiateHttpVersion($this->mockRequest, $mockResponseClass);
+        $this->assertInstanceOf($mockResponseClass, $response);
+        $response->expects($this->once())
+                 ->method('header')
+                 ->with($this->equalTo('HTTP/1.1 505 HTTP Version Not Supported'));
+        $response->expects($this->once())
+                 ->method('sendBody')
+                 ->with($this->equalTo('Unsupported HTTP protocol version, expected HTTP/1.0 or HTTP/1.1'));
+    }
+
+    /**
+     * @test
+     */
+    public function createWithSupportedProtocolVersion1_0()
+    {
+        $this->mockRequest->expects($this->once())
+                          ->method('getProtocolVersion')
+                          ->will($this->returnValue('1.0'));
+        $this->mockRequest->expects($this->never())
+                          ->method('cancel');
+        $mockResponseClass = get_class($this->getMockBuilder('net\stubbles\webapp\response\WebResponse')
+                                            ->setMethods(array('header', 'sendBody'))
+                                            ->getMock()
+                             );
+        $response = ResponseNegotiator::negotiateHttpVersion($this->mockRequest, $mockResponseClass);
+        $this->assertInstanceOf($mockResponseClass, $response);
+        $response->expects($this->once())
+                 ->method('header')
+                 ->with($this->equalTo('HTTP/1.0 200 OK'));
+    }
+
+    /**
+     * @test
+     */
+    public function createWithSupportedProtocolVersionAndDefaultClass()
+    {
+        $this->mockRequest->expects($this->once())
+                          ->method('getProtocolVersion')
+                          ->will($this->returnValue('1.1'));
+        $this->mockRequest->expects($this->never())
+                          ->method('cancel');
+        $response = ResponseNegotiator::negotiateHttpVersion($this->mockRequest);
+        $this->assertInstanceOf('net\stubbles\webapp\response\WebResponse',
+                                $response
         );
     }
 
@@ -107,11 +151,28 @@ class ResponseNegotiatorTestCase extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function doesNotNegotiateMimeTypeWithAlreadyCancelledRequest()
+    {
+        $this->mockRequest->expects($this->once())
+                          ->method('isCancelled')
+                          ->will($this->returnValue(true));
+        $this->mockRequest->expects($this->never())
+                          ->method('readHeader');
+        $this->mockRouting->expects($this->never())
+                          ->method('negotiateMimeType');
+        $this->assertSame($this->mockResponse,
+                          $this->responseNegotiator->negotiateMimeType($this->mockRequest, $this->mockRouting)
+        );
+    }
+
+    /**
+     * @test
+     */
     public function failedMimeTypeNegotiationForExistingRouteRespondsWithNotAcceptable()
     {
         $this->mockRequest->expects($this->once())
-                          ->method('getProtocolVersion')
-                          ->will($this->returnValue('1.1'));
+                          ->method('isCancelled')
+                          ->will($this->returnValue(false));
         $this->mockAcceptHeader();
         $this->mockRouting->expects($this->once())
                           ->method('negotiateMimeType')
@@ -128,7 +189,7 @@ class ResponseNegotiatorTestCase extends \PHPUnit_Framework_TestCase
         $this->mockRequest->expects($this->once())
                           ->method('cancel');
         $this->assertSame($this->mockResponse,
-                          $this->responseNegotiator->negotiate($this->mockRequest, $this->mockRouting)
+                          $this->responseNegotiator->negotiateMimeType($this->mockRequest, $this->mockRouting)
         );
     }
 
@@ -138,8 +199,8 @@ class ResponseNegotiatorTestCase extends \PHPUnit_Framework_TestCase
     public function missingFormatterForNegotiatedMimeTypeRespondsWithInternalServerError()
     {
         $this->mockRequest->expects($this->once())
-                          ->method('getProtocolVersion')
-                          ->will($this->returnValue('1.1'));
+                          ->method('isCancelled')
+                          ->will($this->returnValue(false));
         $this->mockAcceptHeader();
         $this->mockRouting->expects($this->once())
                           ->method('negotiateMimeType')
@@ -156,7 +217,7 @@ class ResponseNegotiatorTestCase extends \PHPUnit_Framework_TestCase
         $this->mockRequest->expects($this->once())
                           ->method('cancel');
         $this->assertSame($this->mockResponse,
-                          $this->responseNegotiator->negotiate($this->mockRequest, $this->mockRouting)
+                          $this->responseNegotiator->negotiateMimeType($this->mockRequest, $this->mockRouting)
         );
     }
 
@@ -166,8 +227,8 @@ class ResponseNegotiatorTestCase extends \PHPUnit_Framework_TestCase
     public function createsFormatterForNegotiatedMimeTypeAndReturnsFormattingResponse()
     {
         $this->mockRequest->expects($this->once())
-                          ->method('getProtocolVersion')
-                          ->will($this->returnValue('1.1'));
+                          ->method('isCancelled')
+                          ->will($this->returnValue(false));
         $this->mockAcceptHeader();
         $this->mockRouting->expects($this->once())
                           ->method('negotiateMimeType')
@@ -190,7 +251,7 @@ class ResponseNegotiatorTestCase extends \PHPUnit_Framework_TestCase
         $this->mockRequest->expects($this->never())
                           ->method('cancel');
         $this->assertInstanceOf('net\stubbles\webapp\response\FormattingResponse',
-                                $this->responseNegotiator->negotiate($this->mockRequest, $this->mockRouting));
+                                $this->responseNegotiator->negotiateMimeType($this->mockRequest, $this->mockRouting));
     }
 
     /**
@@ -199,8 +260,8 @@ class ResponseNegotiatorTestCase extends \PHPUnit_Framework_TestCase
     public function failedMimeTypeNegotiationForNonExistingRouteReturnsFormattingResponse()
     {
         $this->mockRequest->expects($this->once())
-                          ->method('getProtocolVersion')
-                          ->will($this->returnValue('1.1'));
+                          ->method('isCancelled')
+                          ->will($this->returnValue(false));
         $this->mockAcceptHeader();
         $this->mockRouting->expects($this->once())
                           ->method('negotiateMimeType')
@@ -217,7 +278,7 @@ class ResponseNegotiatorTestCase extends \PHPUnit_Framework_TestCase
         $this->mockRequest->expects($this->never())
                           ->method('cancel');
         $this->assertInstanceOf('net\stubbles\webapp\response\FormattingResponse',
-                                $this->responseNegotiator->negotiate($this->mockRequest, $this->mockRouting));
+                                $this->responseNegotiator->negotiateMimeType($this->mockRequest, $this->mockRouting));
     }
 }
 ?>
