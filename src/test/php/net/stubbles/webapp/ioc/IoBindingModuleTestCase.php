@@ -224,10 +224,10 @@ class IoBindingModuleTestCase extends \PHPUnit_Framework_TestCase
                                   'text/json',
                                   'text/html',
                                   'text/plain',
+                                  'foo/bar',
                                   'text/xml',
                                   'application/xml',
-                                  'application/rss+xml',
-                                  'foo/bar'
+                                  'application/rss+xml'
                             ),
                             $injector->getConstant('net.stubbles.webapp.response.format.mimetypes')
         );

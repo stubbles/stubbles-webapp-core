@@ -7,7 +7,12 @@
     "require": {
         "php": ">=5.3.0",
         "stubbles/core": "2.1.*",
-        "stubbles/input": "2.1.*",
+        "stubbles/input": "2.1.*"
+    },
+    "suggest": {
+        "stubbles/xml": "2.0.*"
+    },
+    "require-dev": {
         "stubbles/xml": "2.0.*"
     },
     "autoload": {
