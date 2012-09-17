@@ -1,5 +1,5 @@
 {
-    "hash": "8df7dfb48bff1b3bf0dfe5465b31cc5b",
+    "hash": "80f6a63e2bde57cd25442af404278436",
     "packages": [
         {
             "package": "stubbles/core",
@@ -8,10 +8,6 @@
         {
             "package": "stubbles/input",
             "version": "v2.1.0"
-        },
-        {
-            "package": "stubbles/xml",
-            "version": "2.0.0"
         }
     ],
     "packages-dev": null,

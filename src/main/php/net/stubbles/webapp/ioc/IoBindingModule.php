@@ -36,8 +36,14 @@ class IoBindingModule extends BaseObject implements BindingModule
     private $formatter      = array('application/json'    => 'net\stubbles\webapp\response\format\JsonFormatter',
                                     'text/json'           => 'net\stubbles\webapp\response\format\JsonFormatter',
                                     'text/html'           => 'net\stubbles\webapp\response\format\HtmlFormatter',
-                                    'text/plain'          => 'net\stubbles\webapp\response\format\PlainTextFormatter',
-                                    'text/xml'            => 'net\stubbles\webapp\response\format\XmlFormatter',
+                                    'text/plain'          => 'net\stubbles\webapp\response\format\PlainTextFormatter'
+                              );
+    /**
+     * map of xml formatters for mime types
+     *
+     * @var  array
+     */
+    private $xmlFormatter   = array('text/xml'            => 'net\stubbles\webapp\response\format\XmlFormatter',
                                     'application/xml'     => 'net\stubbles\webapp\response\format\XmlFormatter',
                                     'application/rss+xml' => 'net\stubbles\webapp\response\format\XmlFormatter'
                               );
@@ -189,9 +195,10 @@ class IoBindingModule extends BaseObject implements BindingModule
                ->toInstance($request);
         $binder->bind('net\stubbles\webapp\response\Response')
                ->toInstance($response);
+        $formatters = $this->getAvailableFormatters();
         $binder->bindConstant('net.stubbles.webapp.response.format.mimetypes')
-               ->to(array_keys($this->formatter));
-        foreach ($this->formatter as $mimeType => $formatter) {
+               ->to(array_keys($formatters));
+        foreach ($formatters as $mimeType => $formatter) {
             $binder->bind('net\stubbles\webapp\response\format\Formatter')
                    ->named($mimeType)
                    ->to($formatter);
@@ -204,6 +211,23 @@ class IoBindingModule extends BaseObject implements BindingModule
                    ->toInstance($session);
             $binder->setSessionScope(new \net\stubbles\webapp\session\SessionBindingScope($session));
         }
+    }
+    
+    /**
+     * returns map of available formatters
+     *
+     * @return  array
+     */
+    private function getAvailableFormatters()
+    {
+        $formatter = $this->formatter;
+        foreach ($this->xmlFormatter as $mimeType => $xmlFormatter) {
+            if (!isset($formatter[$mimeType]) && class_exists('net\stubbles\xml\serializer\XmlSerializerFacade')) {
+                $formatter[$mimeType] = $xmlFormatter;
+            }
+        }
+        
+        return $formatter;
     }
 }
 ?>
