@@ -154,13 +154,44 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
                       ->method('canFindRoute')
                       ->will($this->returnValue(false));
         $this->routing->expects($this->once())
-                      ->method('getAllowedMethods')
-                      ->will($this->returnValue(array()));
+                      ->method('canFindRouteWithAnyMethod')
+                      ->will($this->returnValue(false));
+        $this->routing->expects($this->never())
+                      ->method('getAllowedMethods');
         $this->mockRequest->expects($this->once())
                           ->method('isCancelled')
                           ->will($this->returnValue(false));
         $this->mockResponse->expects($this->once())
                            ->method('notFound');
+        $this->mockResponse->expects($this->once())
+                           ->method('send');
+        $this->webApp->run();
+    }
+
+    /**
+     * @test
+     */
+    public function respondsWith20OkIfRequestMethodIsOptionsButRouteHasNoSpecificOptionsSupport()
+    {
+        $this->routing->expects($this->once())
+                      ->method('canFindRoute')
+                      ->will($this->returnValue(false));
+        $this->routing->expects($this->once())
+                      ->method('canFindRouteWithAnyMethod')
+                      ->will($this->returnValue(true));
+        $this->routing->expects($this->once())
+                      ->method('getAllowedMethods')
+                      ->will($this->returnValue(array('POST', 'PUT')));
+        $this->mockRequest->expects($this->any())
+                          ->method('getMethod')
+                          ->will($this->returnValue('OPTIONS'));
+        $this->mockResponse->expects($this->at(0))
+                           ->method('addHeader')
+                           ->with($this->equalTo('Allow'), $this->equalTo('POST, PUT, OPTIONS'))
+                           ->will($this->returnSelf());
+        $this->mockResponse->expects($this->at(1))
+                           ->method('addHeader')
+                           ->with($this->equalTo('Access-Control-Allow-Methods'), $this->equalTo('POST, PUT, OPTIONS'));
         $this->mockResponse->expects($this->once())
                            ->method('send');
         $this->webApp->run();
@@ -175,6 +206,9 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
                       ->method('canFindRoute')
                       ->will($this->returnValue(false));
         $this->routing->expects($this->once())
+                      ->method('canFindRouteWithAnyMethod')
+                      ->will($this->returnValue(true));
+        $this->routing->expects($this->once())
                       ->method('getAllowedMethods')
                       ->will($this->returnValue(array('POST', 'PUT')));
         $this->mockRequest->expects($this->any())
@@ -182,7 +216,7 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
                           ->will($this->returnValue('GET'));
         $this->mockResponse->expects($this->once())
                            ->method('methodNotAllowed')
-                           ->with($this->equalTo('GET'), $this->equalTo(array('POST', 'PUT')));
+                           ->with($this->equalTo('GET'), $this->equalTo(array('POST', 'PUT', 'OPTIONS')));
         $this->mockResponse->expects($this->once())
                            ->method('send');
         $this->webApp->run();
