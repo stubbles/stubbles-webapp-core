@@ -2,12 +2,78 @@
     "hash": "26d129743adbd2e8f8dba82ac9109862",
     "packages": [
         {
-            "package": "stubbles/core",
-            "version": "v2.1.2"
+            "name": "stubbles/core",
+            "version": "v2.1.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/stubbles/stubbles-core",
+                "reference": "v2.1.2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://github.com/stubbles/stubbles-core/zipball/v2.1.2",
+                "reference": "v2.1.2",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "mikey179/vfsstream": "1.1.*"
+            },
+            "time": "2012-08-29 21:01:18",
+            "bin": [
+                "bin/clearCache"
+            ],
+            "type": "library",
+            "installation-source": "dist",
+            "autoload": {
+                "psr-0": {
+                    "net\\stubbles": "src/main/php",
+                    "org\\stubbles": "src/main/php"
+                }
+            },
+            "license": [
+                "BSD-3"
+            ],
+            "description": "Provides base classes for Stubbles packages.",
+            "homepage": "http://stubbles.net/"
         },
         {
-            "package": "stubbles/input",
-            "version": "v2.2.0"
+            "name": "stubbles/input",
+            "version": "v2.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/stubbles/stubbles-input",
+                "reference": "v2.2.0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://github.com/stubbles/stubbles-input/zipball/v2.2.0",
+                "reference": "v2.2.0",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0",
+                "stubbles/core": "2.1.*"
+            },
+            "require-dev": {
+                "mikey179/vfsstream": "1.0.*"
+            },
+            "time": "2012-09-06 20:52:28",
+            "type": "library",
+            "installation-source": "dist",
+            "autoload": {
+                "psr-0": {
+                    "net\\stubbles\\input": "src/main/php",
+                    "org\\stubbles\\input": "src/main/php"
+                }
+            },
+            "license": [
+                "BSD-3"
+            ],
+            "description": "Stubbles Input enables to handle input data via validation and filtering.",
+            "homepage": "http://stubbles.net/"
         }
     ],
     "packages-dev": null,
