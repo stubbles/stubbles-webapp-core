@@ -69,7 +69,7 @@ class NativeSessionStorageTestCase extends \PHPUnit_Framework_TestCase
         }
 
         $this->assertNotEquals($id,
-                               $this->nativeSessionStorage->regenerateId()
+                               $this->nativeSessionStorage->regenerate()
                                                           ->get()
         );
     }
