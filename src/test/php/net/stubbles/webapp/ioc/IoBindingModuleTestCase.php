@@ -118,6 +118,8 @@ class IoBindingModuleTestCase extends \PHPUnit_Framework_TestCase
         } catch (\net\stubbles\lang\exception\RuntimeException $re) {
             $this->fail($re->getMessage());
         }
+
+        $this->addToAssertionCount(1);
     }
 
     /**
