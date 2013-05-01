@@ -9,7 +9,6 @@
  */
 namespace net\stubbles\webapp\interceptor;
 use net\stubbles\input\web\WebRequest;
-use net\stubbles\lang\Object;
 use net\stubbles\webapp\response\Response;
 /**
  * interface for pre interceptors.
@@ -17,7 +16,7 @@ use net\stubbles\webapp\response\Response;
  * Preinterceptors are called after all initializations have been done and
  * before processing of data starts.
  */
-interface PreInterceptor extends Object
+interface PreInterceptor
 {
     /**
      * does the preprocessing stuff

@@ -8,14 +8,13 @@
  * @package  net\stubbles\webapp
  */
 namespace net\stubbles\webapp;
-use net\stubbles\lang\BaseObject;
 use net\stubbles\lang\exception\IllegalArgumentException;
 /**
  * Represents information about a route that can be called.
  *
  * @since  2.0.0
  */
-class Route extends BaseObject implements ConfigurableRoute
+class Route implements ConfigurableRoute
 {
     /**
      * path this route is applicable for
@@ -185,7 +184,7 @@ class Route extends BaseObject implements ConfigurableRoute
     /**
      * add a post interceptor for this route
      *
-     * @param   string|callback|interceptor\PostInterceptor  $preInterceptor
+     * @param   string|callback|interceptor\PostInterceptor  $postInterceptor
      * @return  Route
      * @throws  IllegalArgumentException
      */

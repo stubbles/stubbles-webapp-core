@@ -46,7 +46,7 @@ class HtmlFormatter extends BaseObject implements Formatter
     /**
      * sets base title for web application
      *
-     * @param   string  $template
+     * @param   string  $title
      * @return  HtmlFormatter
      * @Inject(optional=true)
      * @Named('net.stubbles.webapp.response.format.html.title')

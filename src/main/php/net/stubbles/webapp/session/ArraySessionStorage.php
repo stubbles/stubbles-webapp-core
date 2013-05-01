@@ -8,13 +8,12 @@
  * @package  net\stubbles\webapp
  */
 namespace net\stubbles\webapp\session;
-use net\stubbles\lang\BaseObject;
 /**
  * Session storage that uses an internal array only and is therefore not durable.
  *
  * @since  2.0.0
  */
-class ArraySessionStorage extends BaseObject implements SessionStorage
+class ArraySessionStorage implements SessionStorage
 {
     /**
      * the data

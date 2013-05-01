@@ -8,7 +8,6 @@
  * @package  net\stubbles\webapp
  */
 namespace net\stubbles\webapp\session;
-use net\stubbles\lang\BaseObject;
 /**
  * Session tokens can be used to verify that forms have been send by those who
  * requested them before.
@@ -16,7 +15,7 @@ use net\stubbles\lang\BaseObject;
  * @since  2.0.0
  * @Singleton
  */
-class Token extends BaseObject
+class Token
 {
     /**
      * key to be associated with the token for the next request
@@ -49,6 +48,7 @@ class Token extends BaseObject
     /**
      * checks if given token equals current token
      *
+     * @param   string  $token
      * @return  bool
      */
     public function isValid($token)

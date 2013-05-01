@@ -8,14 +8,13 @@
  * @package  net\stubbles\webapp
  */
 namespace net\stubbles\webapp\response;
-use net\stubbles\lang\Object;
 /**
  * Interface for a response to a request.
  *
  * The response collects all data that should be send to the source
  * that initiated the request.
  */
-interface Response extends Object
+interface Response
 {
     /**
      * clears the response
@@ -55,6 +54,7 @@ interface Response extends Object
     /**
      * removes cookie with given name
      *
+     * @param   string  $name
      * @return  Response
      * @since   2.0.0
      */
@@ -73,13 +73,12 @@ interface Response extends Object
      *
      * Status code is optional, default is 302.
      *
-     * @param   string  $url           url to redirect to
-     * @param   int     $statusCode    HTTP status code to redirect with (301, 302, ...)
-     * @param   string  $reasonPhrase  HTTP status code reason phrase
+     * @param   string|HttpUri  $uri         http uri to redirect to
+     * @param   int             $statusCode  HTTP status code to redirect with (301, 302, ...)
      * @return  Response
      * @since   1.3.0
      */
-    public function redirect($url, $statusCode = 302);
+    public function redirect($uri, $statusCode = 302);
 
     /**
      * creates a 403 Forbidden message

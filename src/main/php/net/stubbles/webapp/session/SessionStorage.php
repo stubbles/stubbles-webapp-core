@@ -8,13 +8,12 @@
  * @package  net\stubbles\webapp
  */
 namespace net\stubbles\webapp\session;
-use net\stubbles\lang\Object;
 /**
  * Interface for session storages.
  *
  * @since  2.0.0
  */
-interface SessionStorage extends Object
+interface SessionStorage
 {
     /**
      * removes all data from storage

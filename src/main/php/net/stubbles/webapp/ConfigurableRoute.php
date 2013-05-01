@@ -20,7 +20,7 @@ interface ConfigurableRoute
     /**
      * add a pre interceptor for this route
      *
-     * @param   string|Closure  $preInterceptor
+     * @param   string|\Closure  $preInterceptor
      * @return  ConfigurableRoute
      */
     public function preIntercept($preInterceptor);
@@ -28,7 +28,7 @@ interface ConfigurableRoute
     /**
      * add a post interceptor for this route
      *
-     * @param   string|Closure  $preInterceptor
+     * @param   string|\Closure  $postInterceptor
      * @return  ConfigurableRoute
      */
     public function postIntercept($postInterceptor);

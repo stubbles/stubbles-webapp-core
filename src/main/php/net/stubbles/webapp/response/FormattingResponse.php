@@ -8,14 +8,13 @@
  * @package  net\stubbles\webapp
  */
 namespace net\stubbles\webapp\response;
-use net\stubbles\lang\BaseObject;
 use net\stubbles\webapp\response\format\Formatter;
 /**
  * Response which is able to format the response body if it is not a string.
  *
  * @since  2.0.0
  */
-class FormattingResponse extends BaseObject implements Response
+class FormattingResponse implements Response
 {
     /**
      * decorated response
@@ -96,6 +95,7 @@ class FormattingResponse extends BaseObject implements Response
     /**
      * removes cookie with given name
      *
+     * @param   string  $name
      * @return  Response
      */
     public function removeCookie($name)
@@ -122,13 +122,13 @@ class FormattingResponse extends BaseObject implements Response
      *
      * Status code is optional, default is 302.
      *
-     * @param   string  $url           url to redirect to
-     * @param   int     $statusCode    HTTP status code to redirect with (301, 302, ...)
+     * @param   string|HttpUri  $uri         http uri to redirect to
+     * @param   int             $statusCode  HTTP status code to redirect with (301, 302, ...)
      * @return  Response
      */
-    public function redirect($url, $statusCode = 302)
+    public function redirect($uri, $statusCode = 302)
     {
-        $this->response->redirect($url, $statusCode);
+        $this->response->redirect($uri, $statusCode);
         return $this;
     }
 

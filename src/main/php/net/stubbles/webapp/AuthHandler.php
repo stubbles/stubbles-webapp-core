@@ -8,13 +8,12 @@
  * @package  net\stubbles\webapp
  */
 namespace net\stubbles\webapp;
-use net\stubbles\lang\Object;
 /**
  * Interface for authentication handlers.
  *
  * @api
  */
-interface AuthHandler extends Object
+interface AuthHandler
 {
     /**
      * checks whether expected role is given

@@ -8,6 +8,7 @@
  * @package  net\stubbles\webapp
  */
 namespace net\stubbles\webapp\session;
+use net\stubbles\lang\reflect\ReflectionObject;
 /**
  * Tests for net\stubbles\webapp\session\Token.
  *
@@ -43,7 +44,9 @@ class TokenTestCase extends \PHPUnit_Framework_TestCase
      */
     public function annotationsPresentOnClass()
     {
-        $this->assertTrue($this->token->getClass()->hasAnnotation('Singleton'));
+        $this->assertTrue(ReflectionObject::fromInstance($this->token)
+                                          ->hasAnnotation('Singleton')
+        );
     }
 
     /**
@@ -51,9 +54,9 @@ class TokenTestCase extends \PHPUnit_Framework_TestCase
      */
     public function annotationsPresentOnConstructor()
     {
-        $this->assertTrue($this->token->getClass()
-                                      ->getConstructor()
-                                      ->hasAnnotation('Inject')
+        $this->assertTrue(ReflectionObject::fromInstance($this->token)
+                                          ->getConstructor()
+                                          ->hasAnnotation('Inject')
         );
     }
 

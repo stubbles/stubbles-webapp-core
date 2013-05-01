@@ -8,7 +8,6 @@
  * @package  net\stubbles\webapp
  */
 namespace net\stubbles\webapp\response;
-use net\stubbles\lang\BaseObject;
 use net\stubbles\peer\http\Http;
 use net\stubbles\peer\http\HttpUri;
 /**
@@ -18,7 +17,7 @@ use net\stubbles\peer\http\HttpUri;
  * collects all data of the response and is able to send it back
  * to the source that initiated the request.
  */
-class WebResponse extends BaseObject implements Response
+class WebResponse implements Response
 {
     /**
      * current php sapi
@@ -133,6 +132,7 @@ class WebResponse extends BaseObject implements Response
     /**
      * removes cookie with given name
      *
+     * @param   string  $name
      * @return  Response
      * @since   2.0.0
      */

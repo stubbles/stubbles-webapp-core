@@ -9,7 +9,6 @@
  */
 namespace net\stubbles\webapp\interceptor;
 use net\stubbles\input\web\WebRequest;
-use net\stubbles\lang\Object;
 use net\stubbles\webapp\response\Response;
 /**
  * Interface for post interceptors.
@@ -17,7 +16,7 @@ use net\stubbles\webapp\response\Response;
  * Postinterceptors are called after all data processing is done. They can change
  * the response or add additional data to the response.
  */
-interface PostInterceptor extends Object
+interface PostInterceptor
 {
     /**
      * does the postprocessing stuff
