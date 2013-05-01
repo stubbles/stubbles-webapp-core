@@ -8,7 +8,6 @@
  * @package  net\stubbles\webapp
  */
 namespace net\stubbles\webapp\session;
-use net\stubbles\lang\BaseObject;
 /**
  * Session storage using default PHP sessions.
  *
@@ -17,7 +16,7 @@ use net\stubbles\lang\BaseObject;
  *
  * @since  2.0.0
  */
-class NativeSessionStorage extends BaseObject implements SessionStorage, SessionId
+class NativeSessionStorage implements SessionStorage, SessionId
 {
     /**
      * name of session

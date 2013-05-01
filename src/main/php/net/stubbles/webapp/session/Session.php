@@ -8,11 +8,10 @@
  * @package  net\stubbles\webapp
  */
 namespace net\stubbles\webapp\session;
-use net\stubbles\lang\Object;
 /**
  * Interface for sessions.
  */
-interface Session extends Object
+interface Session
 {
     /**
      * key to be associated with the fingerprint of the user

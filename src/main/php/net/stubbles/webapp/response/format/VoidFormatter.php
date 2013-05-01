@@ -50,8 +50,8 @@ class VoidFormatter extends BaseObject implements Formatter
     /**
      * write error message about 405 Method Not Allowed error
      *
-     * @param   string         $requestMethod   original request method
-     * @param   array<string>  $allowedMethods  list of allowed methods
+     * @param   string    $requestMethod   original request method
+     * @param   string[]  $allowedMethods  list of allowed methods
      * @return  string
      */
     public function formatMethodNotAllowedError($requestMethod, array $allowedMethods)

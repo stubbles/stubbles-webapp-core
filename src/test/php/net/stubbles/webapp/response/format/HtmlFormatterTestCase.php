@@ -8,6 +8,7 @@
  * @package  net\stubbles\webapp
  */
 namespace net\stubbles\webapp\response\format;
+use net\stubbles\lang\reflect\ReflectionObject;
 /**
  * Tests for net\stubbles\webapp\response\format\HtmlFormatter.
  *
@@ -37,7 +38,8 @@ class HtmlFormatterTestCase extends \PHPUnit_Framework_TestCase
      */
     public function annotationsPresentOnSetTemplateMethod()
     {
-        $method = $this->htmlFormatter->getClass()->getMethod('setTemplate');
+        $method = ReflectionObject::fromInstance($this->htmlFormatter)
+                                  ->getMethod('setTemplate');
         $this->assertTrue($method->hasAnnotation('Inject'));
         $this->assertTrue($method->getAnnotation('Inject')->isOptional());
         $this->assertTrue($method->hasAnnotation('Named'));
@@ -51,7 +53,8 @@ class HtmlFormatterTestCase extends \PHPUnit_Framework_TestCase
      */
     public function annotationsPresentOnSetBaseTitleMethod()
     {
-        $method = $this->htmlFormatter->getClass()->getMethod('setBaseTitle');
+        $method = ReflectionObject::fromInstance($this->htmlFormatter)
+                                  ->getMethod('setBaseTitle');
         $this->assertTrue($method->hasAnnotation('Inject'));
         $this->assertTrue($method->getAnnotation('Inject')->isOptional());
         $this->assertTrue($method->hasAnnotation('Named'));

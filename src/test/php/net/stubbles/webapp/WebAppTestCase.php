@@ -8,6 +8,7 @@
  * @package  net\stubbles\webapp
  */
 namespace net\stubbles\webapp;
+use net\stubbles\lang\reflect\ReflectionObject;
 /**
  * Helper class for the test.
  */
@@ -96,9 +97,9 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
      */
     public function annotationPresentOnConstructor()
     {
-        $this->assertTrue($this->webApp->getClass()
-                                       ->getConstructor()
-                                       ->hasAnnotation('Inject')
+        $this->assertTrue(ReflectionObject::fromInstance($this->webApp)
+                                          ->getConstructor()
+                                          ->hasAnnotation('Inject')
         );
     }
 
@@ -107,7 +108,8 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
      */
     public function annotationPresentOnSetAuthHandlerMethod()
     {
-        $method = $this->webApp->getClass()->getMethod('setAuthHandler');
+        $method = ReflectionObject::fromInstance($this->webApp)
+                                  ->getMethod('setAuthHandler');
         $this->assertTrue($method->hasAnnotation('Inject'));
         $this->assertTrue($method->getAnnotation('Inject')->isOptional());
     }

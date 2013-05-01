@@ -11,7 +11,6 @@ namespace net\stubbles\webapp\ioc;
 use net\stubbles\input\web\WebRequest;
 use net\stubbles\ioc\InjectionProvider;
 use net\stubbles\ioc\Injector;
-use net\stubbles\lang\BaseObject;
 use net\stubbles\webapp\Routing;
 use net\stubbles\webapp\UriRequest;
 /**
@@ -19,7 +18,7 @@ use net\stubbles\webapp\UriRequest;
  *
  * @since  2.0.0
  */
-class RoutingProvider extends BaseObject implements InjectionProvider
+class RoutingProvider implements InjectionProvider
 {
     /**
      * request instance

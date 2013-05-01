@@ -8,7 +8,6 @@
  * @package  net\stubbles\webapp
  */
 namespace net\stubbles\webapp\session;
-use net\stubbles\lang\BaseObject;
 use net\stubbles\lang\exception\IllegalStateException;
 /**
  * Base class for session implementations.
@@ -19,7 +18,7 @@ use net\stubbles\lang\exception\IllegalStateException;
  * request. While an instance is created the class checks the session to prevent
  * the user against session fixation and session hijacking.
  */
-class WebSession extends BaseObject implements Session
+class WebSession implements Session
 {
     /**
      * where session data is stored

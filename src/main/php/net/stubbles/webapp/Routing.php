@@ -9,7 +9,6 @@
  */
 namespace net\stubbles\webapp;
 use net\stubbles\ioc\Injector;
-use net\stubbles\lang\BaseObject;
 use net\stubbles\lang\exception\IllegalArgumentException;
 use net\stubbles\peer\http\AcceptHeader;
 use net\stubbles\webapp\interceptor\PreInterceptor;
@@ -20,7 +19,7 @@ use net\stubbles\webapp\interceptor\PostInterceptor;
  * @since  2.0.0
  * @ProvidedBy(net\stubbles\webapp\ioc\RoutingProvider.class)
  */
-class Routing extends BaseObject implements RoutingConfigurator
+class Routing implements RoutingConfigurator
 {
     /**
      * current request

@@ -8,13 +8,12 @@
  * @package  net\stubbles\webapp
  */
 namespace net\stubbles\webapp;
-use net\stubbles\lang\BaseObject;
 /**
  * Called path.
  *
  * @since  2.0.0
  */
-class UriPath extends BaseObject
+class UriPath
 {
     /**
      * matched path from route configuration

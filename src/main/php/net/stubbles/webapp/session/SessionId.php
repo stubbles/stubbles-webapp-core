@@ -8,13 +8,12 @@
  * @package  net\stubbles\webapp
  */
 namespace net\stubbles\webapp\session;
-use net\stubbles\lang\Object;
 /**
  * Container for a session id.
  *
  * @since  2.0.0
  */
-interface SessionId extends Object
+interface SessionId
 {
     /**
      * returns session name
