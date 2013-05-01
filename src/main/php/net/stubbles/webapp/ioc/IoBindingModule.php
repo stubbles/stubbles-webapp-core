@@ -12,7 +12,6 @@ use net\stubbles\input\web\BaseWebRequest;
 use net\stubbles\input\web\WebRequest;
 use net\stubbles\ioc\Binder;
 use net\stubbles\ioc\module\BindingModule;
-use net\stubbles\lang\BaseObject;
 use net\stubbles\webapp\response\Response;
 use net\stubbles\webapp\response\ResponseNegotiator;
 /**
@@ -20,7 +19,7 @@ use net\stubbles\webapp\response\ResponseNegotiator;
  *
  * @since  1.7.0
  */
-class IoBindingModule extends BaseObject implements BindingModule
+class IoBindingModule implements BindingModule
 {
     /**
      * response class to be used
@@ -73,6 +72,7 @@ class IoBindingModule extends BaseObject implements BindingModule
     /**
      * factory method
      *
+     * @param   string  $sessionName  name of session, will also be name of session cookie and param
      * @return  IoBindingModule
      * @since   1.3.0
      */
@@ -212,7 +212,7 @@ class IoBindingModule extends BaseObject implements BindingModule
             $binder->setSessionScope(new \net\stubbles\webapp\session\SessionBindingScope($session));
         }
     }
-    
+
     /**
      * returns map of available formatters
      *
@@ -226,7 +226,7 @@ class IoBindingModule extends BaseObject implements BindingModule
                 $formatter[$mimeType] = $xmlFormatter;
             }
         }
-        
+
         return $formatter;
     }
 }

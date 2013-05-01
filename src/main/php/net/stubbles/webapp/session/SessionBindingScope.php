@@ -10,13 +10,12 @@
 namespace net\stubbles\webapp\session;
 use net\stubbles\ioc\InjectionProvider;
 use net\stubbles\ioc\binding\BindingScope;
-use net\stubbles\lang\BaseObject;
 use net\stubbles\lang\reflect\BaseReflectionClass;
 use net\stubbles\webapp\session\Session;
 /**
  * Interface for session storages.
  */
-class SessionBindingScope extends BaseObject implements BindingScope
+class SessionBindingScope implements BindingScope
 {
     /**
      * session prefix key

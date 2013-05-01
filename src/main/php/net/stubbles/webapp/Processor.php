@@ -9,14 +9,13 @@
  */
 namespace net\stubbles\webapp;
 use net\stubbles\input\web\WebRequest;
-use net\stubbles\lang\Object;
 use net\stubbles\webapp\response\Response;
 /**
  * Interface for processors.
  *
  * @api
  */
-interface Processor extends Object
+interface Processor
 {
     /**
      * processes the request

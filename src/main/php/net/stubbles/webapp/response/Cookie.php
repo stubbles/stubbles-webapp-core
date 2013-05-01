@@ -8,7 +8,6 @@
  * @package  net\stubbles\webapp
  */
 namespace net\stubbles\webapp\response;
-use net\stubbles\lang\BaseObject;
 /**
  * Container for cookies to be send out to the user.
  *
@@ -19,7 +18,7 @@ use net\stubbles\lang\BaseObject;
  * @link  http://wp.netscape.com/newsref/std/cookie_spec.html
  * @link  http://www.faqs.org/rfcs/rfc2109.html
  */
-class Cookie extends BaseObject
+class Cookie
 {
     /**
      * name of the cookie

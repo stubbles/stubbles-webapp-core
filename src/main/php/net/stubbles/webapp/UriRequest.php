@@ -8,14 +8,13 @@
  * @package  net\stubbles\webapp
  */
 namespace net\stubbles\webapp;
-use net\stubbles\lang\BaseObject;
 use net\stubbles\peer\http\HttpUri;
 /**
  * Utility methods to handle operations based on the uri called in the current request.
  *
  * @since  1.7.0
  */
-class UriRequest extends BaseObject
+class UriRequest
 {
     /**
      * current uri

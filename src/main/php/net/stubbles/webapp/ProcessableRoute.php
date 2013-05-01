@@ -10,7 +10,6 @@
 namespace net\stubbles\webapp;
 use net\stubbles\input\web\WebRequest;
 use net\stubbles\ioc\Injector;
-use net\stubbles\lang\BaseObject;
 use net\stubbles\lang\exception\RuntimeException;
 use net\stubbles\webapp\response\Response;
 /**
@@ -18,7 +17,7 @@ use net\stubbles\webapp\response\Response;
  *
  * @since  2.0.0
  */
-class ProcessableRoute extends BaseObject
+class ProcessableRoute
 {
     /**
      * route configuration

@@ -10,14 +10,13 @@
 namespace net\stubbles\webapp\response;
 use net\stubbles\input\web\WebRequest;
 use net\stubbles\ioc\Injector;
-use net\stubbles\lang\BaseObject;
 use net\stubbles\webapp\Routing;
 /**
  * Negotiates correct response for request.
  *
  * @since  2.0.0
  */
-class ResponseNegotiator extends BaseObject
+class ResponseNegotiator
 {
     /**
      * base response implementation

@@ -8,13 +8,12 @@
  * @package  net\stubbles\webapp
  */
 namespace net\stubbles\webapp\session;
-use net\stubbles\lang\BaseObject;
 /**
  * Null session for usages in non-sessionbased web applications.
  *
  * @since  2.0.0
  */
-class NullSession extends BaseObject implements Session
+class NullSession implements Session
 {
     /**
      * if of the session

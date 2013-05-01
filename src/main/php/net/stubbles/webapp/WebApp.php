@@ -144,7 +144,6 @@ abstract class WebApp extends App
      *    method, resulting in 405 Method Not Allowed
      *
      * @param  Response  $response
-     * @param  string[]  $allowedMethods
      */
     private function handleRouteMismatch(Response $response)
     {

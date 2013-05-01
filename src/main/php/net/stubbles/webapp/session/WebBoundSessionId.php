@@ -9,7 +9,6 @@
  */
 namespace net\stubbles\webapp\session;
 use net\stubbles\input\web\WebRequest;
-use net\stubbles\lang\BaseObject;
 use net\stubbles\webapp\response\Cookie;
 use net\stubbles\webapp\response\Response;
 /**
@@ -17,7 +16,7 @@ use net\stubbles\webapp\response\Response;
  *
  * @since  2.0.0
  */
-class WebBoundSessionId extends BaseObject implements SessionId
+class WebBoundSessionId implements SessionId
 {
     /**
      * regular expression to validate the session id

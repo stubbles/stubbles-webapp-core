@@ -8,13 +8,12 @@
  * @package  net\stubbles\webapp
  */
 namespace net\stubbles\webapp\session;
-use net\stubbles\lang\BaseObject;
 /**
  * Session id which is always created new.
  *
  * @since  2.0.0
  */
-class NoneDurableSessionId extends BaseObject implements SessionId
+class NoneDurableSessionId implements SessionId
 {
     /**
      * actual id
@@ -52,7 +51,6 @@ class NoneDurableSessionId extends BaseObject implements SessionId
     /**
      * reads session id
      *
-     * @param   string  $sessionName  name of session, equals parameter and cookie name
      * @return  string
      */
     public function get()
