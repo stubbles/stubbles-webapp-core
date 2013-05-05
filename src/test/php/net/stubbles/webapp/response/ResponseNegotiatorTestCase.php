@@ -8,7 +8,7 @@
  * @package  net\stubbles\webapp
  */
 namespace net\stubbles\webapp\response;
-use net\stubbles\lang\reflect\ReflectionObject;
+use net\stubbles\lang;
 /**
  * Tests for net\stubbles\webapp\response\ResponseNegotiator.
  *
@@ -69,10 +69,7 @@ class ResponseNegotiatorTestCase extends \PHPUnit_Framework_TestCase
      */
     public function annotationPresentOnConstructor()
     {
-        $this->assertTrue(ReflectionObject::fromInstance($this->responseNegotiator)
-                                          ->getConstructor()
-                                          ->hasAnnotation('Inject')
-        );
+        $this->assertTrue(lang\reflectConstructor($this->responseNegotiator)->hasAnnotation('Inject'));
     }
 
     /**
