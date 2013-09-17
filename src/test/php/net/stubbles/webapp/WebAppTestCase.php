@@ -8,7 +8,7 @@
  * @package  net\stubbles\webapp
  */
 namespace net\stubbles\webapp;
-use net\stubbles\lang\reflect\ReflectionObject;
+use net\stubbles\lang;
 /**
  * Helper class for the test.
  */
@@ -97,10 +97,7 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
      */
     public function annotationPresentOnConstructor()
     {
-        $this->assertTrue(ReflectionObject::fromInstance($this->webApp)
-                                          ->getConstructor()
-                                          ->hasAnnotation('Inject')
-        );
+        $this->assertTrue(lang\reflectConstructor($this->webApp)->hasAnnotation('Inject'));
     }
 
     /**
@@ -108,8 +105,7 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
      */
     public function annotationPresentOnSetAuthHandlerMethod()
     {
-        $method = ReflectionObject::fromInstance($this->webApp)
-                                  ->getMethod('setAuthHandler');
+        $method = lang\reflect($this->webApp, 'setAuthHandler');
         $this->assertTrue($method->hasAnnotation('Inject'));
         $this->assertTrue($method->getAnnotation('Inject')->isOptional());
     }
@@ -119,7 +115,7 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
      */
     public function canCreateIoBindingModuleWithSession()
     {
-        $this->assertInstanceOf('net\\stubbles\\webapp\\ioc\\IoBindingModule',
+        $this->assertInstanceOf('net\stubbles\webapp\ioc\IoBindingModule',
                                 TestWebApp::callMethod('createIoBindingModuleWithSession')
         );
     }
@@ -129,7 +125,7 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
      */
     public function canCreateIoBindingModuleWithoutSession()
     {
-        $this->assertInstanceOf('net\\stubbles\\webapp\\ioc\\IoBindingModule',
+        $this->assertInstanceOf('net\stubbles\webapp\ioc\IoBindingModule',
                                 TestWebApp::callMethod('createIoBindingModuleWithoutSession')
         );
     }

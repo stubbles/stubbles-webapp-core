@@ -8,7 +8,7 @@
  * @package  net\stubbles\webapp
  */
 namespace net\stubbles\webapp\ioc;
-use net\stubbles\lang\reflect\ReflectionClass;
+use net\stubbles\lang;
 use net\stubbles\peer\http\HttpUri;
 /**
  * Tests for net\stubbles\webapp\ioc\IoBindingModule.
@@ -45,7 +45,7 @@ class RoutingProviderTestCase extends \PHPUnit_Framework_TestCase
      */
     public function isDefaultProviderForRouting()
     {
-        $refClass = new ReflectionClass('net\stubbles\webapp\Routing');
+        $refClass = lang\reflect('net\stubbles\webapp\Routing');
         $this->assertTrue($refClass->hasAnnotation('ProvidedBy'));
         $this->assertEquals('net\stubbles\webapp\ioc\RoutingProvider',
                             $refClass->getAnnotation('ProvidedBy')
