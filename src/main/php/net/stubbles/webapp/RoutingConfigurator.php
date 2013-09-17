@@ -167,5 +167,21 @@ interface RoutingConfigurator
      * @return  RoutingConfigurator
      */
     public function postIntercept($postInterceptor, $requestMethod = null);
+
+    /**
+     * add a supported mime type
+     *
+     * @param   string  $mimeType
+     * @return  RoutingConfigurator
+     */
+    public function supportsMimeType($mimeType);
+
+    /**
+     * disables content negotation
+     *
+     * @return  RoutingConfigurator
+     * @since   2.1.1
+     */
+    public function disableContentNegotiation();
 }
 ?>
