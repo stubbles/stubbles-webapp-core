@@ -64,6 +64,12 @@ class Route implements ConfigurableRoute
      * @type  string[]
      */
     private $mimeTypes        = array();
+    /**
+     * whether content negotation is disabled or not
+     *
+     * @type  bool
+     */
+    private $disableContentNegotation = false;
 
     /**
      * constructor
@@ -282,5 +288,27 @@ class Route implements ConfigurableRoute
     {
         return $this->mimeTypes;
     }
+
+    /**
+     * disables content negotation
+     *
+     * @return  Route
+     * @since   2.1.1
+     */
+    public function disableContentNegotiation()
+    {
+        $this->disableContentNegotation = true;
+        return $this;
+    }
+
+    /**
+     * checks whether content negotation is disabled
+     *
+     * @return  bool
+     * @since   2.1.1
+     */
+    public function isContentNegotationDisabled()
+    {
+        return $this->disableContentNegotation;
+    }
 }
-?>

@@ -277,5 +277,25 @@ class RouteTestCase extends \PHPUnit_Framework_TestCase
                                  ->getSupportedMimeTypes()
         );
     }
+
+    /**
+     * @test
+     * @since  2.1.1
+     */
+    public function contentNegotationIsEnabledByDefault()
+    {
+        $this->assertFalse($this->createRoute()->isContentNegotationDisabled());
+    }
+
+    /**
+     * @test
+     * @since  2.1.1
+     */
+    public function contentNegotationCanBeDisabled()
+    {
+        $this->assertTrue($this->createRoute()
+                               ->disableContentNegotiation()
+                               ->isContentNegotationDisabled()
+        );
+    }
 }
-?>
