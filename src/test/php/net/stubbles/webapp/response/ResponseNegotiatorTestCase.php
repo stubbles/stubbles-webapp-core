@@ -168,6 +168,27 @@ class ResponseNegotiatorTestCase extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
+     * @since  2.1.1
+     */
+    public function doesNotNegotiateMimeTypeWhenContentNegotiationDisabled()
+    {
+        $this->mockRequest->expects($this->once())
+                          ->method('isCancelled')
+                          ->will($this->returnValue(false));
+        $this->mockRequest->expects($this->never())
+                          ->method('readHeader');
+        $this->mockRouting->expects($this->once())
+                          ->method('isContentNegotationDisabled')
+                          ->will($this->returnValue(true));
+        $this->mockRouting->expects($this->never())
+                          ->method('negotiateMimeType');
+        $this->assertSame($this->mockResponse,
+                          $this->responseNegotiator->negotiateMimeType($this->mockRequest, $this->mockRouting)
+        );
+    }
+
+    /**
+     * @test
      */
     public function failedMimeTypeNegotiationForExistingRouteRespondsWithNotAcceptable()
     {
@@ -175,6 +196,9 @@ class ResponseNegotiatorTestCase extends \PHPUnit_Framework_TestCase
                           ->method('isCancelled')
                           ->will($this->returnValue(false));
         $this->mockAcceptHeader();
+        $this->mockRouting->expects($this->once())
+                          ->method('isContentNegotationDisabled')
+                          ->will($this->returnValue(false));
         $this->mockRouting->expects($this->once())
                           ->method('negotiateMimeType')
                           ->will($this->returnValue(null));
@@ -204,6 +228,9 @@ class ResponseNegotiatorTestCase extends \PHPUnit_Framework_TestCase
                           ->will($this->returnValue(false));
         $this->mockAcceptHeader();
         $this->mockRouting->expects($this->once())
+                          ->method('isContentNegotationDisabled')
+                          ->will($this->returnValue(false));
+        $this->mockRouting->expects($this->once())
                           ->method('negotiateMimeType')
                           ->will($this->returnValue('application/json'));
         $this->mockInjector->expects($this->once())
@@ -231,6 +258,9 @@ class ResponseNegotiatorTestCase extends \PHPUnit_Framework_TestCase
                           ->method('isCancelled')
                           ->will($this->returnValue(false));
         $this->mockAcceptHeader();
+        $this->mockRouting->expects($this->once())
+                          ->method('isContentNegotationDisabled')
+                          ->will($this->returnValue(false));
         $this->mockRouting->expects($this->once())
                           ->method('negotiateMimeType')
                           ->will($this->returnValue('application/json'));
@@ -264,6 +294,9 @@ class ResponseNegotiatorTestCase extends \PHPUnit_Framework_TestCase
                           ->method('isCancelled')
                           ->will($this->returnValue(false));
         $this->mockAcceptHeader();
+        $this->mockRouting->expects($this->once())
+                          ->method('isContentNegotationDisabled')
+                          ->will($this->returnValue(false));
         $this->mockRouting->expects($this->once())
                           ->method('negotiateMimeType')
                           ->will($this->returnValue(null));

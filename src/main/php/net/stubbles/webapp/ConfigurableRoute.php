@@ -55,5 +55,12 @@ interface ConfigurableRoute
      * @return  ConfigurableRoute
      */
     public function supportsMimeType($mimeType);
+
+    /**
+     * disables content negotation
+     *
+     * @return  Route
+     * @since   2.1.1
+     */
+    public function disableContentNegotiation();
 }
-?>

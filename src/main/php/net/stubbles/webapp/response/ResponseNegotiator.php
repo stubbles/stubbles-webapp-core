@@ -86,6 +86,10 @@ class ResponseNegotiator
             return $this->response;
         }
 
+        if ($routing->isContentNegotationDisabled()) {
+            return $this->response;
+        }
+
         $mimeType = $routing->negotiateMimeType($request->readHeader('HTTP_ACCEPT')
                                                         ->applyFilter(new \net\stubbles\input\filter\AcceptFilter())
                     );

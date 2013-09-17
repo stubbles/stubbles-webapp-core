@@ -64,6 +64,12 @@ class Routing implements RoutingConfigurator
      */
     private $mimeTypes        = array();
     /**
+     * whether content negotation is disabled or not
+     *
+     * @type  bool
+     */
+    private $disableContentNegotation = false;
+    /**
      * injector instance
      *
      * @type  Injector
@@ -482,5 +488,36 @@ class Routing implements RoutingConfigurator
 
         return array_merge($route->getSupportedMimeTypes(), $this->mimeTypes);
     }
+
+    /**
+     * disables content negotation
+     *
+     * @return  Routing
+     * @since   2.1.1
+     */
+    public function disableContentNegotiation()
+    {
+        $this->disableContentNegotation = true;
+        return $this;
+    }
+
+    /**
+     * checks whether content negotation is disabled
+     *
+     * @return  bool
+     * @since   2.1.1
+     */
+    public function isContentNegotationDisabled()
+    {
+        if ($this->disableContentNegotation) {
+            return true;
+        }
+
+        $route = $this->findRouteConfig();
+        if (null === $route) {
+            return false;
+        }
+
+        return $route->isContentNegotationDisabled();
+    }
 }
-?>

@@ -436,5 +436,37 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
                                         ->negotiateMimeType(AcceptHeader::parse('text/*;q=0.3, text/html;q=0.7'))
         );
     }
+
+    /**
+     * @test
+     * @since  2.1.1
+     */
+    public function contentNegotationIsEnabledByDefault()
+    {
+        $this->assertFalse($this->routing->isContentNegotationDisabled());
+    }
+
+    /**
+     * @test
+     * @since  2.1.1
+     */
+    public function contentNegotationCanBeDisabled()
+    {
+        $this->assertTrue($this->routing->disableContentNegotiation()
+                                        ->isContentNegotationDisabled()
+        );
+    }
+
+    /**
+     * @test
+     * @since  2.1.1
+     */
+    public function contentNegotationIsDisabledWhenDisabledForRoute()
+    {
+        $this->routing->onGet('/hello', function() {})
+                      ->disableContentNegotiation();
+        $this->assertTrue($this->routing->disableContentNegotiation()
+                                        ->isContentNegotationDisabled()
+        );
+    }
 }
-?>
