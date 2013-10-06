@@ -1,3 +1,9 @@
+2.1.2, (2013-10-06)
+-------------------
+
+   * `net\stubbles\webapp\WebApp::run()` now returns response instance
+
+
 2.1.1, (2013-09-17)
 -------------------
 
