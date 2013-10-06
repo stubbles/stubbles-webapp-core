@@ -77,6 +77,8 @@ abstract class WebApp extends App
 
     /**
      * runs the application
+     *
+     * @return  Response
      */
     public function run()
     {
@@ -93,6 +95,17 @@ abstract class WebApp extends App
             }
         }
 
+        $this->send($response);
+        return $response;
+    }
+
+    /**
+     * sends response
+     *
+     * @param  Response  $response
+     */
+    protected function send(Response $response)
+    {
         if ($this->request->getMethod() === 'HEAD') {
             $response->sendHead();
         } else {
