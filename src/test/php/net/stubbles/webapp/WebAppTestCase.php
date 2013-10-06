@@ -54,12 +54,6 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
      */
     private $mockResponse;
     /**
-     * mocked injector instance
-     *
-     * @type  \PHPUnit_Framework_MockObject_MockObject
-     */
-    private $mockInjector;
-    /**
      * partially mocked routing
      *
      * @type  Routing
@@ -140,7 +134,7 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
                           ->will($this->returnValue(true));
         $this->mockResponse->expects($this->once())
                            ->method('send');
-        $this->webApp->run();
+        $this->assertSame($this->mockResponse, $this->webApp->run());
     }
 
     /**
@@ -163,7 +157,7 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
                            ->method('notFound');
         $this->mockResponse->expects($this->once())
                            ->method('send');
-        $this->webApp->run();
+        $this->assertSame($this->mockResponse, $this->webApp->run());
     }
 
     /**
@@ -192,7 +186,7 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
                            ->with($this->equalTo('Access-Control-Allow-Methods'), $this->equalTo('POST, PUT, OPTIONS'));
         $this->mockResponse->expects($this->once())
                            ->method('send');
-        $this->webApp->run();
+        $this->assertSame($this->mockResponse, $this->webApp->run());
     }
 
     /**
@@ -217,7 +211,7 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
                            ->with($this->equalTo('GET'), $this->equalTo(array('POST', 'PUT', 'OPTIONS')));
         $this->mockResponse->expects($this->once())
                            ->method('send');
-        $this->webApp->run();
+        $this->assertSame($this->mockResponse, $this->webApp->run());
     }
 
     /**
@@ -255,7 +249,7 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
                            ->with($this->equalTo('https://example.net/admin'));
         $this->mockResponse->expects($this->once())
                            ->method('send');
-        $this->webApp->run();
+        $this->assertSame($this->mockResponse, $this->webApp->run());
     }
 
     /**
@@ -275,7 +269,7 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
                            ->with($this->equalTo('Requested route requires authorization, but no auth handler defined for application'));
         $this->mockResponse->expects($this->once())
                            ->method('send');
-        $this->webApp->run();
+        $this->assertSame($this->mockResponse, $this->webApp->run());
     }
 
     /**
@@ -313,7 +307,9 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
                            ->with($this->equalTo('https://example.net/login'));
         $this->mockResponse->expects($this->once())
                            ->method('send');
-        $this->webApp->setAuthHandler($mockAuthHandler)->run();
+        $this->assertSame($this->mockResponse,
+                          $this->webApp->setAuthHandler($mockAuthHandler)->run()
+        );
     }
 
     /**
@@ -349,7 +345,9 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
                            ->method('forbidden');
         $this->mockResponse->expects($this->once())
                            ->method('send');
-        $this->webApp->setAuthHandler($mockAuthHandler)->run();
+        $this->assertSame($this->mockResponse,
+                          $this->webApp->setAuthHandler($mockAuthHandler)->run()
+        );
     }
 
     /**
@@ -376,7 +374,7 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
                   ->method('applyPostInterceptors');
         $this->mockResponse->expects($this->once())
                            ->method('send');
-        $this->webApp->run();
+        $this->assertSame($this->mockResponse, $this->webApp->run());
     }
 
     /**
@@ -407,7 +405,7 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
                   ->method('applyPostInterceptors');
         $this->mockResponse->expects($this->once())
                            ->method('send');
-        $this->webApp->run();
+        $this->assertSame($this->mockResponse, $this->webApp->run());
     }
 
     /**
@@ -441,7 +439,7 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
                     );
         $this->mockResponse->expects($this->once())
                            ->method('send');
-        $this->webApp->run();
+        $this->assertSame($this->mockResponse, $this->webApp->run());
     }
 
     /**
@@ -478,7 +476,7 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
                           ->will($this->returnValue('HEAD'));
         $this->mockResponse->expects($this->once())
                            ->method('sendHead');
-        $this->webApp->run();
+        $this->assertSame($this->mockResponse, $this->webApp->run());
     }
 }
 ?>
