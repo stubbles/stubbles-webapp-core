@@ -54,12 +54,6 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
      */
     private $mockResponse;
     /**
-     * mocked injector instance
-     *
-     * @type  \PHPUnit_Framework_MockObject_MockObject
-     */
-    private $mockInjector;
-    /**
      * partially mocked routing
      *
      * @type  Routing
