@@ -211,11 +211,11 @@ class Routing implements RoutingConfigurator
         if (null === $this->processableRoute) {
             $route = $this->findRouteConfig();
             if (null !== $route) {
-                $this->processableRoute = new ProcessableRoute($route,
-                                                               $this->calledUri,
-                                                               $this->getPreInterceptors($route),
-                                                               $this->getPostInterceptors($route),
-                                                               $this->injector
+                $this->processableRoute = new ConfiguredProcessableRoute($route,
+                                                                         $this->calledUri,
+                                                                         $this->getPreInterceptors($route),
+                                                                         $this->getPostInterceptors($route),
+                                                                         $this->injector
                                           );
             }
         }
