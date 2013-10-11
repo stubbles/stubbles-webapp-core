@@ -44,7 +44,7 @@ class Routing implements RoutingConfigurator
      *
      * @type  ProcessableRoute
      */
-    private $processableRoute;
+    private $matchingRoute;
     /**
      * list of global pre interceptors and to which request method they respond
      *
@@ -208,19 +208,19 @@ class Routing implements RoutingConfigurator
      */
     public function findRoute()
     {
-        if (null === $this->processableRoute) {
+        if (null === $this->matchingRoute) {
             $route = $this->findRouteConfig();
             if (null !== $route) {
-                $this->processableRoute = new ConfiguredProcessableRoute($route,
-                                                                         $this->calledUri,
-                                                                         $this->getPreInterceptors($route),
-                                                                         $this->getPostInterceptors($route),
-                                                                         $this->injector
-                                          );
+                $this->matchingRoute = new MatchingRoute($route,
+                                                         $this->calledUri,
+                                                         $this->getPreInterceptors($route),
+                                                         $this->getPostInterceptors($route),
+                                                         $this->injector
+                                       );
             }
         }
 
-        return $this->processableRoute;
+        return $this->matchingRoute;
     }
 
     /**

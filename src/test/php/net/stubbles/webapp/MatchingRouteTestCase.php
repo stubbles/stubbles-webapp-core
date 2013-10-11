@@ -11,12 +11,12 @@ namespace net\stubbles\webapp;
 use net\stubbles\input\web\WebRequest;
 use net\stubbles\webapp\response\Response;
 /**
- * Tests for net\stubbles\webapp\ProcessableRoute.
+ * Tests for net\stubbles\webapp\MatchingRoute.
  *
  * @since  2.0.0
  * @group  core
  */
-class ConfiguredProcessableRouteTestCase extends \PHPUnit_Framework_TestCase
+class MAtchingRouteTestCase extends \PHPUnit_Framework_TestCase
 {
     /**
      * mocked request instance
@@ -58,11 +58,11 @@ class ConfiguredProcessableRouteTestCase extends \PHPUnit_Framework_TestCase
                            function() {},
                            'GET'
                  );
-        $processableRoute = new ConfiguredProcessableRoute($route->httpsOnly(),
-                                                           UriRequest::fromString('http://example.com/hello/world', 'GET'),
-                                                           array(),
-                                                           array(),
-                                                           $this->mockInjector
+        $processableRoute = new MatchingRoute($route->httpsOnly(),
+                                              UriRequest::fromString('http://example.com/hello/world', 'GET'),
+                                              array(),
+                                              array(),
+                                              $this->mockInjector
                             );
         $this->assertTrue($processableRoute->switchToHttps());
     }
@@ -84,11 +84,11 @@ class ConfiguredProcessableRouteTestCase extends \PHPUnit_Framework_TestCase
                            function() {},
                            'GET'
                  );
-        $processableRoute = new ConfiguredProcessableRoute($route->httpsOnly(),
-                                                           UriRequest::fromString('https://example.com/hello/world', 'GET'),
-                                                           array(),
-                                                           array(),
-                                                           $this->mockInjector
+        $processableRoute = new MatchingRoute($route->httpsOnly(),
+                                              UriRequest::fromString('https://example.com/hello/world', 'GET'),
+                                              array(),
+                                              array(),
+                                              $this->mockInjector
                             );
         $this->assertFalse($processableRoute->switchToHttps());
     }
@@ -112,11 +112,11 @@ class ConfiguredProcessableRouteTestCase extends \PHPUnit_Framework_TestCase
                            function() {},
                            'GET'
                  );
-        $processableRoute = new ConfiguredProcessableRoute($route->withRoleOnly('admin'),
-                                                           UriRequest::fromString('https://example.com/hello/world', 'GET'),
-                                                           array(),
-                                                           array(),
-                                                           $this->mockInjector
+        $processableRoute = new MatchingRoute($route->withRoleOnly('admin'),
+                                              UriRequest::fromString('https://example.com/hello/world', 'GET'),
+                                              array(),
+                                              array(),
+                                              $this->mockInjector
                             );
         $this->assertTrue($processableRoute->requiresRole());
     }
@@ -130,11 +130,11 @@ class ConfiguredProcessableRouteTestCase extends \PHPUnit_Framework_TestCase
                            function() {},
                            'GET'
                  );
-        $processableRoute = new ConfiguredProcessableRoute($route->withRoleOnly('admin'),
-                                                           UriRequest::fromString('https://example.com/hello/world', 'GET'),
-                                                           array(),
-                                                           array(),
-                                                           $this->mockInjector
+        $processableRoute = new MatchingRoute($route->withRoleOnly('admin'),
+                                              UriRequest::fromString('https://example.com/hello/world', 'GET'),
+                                              array(),
+                                              array(),
+                                              $this->mockInjector
                             );
         $this->assertEquals('admin', $processableRoute->getRequiredRole());
     }
@@ -149,13 +149,13 @@ class ConfiguredProcessableRouteTestCase extends \PHPUnit_Framework_TestCase
      */
     private function createRoute($callback, array $preInterceptors = array(), array $postInterceptors = array())
     {
-        return new ConfiguredProcessableRoute(new Route('/hello/{name}',
-                                              $callback,
-                                              'GET'
-                                              ),
-                                              UriRequest::fromString('http://example.com/hello/world', 'GET'),
-                                              $preInterceptors,
-                                              $postInterceptors,
+        return new MatchingRoute(new Route('/hello/{name}',
+                                           $callback,
+                                           'GET'
+                                 ),
+                                 UriRequest::fromString('http://example.com/hello/world', 'GET'),
+                                 $preInterceptors,
+                                 $postInterceptors,
 
                 $this->mockInjector
         );

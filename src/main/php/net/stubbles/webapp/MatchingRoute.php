@@ -17,7 +17,7 @@ use net\stubbles\webapp\response\Response;
  *
  * @since  2.0.0
  */
-class ConfiguredProcessableRoute extends AbstractProcessableRoute
+class MatchingRoute extends AbstractProcessableRoute
 {
     /**
      * route configuration
