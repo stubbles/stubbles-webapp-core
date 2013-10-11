@@ -16,7 +16,7 @@ use net\stubbles\webapp\response\Response;
  * @since  2.0.0
  * @group  core
  */
-class MAtchingRouteTestCase extends \PHPUnit_Framework_TestCase
+class MatchingRouteTestCase extends \PHPUnit_Framework_TestCase
 {
     /**
      * mocked request instance
