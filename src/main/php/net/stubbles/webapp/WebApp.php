@@ -83,10 +83,15 @@ abstract class WebApp extends App
     public function run()
     {
         $this->configureRouting($this->routing);
-        $response = $this->responseNegotiator->negotiateMimeType($this->request, $this->routing);
+        $route    = $this->routing->findRoute(new UriRequest($this->request->getUri(),
+                                                             $this->request->getMethod()
+                                              )
+                    );
+        $response = $this->responseNegotiator->negotiateMimeType($this->request, $route->getSupportedMimeTypes());
         if (!$this->request->isCancelled()) {
-            $route = $this->detectRoute($response);
-            if (null !== $route) {
+            if ($route->switchToHttps()) {
+                $response->redirect($route->getHttpsUri());
+            } elseif ($this->isAuthorized($route, $response)) {
                 if ($route->applyPreInterceptors($this->request, $response)) {
                     if ($route->process($this->request, $response)) {
                         $route->applyPostInterceptors($this->request, $response);
@@ -119,66 +124,6 @@ abstract class WebApp extends App
      * @param  RoutingConfigurator  $routing
      */
     protected abstract function configureRouting(RoutingConfigurator $routing);
-
-    /**
-     * retrieves route
-     *
-     * @param   Response  $response
-     * @return  ProcessableRoute
-     */
-    private function detectRoute(Response $response)
-    {
-        if (!$this->routing->canFindRoute()) {
-            $this->handleRouteMismatch($response);
-            return null;
-        }
-
-        $route = $this->routing->findRoute();
-        if ($route->switchToHttps()) {
-            $response->redirect($route->getHttpsUri());
-            return null;
-        }
-
-        if ($this->isAuthorized($route, $response)) {
-            return $route;
-        }
-
-        return null;
-    }
-
-    /**
-     * handles cases where no route can be found for a request
-     *
-     * The cases might be:
-     *  - a request for a non-existing path, resulting in 404 Not Found
-     *  - a request for an existing path with request method OPTIONS,
-     *    resulting in 200 OK and appropriate response headers
-     *  - a request for an existing path, but with a non-supported request
-     *    method, resulting in 405 Method Not Allowed
-     *
-     * @param  Response  $response
-     */
-    private function handleRouteMismatch(Response $response)
-    {
-        if (!$this->routing->canFindRouteWithAnyMethod()) {
-            $response->notFound();
-            return;
-        }
-
-        $allowedMethods = $this->routing->getAllowedMethods();
-        if (!in_array('OPTIONS', $allowedMethods)) {
-            $allowedMethods[] = 'OPTIONS';
-        }
-
-        if ($this->request->getMethod() === 'OPTIONS') {
-            $response->addHeader('Allow', join(', ', $allowedMethods))
-                     ->addHeader('Access-Control-Allow-Methods', join(', ', $allowedMethods));
-            return;
-
-        }
-
-        $response->methodNotAllowed($this->request->getMethod(), $allowedMethods);
-    }
 
     /**
      * checks if request to given route is authorized
