@@ -11,6 +11,7 @@ namespace net\stubbles\webapp;
 use net\stubbles\input\web\WebRequest;
 use net\stubbles\ioc\Injector;
 use net\stubbles\lang\exception\RuntimeException;
+use net\stubbles\webapp\interceptor\Interceptors;
 use net\stubbles\webapp\response\Response;
 use net\stubbles\webapp\response\SupportedMimeTypes;
 /**
@@ -26,31 +27,34 @@ class MatchingRoute extends AbstractProcessableRoute
      * @type  Route
      */
     private $route;
+    /**
+     * injector instance
+     *
+     * @type  Injector
+     */
+    private $injector;
 
     /**
      * constructor
      *
-     * @param  Route               $route               route configuration
      * @param  UriRequest          $calledUri           actual called uri
-     * @param  array               $preInterceptors     list of pre interceptors to be processed
-     * @param  array               $postInterceptors    list of post interceptors to be processed
-     * @param  Injector            $injector
+     * @param  Interceptors        $interceptors
      * @param  SupportedMimeTypes  $supportedMimeTypes
+     * @param  Route               $route               route configuration
+     * @param  Injector            $injector
      */
-    public function __construct(Route $route,
-                                UriRequest $calledUri,
-                                array $preInterceptors,
-                                array $postInterceptors,
-                                Injector $injector,
-                                SupportedMimeTypes $supportedMimeTypes)
+    public function __construct(UriRequest $calledUri,
+                                Interceptors $interceptors,
+                                SupportedMimeTypes $supportedMimeTypes,
+                                Route $route,
+                                Injector $injector)
     {
         parent::__construct($calledUri,
-                            $preInterceptors,
-                            $postInterceptors,
-                            $injector,
+                            $interceptors,
                             $supportedMimeTypes
         );
-        $this->route = $route;
+        $this->route    = $route;
+        $this->injector = $injector;
     }
 
     /**

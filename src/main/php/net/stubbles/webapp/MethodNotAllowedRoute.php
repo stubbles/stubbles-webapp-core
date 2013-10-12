@@ -9,7 +9,7 @@
  */
 namespace net\stubbles\webapp;
 use net\stubbles\input\web\WebRequest;
-use net\stubbles\ioc\Injector;
+use net\stubbles\webapp\interceptor\Interceptors;
 use net\stubbles\webapp\response\Response;
 use net\stubbles\webapp\response\SupportedMimeTypes;
 /**
@@ -29,24 +29,18 @@ class MethodNotAllowedRoute extends AbstractProcessableRoute
     /**
      * constructor
      *
-     * @param  string[]            $allowedMethods
      * @param  UriRequest          $calledUri           actual called uri
-     * @param  array               $preInterceptors     list of pre interceptors to be processed
-     * @param  array               $postInterceptors    list of post interceptors to be processed
-     * @param  Injector            $injector
+     * @param  Interceptors        $interceptors
      * @param  SupportedMimeTypes  $supportedMimeTypes
+     * @param  string[]            $allowedMethods
      */
-    public function __construct(array $allowedMethods,
-                                UriRequest $calledUri,
-                                array $preInterceptors,
-                                array $postInterceptors,
-                                Injector $injector,
-                                SupportedMimeTypes $supportedMimeTypes)
+    public function __construct(UriRequest $calledUri,
+                                Interceptors $interceptors,
+                                SupportedMimeTypes $supportedMimeTypes,
+                                array $allowedMethods)
     {
         parent::__construct($calledUri,
-                            $preInterceptors,
-                            $postInterceptors,
-                            $injector,
+                            $interceptors,
                             $supportedMimeTypes
         );
         $this->allowedMethods = $allowedMethods;

@@ -51,6 +51,24 @@ class MatchingRouteTestCase extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * creates instance to test
+     *
+     * @param   Route  $routeConfig
+     * @return  MatchingRoute
+     */
+    private function createMatchingRoute(Route $routeConfig, $uri = 'http://example.com/hello/world')
+    {
+        return new MatchingRoute(UriRequest::fromString($uri, 'GET'),
+                                 $this->getMockBuilder('net\stubbles\webapp\interceptor\Interceptors')
+                                      ->disableOriginalConstructor()
+                                      ->getMock(),
+                                 new SupportedMimeTypes(array()),
+                                 $routeConfig,
+                                 $this->mockInjector
+        );
+    }
+
+    /**
      * @test
      */
     public function requiresSwitchToHttpsIfCalledUriIsNotHttpsButRouteRequiresHttps()
@@ -59,22 +77,16 @@ class MatchingRouteTestCase extends \PHPUnit_Framework_TestCase
                            function() {},
                            'GET'
                  );
-        $processableRoute = new MatchingRoute($route->httpsOnly(),
-                                              UriRequest::fromString('http://example.com/hello/world', 'GET'),
-                                              array(),
-                                              array(),
-                                              $this->mockInjector,
-                                              new SupportedMimeTypes(array())
-                            );
+        $processableRoute = $this->createMatchingRoute($route->httpsOnly());
         $this->assertTrue($processableRoute->switchToHttps());
     }
 
     /**
      * @test
      */
-    public function doesNotrequireSwitchToHttpsIfCalledUriIsNotHttpsAndRouteDoesNotRequiresHttp()
+    public function doesNotrequireSwitchToHttpsIfCalledUriIsNotHttpsAndRouteDoesNotRequireHttps()
     {
-        $this->assertFalse($this->createRoute(function() {})->switchToHttps());
+        $this->assertFalse($this->createMatchingRouteWithCallback(function() {})->switchToHttps());
     }
 
     /**
@@ -86,13 +98,7 @@ class MatchingRouteTestCase extends \PHPUnit_Framework_TestCase
                            function() {},
                            'GET'
                  );
-        $processableRoute = new MatchingRoute($route->httpsOnly(),
-                                              UriRequest::fromString('https://example.com/hello/world', 'GET'),
-                                              array(),
-                                              array(),
-                                              $this->mockInjector,
-                                              new SupportedMimeTypes(array())
-                            );
+        $processableRoute = $this->createMatchingRoute($route->httpsOnly(), 'https://example.com/hello/world');
         $this->assertFalse($processableRoute->switchToHttps());
     }
 
@@ -102,7 +108,7 @@ class MatchingRouteTestCase extends \PHPUnit_Framework_TestCase
     public function returnsHttpsUriFromCalledUri()
     {
         $this->assertEquals('https://example.com/hello/world',
-                            (string) $this->createRoute(function() {})->getHttpsUri()
+                            (string) $this->createMatchingRouteWithCallback(function() {})->getHttpsUri()
         );
     }
 
@@ -115,13 +121,7 @@ class MatchingRouteTestCase extends \PHPUnit_Framework_TestCase
                            function() {},
                            'GET'
                  );
-        $processableRoute = new MatchingRoute($route->withRoleOnly('admin'),
-                                              UriRequest::fromString('https://example.com/hello/world', 'GET'),
-                                              array(),
-                                              array(),
-                                              $this->mockInjector,
-                                              new SupportedMimeTypes(array())
-                            );
+        $processableRoute = $this->createMatchingRoute($route->withRoleOnly('admin'));
         $this->assertTrue($processableRoute->requiresRole());
     }
 
@@ -134,13 +134,7 @@ class MatchingRouteTestCase extends \PHPUnit_Framework_TestCase
                            function() {},
                            'GET'
                  );
-        $processableRoute = new MatchingRoute($route->withRoleOnly('admin'),
-                                              UriRequest::fromString('https://example.com/hello/world', 'GET'),
-                                              array(),
-                                              array(),
-                                              $this->mockInjector,
-                                              new SupportedMimeTypes(array())
-                            );
+        $processableRoute = $this->createMatchingRoute($route->withRoleOnly('admin'));
         $this->assertEquals('admin', $processableRoute->getRequiredRole());
     }
 
@@ -148,21 +142,14 @@ class MatchingRouteTestCase extends \PHPUnit_Framework_TestCase
      * creates instance to test
      *
      * @param   callable  $callback
-     * @param   array     $preInterceptors
-     * @param   array     $postInterceptors
      * @return  ProcessableRoute
      */
-    private function createRoute($callback, array $preInterceptors = array(), array $postInterceptors = array())
+    private function createMatchingRouteWithCallback($callback)
     {
-        return new MatchingRoute(new Route('/hello/{name}',
-                                           $callback,
-                                           'GET'
-                                 ),
-                                 UriRequest::fromString('http://example.com/hello/world', 'GET'),
-                                 $preInterceptors,
-                                 $postInterceptors,
-                                 $this->mockInjector,
-                                 new SupportedMimeTypes(array())
+        return $this->createMatchingRoute(new Route('/hello/{name}',
+                                                    $callback,
+                                                    'GET'
+                                          )
         );
     }
 
@@ -182,12 +169,12 @@ class MatchingRouteTestCase extends \PHPUnit_Framework_TestCase
                            ->with($this->equalTo('Hello world'));
         $this->mockInjector->expects($this->never())
                            ->method('getInstance');
-        $this->createRoute(function(WebRequest $request, Response $response, UriPath $uriPath)
-                           {
-                               $response->setStatusCode(418)
-                                        ->write('Hello ' . $uriPath->getArgument('name'));
-                               $request->cancel();
-                           }
+        $this->createMatchingRouteWithCallback(function(WebRequest $request, Response $response, UriPath $uriPath)
+                                               {
+                                                   $response->setStatusCode(418)
+                                                            ->write('Hello ' . $uriPath->getArgument('name'));
+                                                   $request->cancel();
+                                               }
                )
              ->process($this->mockRequest, $this->mockResponse);
     }
@@ -221,7 +208,7 @@ class MatchingRouteTestCase extends \PHPUnit_Framework_TestCase
                            ->with($this->equalTo('Hello world'));
         $this->mockInjector->expects($this->never())
                            ->method('getInstance');
-        $this->createRoute(array($this, 'theCallable'))
+        $this->createMatchingRouteWithCallback(array($this, 'theCallable'))
              ->process($this->mockRequest, $this->mockResponse);
     }
 
@@ -235,7 +222,7 @@ class MatchingRouteTestCase extends \PHPUnit_Framework_TestCase
                            ->method('getInstance')
                            ->with($this->equalTo('\stdClass'))
                            ->will($this->returnValue(new \stdClass()));
-        $this->createRoute('\stdClass')
+        $this->createMatchingRouteWithCallback('\stdClass')
              ->process($this->mockRequest, $this->mockResponse);
     }
 
@@ -255,7 +242,7 @@ class MatchingRouteTestCase extends \PHPUnit_Framework_TestCase
                            ->method('getInstance')
                            ->with($this->equalTo(get_class($mockProcessor)))
                            ->will($this->returnValue($mockProcessor));
-        $this->createRoute(get_class($mockProcessor))
+        $this->createMatchingRouteWithCallback(get_class($mockProcessor))
              ->process($this->mockRequest, $this->mockResponse);
     }
 
@@ -273,7 +260,7 @@ class MatchingRouteTestCase extends \PHPUnit_Framework_TestCase
                         );
         $this->mockInjector->expects($this->never())
                            ->method('getInstance');
-        $this->createRoute($mockProcessor)
+        $this->createMatchingRouteWithCallback($mockProcessor)
              ->process($this->mockRequest, $this->mockResponse);
     }
 }

@@ -97,14 +97,14 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
      */
     private function createProcessableRoute(Route $route, array $preInterceptors = array(), array $postInterceptors = array())
     {
-        return new MatchingRoute($route,
-                                 UriRequest::fromString('http://example.net/hello', 'GET'),
-                                 $preInterceptors,
-                                 $postInterceptors,
-                                 $this->getMockBuilder('net\stubbles\ioc\Injector')
-                                      ->disableOriginalConstructor()
-                                      ->getMock(),
-                                 new response\SupportedMimeTypes(array())
+        $mockInjector = $this->getMockBuilder('net\stubbles\ioc\Injector')
+                             ->disableOriginalConstructor()
+                             ->getMock();
+        return new MatchingRoute(UriRequest::fromString('http://example.net/hello', 'GET'),
+                                 new interceptor\Interceptors($mockInjector, $preInterceptors, $postInterceptors),
+                                 new response\SupportedMimeTypes(array()),
+                                 $route,
+                                 $mockInjector
         );
     }
 

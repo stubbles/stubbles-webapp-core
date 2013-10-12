@@ -10,6 +10,7 @@
 namespace net\stubbles\webapp;
 use net\stubbles\ioc\Injector;
 use net\stubbles\lang\exception\IllegalArgumentException;
+use net\stubbles\webapp\interceptor\Interceptors;
 use net\stubbles\webapp\interceptor\PreInterceptor;
 use net\stubbles\webapp\interceptor\PostInterceptor;
 use net\stubbles\webapp\response\SupportedMimeTypes;
@@ -157,39 +158,33 @@ class Routing implements RoutingConfigurator
     {
         $routeConfig = $this->findRouteConfig();
         if (null !== $routeConfig) {
-            return new MatchingRoute($routeConfig,
-                                     $this->calledUri,
-                                     $this->getPreInterceptors($routeConfig),
-                                     $this->getPostInterceptors($routeConfig),
-                                     $this->injector,
-                                     $this->getSupportedMimeTypes($routeConfig)
+            return new MatchingRoute($this->calledUri,
+                                     $this->collectInterceptors($routeConfig),
+                                     $this->getSupportedMimeTypes($routeConfig),
+                                     $routeConfig,
+                                     $this->injector
                    );
         }
 
         if ($this->canFindRouteWithAnyMethod()) {
             if ($this->calledUri->methodEquals('OPTIONS')) {
-                return new OptionsRoute($this->getAllowedMethods(),
-                                        $this->calledUri,
-                                        $this->getPreInterceptors(),
-                                        $this->getPostInterceptors(),
-                                        $this->injector,
-                                        SupportedMimeTypes::createWithDisabledContentNegotation()
+                return new OptionsRoute($this->calledUri,
+                                        $this->collectInterceptors(),
+                                        SupportedMimeTypes::createWithDisabledContentNegotation(),
+                                        $this->getAllowedMethods()
+
                 );
             }
 
-            return new MethodNotAllowedRoute($this->getAllowedMethods(),
-                                             $this->calledUri,
-                                             $this->getPreInterceptors(),
-                                             $this->getPostInterceptors(),
-                                             $this->injector,
-                                             SupportedMimeTypes::createWithDisabledContentNegotation()
+            return new MethodNotAllowedRoute($this->calledUri,
+                                             $this->collectInterceptors(),
+                                             SupportedMimeTypes::createWithDisabledContentNegotation(),
+                                             $this->getAllowedMethods()
             );
         }
 
         return new MissingRoute($this->calledUri,
-                                $this->getPreInterceptors(),
-                                $this->getPostInterceptors(),
-                                $this->injector,
+                                $this->collectInterceptors(),
                                 SupportedMimeTypes::createWithDisabledContentNegotation()
         );
     }
@@ -389,6 +384,20 @@ class Routing implements RoutingConfigurator
                                           'requestMethod' => $requestMethod
                                    );
         return $this;
+    }
+
+    /**
+     * collects interceptors
+     *
+     * @param   Route  $routeConfig
+     * @return  Interceptors
+     */
+    private function collectInterceptors(Route $routeConfig = null)
+    {
+        return new Interceptors($this->injector,
+                                $this->getPreInterceptors($routeConfig),
+                                $this->getPostInterceptors($routeConfig)
+        );
     }
 
     /**

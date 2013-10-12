@@ -41,14 +41,12 @@ class OptionsRouteTestCase extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->optionsRoute = new OptionsRoute(array('GET', 'POST', 'HEAD'),
-                                               UriRequest::fromString('http://example.com/hello/world', 'GET'),
-                                               array(),
-                                               array(),
-                                               $this->getMockBuilder('net\stubbles\ioc\Injector')
+        $this->optionsRoute = new OptionsRoute(UriRequest::fromString('http://example.com/hello/world', 'GET'),
+                                               $this->getMockBuilder('net\stubbles\webapp\interceptor\Interceptors')
                                                     ->disableOriginalConstructor()
                                                     ->getMock(),
-                                               new SupportedMimeTypes(array())
+                                               new SupportedMimeTypes(array()),
+                                               array('GET', 'POST', 'HEAD')
                               );
         $this->mockRequest  = $this->getMock('net\stubbles\input\web\WebRequest');
         $this->mockResponse = $this->getMock('net\stubbles\webapp\response\Response');
