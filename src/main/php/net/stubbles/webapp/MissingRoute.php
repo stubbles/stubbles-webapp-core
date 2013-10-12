@@ -32,7 +32,7 @@ class MissingRoute extends AbstractProcessableRoute
      *
      * @return  bool
      */
-    public function requiresRole()
+    public function requiresAuth()
     {
         return false;
     }
@@ -40,13 +40,25 @@ class MissingRoute extends AbstractProcessableRoute
     /**
      * checks whether this is an authorized request to this route
      *
+     * @param   AuthHandler  $authHandler
      * @return  bool
      */
-    public function getRequiredRole()
+    public function isAuthorized(AuthHandler $authHandler)
     {
-        return null;
+        return true;
     }
- 
+
+    /**
+     * checks whether route required login
+     *
+     * @param   AuthHandler  $authHandler
+     * @return  bool
+     */
+    public function requiresLogin(AuthHandler $authHandler)
+    {
+        return false;
+    }
+
     /**
      * creates processor instance
      *

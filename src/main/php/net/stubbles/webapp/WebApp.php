@@ -134,7 +134,7 @@ abstract class WebApp extends App
      */
     private function isAuthorized(ProcessableRoute $route, Response $response)
     {
-        if (!$route->requiresRole()) {
+        if (!$route->requiresAuth()) {
             return true;
         }
 
@@ -143,11 +143,11 @@ abstract class WebApp extends App
             return false;
         }
 
-        if ($this->authHandler->isAuthorized($route->getRequiredRole())) {
+        if ($route->isAuthorized($this->authHandler)) {
             return true;
         }
 
-        if ($this->authHandler->requiresLogin($route->getRequiredRole())) {
+        if ($route->requiresLogin($this->authHandler)) {
             $response->redirect($this->authHandler->getLoginUri());
         } else {
             $response->forbidden();

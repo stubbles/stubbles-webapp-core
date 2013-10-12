@@ -72,19 +72,31 @@ class MatchingRoute extends AbstractProcessableRoute
      *
      * @return  bool
      */
-    public function requiresRole()
+    public function requiresAuth()
     {
-        return $this->route->requiresRole();
+        return $this->route->requiresAuth();
     }
 
     /**
      * checks whether this is an authorized request to this route
      *
+     * @param   AuthHandler  $authHandler
      * @return  bool
      */
-    public function getRequiredRole()
+    public function isAuthorized(AuthHandler $authHandler)
     {
-        return $this->route->getRequiredRole();
+        return $this->route->isAuthorized($authHandler);
+    }
+
+    /**
+     * checks whether route required login
+     *
+     * @param   AuthHandler  $authHandler
+     * @return  bool
+     */
+    public function requiresLogin(AuthHandler $authHandler)
+    {
+        return $this->route->requiresLogin($authHandler);
     }
 
     /**

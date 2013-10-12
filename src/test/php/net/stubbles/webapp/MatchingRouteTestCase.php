@@ -115,27 +115,50 @@ class MatchingRouteTestCase extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function requiresRoleIfRouteRequiresRole()
+    public function requiresAuthIfRouteRequiresAuth()
     {
         $route = new Route('/hello/{name}',
                            function() {},
                            'GET'
                  );
         $processableRoute = $this->createMatchingRoute($route->withRoleOnly('admin'));
-        $this->assertTrue($processableRoute->requiresRole());
+        $this->assertTrue($processableRoute->requiresAuth());
     }
 
     /**
      * @test
      */
-    public function returnsRoleFromRule()
+    public function delegatesAuthHandlingToRoute()
     {
         $route = new Route('/hello/{name}',
                            function() {},
                            'GET'
                  );
+        $mockAuthHandler = $this->getMock('net\stubbles\webapp\AuthHandler');
+        $mockAuthHandler->expects($this->once())
+                        ->method('isAuthorized')
+                        ->with($this->equalTo('admin'))
+                        ->will($this->returnValue(true));
         $processableRoute = $this->createMatchingRoute($route->withRoleOnly('admin'));
-        $this->assertEquals('admin', $processableRoute->getRequiredRole());
+        $this->assertTrue($processableRoute->isAuthorized($mockAuthHandler));
+    }
+
+    /**
+     * @test
+     */
+    public function delegatesLoginDecisionToRoute()
+    {
+        $route = new Route('/hello/{name}',
+                           function() {},
+                           'GET'
+                 );
+        $mockAuthHandler = $this->getMock('net\stubbles\webapp\AuthHandler');
+        $mockAuthHandler->expects($this->once())
+                        ->method('requiresLogin')
+                        ->with($this->equalTo('admin'))
+                        ->will($this->returnValue(true));
+        $processableRoute = $this->createMatchingRoute($route->withRoleOnly('admin'));
+        $this->assertTrue($processableRoute->requiresLogin($mockAuthHandler));
     }
 
     /**
