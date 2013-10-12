@@ -295,5 +295,36 @@ class FormattingResponseTestCase extends \PHPUnit_Framework_TestCase
                           $this->formattingResponse->sendHead()
         );
     }
+
+    /**
+     * @test
+     * @since  2.2.0
+     */
+    public function addsContentTypeHeaderOnSendWhenMimeTypeInitiallyGiven()
+    {
+         $formattingResponse = new FormattingResponse($this->decoratedResponse,
+                                                      $this->mockFormatter,
+                                                      'text/plain'
+                               );
+         $this->decoratedResponse->expects($this->once())
+                                 ->method('addHeader')
+                                 ->with($this->equalTo('Content-type'), $this->equalTo('text/plain'));
+         $formattingResponse->send();
+    }
+
+    /**
+     * @test
+     * @since  2.2.0
+     */
+    public function addsContentTypeHeaderOnSendHeadWhenMimeTypeInitiallyGiven()
+    {
+         $formattingResponse = new FormattingResponse($this->decoratedResponse,
+                                                      $this->mockFormatter,
+                                                      'text/plain'
+                               );
+         $this->decoratedResponse->expects($this->once())
+                                 ->method('addHeader')
+                                 ->with($this->equalTo('Content-type'), $this->equalTo('text/plain'));
+         $formattingResponse->sendHead();
+    }
 }
-?>

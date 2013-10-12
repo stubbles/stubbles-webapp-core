@@ -9,6 +9,7 @@
  */
 namespace net\stubbles\webapp;
 use net\stubbles\lang;
+use net\stubbles\peer\http\HttpUri;
 /**
  * Helper class for the test.
  */
@@ -65,7 +66,13 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->mockRequest      = $this->getMock('net\stubbles\input\web\WebRequest');
+        $this->mockRequest  = $this->getMock('net\stubbles\input\web\WebRequest');
+        $this->mockRequest->expects($this->any())
+                          ->method('getMethod')
+                          ->will($this->returnValue('GET'));
+        $this->mockRequest->expects($this->any())
+                          ->method('getUri')
+                          ->will($this->returnValue(HttpUri::fromString('http://example.com/hello')));
         $this->mockResponse     = $this->getMock('net\stubbles\webapp\response\Response');
         $mockResponseNegotiator = $this->getMockBuilder('net\stubbles\webapp\response\ResponseNegotiator')
                                        ->disableOriginalConstructor()
@@ -76,7 +83,6 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
         $this->routing = $this->getMockBuilder('net\stubbles\webapp\Routing')
                               ->disableOriginalConstructor()
                               ->getMock();
-
         $this->webApp  = $this->getMock('net\stubbles\webapp\TestWebApp',
                                         array('configureRouting'),
                                         array($this->mockRequest,
@@ -125,96 +131,6 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @test
-     */
-    public function doesNothingIfResponseNegotiationFails()
-    {
-        $this->mockRequest->expects($this->once())
-                          ->method('isCancelled')
-                          ->will($this->returnValue(true));
-        $this->mockResponse->expects($this->once())
-                           ->method('send');
-        $this->assertSame($this->mockResponse, $this->webApp->run());
-    }
-
-    /**
-     * @test
-     */
-    public function respondsWithError404IfNoRouteFound()
-    {
-        $this->routing->expects($this->once())
-                      ->method('canFindRoute')
-                      ->will($this->returnValue(false));
-        $this->routing->expects($this->once())
-                      ->method('canFindRouteWithAnyMethod')
-                      ->will($this->returnValue(false));
-        $this->routing->expects($this->never())
-                      ->method('getAllowedMethods');
-        $this->mockRequest->expects($this->once())
-                          ->method('isCancelled')
-                          ->will($this->returnValue(false));
-        $this->mockResponse->expects($this->once())
-                           ->method('notFound');
-        $this->mockResponse->expects($this->once())
-                           ->method('send');
-        $this->assertSame($this->mockResponse, $this->webApp->run());
-    }
-
-    /**
-     * @test
-     */
-    public function respondsWith20OkIfRequestMethodIsOptionsButRouteHasNoSpecificOptionsSupport()
-    {
-        $this->routing->expects($this->once())
-                      ->method('canFindRoute')
-                      ->will($this->returnValue(false));
-        $this->routing->expects($this->once())
-                      ->method('canFindRouteWithAnyMethod')
-                      ->will($this->returnValue(true));
-        $this->routing->expects($this->once())
-                      ->method('getAllowedMethods')
-                      ->will($this->returnValue(array('POST', 'PUT')));
-        $this->mockRequest->expects($this->any())
-                          ->method('getMethod')
-                          ->will($this->returnValue('OPTIONS'));
-        $this->mockResponse->expects($this->at(0))
-                           ->method('addHeader')
-                           ->with($this->equalTo('Allow'), $this->equalTo('POST, PUT, OPTIONS'))
-                           ->will($this->returnSelf());
-        $this->mockResponse->expects($this->at(1))
-                           ->method('addHeader')
-                           ->with($this->equalTo('Access-Control-Allow-Methods'), $this->equalTo('POST, PUT, OPTIONS'));
-        $this->mockResponse->expects($this->once())
-                           ->method('send');
-        $this->assertSame($this->mockResponse, $this->webApp->run());
-    }
-
-    /**
-     * @test
-     */
-    public function respondsWithError405IfPathNotApplicableForGivenRequestMethod()
-    {
-        $this->routing->expects($this->once())
-                      ->method('canFindRoute')
-                      ->will($this->returnValue(false));
-        $this->routing->expects($this->once())
-                      ->method('canFindRouteWithAnyMethod')
-                      ->will($this->returnValue(true));
-        $this->routing->expects($this->once())
-                      ->method('getAllowedMethods')
-                      ->will($this->returnValue(array('POST', 'PUT')));
-        $this->mockRequest->expects($this->any())
-                          ->method('getMethod')
-                          ->will($this->returnValue('GET'));
-        $this->mockResponse->expects($this->once())
-                           ->method('methodNotAllowed')
-                           ->with($this->equalTo('GET'), $this->equalTo(array('POST', 'PUT', 'OPTIONS')));
-        $this->mockResponse->expects($this->once())
-                           ->method('send');
-        $this->assertSame($this->mockResponse, $this->webApp->run());
-    }
-
-    /**
      *
      * @param type $mockRoute
      */
@@ -223,13 +139,27 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
         $mockRoute = $this->getMockBuilder('net\stubbles\webapp\ProcessableRoute')
                           ->disableOriginalConstructor()
                           ->getMock();
-        $this->routing->expects($this->once())
-                      ->method('canFindRoute')
-                      ->will($this->returnValue(true));
+        $mockRoute->expects($this->once())
+                  ->method('getSupportedMimeTypes')
+                  ->will($this->returnValue(new response\SupportedMimeTypes(array())));
         $this->routing->expects($this->once())
                       ->method('findRoute')
                       ->will($this->returnValue($mockRoute));
         return $mockRoute;
+    }
+
+    /**
+     * @test
+     */
+    public function doesNothingIfResponseNegotiationFails()
+    {
+        $this->createMockRoute();
+        $this->mockRequest->expects($this->once())
+                          ->method('isCancelled')
+                          ->will($this->returnValue(true));
+        $this->mockResponse->expects($this->once())
+                           ->method('send');
+        $this->assertSame($this->mockResponse, $this->webApp->run());
     }
 
     /**
@@ -445,8 +375,28 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function executesGetWithHeadRequestForSameUri()
+    public function executesEverythingButSendsHeadOnlyWhenRequestMethodIsHead()
     {
+        $this->mockRequest  = $this->getMock('net\stubbles\input\web\WebRequest');
+        $this->mockRequest->expects($this->any())
+                          ->method('getMethod')
+                          ->will($this->returnValue('HEAD'));
+        $this->mockRequest->expects($this->any())
+                          ->method('getUri')
+                          ->will($this->returnValue(HttpUri::fromString('http://example.com/hello')));
+        $mockResponseNegotiator = $this->getMockBuilder('net\stubbles\webapp\response\ResponseNegotiator')
+                                       ->disableOriginalConstructor()
+                                       ->getMock();
+        $mockResponseNegotiator->expects($this->any())
+                               ->method('negotiateMimeType')
+                               ->will($this->returnValue($this->mockResponse));
+        $this->webApp  = $this->getMock('net\stubbles\webapp\TestWebApp',
+                                        array('configureRouting'),
+                                        array($this->mockRequest,
+                                              $mockResponseNegotiator,
+                                              $this->routing
+                                        )
+                         );
         $mockRoute = $this->createMockRoute();
         $mockRoute->expects($this->once())
                   ->method('switchToHttps')
@@ -471,9 +421,6 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
                   ->with($this->equalTo($this->mockRequest),
                          $this->equalTo($this->mockResponse)
                     );
-        $this->mockRequest->expects($this->once())
-                          ->method('getMethod')
-                          ->will($this->returnValue('HEAD'));
         $this->mockResponse->expects($this->once())
                            ->method('sendHead');
         $this->assertSame($this->mockResponse, $this->webApp->run());
