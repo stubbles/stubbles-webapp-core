@@ -10,6 +10,7 @@
 namespace net\stubbles\webapp;
 use net\stubbles\input\web\WebRequest;
 use net\stubbles\webapp\response\Response;
+use net\stubbles\webapp\response\SupportedMimeTypes;
 /**
  * Tests for net\stubbles\webapp\MatchingRoute.
  *
@@ -62,7 +63,8 @@ class MatchingRouteTestCase extends \PHPUnit_Framework_TestCase
                                               UriRequest::fromString('http://example.com/hello/world', 'GET'),
                                               array(),
                                               array(),
-                                              $this->mockInjector
+                                              $this->mockInjector,
+                                              new SupportedMimeTypes(array())
                             );
         $this->assertTrue($processableRoute->switchToHttps());
     }
@@ -88,7 +90,8 @@ class MatchingRouteTestCase extends \PHPUnit_Framework_TestCase
                                               UriRequest::fromString('https://example.com/hello/world', 'GET'),
                                               array(),
                                               array(),
-                                              $this->mockInjector
+                                              $this->mockInjector,
+                                              new SupportedMimeTypes(array())
                             );
         $this->assertFalse($processableRoute->switchToHttps());
     }
@@ -116,7 +119,8 @@ class MatchingRouteTestCase extends \PHPUnit_Framework_TestCase
                                               UriRequest::fromString('https://example.com/hello/world', 'GET'),
                                               array(),
                                               array(),
-                                              $this->mockInjector
+                                              $this->mockInjector,
+                                              new SupportedMimeTypes(array())
                             );
         $this->assertTrue($processableRoute->requiresRole());
     }
@@ -134,7 +138,8 @@ class MatchingRouteTestCase extends \PHPUnit_Framework_TestCase
                                               UriRequest::fromString('https://example.com/hello/world', 'GET'),
                                               array(),
                                               array(),
-                                              $this->mockInjector
+                                              $this->mockInjector,
+                                              new SupportedMimeTypes(array())
                             );
         $this->assertEquals('admin', $processableRoute->getRequiredRole());
     }
@@ -156,8 +161,8 @@ class MatchingRouteTestCase extends \PHPUnit_Framework_TestCase
                                  UriRequest::fromString('http://example.com/hello/world', 'GET'),
                                  $preInterceptors,
                                  $postInterceptors,
-
-                $this->mockInjector
+                                 $this->mockInjector,
+                                 new SupportedMimeTypes(array())
         );
     }
 

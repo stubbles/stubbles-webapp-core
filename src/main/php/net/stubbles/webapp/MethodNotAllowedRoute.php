@@ -10,34 +10,33 @@
 namespace net\stubbles\webapp;
 use net\stubbles\input\web\WebRequest;
 use net\stubbles\ioc\Injector;
-use net\stubbles\lang\exception\RuntimeException;
 use net\stubbles\webapp\response\Response;
 use net\stubbles\webapp\response\SupportedMimeTypes;
 /**
- * Contains logic to process the route.
+ * Processable route which denotes a 405 Method Not Allowed route.
  *
- * @since  2.0.0
+ * @since  2.2.0
  */
-class MatchingRoute extends AbstractProcessableRoute
+class MethodNotAllowedRoute extends AbstractProcessableRoute
 {
     /**
-     * route configuration
+     * list of actually allowed request methods
      *
-     * @type  Route
+     * @type  string[]
      */
-    private $route;
+    private $allowedMethods;
 
     /**
      * constructor
      *
-     * @param  Route               $route               route configuration
+     * @param  string[]            $allowedMethods
      * @param  UriRequest          $calledUri           actual called uri
      * @param  array               $preInterceptors     list of pre interceptors to be processed
      * @param  array               $postInterceptors    list of post interceptors to be processed
      * @param  Injector            $injector
      * @param  SupportedMimeTypes  $supportedMimeTypes
      */
-    public function __construct(Route $route,
+    public function __construct(array $allowedMethods,
                                 UriRequest $calledUri,
                                 array $preInterceptors,
                                 array $postInterceptors,
@@ -50,7 +49,10 @@ class MatchingRoute extends AbstractProcessableRoute
                             $injector,
                             $supportedMimeTypes
         );
-        $this->route = $route;
+        $this->allowedMethods = $allowedMethods;
+        if (!in_array('OPTIONS', $this->allowedMethods)) {
+            $this->allowedMethods[] = 'OPTIONS';
+        }
     }
 
     /**
@@ -60,7 +62,7 @@ class MatchingRoute extends AbstractProcessableRoute
      */
     public function switchToHttps()
     {
-        return (!$this->calledUri->isHttps() && $this->route->requiresHttps());
+        return false;
     }
 
     /**
@@ -70,7 +72,7 @@ class MatchingRoute extends AbstractProcessableRoute
      */
     public function requiresRole()
     {
-        return $this->route->requiresRole();
+        return false;
     }
 
     /**
@@ -80,7 +82,7 @@ class MatchingRoute extends AbstractProcessableRoute
      */
     public function getRequiredRole()
     {
-        return $this->route->getRequiredRole();
+        return null;
     }
 
     /**
@@ -89,28 +91,11 @@ class MatchingRoute extends AbstractProcessableRoute
      * @param   WebRequest  $request    current request
      * @param   Response    $response   response to send
      * @return  bool
-     * @throws  RuntimeException
      */
     public function process(WebRequest $request, Response $response)
     {
-
-        $uriPath  = $this->route->getUriPath($this->calledUri);
-        $callback = $this->route->getCallback();
-        if ($callback instanceof \Closure) {
-            $callback($request, $response, $uriPath);
-        } elseif (is_callable($callback)) {
-            call_user_func_array($callback, array($request, $response, $uriPath));
-        } elseif ($callback instanceof Processor) {
-            $callback->process($request, $response, $uriPath);
-        } else {
-            $processor = $this->injector->getInstance($callback);
-            if (!($processor instanceof Processor)) {
-                throw new RuntimeException('Configured callback class ' . $callback . ' for route ' . $uriPath->getMatched() . ' is not an instance of net\stubbles\webapp\Processor');
-            }
-
-            $processor->process($request, $response, $uriPath);
-        }
-
-        return !$request->isCancelled();
+        $response->methodNotAllowed($request->getMethod(), $this->allowedMethods);
+        return true;
     }
+
 }

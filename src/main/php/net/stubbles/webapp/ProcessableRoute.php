@@ -46,6 +46,13 @@ interface ProcessableRoute
     public function getRequiredRole();
 
     /**
+     * returns list of supported mime types
+     *
+     * @return  SupportedMimeTypes
+     */
+    public function getSupportedMimeTypes();
+
+    /**
      * apply pre interceptors
      *
      * Returns false if one of the pre interceptors cancels the request.

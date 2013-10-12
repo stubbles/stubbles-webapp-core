@@ -10,6 +10,7 @@
 namespace net\stubbles\webapp;
 use net\stubbles\input\web\WebRequest;
 use net\stubbles\webapp\response\Response;
+use net\stubbles\webapp\response\SupportedMimeTypes;
 /**
  * Helper class for the test.
  */
@@ -71,6 +72,12 @@ class AbstractProcessableRouteTestCase extends \PHPUnit_Framework_TestCase
      * @type  \PHPUnit_Framework_MockObject_MockObject
      */
     private $mockInjector;
+    /**
+     * mocked list of supported mime types
+     *
+     * @type  SupportedMimeTypes
+     */
+    private $supportedMimeTypes;
 
     /**
      * set up test environment
@@ -82,16 +89,7 @@ class AbstractProcessableRouteTestCase extends \PHPUnit_Framework_TestCase
         $this->mockInjector = $this->getMockBuilder('net\stubbles\ioc\Injector')
                                    ->disableOriginalConstructor()
                                    ->getMock();
-    }
-
-    /**
-     * @test
-     */
-    public function returnsHttpsUriFromCalledUri()
-    {
-        $this->assertEquals('https://example.com/hello/world',
-                            (string) $this->createRoute()->getHttpsUri()
-        );
+        $this->supportedMimeTypes = new SupportedMimeTypes(array());
     }
 
     /**
@@ -106,7 +104,30 @@ class AbstractProcessableRouteTestCase extends \PHPUnit_Framework_TestCase
         return new TestAbstractProcessableRoute(UriRequest::fromString('http://example.com/hello/world', 'GET'),
                                                 $preInterceptors,
                                                 $postInterceptors,
-                                                $this->mockInjector
+                                                $this->mockInjector,
+                                                $this->supportedMimeTypes
+
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function returnsHttpsUriFromCalledUri()
+    {
+        $this->assertEquals('https://example.com/hello/world',
+                            (string) $this->createRoute()->getHttpsUri()
+        );
+    }
+
+    /**
+     * @test
+     * @since  2.2.0
+     */
+    public function returnsGivenListOfSupportedMimeTypes()
+    {
+        $this->assertSame($this->supportedMimeTypes,
+                          $this->createRoute()->getSupportedMimeTypes()
         );
     }
 

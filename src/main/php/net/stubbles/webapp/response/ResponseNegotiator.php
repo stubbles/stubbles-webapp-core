@@ -10,7 +10,7 @@
 namespace net\stubbles\webapp\response;
 use net\stubbles\input\web\WebRequest;
 use net\stubbles\ioc\Injector;
-use net\stubbles\webapp\Routing;
+use net\stubbles\webapp\ProcessableRoute;
 /**
  * Negotiates correct response for request.
  *
@@ -71,7 +71,6 @@ class ResponseNegotiator
     /**
      * negotiates mime type based on accept header and configured mime types
      *
-     * In case the request was already cancelled no negotation takes place.
      * Forces a 406 Not Acceptable response in case none of the accepted user
      * agent mime types is supported. Forces a 500 Internal Server Error
      * response in case a mime type but no suitable formatter was found.
@@ -80,21 +79,17 @@ class ResponseNegotiator
      * @param   Routing     $routing
      * @return  Response
      */
-    public function negotiateMimeType(WebRequest $request, Routing $routing)
+    public function negotiateMimeType(WebRequest $request, SupportedMimeTypes $supportedMimeTypes)
     {
-        if ($request->isCancelled()) {
+        if ($supportedMimeTypes->isContentNegotationDisabled()) {
             return $this->response;
         }
 
-        if ($routing->isContentNegotationDisabled()) {
-            return $this->response;
-        }
-
-        $mimeType = $routing->negotiateMimeType($request->readHeader('HTTP_ACCEPT')
-                                                        ->applyFilter(new \net\stubbles\input\filter\AcceptFilter())
+        $mimeType = $supportedMimeTypes->findMatch($request->readHeader('HTTP_ACCEPT')
+                                                           ->applyFilter(new \net\stubbles\input\filter\AcceptFilter())
                     );
-        if (null === $mimeType && $routing->canFindRouteWithAnyMethod()) {
-            $this->response->notAcceptable($routing->getSupportedMimeTypes());
+        if (null === $mimeType) {
+            $this->response->notAcceptable($supportedMimeTypes->asArray());
             $request->cancel();
             return $this->response;
         }
@@ -106,12 +101,9 @@ class ResponseNegotiator
             return $this->response;
         }
 
-        if (null !== $mimeType) {
-            $this->response->addHeader('Content-type', $mimeType);
-        }
-
         return new FormattingResponse($this->response,
-                                      $formatter
+                                      $formatter,
+                                      $mimeType
         );
     }
 

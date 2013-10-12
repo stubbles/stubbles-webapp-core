@@ -29,16 +29,20 @@ class FormattingResponse implements Response
      */
     private $formatter;
 
+    private $mimeType;
+
     /**
      * constructor
      *
      * @param  Response   $response
      * @param  Formatter  $formatter
+     * @param  string     $mimeType
      */
-    public function __construct(Response $response, Formatter $formatter)
+    public function __construct(Response $response, Formatter $formatter, $mimeType = null)
     {
         $this->response  = $response;
         $this->formatter = $formatter;
+        $this->mimeType  = $mimeType;
     }
 
     /**
@@ -214,6 +218,7 @@ class FormattingResponse implements Response
      */
     public function send()
     {
+        $this->addContentType();
         $this->response->send();
         return $this;
     }
@@ -226,8 +231,18 @@ class FormattingResponse implements Response
      */
     public function sendHead()
     {
+        $this->addContentType();
         $this->response->sendHead();
         return $this;
     }
+
+    /**
+     * adds content type header
+     */
+    private function addContentType()
+    {
+        if (null !== $this->mimeType) {
+            $this->response->addHeader('Content-type', $this->mimeType);
+        }
+    }
 }
-?>

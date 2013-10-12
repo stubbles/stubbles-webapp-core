@@ -11,6 +11,7 @@ namespace net\stubbles\webapp;
 use net\stubbles\input\web\WebRequest;
 use net\stubbles\ioc\Injector;
 use net\stubbles\webapp\response\Response;
+use net\stubbles\webapp\response\SupportedMimeTypes;
 /**
  * Contains logic to process the route.
  *
@@ -42,24 +43,33 @@ abstract class AbstractProcessableRoute implements ProcessableRoute
      * @type  Injector
      */
     protected $injector;
+    /**
+     * list of available mime types for all routes
+     *
+     * @type  SupportedMimeTypes
+     */
+    private $supportedMimeTypes;
 
     /**
      * constructor
      *
-     * @param  UriRequest  $calledUri         actual called uri
-     * @param  array       $preInterceptors   list of pre interceptors to be processed
-     * @param  array       $postInterceptors  list of post interceptors to be processed
-     * @param  Injector    $injector
+     * @param  UriRequest          $calledUri           actual called uri
+     * @param  array               $preInterceptors     list of pre interceptors to be processed
+     * @param  array               $postInterceptors    list of post interceptors to be processed
+     * @param  Injector            $injector
+     * @param  SupportedMimeTypes  $supportedMimeTypes
      */
     public function __construct(UriRequest $calledUri,
                                 array $preInterceptors,
                                 array $postInterceptors,
-                                Injector $injector)
+                                Injector $injector,
+                                SupportedMimeTypes $supportedMimeTypes)
     {
-        $this->calledUri        = $calledUri;
-        $this->preInterceptors  = $preInterceptors;
-        $this->postInterceptors = $postInterceptors;
-        $this->injector         = $injector;
+        $this->calledUri          = $calledUri;
+        $this->preInterceptors    = $preInterceptors;
+        $this->postInterceptors   = $postInterceptors;
+        $this->injector           = $injector;
+        $this->supportedMimeTypes = $supportedMimeTypes;
     }
 
     /**
@@ -70,6 +80,16 @@ abstract class AbstractProcessableRoute implements ProcessableRoute
     public function getHttpsUri()
     {
         return $this->calledUri->toHttps();
+    }
+
+    /**
+     * returns list of supported mime types
+     *
+     * @return  SupportedMimeTypes
+     */
+    public function getSupportedMimeTypes()
+    {
+        return $this->supportedMimeTypes;
     }
 
     /**

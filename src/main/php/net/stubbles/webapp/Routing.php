@@ -10,9 +10,9 @@
 namespace net\stubbles\webapp;
 use net\stubbles\ioc\Injector;
 use net\stubbles\lang\exception\IllegalArgumentException;
-use net\stubbles\peer\http\AcceptHeader;
 use net\stubbles\webapp\interceptor\PreInterceptor;
 use net\stubbles\webapp\interceptor\PostInterceptor;
+use net\stubbles\webapp\response\SupportedMimeTypes;
 /**
  * Contains routing information and decides which route is applicable for given request.
  *
@@ -33,18 +33,6 @@ class Routing implements RoutingConfigurator
      * @type  Route[]
      */
     private $routes           = array();
-    /**
-     * selected route
-     *
-     * @type  Route
-     */
-    private $selectedRoute;
-    /**
-     * selected route
-     *
-     * @type  ProcessableRoute
-     */
-    private $matchingRoute;
     /**
      * list of global pre interceptors and to which request method they respond
      *
@@ -161,11 +149,73 @@ class Routing implements RoutingConfigurator
     }
 
     /**
+     * returns route which is applicable for given request
+     *
+     * @return  ProcessableRoute
+     */
+    public function findRoute()
+    {
+        $routeConfig = $this->findRouteConfig();
+        if (null !== $routeConfig) {
+            return new MatchingRoute($routeConfig,
+                                     $this->calledUri,
+                                     $this->getPreInterceptors($routeConfig),
+                                     $this->getPostInterceptors($routeConfig),
+                                     $this->injector,
+                                     $this->getSupportedMimeTypes($routeConfig)
+                   );
+        }
+
+        if ($this->canFindRouteWithAnyMethod()) {
+            if ($this->calledUri->methodEquals('OPTIONS')) {
+                return new OptionsRoute($this->getAllowedMethods(),
+                                        $this->calledUri,
+                                        $this->getPreInterceptors(),
+                                        $this->getPostInterceptors(),
+                                        $this->injector,
+                                        SupportedMimeTypes::createWithDisabledContentNegotation()
+                );
+            }
+
+            return new MethodNotAllowedRoute($this->getAllowedMethods(),
+                                             $this->calledUri,
+                                             $this->getPreInterceptors(),
+                                             $this->getPostInterceptors(),
+                                             $this->injector,
+                                             SupportedMimeTypes::createWithDisabledContentNegotation()
+            );
+        }
+
+        return new MissingRoute($this->calledUri,
+                                $this->getPreInterceptors(),
+                                $this->getPostInterceptors(),
+                                $this->injector,
+                                SupportedMimeTypes::createWithDisabledContentNegotation()
+        );
+    }
+
+    /**
+     * finds route based on called uri
+     *
+     * @return  Route
+     */
+    private function findRouteConfig()
+    {
+        foreach ($this->routes as $route) {
+            if ($route->matches($this->calledUri)) {
+                return $route;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * returns list of allowed method for called uri
      *
      * @return  string[]
      */
-    public function getAllowedMethods()
+    private function getAllowedMethods()
     {
         $allowedMethods = array();
         foreach ($this->routes as $route) {
@@ -186,60 +236,9 @@ class Routing implements RoutingConfigurator
      *
      * @return  bool
      */
-    public function canFindRouteWithAnyMethod()
+    private function canFindRouteWithAnyMethod()
     {
         return count($this->getAllowedMethods()) > 0;
-    }
-
-    /**
-     * checks whether there is a route
-     *
-     * @return  bool
-     */
-    public function canFindRoute()
-    {
-        return null !== $this->findRouteConfig();
-    }
-
-    /**
-     * returns route qhich is applicable for given request
-     *
-     * @return  ProcessableRoute
-     */
-    public function findRoute()
-    {
-        if (null === $this->matchingRoute) {
-            $route = $this->findRouteConfig();
-            if (null !== $route) {
-                $this->matchingRoute = new MatchingRoute($route,
-                                                         $this->calledUri,
-                                                         $this->getPreInterceptors($route),
-                                                         $this->getPostInterceptors($route),
-                                                         $this->injector
-                                       );
-            }
-        }
-
-        return $this->matchingRoute;
-    }
-
-    /**
-     * finds route based on called uri
-     *
-     * @return  Route
-     */
-    private function findRouteConfig()
-    {
-        if (null === $this->selectedRoute) {
-            foreach ($this->routes as $route) {
-                if ($route->matches($this->calledUri)) {
-                    $this->selectedRoute    = $route;
-                    return $this->selectedRoute;
-                }
-            }
-        }
-
-        return $this->selectedRoute;
     }
 
     /**
@@ -455,41 +454,6 @@ class Routing implements RoutingConfigurator
     }
 
     /**
-     * negotiates best mime type based on accept header
-     *
-     * @param   AcceptHeader  $acceptedMimeTypes
-     * @return  string
-     */
-    public function negotiateMimeType(AcceptHeader $acceptedMimeTypes)
-    {
-        $supportedMimeTypes = $this->getSupportedMimeTypes();
-        if (count($supportedMimeTypes) === 0) {
-            return 'text/html';
-        }
-
-        if (count($acceptedMimeTypes) === 0) {
-            return array_shift($supportedMimeTypes);
-        }
-
-        return $acceptedMimeTypes->findMatchWithGreatestPriority($supportedMimeTypes);
-    }
-
-    /**
-     * returns list of supported mime types
-     *
-     * @return  string[]
-     */
-    public function getSupportedMimeTypes()
-    {
-        $route = $this->findRouteConfig();
-        if (null === $route) {
-            return $this->mimeTypes;
-        }
-
-        return array_merge($route->getSupportedMimeTypes(), $this->mimeTypes);
-    }
-
-    /**
      * disables content negotation
      *
      * @return  Routing
@@ -502,22 +466,25 @@ class Routing implements RoutingConfigurator
     }
 
     /**
-     * checks whether content negotation is disabled
+     * retrieves list of supported mime types
      *
-     * @return  bool
-     * @since   2.1.1
+     * @param   Route  $route
+     * @return  SupportedMimeTypes
      */
-    public function isContentNegotationDisabled()
+    private function getSupportedMimeTypes(Route $route = null)
     {
         if ($this->disableContentNegotation) {
-            return true;
+            return SupportedMimeTypes::createWithDisabledContentNegotation();
         }
 
-        $route = $this->findRouteConfig();
-        if (null === $route) {
-            return false;
+        if (null !== $route && $route->isContentNegotationDisabled()) {
+            return SupportedMimeTypes::createWithDisabledContentNegotation();
         }
 
-        return $route->isContentNegotationDisabled();
+        $routeMimeTypes = (($route !== null) ? ($route->getSupportedMimeTypes()) : (array()));
+        return new SupportedMimeTypes(array_merge($routeMimeTypes,
+                                                  $this->mimeTypes
+                                      )
+        );
     }
 }
