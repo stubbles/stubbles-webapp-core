@@ -8,6 +8,7 @@
  * @package  net\stubbles\webapp
  */
 namespace net\stubbles\webapp;
+use net\stubbles\lang;
 /**
  * Tests for net\stubbles\webapp\Routing.
  *
@@ -22,17 +23,33 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
      * @type  Routing
      */
     private $routing;
+    /**
+     * called uri during tests
+     *
+     * @type  UriRequest
+     */
+    private $calledUri;
 
     /**
      * set up test environment
      */
     public function setUp()
     {
-        $this->routing = new Routing(UriRequest::fromString('http://example.net/hello', 'GET'),
-                                     $this->getMockBuilder('net\stubbles\ioc\Injector')
-                                          ->disableOriginalConstructor()
-                                          ->getMock()
-                         );
+        $this->routing   = new Routing($this->getMockBuilder('net\stubbles\ioc\Injector')
+                                            ->disableOriginalConstructor()
+                                            ->getMock()
+                           );
+        $this->calledUri = UriRequest::fromString('http://example.net/hello', 'GET');
+    }
+
+    /**
+     * @test
+     */
+    public function annotationsPresentOnConstructor()
+    {
+        $this->assertTrue(lang\reflectConstructor($this->routing)
+                              ->hasAnnotation('Inject')
+        );
     }
 
     /**
@@ -41,7 +58,7 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
     public function returnsMissingRouteOnRouteSelectionWhenNoRouteAdded()
     {
         $this->assertInstanceOf('net\stubbles\webapp\MissingRoute',
-                                $this->routing->findRoute()
+                                $this->routing->findRoute($this->calledUri)
         );
     }
 
@@ -53,7 +70,7 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
         $this->routing->onHead('/bar', function() {});
         $this->routing->onGet('/foo', function() {});
         $this->assertInstanceOf('net\stubbles\webapp\MissingRoute',
-                                $this->routing->findRoute()
+                                $this->routing->findRoute($this->calledUri)
         );
     }
 
@@ -63,15 +80,10 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
      */
     public function returnsOptionsRouteOnRouteSelectionWhenNoSuitableRouteForMethodAddedButIsOptionsRequest()
     {
-        $routing = new Routing(UriRequest::fromString('http://example.net/hello', 'OPTIONS'),
-                               $this->getMockBuilder('net\stubbles\ioc\Injector')
-                                    ->disableOriginalConstructor()
-                                    ->getMock()
-                   );
-        $routing->onHead('/hello', function() {});
-        $routing->onGet('/foo', function() {});
+        $this->routing->onHead('/hello', function() {});
+        $this->routing->onGet('/foo', function() {});
         $this->assertInstanceOf('net\stubbles\webapp\OptionsRoute',
-                                $routing->findRoute()
+                                $this->routing->findRoute(UriRequest::fromString('http://example.net/hello', 'OPTIONS'))
         );
     }
 
@@ -84,7 +96,7 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
         $this->routing->onHead('/hello', function() {});
         $this->routing->onGet('/foo', function() {});
         $this->assertInstanceOf('net\stubbles\webapp\MethodNotAllowedRoute',
-                                $this->routing->findRoute()
+                                $this->routing->findRoute($this->calledUri)
         );
     }
 
@@ -114,7 +126,7 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
     public function returnsRouteWhichFitsMethodAndPath()
     {
         $route = $this->createProcessableRoute($this->routing->onGet('/hello', function() {}));
-        $this->assertEquals($route, $this->routing->findRoute());
+        $this->assertEquals($route, $this->routing->findRoute($this->calledUri));
     }
 
     /**
@@ -138,7 +150,7 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
                                           ->preInterceptOnPost($preInterceptor)
                                           ->preInterceptOnPut($preInterceptor)
                                           ->preInterceptOnDelete($preInterceptor)
-                                          ->findRoute()
+                                          ->findRoute($this->calledUri)
         );
     }
 
@@ -154,7 +166,7 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
         $this->assertEquals($route,
                             $this->routing->preIntercept('array_map')
                                           ->preInterceptOnGet($preInterceptor)
-                                          ->findRoute()
+                                          ->findRoute($this->calledUri)
         );
     }
 
@@ -173,7 +185,7 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
         $this->assertEquals($route,
                             $this->routing->preIntercept($preInterceptor)
                                           ->preIntercept($mockPreFunction)
-                                          ->findRoute()
+                                          ->findRoute($this->calledUri)
         );
     }
 
@@ -189,7 +201,7 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
                  );
         $this->assertEquals($route,
                             $this->routing->preInterceptOnGet($preInterceptor)
-                                          ->findRoute()
+                                          ->findRoute($this->calledUri)
         );
     }
 
@@ -214,7 +226,7 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
                                           ->postInterceptOnPost($postInterceptor)
                                           ->postInterceptOnPut($postInterceptor)
                                           ->postInterceptOnDelete($postInterceptor)
-                                          ->findRoute()
+                                          ->findRoute($this->calledUri)
         );
     }
 
@@ -231,7 +243,7 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
         $this->assertEquals($route,
                             $this->routing->postIntercept('array_map')
                                           ->postInterceptOnGet($postInterceptor)
-                                          ->findRoute()
+                                          ->findRoute($this->calledUri)
         );
     }
 
@@ -251,7 +263,7 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
         $this->assertEquals($route,
                             $this->routing->postIntercept($postInterceptor)
                                           ->postIntercept($mockPostFunction)
-                                          ->findRoute()
+                                          ->findRoute($this->calledUri)
         );
     }
 
@@ -268,7 +280,7 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
                  );
         $this->assertEquals($route,
                             $this->routing->postInterceptOnGet($postInterceptor)
-                                          ->findRoute()
+                                          ->findRoute($this->calledUri)
         );
     }
 
@@ -278,7 +290,7 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
     public function supportsNoMimeTypeByDefault()
     {
         $this->assertEquals(array(),
-                            $this->routing->findRoute()
+                            $this->routing->findRoute($this->calledUri)
                                           ->getSupportedMimeTypes()
                                           ->asArray()
         );
@@ -295,7 +307,7 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
                                   'application/xml'
                             ),
                             $this->routing->supportsMimeType('application/xml')
-                                          ->findRoute()
+                                          ->findRoute($this->calledUri)
                                           ->getSupportedMimeTypes()
                                           ->asArray()
         );
@@ -308,7 +320,7 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
     public function contentNegotationIsEnabledByDefault()
     {
         $this->routing->onGet('/hello', function() {});
-        $this->assertFalse($this->routing->findRoute()
+        $this->assertFalse($this->routing->findRoute($this->calledUri)
                                          ->getSupportedMimeTypes()
                                          ->isContentNegotationDisabled()
         );
@@ -322,7 +334,7 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
     {
         $this->routing->onGet('/hello', function() {});
         $this->assertTrue($this->routing->disableContentNegotiation()
-                                        ->findRoute()
+                                        ->findRoute($this->calledUri)
                                         ->getSupportedMimeTypes()
                                         ->isContentNegotationDisabled()
         );
@@ -337,7 +349,7 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
         $this->routing->onGet('/hello', function() {})
                       ->disableContentNegotiation();
         $this->assertTrue($this->routing->disableContentNegotiation()
-                                        ->findRoute()
+                                        ->findRoute($this->calledUri)
                                         ->getSupportedMimeTypes()
                                         ->isContentNegotationDisabled()
         );

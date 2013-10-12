@@ -83,7 +83,10 @@ abstract class WebApp extends App
     public function run()
     {
         $this->configureRouting($this->routing);
-        $route    = $this->routing->findRoute();
+        $route    = $this->routing->findRoute(new UriRequest($this->request->getUri(),
+                                                             $this->request->getMethod()
+                                              )
+                    );
         $response = $this->responseNegotiator->negotiateMimeType($this->request, $route->getSupportedMimeTypes());
         if (!$this->request->isCancelled()) {
             if ($route->switchToHttps()) {

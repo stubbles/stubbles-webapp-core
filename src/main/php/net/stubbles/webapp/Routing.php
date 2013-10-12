@@ -18,16 +18,9 @@ use net\stubbles\webapp\response\SupportedMimeTypes;
  * Contains routing information and decides which route is applicable for given request.
  *
  * @since  2.0.0
- * @ProvidedBy(net\stubbles\webapp\ioc\RoutingProvider.class)
  */
 class Routing implements RoutingConfigurator
 {
-    /**
-     * current request
-     *
-     * @type  UriRequest
-     */
-    private $calledUri;
     /**
      * list of routes for the web app
      *
@@ -68,12 +61,11 @@ class Routing implements RoutingConfigurator
     /**
      * constructor
      *
-     * @param  UriRequest  $calledUri
-     * @param  Injector    $injector
+     * @param  Injector  $injector
+     * @Inject
      */
-    public function __construct(UriRequest $calledUri, Injector $injector)
+    public function __construct(Injector $injector)
     {
-        $this->calledUri = $calledUri;
         $this->injector  = $injector;
     }
 
@@ -152,39 +144,40 @@ class Routing implements RoutingConfigurator
     /**
      * returns route which is applicable for given request
      *
+     * @param   UriRequest  $calledUri
      * @return  ProcessableRoute
      */
-    public function findRoute()
+    public function findRoute(UriRequest $calledUri)
     {
-        $routeConfig = $this->findRouteConfig();
+        $routeConfig = $this->findRouteConfig($calledUri);
         if (null !== $routeConfig) {
-            return new MatchingRoute($this->calledUri,
-                                     $this->collectInterceptors($routeConfig),
+            return new MatchingRoute($calledUri,
+                                     $this->collectInterceptors($calledUri, $routeConfig),
                                      $this->getSupportedMimeTypes($routeConfig),
                                      $routeConfig,
                                      $this->injector
                    );
         }
 
-        if ($this->canFindRouteWithAnyMethod()) {
-            if ($this->calledUri->methodEquals('OPTIONS')) {
-                return new OptionsRoute($this->calledUri,
-                                        $this->collectInterceptors(),
+        if ($this->canFindRouteWithAnyMethod($calledUri)) {
+            if ($calledUri->methodEquals('OPTIONS')) {
+                return new OptionsRoute($calledUri,
+                                        $this->collectInterceptors($calledUri),
                                         SupportedMimeTypes::createWithDisabledContentNegotation(),
-                                        $this->getAllowedMethods()
+                                        $this->getAllowedMethods($calledUri)
 
                 );
             }
 
-            return new MethodNotAllowedRoute($this->calledUri,
-                                             $this->collectInterceptors(),
+            return new MethodNotAllowedRoute($calledUri,
+                                             $this->collectInterceptors($calledUri),
                                              SupportedMimeTypes::createWithDisabledContentNegotation(),
-                                             $this->getAllowedMethods()
+                                             $this->getAllowedMethods($calledUri)
             );
         }
 
-        return new MissingRoute($this->calledUri,
-                                $this->collectInterceptors(),
+        return new MissingRoute($calledUri,
+                                $this->collectInterceptors($calledUri),
                                 SupportedMimeTypes::createWithDisabledContentNegotation()
         );
     }
@@ -192,12 +185,13 @@ class Routing implements RoutingConfigurator
     /**
      * finds route based on called uri
      *
+     * @param   UriRequest  $calledUri
      * @return  Route
      */
-    private function findRouteConfig()
+    private function findRouteConfig(UriRequest $calledUri)
     {
         foreach ($this->routes as $route) {
-            if ($route->matches($this->calledUri)) {
+            if ($route->matches($calledUri)) {
                 return $route;
             }
         }
@@ -208,13 +202,14 @@ class Routing implements RoutingConfigurator
     /**
      * returns list of allowed method for called uri
      *
+     * @param   UriRequest  $calledUri
      * @return  string[]
      */
-    private function getAllowedMethods()
+    private function getAllowedMethods(UriRequest $calledUri)
     {
         $allowedMethods = array();
         foreach ($this->routes as $route) {
-            if ($route->matchesPath($this->calledUri)) {
+            if ($route->matchesPath($calledUri)) {
                 $allowedMethods[] = $route->getMethod();
             }
         }
@@ -229,11 +224,12 @@ class Routing implements RoutingConfigurator
     /**
      * checks whether there is a route at all
      *
+     * @param   UriRequest  $calledUri
      * @return  bool
      */
-    private function canFindRouteWithAnyMethod()
+    private function canFindRouteWithAnyMethod(UriRequest $calledUri)
     {
-        return count($this->getAllowedMethods()) > 0;
+        return count($this->getAllowedMethods($calledUri)) > 0;
     }
 
     /**
@@ -389,60 +385,64 @@ class Routing implements RoutingConfigurator
     /**
      * collects interceptors
      *
-     * @param   Route  $routeConfig
+     * @param   UriRequest  $calledUri
+     * @param   Route       $routeConfig
      * @return  Interceptors
      */
-    private function collectInterceptors(Route $routeConfig = null)
+    private function collectInterceptors(UriRequest $calledUri, Route $routeConfig = null)
     {
         return new Interceptors($this->injector,
-                                $this->getPreInterceptors($routeConfig),
-                                $this->getPostInterceptors($routeConfig)
+                                $this->getPreInterceptors($calledUri, $routeConfig),
+                                $this->getPostInterceptors($calledUri, $routeConfig)
         );
     }
 
     /**
      * returns list of applicable pre interceptors for this request
      *
-     * @param   Route  $route
+     * @param   UriRequest  $calledUri
+     * @param   Route       $routeConfig
      * @return  array
      */
-    private function getPreInterceptors(Route $route = null)
+    private function getPreInterceptors(UriRequest $calledUri, Route $routeConfig = null)
     {
-        $global = $this->getApplicable($this->preInterceptors);
-        if (null === $route) {
+        $global = $this->getApplicable($calledUri, $this->preInterceptors);
+        if (null === $routeConfig) {
             return $global;
         }
 
-        return array_merge($global, $route->getPreInterceptors());
+        return array_merge($global, $routeConfig->getPreInterceptors());
     }
 
     /**
      * returns list of applicable post interceptors for this request
      *
-     * @param   Route  $route
+     * @param   UriRequest  $calledUri
+     * @param   Route       $routeConfig
      * @return  array
      */
-    private function getPostInterceptors(Route $route = null)
+    private function getPostInterceptors(UriRequest $calledUri, Route $routeConfig = null)
     {
-        $global = $this->getApplicable($this->postInterceptors);
-        if (null === $route) {
+        $global = $this->getApplicable($calledUri, $this->postInterceptors);
+        if (null === $routeConfig) {
             return $global;
         }
 
-        return array_merge($route->getPostInterceptors(), $global);
+        return array_merge($routeConfig->getPostInterceptors(), $global);
     }
 
     /**
      * calculates which interceptors are applicable for given request method
      *
-     * @param   array[]  $interceptors   list of pre/post interceptors to check
+     * @param   UriRequest  $calledUri
+     * @param   array[]     $interceptors   list of interceptors to check
      * @return  array
      */
-    private function getApplicable(array $interceptors)
+    private function getApplicable(UriRequest $calledUri, array $interceptors)
     {
         $applicable = array();
         foreach ($interceptors as  $interceptor) {
-            if ($this->calledUri->methodEquals($interceptor['requestMethod'])) {
+            if ($calledUri->methodEquals($interceptor['requestMethod'])) {
                 $applicable[] = $interceptor['interceptor'];
             }
         }
@@ -477,20 +477,20 @@ class Routing implements RoutingConfigurator
     /**
      * retrieves list of supported mime types
      *
-     * @param   Route  $route
+     * @param   Route  $routeConfig
      * @return  SupportedMimeTypes
      */
-    private function getSupportedMimeTypes(Route $route = null)
+    private function getSupportedMimeTypes(Route $routeConfig = null)
     {
         if ($this->disableContentNegotation) {
             return SupportedMimeTypes::createWithDisabledContentNegotation();
         }
 
-        if (null !== $route && $route->isContentNegotationDisabled()) {
+        if (null !== $routeConfig && $routeConfig->isContentNegotationDisabled()) {
             return SupportedMimeTypes::createWithDisabledContentNegotation();
         }
 
-        $routeMimeTypes = (($route !== null) ? ($route->getSupportedMimeTypes()) : (array()));
+        $routeMimeTypes = (($routeConfig !== null) ? ($routeConfig->getSupportedMimeTypes()) : (array()));
         return new SupportedMimeTypes(array_merge($routeMimeTypes,
                                                   $this->mimeTypes
                                       )

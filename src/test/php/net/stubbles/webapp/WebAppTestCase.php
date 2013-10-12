@@ -9,6 +9,7 @@
  */
 namespace net\stubbles\webapp;
 use net\stubbles\lang;
+use net\stubbles\peer\http\HttpUri;
 /**
  * Helper class for the test.
  */
@@ -65,7 +66,13 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->mockRequest      = $this->getMock('net\stubbles\input\web\WebRequest');
+        $this->mockRequest  = $this->getMock('net\stubbles\input\web\WebRequest');
+        $this->mockRequest->expects($this->any())
+                          ->method('getMethod')
+                          ->will($this->returnValue('GET'));
+        $this->mockRequest->expects($this->any())
+                          ->method('getUri')
+                          ->will($this->returnValue(HttpUri::fromString('http://example.com/hello')));
         $this->mockResponse     = $this->getMock('net\stubbles\webapp\response\Response');
         $mockResponseNegotiator = $this->getMockBuilder('net\stubbles\webapp\response\ResponseNegotiator')
                                        ->disableOriginalConstructor()
@@ -368,8 +375,28 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function executesGetWithHeadRequestForSameUri()
+    public function executesEverythingButSendsHeadOnlyWhenRequestMethodIsHead()
     {
+        $this->mockRequest  = $this->getMock('net\stubbles\input\web\WebRequest');
+        $this->mockRequest->expects($this->any())
+                          ->method('getMethod')
+                          ->will($this->returnValue('HEAD'));
+        $this->mockRequest->expects($this->any())
+                          ->method('getUri')
+                          ->will($this->returnValue(HttpUri::fromString('http://example.com/hello')));
+        $mockResponseNegotiator = $this->getMockBuilder('net\stubbles\webapp\response\ResponseNegotiator')
+                                       ->disableOriginalConstructor()
+                                       ->getMock();
+        $mockResponseNegotiator->expects($this->any())
+                               ->method('negotiateMimeType')
+                               ->will($this->returnValue($this->mockResponse));
+        $this->webApp  = $this->getMock('net\stubbles\webapp\TestWebApp',
+                                        array('configureRouting'),
+                                        array($this->mockRequest,
+                                              $mockResponseNegotiator,
+                                              $this->routing
+                                        )
+                         );
         $mockRoute = $this->createMockRoute();
         $mockRoute->expects($this->once())
                   ->method('switchToHttps')
@@ -394,9 +421,6 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
                   ->with($this->equalTo($this->mockRequest),
                          $this->equalTo($this->mockResponse)
                     );
-        $this->mockRequest->expects($this->once())
-                          ->method('getMethod')
-                          ->will($this->returnValue('HEAD'));
         $this->mockResponse->expects($this->once())
                            ->method('sendHead');
         $this->assertSame($this->mockResponse, $this->webApp->run());
