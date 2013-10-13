@@ -1,4 +1,4 @@
-2.2.0, (2013-10-??)
+2.2.0, (2013-10-13)
 -------------------
 
    * global interceptors (pre and post) are now called even if no suitable route could be found
