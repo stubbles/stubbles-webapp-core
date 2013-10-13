@@ -96,6 +96,33 @@ class InterceptorsTestCase extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function respondsWithInternalServerErrorIfPreInterceptorThrowsException()
+    {
+        $preInterceptor = $this->getMock('net\stubbles\webapp\interceptor\PreInterceptor');
+        $preInterceptor->expects($this->once())
+                       ->method('preProcess')
+                       ->with($this->equalTo($this->mockRequest), $this->equalTo($this->mockResponse))
+                       ->will($this->throwException(new \Exception('some error occurred')));
+        $this->mockInjector->expects($this->once())
+                           ->method('getInstance')
+                           ->with($this->equalTo('some\PreInterceptor'))
+                           ->will($this->returnValue($preInterceptor));
+        $this->mockResponse->expects($this->once())
+                           ->method('internalServerError')
+                           ->with($this->equalTo('some error occurred'));
+        $this->assertFalse($this->createInterceptors(array('some\PreInterceptor',
+                                                           'other\PreInterceptor'
+                                                     )
+                                  )
+                                ->preProcess($this->mockRequest,
+                                             $this->mockResponse
+                                  )
+        );
+    }
+
+    /**
+     * @test
+     */
     public function doesNotCallOtherPreInterceptorsIfOneReturnsFalse()
     {
         $preInterceptor = $this->getMock('net\stubbles\webapp\interceptor\PreInterceptor');
@@ -160,6 +187,34 @@ class InterceptorsTestCase extends \PHPUnit_Framework_TestCase
                            ->will($this->returnValue(new \stdClass()));
         $this->mockResponse->expects($this->once())
                            ->method('internalServerError');
+        $this->assertFalse($this->createInterceptors(array(),
+                                                     array('some\PostInterceptor',
+                                                           'other\PostInterceptor'
+                                                     )
+                                  )
+                                ->postProcess($this->mockRequest,
+                                              $this->mockResponse
+                                  )
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function respondsWithInternalServerErrorIfPostInterceptorThrowsException()
+    {
+        $postInterceptor = $this->getMock('net\stubbles\webapp\interceptor\PostInterceptor');
+        $postInterceptor->expects($this->once())
+                        ->method('postProcess')
+                        ->with($this->equalTo($this->mockRequest), $this->equalTo($this->mockResponse))
+                        ->will($this->throwException(new \Exception('some error occurred')));
+        $this->mockInjector->expects($this->once())
+                           ->method('getInstance')
+                           ->with($this->equalTo('some\PostInterceptor'))
+                           ->will($this->returnValue($postInterceptor));
+        $this->mockResponse->expects($this->once())
+                           ->method('internalServerError')
+                           ->with($this->equalTo('some error occurred'));
         $this->assertFalse($this->createInterceptors(array(),
                                                      array('some\PostInterceptor',
                                                            'other\PostInterceptor'

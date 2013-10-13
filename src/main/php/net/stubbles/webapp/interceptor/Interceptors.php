@@ -61,7 +61,12 @@ class Interceptors
     public function preProcess(WebRequest $request, Response $response)
     {
         foreach ($this->preInterceptors as $preInterceptor) {
-            if (false === $this->executePreInterceptor($preInterceptor, $request, $response)) {
+            try {
+                if (false === $this->executePreInterceptor($preInterceptor, $request, $response)) {
+                    return false;
+                }
+            } catch (\Exception $e) {
+                $response->internalServerError($e->getMessage());
                 return false;
             }
         }
@@ -110,7 +115,12 @@ class Interceptors
     public function postProcess(WebRequest $request, Response $response)
     {
         foreach ($this->postInterceptors as $postInterceptor) {
-            if (false === $this->executePostInterceptor($postInterceptor, $request, $response)) {
+            try {
+                if (false === $this->executePostInterceptor($postInterceptor, $request, $response)) {
+                    return false;
+                }
+            } catch (\Exception $e) {
+                $response->internalServerError($e->getMessage());
                 return false;
             }
         }
