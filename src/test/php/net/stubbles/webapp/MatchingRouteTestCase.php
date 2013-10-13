@@ -177,12 +177,24 @@ class MatchingRouteTestCase extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @test
+     * data provider for different return value handling
+     *
+     * @return  array
      */
-    public function processCallsClosureGivenAsCallback()
+    public function returnValueAssertions()
     {
-        $this->mockRequest->expects($this->once())
-                          ->method('cancel');
+        return array(array('assertFalse', false),
+                     array('assertTrue', true),
+                     array('assertTrue', null)
+        );
+    }
+
+    /**
+     * @test
+     * @dataProvider  returnValueAssertions
+     */
+    public function processCallsClosureGivenAsCallback($assert, $returnValue)
+    {
         $this->mockResponse->expects($this->once())
                            ->method('setStatusCode')
                            ->with($this->equalTo(418))
@@ -190,16 +202,18 @@ class MatchingRouteTestCase extends \PHPUnit_Framework_TestCase
         $this->mockResponse->expects($this->once())
                            ->method('write')
                            ->with($this->equalTo('Hello world'));
-        $this->mockInjector->expects($this->never())
-                           ->method('getInstance');
-        $this->createMatchingRouteWithCallback(function(WebRequest $request, Response $response, UriPath $uriPath)
-                                               {
-                                                   $response->setStatusCode(418)
-                                                            ->write('Hello ' . $uriPath->getArgument('name'));
-                                                   $request->cancel();
-                                               }
-               )
-             ->process($this->mockRequest, $this->mockResponse);
+        $this->$assert($this->createMatchingRouteWithCallback(function(WebRequest $request, Response $response, UriPath $uriPath)
+                                                              use($returnValue)
+                                                              {
+                                                                  $response->setStatusCode(418)
+                                                                           ->write('Hello ' . $uriPath->getArgument('name'));
+                                                                  if (null !== $returnValue) {
+                                                                      return $returnValue;
+                                                                  }
+                                                              }
+                              )
+                            ->process($this->mockRequest, $this->mockResponse)
+        );
     }
 
     /**
@@ -212,7 +226,6 @@ class MatchingRouteTestCase extends \PHPUnit_Framework_TestCase
     {
         $response->setStatusCode(418)
                  ->write('Hello ' . $uriPath->getArgument('name'));
-        $request->cancel();
     }
 
     /**
@@ -220,8 +233,6 @@ class MatchingRouteTestCase extends \PHPUnit_Framework_TestCase
      */
     public function processCallsGivenCallback()
     {
-        $this->mockRequest->expects($this->once())
-                          ->method('cancel');
         $this->mockResponse->expects($this->once())
                            ->method('setStatusCode')
                            ->with($this->equalTo(418))
@@ -231,8 +242,31 @@ class MatchingRouteTestCase extends \PHPUnit_Framework_TestCase
                            ->with($this->equalTo('Hello world'));
         $this->mockInjector->expects($this->never())
                            ->method('getInstance');
-        $this->createMatchingRouteWithCallback(array($this, 'theCallable'))
-             ->process($this->mockRequest, $this->mockResponse);
+        $this->assertTrue($this->createMatchingRouteWithCallback(array($this, 'theCallable'))
+                               ->process($this->mockRequest, $this->mockResponse)
+        );
+    }
+
+    /**
+     * @test
+     * @dataProvider  returnValueAssertions
+     */
+    public function processCallsGivenProcessorInstance($assert, $returnValue)
+    {
+        $mockProcessor = $this->getMock('net\stubbles\webapp\Processor');
+        $mocked = $mockProcessor->expects($this->once())
+                                ->method('process')
+                                ->with($this->equalTo($this->mockRequest),
+                                       $this->equalTo($this->mockResponse),
+                                       $this->equalTo(new UriPath('/hello/{name}', array('name' => 'world'), null))
+                                  );
+        if (null !== $returnValue) {
+            $mocked->will($this->returnValue($returnValue));
+        }
+
+        $this->$assert($this->createMatchingRouteWithCallback($mockProcessor)
+                            ->process($this->mockRequest, $this->mockResponse)
+        );
     }
 
     /**
@@ -251,39 +285,27 @@ class MatchingRouteTestCase extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
+     * @dataProvider  returnValueAssertions
      */
-    public function processCreatesAndCallsGivenProcessorClass()
+    public function processCreatesAndCallsGivenProcessorClass($assert, $returnValue)
     {
         $mockProcessor = $this->getMock('net\stubbles\webapp\Processor');
-        $mockProcessor->expects($this->once())
-                      ->method('process')
-                      ->with($this->equalTo($this->mockRequest),
-                             $this->equalTo($this->mockResponse),
-                             $this->equalTo(new UriPath('/hello/{name}', array('name' => 'world'), null))
-                        );
+        $mocked = $mockProcessor->expects($this->once())
+                                ->method('process')
+                                ->with($this->equalTo($this->mockRequest),
+                                       $this->equalTo($this->mockResponse),
+                                       $this->equalTo(new UriPath('/hello/{name}', array('name' => 'world'), null))
+                                  );
+        if (null !== $returnValue) {
+            $mocked->will($this->returnValue($returnValue));
+        }
+
         $this->mockInjector->expects($this->once())
                            ->method('getInstance')
                            ->with($this->equalTo(get_class($mockProcessor)))
                            ->will($this->returnValue($mockProcessor));
-        $this->createMatchingRouteWithCallback(get_class($mockProcessor))
-             ->process($this->mockRequest, $this->mockResponse);
-    }
-
-    /**
-     * @test
-     */
-    public function processCallsGivenProcessorInstance()
-    {
-        $mockProcessor = $this->getMock('net\stubbles\webapp\Processor');
-        $mockProcessor->expects($this->once())
-                      ->method('process')
-                      ->with($this->equalTo($this->mockRequest),
-                             $this->equalTo($this->mockResponse),
-                             $this->equalTo(new UriPath('/hello/{name}', array('name' => 'world'), null))
-                        );
-        $this->mockInjector->expects($this->never())
-                           ->method('getInstance');
-        $this->createMatchingRouteWithCallback($mockProcessor)
-             ->process($this->mockRequest, $this->mockResponse);
+        $this->$assert($this->createMatchingRouteWithCallback(get_class($mockProcessor))
+                            ->process($this->mockRequest, $this->mockResponse)
+        );
     }
 }

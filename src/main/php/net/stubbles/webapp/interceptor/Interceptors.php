@@ -62,17 +62,17 @@ class Interceptors
     {
         foreach ($this->preInterceptors as $interceptor) {
             if ($interceptor instanceof \Closure) {
-                $interceptor($request, $response);
+                $result = $interceptor($request, $response);
             } elseif (is_callable($interceptor)) {
-                call_user_func_array($interceptor, array($request, $response));
+                $result = call_user_func_array($interceptor, array($request, $response));
             } elseif ($interceptor instanceof PreInterceptor) {
-                $interceptor->preProcess($request, $response);
+                $result = $interceptor->preProcess($request, $response);
             } else {
-                $this->injector->getInstance($interceptor)
-                               ->preProcess($request, $response);
+                $result = $this->injector->getInstance($interceptor)
+                                         ->preProcess($request, $response);
             }
 
-            if ($request->isCancelled()) {
+            if (false === $result) {
                 return false;
             }
         }
@@ -91,17 +91,17 @@ class Interceptors
     {
         foreach ($this->postInterceptors as $interceptor) {
             if ($interceptor instanceof \Closure) {
-                $interceptor($request, $response);
+                $result = $interceptor($request, $response);
             } elseif (is_callable($interceptor)) {
-                call_user_func_array($interceptor, array($request, $response));
+                $result = call_user_func_array($interceptor, array($request, $response));
             } elseif ($interceptor instanceof PostInterceptor) {
-                $interceptor->postProcess($request, $response);
+                $result = $interceptor->postProcess($request, $response);
             } else {
-                $this->injector->getInstance($interceptor)
-                               ->postProcess($request, $response);
+                $result = $this->injector->getInstance($interceptor)
+                                         ->postProcess($request, $response);
             }
 
-            if ($request->isCancelled()) {
+            if (false === $result) {
                 return false;
             }
         }

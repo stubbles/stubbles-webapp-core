@@ -100,7 +100,13 @@ class MatchingRoute extends AbstractProcessableRoute
     }
 
     /**
-     * creates processor instance
+     * triggers actual logic on this route
+     *
+     * The logic might be capsuled in a closure, a callback, or a processor
+     * class. The return value from this logic will be used to evaluate whether
+     * post processors are called by the web app. A return value of false means
+     * no post processor will be called, whereas true or no return value will
+     * result in post processors being called by the webapp.
      *
      * @param   WebRequest  $request    current request
      * @param   Response    $response   response to send
@@ -109,24 +115,43 @@ class MatchingRoute extends AbstractProcessableRoute
      */
     public function process(WebRequest $request, Response $response)
     {
-
         $uriPath  = $this->route->getUriPath($this->calledUri);
         $callback = $this->route->getCallback();
         if ($callback instanceof \Closure) {
-            $callback($request, $response, $uriPath);
-        } elseif (is_callable($callback)) {
-            call_user_func_array($callback, array($request, $response, $uriPath));
-        } elseif ($callback instanceof Processor) {
-            $callback->process($request, $response, $uriPath);
-        } else {
-            $processor = $this->injector->getInstance($callback);
-            if (!($processor instanceof Processor)) {
-                throw new RuntimeException('Configured callback class ' . $callback . ' for route ' . $uriPath->getMatched() . ' is not an instance of net\stubbles\webapp\Processor');
-            }
-
-            $processor->process($request, $response, $uriPath);
+            return $this->result($callback($request, $response, $uriPath));
         }
 
-        return !$request->isCancelled();
+        if (is_callable($callback)) {
+            return $this->result(call_user_func_array($callback, array($request, $response, $uriPath)));
+        }
+
+        if ($callback instanceof Processor) {
+            return $this->result($callback->process($request, $response, $uriPath));
+        }
+
+        $processor = $this->injector->getInstance($callback);
+        if (!($processor instanceof Processor)) {
+            throw new RuntimeException('Configured callback class ' . $callback . ' for route ' . $uriPath->getMatched() . ' is not an instance of net\stubbles\webapp\Processor');
+        }
+
+        return $this->result($processor->process($request, $response, $uriPath));
+    }
+
+    /**
+     * calculates result from return value
+     *
+     * Result will be false if return value from callback is false. If callback
+     * returns true or void result will be true.
+     *
+     * @param   bool  $returnValue
+     * @return  bool
+     */
+    private function result($returnValue)
+    {
+        if (false === $returnValue) {
+            return false;
+        }
+
+        return true;
     }
 }
