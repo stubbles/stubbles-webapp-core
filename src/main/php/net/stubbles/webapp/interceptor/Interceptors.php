@@ -91,8 +91,13 @@ class Interceptors
             return $preInterceptor->preProcess($request, $response);
         }
 
-        return $this->injector->getInstance($preInterceptor)
-                              ->preProcess($request, $response);
+        $instance = $this->injector->getInstance($preInterceptor);
+        if (!($instance instanceof PreInterceptor)) {
+            $response->internalServerError('Configured pre interceptor ' . $preInterceptor . ' is not an instance of net\stubbles\webapp\interceptor\PreInterceptor');
+            return false;
+        }
+
+        return $instance->preProcess($request, $response);
     }
 
     /**
@@ -135,7 +140,12 @@ class Interceptors
             return $postInterceptor->postProcess($request, $response);
         }
 
-        return $this->injector->getInstance($postInterceptor)
-                              ->postProcess($request, $response);
+        $instance = $this->injector->getInstance($postInterceptor);
+        if (!($instance instanceof PostInterceptor)) {
+            $response->internalServerError('Configured post interceptor ' . $postInterceptor . ' is not an instance of net\stubbles\webapp\interceptor\PostInterceptor');
+            return false;
+        }
+
+        return $instance->postProcess($request, $response);
     }
 }

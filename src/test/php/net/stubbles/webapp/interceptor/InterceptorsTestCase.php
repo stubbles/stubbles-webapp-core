@@ -75,7 +75,28 @@ class InterceptorsTestCase extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function doesNotCallOtherPreInterceptorsIfOneCancelsRequest()
+    public function respondsWithInternalServerErrorIfPreInterceptorDoesNotImplementInterface()
+    {
+        $this->mockInjector->expects($this->once())
+                           ->method('getInstance')
+                           ->with($this->equalTo('some\PreInterceptor'))
+                           ->will($this->returnValue(new \stdClass()));
+        $this->mockResponse->expects($this->once())
+                           ->method('internalServerError');
+        $this->assertFalse($this->createInterceptors(array('some\PreInterceptor',
+                                                           'other\PreInterceptor'
+                                                     )
+                                  )
+                                ->preProcess($this->mockRequest,
+                                             $this->mockResponse
+                                  )
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function doesNotCallOtherPreInterceptorsIfOneReturnsFalse()
     {
         $preInterceptor = $this->getMock('net\stubbles\webapp\interceptor\PreInterceptor');
         $preInterceptor->expects($this->once())
@@ -99,7 +120,7 @@ class InterceptorsTestCase extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function returnsTrueWhenRequestNotCancelledByAnyPreInterceptor()
+    public function returnsTrueWhenNoPreInterceptorReturnsFalse()
     {
         $mockPreInterceptor = $this->getMock('net\stubbles\webapp\interceptor\PreInterceptor');
         $mockPreInterceptor->expects($this->exactly(2))
@@ -131,7 +152,29 @@ class InterceptorsTestCase extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function doesNotCallOtherPostInterceptorsIfOneCancelsRequest()
+    public function respondsWithInternalServerErrorIfPostInterceptorDoesNotImplementInterface()
+    {
+        $this->mockInjector->expects($this->once())
+                           ->method('getInstance')
+                           ->with($this->equalTo('some\PostInterceptor'))
+                           ->will($this->returnValue(new \stdClass()));
+        $this->mockResponse->expects($this->once())
+                           ->method('internalServerError');
+        $this->assertFalse($this->createInterceptors(array(),
+                                                     array('some\PostInterceptor',
+                                                           'other\PostInterceptor'
+                                                     )
+                                  )
+                                ->postProcess($this->mockRequest,
+                                              $this->mockResponse
+                                  )
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function doesNotCallOtherPostInterceptorsIfOneReturnsFalse()
     {
         $postInterceptor = $this->getMock('net\stubbles\webapp\interceptor\PostInterceptor');
         $postInterceptor->expects($this->once())
@@ -156,7 +199,7 @@ class InterceptorsTestCase extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function returnsTrueWhenRequestNotCancelledByAnyPostInterceptor()
+    public function returnsTrueWhenNoPostInterceptorReturnsFalse()
     {
         $mockPostInterceptor = $this->getMock('net\stubbles\webapp\interceptor\PostInterceptor');
         $mockPostInterceptor->expects($this->exactly(2))
