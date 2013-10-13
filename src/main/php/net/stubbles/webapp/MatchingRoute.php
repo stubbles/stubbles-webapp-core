@@ -10,7 +10,6 @@
 namespace net\stubbles\webapp;
 use net\stubbles\input\web\WebRequest;
 use net\stubbles\ioc\Injector;
-use net\stubbles\lang\exception\RuntimeException;
 use net\stubbles\webapp\interceptor\Interceptors;
 use net\stubbles\webapp\response\Response;
 use net\stubbles\webapp\response\SupportedMimeTypes;
@@ -72,49 +71,91 @@ class MatchingRoute extends AbstractProcessableRoute
      *
      * @return  bool
      */
-    public function requiresRole()
+    public function requiresAuth()
     {
-        return $this->route->requiresRole();
+        return $this->route->requiresAuth();
     }
 
     /**
      * checks whether this is an authorized request to this route
      *
+     * @param   AuthHandler  $authHandler
      * @return  bool
      */
-    public function getRequiredRole()
+    public function isAuthorized(AuthHandler $authHandler)
     {
-        return $this->route->getRequiredRole();
+        return $this->route->isAuthorized($authHandler);
     }
 
     /**
-     * creates processor instance
+     * checks whether route required login
+     *
+     * @param   AuthHandler  $authHandler
+     * @return  bool
+     */
+    public function requiresLogin(AuthHandler $authHandler)
+    {
+        return $this->route->requiresLogin($authHandler);
+    }
+
+    /**
+     * triggers actual logic on this route
+     *
+     * The logic might be capsuled in a closure, a callback, or a processor
+     * class. The return value from this logic will be used to evaluate whether
+     * post processors are called by the web app. A return value of false means
+     * no post processor will be called, whereas any other or no return value
+     * will result in post processors being called by the webapp.
      *
      * @param   WebRequest  $request    current request
      * @param   Response    $response   response to send
      * @return  bool
-     * @throws  RuntimeException
      */
     public function process(WebRequest $request, Response $response)
     {
-
         $uriPath  = $this->route->getUriPath($this->calledUri);
         $callback = $this->route->getCallback();
-        if ($callback instanceof \Closure) {
-            $callback($request, $response, $uriPath);
-        } elseif (is_callable($callback)) {
-            call_user_func_array($callback, array($request, $response, $uriPath));
-        } elseif ($callback instanceof Processor) {
-            $callback->process($request, $response, $uriPath);
-        } else {
-            $processor = $this->injector->getInstance($callback);
-            if (!($processor instanceof Processor)) {
-                throw new RuntimeException('Configured callback class ' . $callback . ' for route ' . $uriPath->getMatched() . ' is not an instance of net\stubbles\webapp\Processor');
+        try {
+            if ($callback instanceof \Closure) {
+                return $this->result($callback($request, $response, $uriPath));
             }
 
-            $processor->process($request, $response, $uriPath);
+            if (is_callable($callback)) {
+                return $this->result(call_user_func_array($callback, array($request, $response, $uriPath)));
+            }
+
+            if ($callback instanceof Processor) {
+                return $this->result($callback->process($request, $response, $uriPath));
+            }
+
+            $processor = $this->injector->getInstance($callback);
+            if (!($processor instanceof Processor)) {
+                $response->internalServerError('Configured callback class ' . $callback . ' for route ' . $uriPath->getMatched() . ' is not an instance of net\stubbles\webapp\Processor');
+                return false;
+            }
+
+            return $this->result($processor->process($request, $response, $uriPath));
+        } catch (\Exception $e) {
+            $response->internalServerError($e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * calculates result from return value
+     *
+     * Result will be false if return value from callback is false. If callback
+     * returns any other value result will be true.
+     *
+     * @param   bool  $returnValue
+     * @return  bool
+     */
+    private function result($returnValue)
+    {
+        if (false === $returnValue) {
+            return false;
         }
 
-        return !$request->isCancelled();
+        return true;
     }
 }

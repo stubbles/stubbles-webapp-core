@@ -2,6 +2,7 @@
 -------------------
 
    * global interceptors (pre and post) are now called even if no suitable route could be found
+   * uncatched exceptions from interceptors and processors are now turned into internal server errors
 
 
 2.1.2, (2013-10-06)

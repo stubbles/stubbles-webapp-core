@@ -62,17 +62,25 @@ class MissingRouteTestCase extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function doesNotRequireAnyRole()
+    public function doesNotRequireAuth()
     {
-        $this->assertFalse($this->missingRoute->requiresRole());
+        $this->assertFalse($this->missingRoute->requiresAuth());
     }
 
     /**
      * @test
      */
-    public function hasNoRequiredRole()
+    public function isAlwaysAuthorized()
     {
-        $this->assertNull($this->missingRoute->getRequiredRole());
+        $this->assertTrue($this->missingRoute->isAuthorized($this->getMock('net\stubbles\webapp\AuthHandler')));
+    }
+
+    /**
+     * @test
+     */
+    public function doesNotRequireLogin()
+    {
+        $this->assertFalse($this->missingRoute->requiresLogin($this->getMock('net\stubbles\webapp\AuthHandler')));
     }
 
     /**

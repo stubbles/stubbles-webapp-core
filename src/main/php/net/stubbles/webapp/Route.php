@@ -252,7 +252,7 @@ class Route implements ConfigurableRoute
      *
      * @return  bool
      */
-    public function requiresRole()
+    public function requiresAuth()
     {
         return null !== $this->requiredRole;
     }
@@ -260,11 +260,31 @@ class Route implements ConfigurableRoute
     /**
      * checks whether this is an authorized request to this route
      *
+     * @param   AuthHandler  $authHandler
      * @return  bool
      */
-    public function getRequiredRole()
+    public function isAuthorized(AuthHandler $authHandler)
     {
-        return $this->requiredRole;
+        if (!$this->requiresAuth()) {
+            return true;
+        }
+
+        return $authHandler->isAuthorized($this->requiredRole);
+    }
+
+    /**
+     * checks whether route required login
+     *
+     * @param   AuthHandler  $authHandler
+     * @return  bool
+     */
+    public function requiresLogin(AuthHandler $authHandler)
+    {
+        if (!$this->requiresAuth()) {
+            return false;
+        }
+
+        return $authHandler->requiresLogin($this->requiredRole);
     }
 
     /**
