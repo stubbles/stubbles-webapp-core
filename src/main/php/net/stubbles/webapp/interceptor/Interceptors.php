@@ -60,24 +60,49 @@ class Interceptors
      */
     public function preProcess(WebRequest $request, Response $response)
     {
-        foreach ($this->preInterceptors as $interceptor) {
-            if ($interceptor instanceof \Closure) {
-                $interceptor($request, $response);
-            } elseif (is_callable($interceptor)) {
-                call_user_func_array($interceptor, array($request, $response));
-            } elseif ($interceptor instanceof PreInterceptor) {
-                $interceptor->preProcess($request, $response);
-            } else {
-                $this->injector->getInstance($interceptor)
-                               ->preProcess($request, $response);
-            }
-
-            if ($request->isCancelled()) {
+        foreach ($this->preInterceptors as $preInterceptor) {
+            try {
+                if (false === $this->executePreInterceptor($preInterceptor, $request, $response)) {
+                    return false;
+                }
+            } catch (\Exception $e) {
+                $response->internalServerError($e->getMessage());
                 return false;
             }
         }
 
         return true;
+    }
+
+    /**
+     * executes pre interceptor
+     *
+     * @param   mixed       $preInterceptor
+     * @param   WebRequest  $request
+     * @param   Response    $response
+     * @return  bool
+     */
+    private function executePreInterceptor($preInterceptor, WebRequest $request, Response $response)
+    {
+        if ($preInterceptor instanceof \Closure) {
+            return $preInterceptor($request, $response);
+        }
+
+        if (is_callable($preInterceptor)) {
+            return call_user_func_array($preInterceptor, array($request, $response));
+        }
+
+        if ($preInterceptor instanceof PreInterceptor) {
+            return $preInterceptor->preProcess($request, $response);
+        }
+
+        $instance = $this->injector->getInstance($preInterceptor);
+        if (!($instance instanceof PreInterceptor)) {
+            $response->internalServerError('Configured pre interceptor ' . $preInterceptor . ' is not an instance of net\stubbles\webapp\interceptor\PreInterceptor');
+            return false;
+        }
+
+        return $instance->preProcess($request, $response);
     }
 
     /**
@@ -89,23 +114,48 @@ class Interceptors
      */
     public function postProcess(WebRequest $request, Response $response)
     {
-        foreach ($this->postInterceptors as $interceptor) {
-            if ($interceptor instanceof \Closure) {
-                $interceptor($request, $response);
-            } elseif (is_callable($interceptor)) {
-                call_user_func_array($interceptor, array($request, $response));
-            } elseif ($interceptor instanceof PostInterceptor) {
-                $interceptor->postProcess($request, $response);
-            } else {
-                $this->injector->getInstance($interceptor)
-                               ->postProcess($request, $response);
-            }
-
-            if ($request->isCancelled()) {
+        foreach ($this->postInterceptors as $postInterceptor) {
+            try {
+                if (false === $this->executePostInterceptor($postInterceptor, $request, $response)) {
+                    return false;
+                }
+            } catch (\Exception $e) {
+                $response->internalServerError($e->getMessage());
                 return false;
             }
         }
 
         return true;
+    }
+
+    /**
+     * executes post interceptor
+     *
+     * @param   mixed       $postInterceptor
+     * @param   WebRequest  $request
+     * @param   Response    $response
+     * @return  bool
+     */
+    private function executePostInterceptor($postInterceptor, WebRequest $request, Response $response)
+    {
+        if ($postInterceptor instanceof \Closure) {
+            return $postInterceptor($request, $response);
+        }
+
+        if (is_callable($postInterceptor)) {
+            return call_user_func_array($postInterceptor, array($request, $response));
+        }
+
+        if ($postInterceptor instanceof PostInterceptor) {
+            return $postInterceptor->postProcess($request, $response);
+        }
+
+        $instance = $this->injector->getInstance($postInterceptor);
+        if (!($instance instanceof PostInterceptor)) {
+            $response->internalServerError('Configured post interceptor ' . $postInterceptor . ' is not an instance of net\stubbles\webapp\interceptor\PostInterceptor');
+            return false;
+        }
+
+        return $instance->postProcess($request, $response);
     }
 }

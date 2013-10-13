@@ -28,14 +28,23 @@ class TestAbstractProcessableRoute extends AbstractProcessableRoute
      *
      * @return  bool
      */
-    public function requiresRole() {}
+    public function requiresAuth() {}
 
     /**
      * checks whether this is an authorized request to this route
      *
+     * @param   AuthHandler  $authHandler
      * @return  bool
      */
-    public function getRequiredRole() {}
+    public function isAuthorized(AuthHandler $authHandler) {}
+
+    /**
+     * checks whether route required login
+     *
+     * @param   AuthHandler  $authHandler
+     * @return  bool
+     */
+    public function requiresLogin(AuthHandler $authHandler) {}
 
     /**
      * creates processor instance
