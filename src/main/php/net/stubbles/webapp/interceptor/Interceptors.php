@@ -60,24 +60,39 @@ class Interceptors
      */
     public function preProcess(WebRequest $request, Response $response)
     {
-        foreach ($this->preInterceptors as $interceptor) {
-            if ($interceptor instanceof \Closure) {
-                $result = $interceptor($request, $response);
-            } elseif (is_callable($interceptor)) {
-                $result = call_user_func_array($interceptor, array($request, $response));
-            } elseif ($interceptor instanceof PreInterceptor) {
-                $result = $interceptor->preProcess($request, $response);
-            } else {
-                $result = $this->injector->getInstance($interceptor)
-                                         ->preProcess($request, $response);
-            }
-
-            if (false === $result) {
+        foreach ($this->preInterceptors as $preInterceptor) {
+            if (false === $this->executePreInterceptor($preInterceptor, $request, $response)) {
                 return false;
             }
         }
 
         return true;
+    }
+
+    /**
+     * executes pre interceptor
+     *
+     * @param   mixed       $preInterceptor
+     * @param   WebRequest  $request
+     * @param   Response    $response
+     * @return  bool
+     */
+    private function executePreInterceptor($preInterceptor, WebRequest $request, Response $response)
+    {
+        if ($preInterceptor instanceof \Closure) {
+            return $preInterceptor($request, $response);
+        }
+
+        if (is_callable($preInterceptor)) {
+            return call_user_func_array($preInterceptor, array($request, $response));
+        }
+
+        if ($preInterceptor instanceof PreInterceptor) {
+            return $preInterceptor->preProcess($request, $response);
+        }
+
+        return $this->injector->getInstance($preInterceptor)
+                              ->preProcess($request, $response);
     }
 
     /**
@@ -89,23 +104,38 @@ class Interceptors
      */
     public function postProcess(WebRequest $request, Response $response)
     {
-        foreach ($this->postInterceptors as $interceptor) {
-            if ($interceptor instanceof \Closure) {
-                $result = $interceptor($request, $response);
-            } elseif (is_callable($interceptor)) {
-                $result = call_user_func_array($interceptor, array($request, $response));
-            } elseif ($interceptor instanceof PostInterceptor) {
-                $result = $interceptor->postProcess($request, $response);
-            } else {
-                $result = $this->injector->getInstance($interceptor)
-                                         ->postProcess($request, $response);
-            }
-
-            if (false === $result) {
+        foreach ($this->postInterceptors as $postInterceptor) {
+            if (false === $this->executePostInterceptor($postInterceptor, $request, $response)) {
                 return false;
             }
         }
 
         return true;
+    }
+
+    /**
+     * executes post interceptor
+     *
+     * @param   mixed       $postInterceptor
+     * @param   WebRequest  $request
+     * @param   Response    $response
+     * @return  bool
+     */
+    private function executePostInterceptor($postInterceptor, WebRequest $request, Response $response)
+    {
+        if ($postInterceptor instanceof \Closure) {
+            return $postInterceptor($request, $response);
+        }
+
+        if (is_callable($postInterceptor)) {
+            return call_user_func_array($postInterceptor, array($request, $response));
+        }
+
+        if ($postInterceptor instanceof PostInterceptor) {
+            return $postInterceptor->postProcess($request, $response);
+        }
+
+        return $this->injector->getInstance($postInterceptor)
+                              ->postProcess($request, $response);
     }
 }
