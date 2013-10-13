@@ -271,16 +271,18 @@ class MatchingRouteTestCase extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @expectedException  net\stubbles\lang\exception\RuntimeException
      */
-    public function processThrowsRuntimeExceptionWhenGivenProcessorClassIsNoProcessor()
+    public function respondsWithInternalServerErrorIfProcessorDoesNotImplementInterface()
     {
         $this->mockInjector->expects($this->once())
                            ->method('getInstance')
                            ->with($this->equalTo('\stdClass'))
                            ->will($this->returnValue(new \stdClass()));
-        $this->createMatchingRouteWithCallback('\stdClass')
-             ->process($this->mockRequest, $this->mockResponse);
+        $this->mockResponse->expects($this->once())
+                           ->method('internalServerError');
+        $this->assertFalse($this->createMatchingRouteWithCallback('\stdClass')
+                                ->process($this->mockRequest, $this->mockResponse)
+        );
     }
 
     /**

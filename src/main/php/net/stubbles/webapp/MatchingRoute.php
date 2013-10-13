@@ -10,7 +10,6 @@
 namespace net\stubbles\webapp;
 use net\stubbles\input\web\WebRequest;
 use net\stubbles\ioc\Injector;
-use net\stubbles\lang\exception\RuntimeException;
 use net\stubbles\webapp\interceptor\Interceptors;
 use net\stubbles\webapp\response\Response;
 use net\stubbles\webapp\response\SupportedMimeTypes;
@@ -111,7 +110,6 @@ class MatchingRoute extends AbstractProcessableRoute
      * @param   WebRequest  $request    current request
      * @param   Response    $response   response to send
      * @return  bool
-     * @throws  RuntimeException
      */
     public function process(WebRequest $request, Response $response)
     {
@@ -131,7 +129,8 @@ class MatchingRoute extends AbstractProcessableRoute
 
         $processor = $this->injector->getInstance($callback);
         if (!($processor instanceof Processor)) {
-            throw new RuntimeException('Configured callback class ' . $callback . ' for route ' . $uriPath->getMatched() . ' is not an instance of net\stubbles\webapp\Processor');
+            $response->internalServerError('Configured callback class ' . $callback . ' for route ' . $uriPath->getMatched() . ' is not an instance of net\stubbles\webapp\Processor');
+            return false;
         }
 
         return $this->result($processor->process($request, $response, $uriPath));
