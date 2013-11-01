@@ -1,3 +1,9 @@
+2.3.0, (2013-11-01)
+-------------------
+
+   * introduced `net\stubbles\webapp\auth\AuthHandlerException`
+
+
 2.2.0, (2013-10-13)
 -------------------
 

@@ -91,7 +91,7 @@ abstract class WebApp extends App
         if (!$this->request->isCancelled()) {
             if ($route->switchToHttps()) {
                 $response->redirect($route->getHttpsUri());
-            } elseif ($this->isAuthorized($route, $response)) {
+            } elseif ($this->authorize($route, $response)) {
                 if ($route->applyPreInterceptors($this->request, $response)) {
                     if ($route->process($this->request, $response)) {
                         $route->applyPostInterceptors($this->request, $response);
@@ -132,7 +132,7 @@ abstract class WebApp extends App
      * @param   Response          $response
      * @return  bool
      */
-    private function isAuthorized(ProcessableRoute $route, Response $response)
+    private function authorize(ProcessableRoute $route, Response $response)
     {
         if (!$route->requiresAuth()) {
             return true;
@@ -143,8 +143,19 @@ abstract class WebApp extends App
             return false;
         }
 
-        if ($route->isAuthorized($this->authHandler)) {
-            return true;
+        try {
+            if ($route->isAuthorized($this->authHandler)) {
+                return true;
+            }
+        } catch (auth\AuthHandlerException $ahe) {
+            if ($ahe->isInternal()) {
+                $response->internalServerError($ahe->getMessage());
+            } else {
+                $response->setStatusCode($ahe->getCode())
+                         ->write($ahe->getMessage());
+            }
+
+            return false;
         }
 
         if ($route->requiresLogin($this->authHandler)) {

@@ -204,6 +204,66 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
+     * @since  2.3.0
+     * @group  issue_32
+     */
+    public function respondsWithError500IfAuthHandlerThrowsInternalAuthHandlerException()
+    {
+        $mockRoute = $this->createMockRoute();
+        $mockRoute->expects($this->once())
+                  ->method('switchToHttps')
+                  ->will($this->returnValue(false));
+        $mockRoute->expects($this->once())
+                  ->method('requiresAuth')
+                  ->will($this->returnValue(true));
+        $mockAuthHandler = $this->getMock('net\stubbles\webapp\AuthHandler');
+        $mockRoute->expects($this->once())
+                  ->method('isAuthorized')
+                  ->will($this->throwException(auth\AuthHandlerException::internal('error')));
+        $this->mockResponse->expects($this->once())
+                           ->method('internalServerError')
+                           ->with($this->equalTo('error'));
+        $this->mockResponse->expects($this->once())
+                           ->method('send');
+        $this->assertSame($this->mockResponse,
+                          $this->webApp->setAuthHandler($mockAuthHandler)->run()
+        );
+    }
+
+    /**
+     * @test
+     * @since  2.3.0
+     * @group  issue_32
+     */
+    public function respondsWithError503IfAuthHandlerThrowsExternalAuthHandlerException()
+    {
+        $mockRoute = $this->createMockRoute();
+        $mockRoute->expects($this->once())
+                  ->method('switchToHttps')
+                  ->will($this->returnValue(false));
+        $mockRoute->expects($this->once())
+                  ->method('requiresAuth')
+                  ->will($this->returnValue(true));
+        $mockAuthHandler = $this->getMock('net\stubbles\webapp\AuthHandler');
+        $mockRoute->expects($this->once())
+                  ->method('isAuthorized')
+                  ->will($this->throwException(auth\AuthHandlerException::external('error')));
+        $this->mockResponse->expects($this->once())
+                           ->method('setStatusCode')
+                           ->with($this->equalTo(503))
+                           ->will($this->returnSelf());
+        $this->mockResponse->expects($this->once())
+                           ->method('write')
+                           ->with($this->equalTo('error'));
+        $this->mockResponse->expects($this->once())
+                           ->method('send');
+        $this->assertSame($this->mockResponse,
+                          $this->webApp->setAuthHandler($mockAuthHandler)->run()
+        );
+    }
+
+    /**
+     * @test
      */
     public function respondsWithRedirectToLoginUriIfRequiresAuthAndNoUserLoggedIn()
     {
