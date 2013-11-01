@@ -8,6 +8,7 @@
  * @package  net\stubbles\webapp
  */
 namespace net\stubbles\webapp;
+use net\stubbles\lang;
 use net\stubbles\lang\exception\IllegalArgumentException;
 /**
  * Represents information about a route that can be called.
@@ -238,6 +239,15 @@ class Route implements ConfigurableRoute
      */
     public function requiresHttps()
     {
+        if ($this->requiresHttps) {
+            return true;
+        }
+
+        if (is_callable($this->callback)) {
+            return false;
+        }
+
+        $this->requiresHttps = lang\reflect($this->callback)->hasAnnotation('RequiresHttps');
         return $this->requiresHttps;
     }
 
@@ -272,7 +282,26 @@ class Route implements ConfigurableRoute
      */
     public function requiresAuth()
     {
-        return $this->requiresLogin || $this->requiresRole();
+        return $this->requiresLogin() || $this->requiresRole();
+    }
+
+    /**
+     * checks whether login is required
+     *
+     * @return  bool
+     */
+    private function requiresLogin()
+    {
+        if ($this->requiresLogin) {
+            return true;
+        }
+
+        if (is_callable($this->callback)) {
+            return false;
+        }
+
+        $this->requiresLogin = lang\reflect($this->callback)->hasAnnotation('RequiresLogin');
+        return $this->requiresLogin;
     }
 
     /**
@@ -282,7 +311,7 @@ class Route implements ConfigurableRoute
      */
     public function requiresRole()
     {
-        return null !== $this->requiredRole;
+        return null !== $this->getRequiredRole();
     }
 
     /**
@@ -292,6 +321,19 @@ class Route implements ConfigurableRoute
      */
     public function getRequiredRole()
     {
+        if (null !== $this->requiredRole) {
+            return $this->requiredRole;
+        }
+
+        if (is_callable($this->callback)) {
+            return null;
+        }
+
+        $class = lang\reflect($this->callback);
+        if ($class->hasAnnotation('RequiresRole')) {
+            $this->requiredRole = $class->getAnnotation('RequiresRole')->getRole();
+        }
+
         return $this->requiredRole;
     }
 
