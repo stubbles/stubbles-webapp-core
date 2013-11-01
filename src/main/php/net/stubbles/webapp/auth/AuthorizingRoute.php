@@ -99,31 +99,16 @@ class AuthorizingRoute implements ProcessableRoute
      */
     public function applyPreInterceptors(WebRequest $request, Response $response)
     {
-        if ($this->isAuthorized($response)) {
-            return $this->actualRoute->applyPreInterceptors($request, $response);
-        }
-
-        if ($this->authHandler->requiresLogin($this->routeConfig->getRequiredRole())) {
-            $response->redirect($this->authHandler->getLoginUri());
-        } else {
-            $response->forbidden();
-        }
-
-        return false;
-    }
-
-    /**
-     * checks whether access to route is authorized
-     *
-     * @param   Response  $response
-     * @return  bool
-     */
-    private function isAuthorized(Response $response)
-    {
         try {
             if ($this->authHandler->isAuthorized($this->routeConfig->getRequiredRole())) {
                 $this->authorized = true;
-                return true;
+                return $this->actualRoute->applyPreInterceptors($request, $response);
+            }
+
+            if ($this->authHandler->requiresLogin($this->routeConfig->getRequiredRole())) {
+                $response->redirect($this->authHandler->getLoginUri());
+            } else {
+                $response->forbidden();
             }
         } catch (AuthHandlerException $ahe) {
             if ($ahe->isInternal()) {
