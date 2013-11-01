@@ -7,7 +7,7 @@
  *
  * @package  net\stubbles\webapp
  */
-namespace net\stubbles\webapp;
+namespace net\stubbles\webapp\auth;
 /**
  * Interface for authentication handlers.
  *
@@ -38,4 +38,3 @@ interface AuthHandler
      */
     public function getLoginUri();
 }
-?>

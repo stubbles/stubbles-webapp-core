@@ -60,38 +60,6 @@ class MethodNotAllowedRoute extends AbstractProcessableRoute
     }
 
     /**
-     * checks if access to this route required authorization
-     *
-     * @return  bool
-     */
-    public function requiresAuth()
-    {
-        return false;
-    }
-
-    /**
-     * checks whether this is an authorized request to this route
-     *
-     * @param   AuthHandler  $authHandler
-     * @return  bool
-     */
-    public function isAuthorized(AuthHandler $authHandler)
-    {
-        return true;
-    }
-
-    /**
-     * checks whether route required login
-     *
-     * @param   AuthHandler  $authHandler
-     * @return  bool
-     */
-    public function requiresLogin(AuthHandler $authHandler)
-    {
-        return false;
-    }
-
-    /**
      * creates processor instance
      *
      * @param   WebRequest  $request    current request

@@ -63,30 +63,6 @@ class MethodNotAllowedRouteTestCase extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function doesNotRequireAuth()
-    {
-        $this->assertFalse($this->methodNotAllowedRoute->requiresAuth());
-    }
-
-    /**
-     * @test
-     */
-    public function isAlwaysAuthorized()
-    {
-        $this->assertTrue($this->methodNotAllowedRoute->isAuthorized($this->getMock('net\stubbles\webapp\AuthHandler')));
-    }
-
-    /**
-     * @test
-     */
-    public function doesNotRequireLogin()
-    {
-        $this->assertFalse($this->methodNotAllowedRoute->requiresLogin($this->getMock('net\stubbles\webapp\AuthHandler')));
-    }
-
-    /**
-     * @test
-     */
     public function processTriggers405MethodNotAllowedResponse()
     {
         $this->mockRequest->expects($this->once())

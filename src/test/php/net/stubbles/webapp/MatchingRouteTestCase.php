@@ -113,55 +113,6 @@ class MatchingRouteTestCase extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @test
-     */
-    public function requiresAuthIfRouteRequiresAuth()
-    {
-        $route = new Route('/hello/{name}',
-                           function() {},
-                           'GET'
-                 );
-        $processableRoute = $this->createMatchingRoute($route->withRoleOnly('admin'));
-        $this->assertTrue($processableRoute->requiresAuth());
-    }
-
-    /**
-     * @test
-     */
-    public function delegatesAuthHandlingToRoute()
-    {
-        $route = new Route('/hello/{name}',
-                           function() {},
-                           'GET'
-                 );
-        $mockAuthHandler = $this->getMock('net\stubbles\webapp\AuthHandler');
-        $mockAuthHandler->expects($this->once())
-                        ->method('isAuthorized')
-                        ->with($this->equalTo('admin'))
-                        ->will($this->returnValue(true));
-        $processableRoute = $this->createMatchingRoute($route->withRoleOnly('admin'));
-        $this->assertTrue($processableRoute->isAuthorized($mockAuthHandler));
-    }
-
-    /**
-     * @test
-     */
-    public function delegatesLoginDecisionToRoute()
-    {
-        $route = new Route('/hello/{name}',
-                           function() {},
-                           'GET'
-                 );
-        $mockAuthHandler = $this->getMock('net\stubbles\webapp\AuthHandler');
-        $mockAuthHandler->expects($this->once())
-                        ->method('requiresLogin')
-                        ->with($this->equalTo('admin'))
-                        ->will($this->returnValue(true));
-        $processableRoute = $this->createMatchingRoute($route->withRoleOnly('admin'));
-        $this->assertTrue($processableRoute->requiresLogin($mockAuthHandler));
-    }
-
-    /**
      * creates instance to test
      *
      * @param   callable  $callback

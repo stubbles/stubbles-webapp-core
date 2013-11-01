@@ -103,16 +103,6 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function annotationPresentOnSetAuthHandlerMethod()
-    {
-        $method = lang\reflect($this->webApp, 'setAuthHandler');
-        $this->assertTrue($method->hasAnnotation('Inject'));
-        $this->assertTrue($method->getAnnotation('Inject')->isOptional());
-    }
-
-    /**
-     * @test
-     */
     public function canCreateIoBindingModuleWithSession()
     {
         $this->assertInstanceOf('net\stubbles\webapp\ioc\IoBindingModule',
@@ -185,102 +175,11 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function respondsWithError500IfPathRequiresAuthButNoAuthHandlerSet()
-    {
-        $mockRoute = $this->createMockRoute();
-        $mockRoute->expects($this->once())
-                  ->method('switchToHttps')
-                  ->will($this->returnValue(false));
-        $mockRoute->expects($this->once())
-                  ->method('requiresAuth')
-                  ->will($this->returnValue(true));
-        $this->mockResponse->expects($this->once())
-                           ->method('internalServerError')
-                           ->with($this->equalTo('Requested route requires authorization, but no auth handler defined for application'));
-        $this->mockResponse->expects($this->once())
-                           ->method('send');
-        $this->assertSame($this->mockResponse, $this->webApp->run());
-    }
-
-    /**
-     * @test
-     */
-    public function respondsWithRedirectToLoginUriIfRequiresAuthAndNoUserLoggedIn()
-    {
-        $mockRoute = $this->createMockRoute();
-        $mockRoute->expects($this->once())
-                  ->method('switchToHttps')
-                  ->will($this->returnValue(false));
-        $mockRoute->expects($this->once())
-                  ->method('requiresAuth')
-                  ->will($this->returnValue(true));
-        $mockRoute->expects($this->once())
-                  ->method('isAuthorized')
-                  ->will($this->returnValue(false));
-        $mockRoute->expects($this->once())
-                  ->method('requiresLogin')
-                  ->will($this->returnValue(true));
-        $this->mockRequest->expects($this->once())
-                          ->method('isCancelled')
-                          ->will($this->returnValue(false));
-        $mockAuthHandler = $this->getMock('net\stubbles\webapp\AuthHandler');
-        $mockAuthHandler->expects($this->once())
-                        ->method('getLoginUri')
-                        ->will($this->returnValue('https://example.net/login'));
-        $this->mockResponse->expects($this->once())
-                           ->method('redirect')
-                           ->with($this->equalTo('https://example.net/login'));
-        $this->mockResponse->expects($this->once())
-                           ->method('send');
-        $this->assertSame($this->mockResponse,
-                          $this->webApp->setAuthHandler($mockAuthHandler)->run()
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function respondsWithError403IfRequiresAuthAndUserHasNoSufficientRights()
-    {
-        $mockRoute = $this->createMockRoute();
-        $mockRoute->expects($this->once())
-                  ->method('switchToHttps')
-                  ->will($this->returnValue(false));
-        $mockRoute->expects($this->once())
-                  ->method('requiresAuth')
-                  ->will($this->returnValue(true));
-        $mockRoute->expects($this->once())
-                  ->method('isAuthorized')
-                  ->will($this->returnValue(false));
-        $mockRoute->expects($this->once())
-                  ->method('requiresLogin')
-                  ->will($this->returnValue(false));
-        $this->mockRequest->expects($this->once())
-                          ->method('isCancelled')
-                          ->will($this->returnValue(false));
-        $mockAuthHandler = $this->getMock('net\stubbles\webapp\AuthHandler');
-        $mockAuthHandler->expects($this->never())
-                        ->method('getLoginUri');
-        $this->mockResponse->expects($this->once())
-                           ->method('forbidden');
-        $this->mockResponse->expects($this->once())
-                           ->method('send');
-        $this->assertSame($this->mockResponse,
-                          $this->webApp->setAuthHandler($mockAuthHandler)->run()
-        );
-    }
-
-    /**
-     * @test
-     */
     public function doesNotExecuteRouteAndPostInterceptorsIfPreInterceptorCancelsRequest()
     {
         $mockRoute = $this->createMockRoute();
         $mockRoute->expects($this->once())
                   ->method('switchToHttps')
-                  ->will($this->returnValue(false));
-        $mockRoute->expects($this->once())
-                  ->method('requiresAuth')
                   ->will($this->returnValue(false));
         $mockRoute->expects($this->once())
                   ->method('applyPreInterceptors')
@@ -305,9 +204,6 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
         $mockRoute = $this->createMockRoute();
         $mockRoute->expects($this->once())
                   ->method('switchToHttps')
-                  ->will($this->returnValue(false));
-        $mockRoute->expects($this->once())
-                  ->method('requiresAuth')
                   ->will($this->returnValue(false));
         $mockRoute->expects($this->once())
                   ->method('applyPreInterceptors')
@@ -336,9 +232,6 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
         $mockRoute = $this->createMockRoute();
         $mockRoute->expects($this->once())
                   ->method('switchToHttps')
-                  ->will($this->returnValue(false));
-        $mockRoute->expects($this->once())
-                  ->method('requiresAuth')
                   ->will($this->returnValue(false));
         $mockRoute->expects($this->once())
                   ->method('applyPreInterceptors')
@@ -392,9 +285,6 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
                   ->method('switchToHttps')
                   ->will($this->returnValue(false));
         $mockRoute->expects($this->once())
-                  ->method('requiresAuth')
-                  ->will($this->returnValue(false));
-        $mockRoute->expects($this->once())
                   ->method('applyPreInterceptors')
                   ->with($this->equalTo($this->mockRequest),
                          $this->equalTo($this->mockResponse)
@@ -416,4 +306,3 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
         $this->assertSame($this->mockResponse, $this->webApp->run());
     }
 }
-?>

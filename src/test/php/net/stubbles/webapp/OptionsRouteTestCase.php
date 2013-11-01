@@ -63,30 +63,6 @@ class OptionsRouteTestCase extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function doesNotRequireAuth()
-    {
-        $this->assertFalse($this->optionsRoute->requiresAuth());
-    }
-
-    /**
-     * @test
-     */
-    public function isAlwaysAuthorized()
-    {
-        $this->assertTrue($this->optionsRoute->isAuthorized($this->getMock('net\stubbles\webapp\AuthHandler')));
-    }
-
-    /**
-     * @test
-     */
-    public function doesNotRequireLogin()
-    {
-        $this->assertFalse($this->optionsRoute->requiresLogin($this->getMock('net\stubbles\webapp\AuthHandler')));
-    }
-
-    /**
-     * @test
-     */
     public function processAddsAllowHeadersWhenRequestMethodIsOptions()
     {
         $this->mockResponse->expects($this->at(0))

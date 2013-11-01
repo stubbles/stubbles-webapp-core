@@ -9,6 +9,7 @@
  */
 namespace net\stubbles\webapp;
 use net\stubbles\input\web\WebRequest;
+use net\stubbles\webapp\auth\AuthHandler;
 use net\stubbles\webapp\response\Response;
 use net\stubbles\webapp\response\SupportedMimeTypes;
 /**

@@ -32,29 +32,6 @@ interface ProcessableRoute
     public function getHttpsUri();
 
     /**
-     * checks if access to this route required authorization
-     *
-     * @return  bool
-     */
-    public function requiresAuth();
-
-    /**
-     * checks whether this is an authorized request to this route
-     *
-     * @param   AuthHandler  $authHandler
-     * @return  bool
-     */
-    public function isAuthorized(AuthHandler $authHandler);
-
-    /**
-     * checks whether route required login
-     *
-     * @param   AuthHandler  $authHandler
-     * @return  bool
-     */
-    public function requiresLogin(AuthHandler $authHandler);
-
-    /**
      * returns list of supported mime types
      *
      * @return  SupportedMimeTypes
