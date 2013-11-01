@@ -10,7 +10,6 @@
 namespace net\stubbles\webapp;
 use net\stubbles\input\web\WebRequest;
 use net\stubbles\ioc\App;
-use net\stubbles\webapp\auth\AuthHandler;
 use net\stubbles\webapp\ioc\IoBindingModule;
 use net\stubbles\webapp\response\Response;
 use net\stubbles\webapp\response\ResponseNegotiator;
