@@ -68,38 +68,6 @@ class MatchingRoute extends AbstractProcessableRoute
     }
 
     /**
-     * checks if access to this route required authorization
-     *
-     * @return  bool
-     */
-    public function requiresAuth()
-    {
-        return $this->route->requiresAuth();
-    }
-
-    /**
-     * checks whether this is an authorized request to this route
-     *
-     * @param   AuthHandler  $authHandler
-     * @return  bool
-     */
-    public function isAuthorized(AuthHandler $authHandler)
-    {
-        return $this->route->isAuthorized($authHandler);
-    }
-
-    /**
-     * checks whether route required login
-     *
-     * @param   AuthHandler  $authHandler
-     * @return  bool
-     */
-    public function requiresLogin(AuthHandler $authHandler)
-    {
-        return $this->route->requiresLogin($authHandler);
-    }
-
-    /**
      * triggers actual logic on this route
      *
      * The logic might be capsuled in a closure, a callback, or a processor
