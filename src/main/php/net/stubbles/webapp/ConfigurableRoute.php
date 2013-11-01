@@ -16,7 +16,6 @@ namespace net\stubbles\webapp;
  */
 interface ConfigurableRoute
 {
-
     /**
      * add a pre interceptor for this route
      *
@@ -39,6 +38,14 @@ interface ConfigurableRoute
      * @return  ConfigurableRoute
      */
     public function httpsOnly();
+
+    /**
+     * makes route only available if a user is logged in
+     *
+     * @return  ConfigurableRoute
+     * @since   3.0.0
+     */
+    public function withLoginOnly();
 
     /**
      * adds a role which is only available via ssl

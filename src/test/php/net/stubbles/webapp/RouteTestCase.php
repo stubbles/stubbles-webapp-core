@@ -223,10 +223,46 @@ class RouteTestCase extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
+     * @since  3.0.0
      */
     public function doesNotRequireAuthByDefault()
     {
         $this->assertFalse($this->createRoute()->requiresAuth());
+    }
+
+    /**
+     * @test
+     * @since  3.0.0
+     */
+    public function requiresAuthWhenLoginIsRequired()
+    {
+        $this->assertTrue($this->createRoute()->withLoginOnly()->requiresAuth());
+    }
+
+    /**
+     * @test
+     * @since  3.0.0
+     */
+    public function requiresAuthWhenRoleIsRequired()
+    {
+        $this->assertTrue($this->createRoute()->withRoleOnly('admin')->requiresAuth());
+    }
+
+    /**
+     * @test
+     * @since  3.0.0
+     */
+    public function requiresAuthWhenLoginAndRoleIsRequired()
+    {
+        $this->assertTrue($this->createRoute()->withLoginOnly()->withRoleOnly('admin')->requiresAuth());
+    }
+
+    /**
+     * @test
+     */
+    public function doesNotRequireRoleByDefault()
+    {
+        $this->assertFalse($this->createRoute()->requiresRole());
     }
 
     /**
@@ -240,9 +276,9 @@ class RouteTestCase extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function requiresAuthWhenRoleIsSet()
+    public function requiresRoleWhenRoleIsSet()
     {
-        $this->assertTrue($this->createRoute()->withRoleOnly('admin')->requiresAuth());
+        $this->assertTrue($this->createRoute()->withRoleOnly('admin')->requiresRole());
     }
 
     /**

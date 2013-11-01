@@ -9,12 +9,19 @@
  */
 namespace net\stubbles\webapp\auth;
 /**
- * Interface for authentication handlers.
+ * Interface for authentication/authorization handlers.
  *
  * @api
  */
 interface AuthHandler
 {
+    /**
+     * checks whether authentication is given
+     *
+     * @return  bool
+     */
+    public function isAuthenticated();
+
     /**
      * checks whether expected role is given
      *
@@ -22,14 +29,6 @@ interface AuthHandler
      * @return  bool
      */
     public function isAuthorized($expectedRole);
-
-    /**
-     * checks whether role requires login
-     *
-     * @param   string  $role
-     * @return  bool
-     */
-    public function requiresLogin($role);
 
     /**
      * returns login uri
