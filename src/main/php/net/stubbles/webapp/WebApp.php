@@ -10,6 +10,7 @@
 namespace net\stubbles\webapp;
 use net\stubbles\input\web\WebRequest;
 use net\stubbles\ioc\App;
+use net\stubbles\webapp\auth\AuthHandler;
 use net\stubbles\webapp\ioc\IoBindingModule;
 use net\stubbles\webapp\response\Response;
 use net\stubbles\webapp\response\ResponseNegotiator;
@@ -38,12 +39,6 @@ abstract class WebApp extends App
      * @type  Routing
      */
     private $routing;
-    /**
-     * auth handler to handle authorization requests
-     *
-     * @type  AuthHandler
-     */
-    private $authHandler;
 
     /**
      * constructor
@@ -63,19 +58,6 @@ abstract class WebApp extends App
     }
 
     /**
-     * sets auth handler
-     *
-     * @param   AuthHandler  $authHandler
-     * @return  WebApp
-     * @Inject(optional=true)
-     */
-    public function setAuthHandler(AuthHandler $authHandler)
-    {
-        $this->authHandler = $authHandler;
-        return $this;
-    }
-
-    /**
      * runs the application
      *
      * @return  Response
@@ -91,11 +73,9 @@ abstract class WebApp extends App
         if (!$this->request->isCancelled()) {
             if ($route->switchToHttps()) {
                 $response->redirect($route->getHttpsUri());
-            } elseif ($this->authorize($route, $response)) {
-                if ($route->applyPreInterceptors($this->request, $response)) {
-                    if ($route->process($this->request, $response)) {
-                        $route->applyPostInterceptors($this->request, $response);
-                    }
+            } elseif ($route->applyPreInterceptors($this->request, $response)) {
+                if ($route->process($this->request, $response)) {
+                    $route->applyPostInterceptors($this->request, $response);
                 }
             }
         }
@@ -126,48 +106,6 @@ abstract class WebApp extends App
     protected abstract function configureRouting(RoutingConfigurator $routing);
 
     /**
-     * checks if request to given route is authorized
-     *
-     * @param   ProcessableRoute  $route
-     * @param   Response          $response
-     * @return  bool
-     */
-    private function authorize(ProcessableRoute $route, Response $response)
-    {
-        if (!$route->requiresAuth()) {
-            return true;
-        }
-
-        if (null === $this->authHandler) {
-            $response->internalServerError('Requested route requires authorization, but no auth handler defined for application');
-            return false;
-        }
-
-        try {
-            if ($route->isAuthorized($this->authHandler)) {
-                return true;
-            }
-        } catch (auth\AuthHandlerException $ahe) {
-            if ($ahe->isInternal()) {
-                $response->internalServerError($ahe->getMessage());
-            } else {
-                $response->setStatusCode($ahe->getCode())
-                         ->write($ahe->getMessage());
-            }
-
-            return false;
-        }
-
-        if ($route->requiresLogin($this->authHandler)) {
-            $response->redirect($this->authHandler->getLoginUri());
-        } else {
-            $response->forbidden();
-        }
-
-        return false;
-    }
-
-    /**
      * creates io binding module with session
      *
      * @param   string  $sessionName
@@ -188,4 +126,3 @@ abstract class WebApp extends App
         return IoBindingModule::createWithoutSession();
     }
 }
-?>

@@ -9,6 +9,7 @@
  */
 namespace net\stubbles\webapp;
 use net\stubbles\lang\exception\IllegalArgumentException;
+use net\stubbles\webapp\auth\AuthHandler;
 /**
  * Represents information about a route that can be called.
  *
@@ -258,33 +259,13 @@ class Route implements ConfigurableRoute
     }
 
     /**
-     * checks whether this is an authorized request to this route
+     * returns required role for this route
      *
-     * @param   AuthHandler  $authHandler
-     * @return  bool
+     * @return  string
      */
-    public function isAuthorized(AuthHandler $authHandler)
+    public function getRequiredRole()
     {
-        if (!$this->requiresAuth()) {
-            return true;
-        }
-
-        return $authHandler->isAuthorized($this->requiredRole);
-    }
-
-    /**
-     * checks whether route required login
-     *
-     * @param   AuthHandler  $authHandler
-     * @return  bool
-     */
-    public function requiresLogin(AuthHandler $authHandler)
-    {
-        if (!$this->requiresAuth()) {
-            return false;
-        }
-
-        return $authHandler->requiresLogin($this->requiredRole);
+        return $this->requiredRole;
     }
 
     /**

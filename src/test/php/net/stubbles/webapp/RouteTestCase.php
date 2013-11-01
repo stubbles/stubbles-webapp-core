@@ -232,6 +232,14 @@ class RouteTestCase extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function returnsNullForRequiredRoleByDefault()
+    {
+        $this->assertNull($this->createRoute()->getRequiredRole());
+    }
+
+    /**
+     * @test
+     */
     public function requiresAuthWhenRoleIsSet()
     {
         $this->assertTrue($this->createRoute()->withRoleOnly('admin')->requiresAuth());
@@ -240,82 +248,12 @@ class RouteTestCase extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function isAuthorizedWhenNoRoleSet()
+    public function returnsRequiredRoleWhenSet()
     {
-        $mockAuthHandler = $this->getMock('net\stubbles\webapp\AuthHandler');
-        $this->assertTrue($this->createRoute()->isAuthorized($mockAuthHandler));
-    }
-
-    /**
-     * @test
-     */
-    public function isAuthorizedWhenAuthHandlerSatisfiedByRole()
-    {
-        $mockAuthHandler = $this->getMock('net\stubbles\webapp\AuthHandler');
-        $mockAuthHandler->expects($this->once())
-                        ->method('isAuthorized')
-                        ->with($this->equalTo('admin'))
-                        ->will($this->returnValue(true));
-        $this->assertTrue($this->createRoute()
-                               ->withRoleOnly('admin')
-                               ->isAuthorized($mockAuthHandler)
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function isNotAuthorizedWhenAuthHandlerNotSatisfiedByRole()
-    {
-        $mockAuthHandler = $this->getMock('net\stubbles\webapp\AuthHandler');
-        $mockAuthHandler->expects($this->once())
-                        ->method('isAuthorized')
-                        ->with($this->equalTo('admin'))
-                        ->will($this->returnValue(false));
-        $this->assertFalse($this->createRoute()
-                                ->withRoleOnly('admin')
-                                ->isAuthorized($mockAuthHandler)
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function doesNotRequireLoginWhenNoRoleSet()
-    {
-        $mockAuthHandler = $this->getMock('net\stubbles\webapp\AuthHandler');
-        $this->assertFalse($this->createRoute()->requiresLogin($mockAuthHandler));
-    }
-
-    /**
-     * @test
-     */
-    public function requiresLoginWhenAuthHandlerRequiredLoginForRole()
-    {
-        $mockAuthHandler = $this->getMock('net\stubbles\webapp\AuthHandler');
-        $mockAuthHandler->expects($this->once())
-                        ->method('requiresLogin')
-                        ->with($this->equalTo('admin'))
-                        ->will($this->returnValue(true));
-        $this->assertTrue($this->createRoute()
-                               ->withRoleOnly('admin')
-                               ->requiresLogin($mockAuthHandler)
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function doesNotRequireLoginWhenAuthHandlerDoesNotRequireLoginForRole()
-    {
-        $mockAuthHandler = $this->getMock('net\stubbles\webapp\AuthHandler');
-        $mockAuthHandler->expects($this->once())
-                        ->method('requiresLogin')
-                        ->with($this->equalTo('guest'))
-                        ->will($this->returnValue(false));
-        $this->assertFalse($this->createRoute()
-                                ->withRoleOnly('guest')
-                                ->requiresLogin($mockAuthHandler)
+        $this->assertEquals('admin',
+                            $this->createRoute()
+                                 ->withRoleOnly('admin')
+                                 ->getRequiredRole()
         );
     }
 

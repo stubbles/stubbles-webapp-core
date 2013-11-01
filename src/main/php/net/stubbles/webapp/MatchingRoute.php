@@ -10,6 +10,7 @@
 namespace net\stubbles\webapp;
 use net\stubbles\input\web\WebRequest;
 use net\stubbles\ioc\Injector;
+use net\stubbles\webapp\auth\AuthHandler;
 use net\stubbles\webapp\interceptor\Interceptors;
 use net\stubbles\webapp\response\Response;
 use net\stubbles\webapp\response\SupportedMimeTypes;

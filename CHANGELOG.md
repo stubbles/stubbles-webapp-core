@@ -1,5 +1,11 @@
-2.3.0, (2013-11-01)
+3.0.0, (2013-11-01)
 -------------------
+
+### BC breaks
+
+   * interface `net\stubbles\webapp\AuthHandler` was replaced by `net\stubbles\webapp\auth\AuthHandler`
+
+### Other changes
 
    * implemented #32: possibility to propagate an error in the auth system to the response
 

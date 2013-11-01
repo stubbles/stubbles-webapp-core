@@ -48,6 +48,7 @@ class AuthHandlerException extends Exception
      * @param   string      $message
      * @param   \Exception  $cause
      * @return  AuthHandlerException
+     * @api
      */
     public static function internal($message, \Exception $cause = null)
     {
@@ -63,6 +64,7 @@ class AuthHandlerException extends Exception
      * @param   string      $message
      * @param   \Exception  $cause
      * @return  AuthHandlerException
+     * @api
      */
     public static function external($message, \Exception $cause = null)
     {

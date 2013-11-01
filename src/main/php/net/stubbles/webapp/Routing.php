@@ -10,6 +10,8 @@
 namespace net\stubbles\webapp;
 use net\stubbles\ioc\Injector;
 use net\stubbles\lang\exception\IllegalArgumentException;
+use net\stubbles\webapp\auth\AuthHandler;
+use net\stubbles\webapp\auth\AuthorizingRoute;
 use net\stubbles\webapp\interceptor\Interceptors;
 use net\stubbles\webapp\interceptor\PreInterceptor;
 use net\stubbles\webapp\interceptor\PostInterceptor;
@@ -57,6 +59,12 @@ class Routing implements RoutingConfigurator
      * @type  Injector
      */
     private $injector;
+    /**
+     * auth handler to handle authorization requests
+     *
+     * @type  AuthHandler
+     */
+    private $authHandler;
 
     /**
      * constructor
@@ -67,6 +75,19 @@ class Routing implements RoutingConfigurator
     public function __construct(Injector $injector)
     {
         $this->injector  = $injector;
+    }
+
+    /**
+     * sets auth handler
+     *
+     * @param   AuthHandler  $authHandler
+     * @return  Routing
+     * @Inject(optional=true)
+     */
+    public function setAuthHandler(AuthHandler $authHandler)
+    {
+        $this->authHandler = $authHandler;
+        return $this;
     }
 
     /**
@@ -151,34 +172,83 @@ class Routing implements RoutingConfigurator
     {
         $routeConfig = $this->findRouteConfig($calledUri);
         if (null !== $routeConfig) {
-            return new MatchingRoute($calledUri,
-                                     $this->collectInterceptors($calledUri, $routeConfig),
-                                     $this->getSupportedMimeTypes($routeConfig),
-                                     $routeConfig,
-                                     $this->injector
-                   );
+            return $this->handleMatchingRoute($calledUri, $routeConfig);
         }
 
         if ($this->canFindRouteWithAnyMethod($calledUri)) {
-            if ($calledUri->methodEquals('OPTIONS')) {
-                return new OptionsRoute($calledUri,
-                                        $this->collectInterceptors($calledUri),
-                                        SupportedMimeTypes::createWithDisabledContentNegotation(),
-                                        $this->getAllowedMethods($calledUri)
-
-                );
-            }
-
-            return new MethodNotAllowedRoute($calledUri,
-                                             $this->collectInterceptors($calledUri),
-                                             SupportedMimeTypes::createWithDisabledContentNegotation(),
-                                             $this->getAllowedMethods($calledUri)
-            );
+            return $this->handleNonMethodMatchingRoute($calledUri);
         }
 
         return new MissingRoute($calledUri,
                                 $this->collectInterceptors($calledUri),
                                 SupportedMimeTypes::createWithDisabledContentNegotation()
+        );
+    }
+
+    /**
+     * creates a processable route for given route
+     *
+     * @param   UriRequest  $calledUri
+     * @param   Route       $routeConfig
+     * @return  ProcessableRoute
+     */
+    private function handleMatchingRoute(UriRequest $calledUri, Route $routeConfig)
+    {
+        if ($routeConfig->requiresAuth()) {
+            if (null === $this->authHandler) {
+                return new InternalServerErrorRoute('Requested route requires authorization, but no auth handler defined for application',
+                                                    $calledUri,
+                                                    $this->getSupportedMimeTypes($routeConfig)
+                );
+            }
+
+            return new AuthorizingRoute($this->authHandler,
+                                        $routeConfig,
+                                        $this->createMatchingRoute($calledUri, $routeConfig)
+            );
+        }
+
+        return $this->createMatchingRoute($calledUri, $routeConfig);
+    }
+
+    /**
+     * creates matching route
+     *
+     * @param   UriRequest  $calledUri
+     * @param   Route       $routeConfig
+     * @return  MatchingRoute
+     */
+    private function createMatchingRoute(UriRequest $calledUri, Route $routeConfig)
+    {
+        return new MatchingRoute($calledUri,
+                                 $this->collectInterceptors($calledUri, $routeConfig),
+                                 $this->getSupportedMimeTypes($routeConfig),
+                                 $routeConfig,
+                                 $this->injector
+        );
+    }
+
+    /**
+     * creates a processable route when a route can be found regardless of request method
+     *
+     * @param   UriRequest  $calledUri
+     * @return  ProcessableRoute
+     */
+    private function handleNonMethodMatchingRoute(UriRequest $calledUri)
+    {
+        if ($calledUri->methodEquals('OPTIONS')) {
+            return new OptionsRoute($calledUri,
+                                    $this->collectInterceptors($calledUri),
+                                    SupportedMimeTypes::createWithDisabledContentNegotation(),
+                                    $this->getAllowedMethods($calledUri)
+
+            );
+        }
+
+        return new MethodNotAllowedRoute($calledUri,
+                                         $this->collectInterceptors($calledUri),
+                                         SupportedMimeTypes::createWithDisabledContentNegotation(),
+                                         $this->getAllowedMethods($calledUri)
         );
     }
 
