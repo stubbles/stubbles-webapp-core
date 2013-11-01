@@ -1,7 +1,7 @@
 2.3.0, (2013-11-01)
 -------------------
 
-   * introduced `net\stubbles\webapp\auth\AuthHandlerException`
+   * implemented #32: possibility to propagate an error in the auth system to the response
 
 
 2.2.0, (2013-10-13)
