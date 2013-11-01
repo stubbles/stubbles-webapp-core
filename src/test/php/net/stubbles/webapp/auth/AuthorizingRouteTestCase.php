@@ -30,6 +30,12 @@ class AuthorizingRouteTestCase extends \PHPUnit_Framework_TestCase
      */
     private $mockAuthHandler;
     /**
+     * route configuration
+     *
+     * @type  Route
+     */
+    private $routeConfig;
+    /**
      * actual route to execute
      *
      * @type  \PHPUnit_Framework_MockObject_MockObject
@@ -54,10 +60,10 @@ class AuthorizingRouteTestCase extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->mockAuthHandler  = $this->getMock('net\stubbles\webapp\auth\AuthHandler');
-        $routeConfig            = new Route('/hello', function() {});
+        $this->routeConfig      = new Route('/hello', function() {});
         $this->mockActualRoute  = $this->getMock('net\stubbles\webapp\ProcessableRoute');
         $this->authorizingRoute = new AuthorizingRoute($this->mockAuthHandler,
-                                                       $routeConfig->withRoleOnly('admin'),
+                                                       $this->routeConfig,
                                                        $this->mockActualRoute
                                   );
         $this->mockRequest      = $this->getMock('net\stubbles\input\web\WebRequest');
@@ -103,8 +109,99 @@ class AuthorizingRouteTestCase extends \PHPUnit_Framework_TestCase
      * @test
      * @group  issue_32
      */
-    public function applyPreInterceptorsReturnsFalseWhenAuthHandlerThrowsAuthHandlerException()
+    public function applyPreInterceptorsReturnsFalseWhenAuthenticationThrowsAuthHandlerException()
     {
+        $this->mockAuthHandler->expects($this->once())
+                              ->method('isAuthenticated')
+                              ->will($this->throwException(AuthHandlerException::internal('error')));
+        $this->mockActualRoute->expects($this->never())
+                              ->method('applyPreInterceptors');
+        $this->assertFalse($this->authorizingRoute->applyPreInterceptors($this->mockRequest, $this->mockResponse));
+    }
+
+    /**
+     * @test
+     * @group  issue_32
+     */
+    public function applyPreInterceptorsTriggersInternalServerErrorWhenAuthenticationThrowsInternalAuthHandlerException()
+    {
+        $this->mockAuthHandler->expects($this->once())
+                              ->method('isAuthenticated')
+                              ->will($this->throwException(AuthHandlerException::internal('error')));
+        $this->mockResponse->expects($this->once())
+                           ->method('internalServerError')
+                           ->with($this->equalTo('error'));
+        $this->mockActualRoute->expects($this->never())
+                              ->method('applyPreInterceptors');
+        $this->assertFalse($this->authorizingRoute->applyPreInterceptors($this->mockRequest, $this->mockResponse));
+    }
+
+    /**
+     * @test
+     * @group  issue_32
+     */
+    public function applyPreInterceptorsTriggersStatusCode503WhenAuthenticationThrowsExternalAuthHandlerException()
+    {
+        $this->mockAuthHandler->expects($this->once())
+                              ->method('isAuthenticated')
+                              ->will($this->throwException(AuthHandlerException::external('error')));
+        $this->mockResponse->expects($this->once())
+                           ->method('setStatusCode')
+                           ->with($this->equalTo(503))
+                           ->will($this->returnSelf());
+        $this->mockResponse->expects($this->once())
+                           ->method('write')
+                           ->with($this->equalTo('error'));
+        $this->mockActualRoute->expects($this->never())
+                              ->method('applyPreInterceptors');
+        $this->assertFalse($this->authorizingRoute->applyPreInterceptors($this->mockRequest, $this->mockResponse));
+    }
+
+    /**
+     * @test
+     */
+    public function applyPreInterceptorsReturnsFalseWhenNotAuthenticated()
+    {
+        $this->mockAuthHandler->expects($this->once())
+                              ->method('isAuthenticated')
+                              ->will($this->returnValue(false));
+        $this->mockAuthHandler->expects($this->once())
+                              ->method('getLoginUri')
+                              ->will($this->returnValue('https://login.example.com/'));
+        $this->mockActualRoute->expects($this->never())
+                              ->method('applyPreInterceptors');
+        $this->assertFalse($this->authorizingRoute->applyPreInterceptors($this->mockRequest, $this->mockResponse));
+    }
+
+    /**
+     * @test
+     */
+    public function applyPreInterceptorsTriggersRedirectToLoginUriWhenNotAuthenticated()
+    {
+        $this->mockAuthHandler->expects($this->once())
+                              ->method('isAuthenticated')
+                              ->will($this->returnValue(false));
+        $this->mockAuthHandler->expects($this->once())
+                              ->method('getLoginUri')
+                              ->will($this->returnValue('https://login.example.com/'));
+        $this->mockResponse->expects($this->once())
+                           ->method('redirect')
+                           ->with($this->equalTo('https://login.example.com/'));
+        $this->mockActualRoute->expects($this->never())
+                              ->method('applyPreInterceptors');
+        $this->assertFalse($this->authorizingRoute->applyPreInterceptors($this->mockRequest, $this->mockResponse));
+    }
+
+    /**
+     * @test
+     * @group  issue_32
+     */
+    public function applyPreInterceptorsReturnsFalseWhenAuthorizationThrowsAuthHandlerException()
+    {
+        $this->routeConfig->withRoleOnly('admin');
+        $this->mockAuthHandler->expects($this->once())
+                              ->method('isAuthenticated')
+                              ->will($this->returnValue(true));
         $this->mockAuthHandler->expects($this->once())
                               ->method('isAuthorized')
                               ->with($this->equalTo('admin'))
@@ -118,8 +215,12 @@ class AuthorizingRouteTestCase extends \PHPUnit_Framework_TestCase
      * @test
      * @group  issue_32
      */
-    public function applyPreInterceptorsTriggersInternalServerErrorWhenAuthHandlerThrowsInternalAuthHandlerException()
+    public function applyPreInterceptorsTriggersInternalServerErrorWhenAuthorizationThrowsInternalAuthHandlerException()
     {
+        $this->routeConfig->withRoleOnly('admin');
+        $this->mockAuthHandler->expects($this->once())
+                              ->method('isAuthenticated')
+                              ->will($this->returnValue(true));
         $this->mockAuthHandler->expects($this->once())
                               ->method('isAuthorized')
                               ->with($this->equalTo('admin'))
@@ -136,8 +237,12 @@ class AuthorizingRouteTestCase extends \PHPUnit_Framework_TestCase
      * @test
      * @group  issue_32
      */
-    public function applyPreInterceptorsTriggersStatusCode503WhenAuthHandlerThrowsExternalAuthHandlerException()
+    public function applyPreInterceptorsTriggersStatusCode503WhenAuthorizationThrowsExternalAuthHandlerException()
     {
+        $this->routeConfig->withRoleOnly('admin');
+        $this->mockAuthHandler->expects($this->once())
+                              ->method('isAuthenticated')
+                              ->will($this->returnValue(true));
         $this->mockAuthHandler->expects($this->once())
                               ->method('isAuthorized')
                               ->with($this->equalTo('admin'))
@@ -157,59 +262,14 @@ class AuthorizingRouteTestCase extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function applyPreInterceptorsReturnsFalseWhenNotAuthorizedAndLoginRequired()
-    {
-        $this->mockAuthHandler->expects($this->once())
-                              ->method('isAuthorized')
-                              ->with($this->equalTo('admin'))
-                              ->will($this->returnValue(false));
-        $this->mockAuthHandler->expects($this->once())
-                              ->method('requiresLogin')
-                              ->with($this->equalTo('admin'))
-                              ->will($this->returnValue(true));
-        $this->mockAuthHandler->expects($this->once())
-                              ->method('getLoginUri')
-                              ->will($this->returnValue('https://login.example.com/'));
-        $this->mockActualRoute->expects($this->never())
-                              ->method('applyPreInterceptors');
-        $this->assertFalse($this->authorizingRoute->applyPreInterceptors($this->mockRequest, $this->mockResponse));
-    }
-
-    /**
-     * @test
-     */
-    public function applyPreInterceptorsTriggersRedirectToLoginUriWhenNotAuthorizedAndLoginRequired()
-    {
-        $this->mockAuthHandler->expects($this->once())
-                              ->method('isAuthorized')
-                              ->with($this->equalTo('admin'))
-                              ->will($this->returnValue(false));
-        $this->mockAuthHandler->expects($this->once())
-                              ->method('requiresLogin')
-                              ->with($this->equalTo('admin'))
-                              ->will($this->returnValue(true));
-        $this->mockAuthHandler->expects($this->once())
-                              ->method('getLoginUri')
-                              ->will($this->returnValue('https://login.example.com/'));
-        $this->mockResponse->expects($this->once())
-                           ->method('redirect')
-                           ->with($this->equalTo('https://login.example.com/'));
-        $this->mockActualRoute->expects($this->never())
-                              ->method('applyPreInterceptors');
-        $this->assertFalse($this->authorizingRoute->applyPreInterceptors($this->mockRequest, $this->mockResponse));
-    }
-
-    /**
-     * @test
-     */
     public function applyPreInterceptorsReturnsFalseWhenNotAuthorized()
     {
+        $this->routeConfig->withRoleOnly('admin');
+        $this->mockAuthHandler->expects($this->once())
+                              ->method('isAuthenticated')
+                              ->will($this->returnValue(true));
         $this->mockAuthHandler->expects($this->once())
                               ->method('isAuthorized')
-                              ->with($this->equalTo('admin'))
-                              ->will($this->returnValue(false));
-        $this->mockAuthHandler->expects($this->once())
-                              ->method('requiresLogin')
                               ->with($this->equalTo('admin'))
                               ->will($this->returnValue(false));
         $this->mockActualRoute->expects($this->never())
@@ -222,12 +282,12 @@ class AuthorizingRouteTestCase extends \PHPUnit_Framework_TestCase
      */
     public function applyPreInterceptorsTriggers403ForbiddenWhenNotAuthorized()
     {
+        $this->routeConfig->withRoleOnly('admin');
+        $this->mockAuthHandler->expects($this->once())
+                              ->method('isAuthenticated')
+                              ->will($this->returnValue(true));
         $this->mockAuthHandler->expects($this->once())
                               ->method('isAuthorized')
-                              ->with($this->equalTo('admin'))
-                              ->will($this->returnValue(false));
-        $this->mockAuthHandler->expects($this->once())
-                              ->method('requiresLogin')
                               ->with($this->equalTo('admin'))
                               ->will($this->returnValue(false));
         $this->mockResponse->expects($this->once())
@@ -240,12 +300,34 @@ class AuthorizingRouteTestCase extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function applyPreInterceptorsCallsActualRouteWhenAuthorized()
+    public function applyPreInterceptorsCallsActualRouteWhenAuthenticatedAndAuthorized()
     {
+        $this->routeConfig->withRoleOnly('admin');
+        $this->mockAuthHandler->expects($this->once())
+                              ->method('isAuthenticated')
+                              ->will($this->returnValue(true));
         $this->mockAuthHandler->expects($this->once())
                               ->method('isAuthorized')
                               ->with($this->equalTo('admin'))
                               ->will($this->returnValue(true));
+        $this->mockActualRoute->expects($this->once())
+                              ->method('applyPreInterceptors')
+                              ->with($this->equalTo($this->mockRequest), $this->equalTo($this->mockResponse))
+                              ->will($this->returnValue(true));
+        $this->assertTrue($this->authorizingRoute->applyPreInterceptors($this->mockRequest, $this->mockResponse));
+    }
+
+    /**
+     * @test
+     */
+    public function applyPreInterceptorsCallsActualRouteWhenAuthenticatedAndNoSpecificAuthorizationRequired()
+    {
+        $this->routeConfig->withLoginOnly();
+        $this->mockAuthHandler->expects($this->once())
+                              ->method('isAuthenticated')
+                              ->will($this->returnValue(true));
+        $this->mockAuthHandler->expects($this->never())
+                              ->method('isAuthorized');
         $this->mockActualRoute->expects($this->once())
                               ->method('applyPreInterceptors')
                               ->with($this->equalTo($this->mockRequest), $this->equalTo($this->mockResponse))
@@ -268,6 +350,10 @@ class AuthorizingRouteTestCase extends \PHPUnit_Framework_TestCase
      */
     public function processCallsProcessOfActualRouteWhenAuthorized()
     {
+        $this->routeConfig->withRoleOnly('admin');
+        $this->mockAuthHandler->expects($this->once())
+                              ->method('isAuthenticated')
+                              ->will($this->returnValue(true));
         $this->mockAuthHandler->expects($this->once())
                               ->method('isAuthorized')
                               ->with($this->equalTo('admin'))
@@ -299,6 +385,10 @@ class AuthorizingRouteTestCase extends \PHPUnit_Framework_TestCase
      */
     public function applyPostInterceptorsCallsActualRouteWhenAuthorized()
     {
+        $this->routeConfig->withRoleOnly('admin');
+        $this->mockAuthHandler->expects($this->once())
+                              ->method('isAuthenticated')
+                              ->will($this->returnValue(true));
         $this->mockAuthHandler->expects($this->once())
                               ->method('isAuthorized')
                               ->with($this->equalTo('admin'))

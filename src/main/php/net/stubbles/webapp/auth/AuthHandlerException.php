@@ -80,14 +80,4 @@ class AuthHandlerException extends Exception
     {
         return self::INTERNAL === $this->getCode();
     }
-
-    /**
-     * checks whether the exception denotes an external error
-     *
-     * @return  bool
-     */
-    public function isExternal()
-    {
-        return self::EXTERNAL === $this->getCode();
-    }
 }

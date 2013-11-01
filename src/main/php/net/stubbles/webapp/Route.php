@@ -9,7 +9,6 @@
  */
 namespace net\stubbles\webapp;
 use net\stubbles\lang\exception\IllegalArgumentException;
-use net\stubbles\webapp\auth\AuthHandler;
 /**
  * Represents information about a route that can be called.
  *
@@ -53,6 +52,12 @@ class Route implements ConfigurableRoute
      * @type  bool
      */
     private $requiresHttps    = false;
+    /**
+     * switch whether login is required for this route
+     *
+     * @type  bool
+     */
+    private $requiresLogin    = false;
     /**
      * required role to access the route
      *
@@ -237,6 +242,18 @@ class Route implements ConfigurableRoute
     }
 
     /**
+     * makes route only available if a user is logged in
+     *
+     * @return  Route
+     * @since   3.0.0
+     */
+    public function withLoginOnly()
+    {
+        $this->requiresLogin = true;
+        return $this;
+    }
+
+    /**
      * adds a role which is required to access the route
      *
      * @param   string  $requiredRole
@@ -249,11 +266,21 @@ class Route implements ConfigurableRoute
     }
 
     /**
-     * checks if access to this route required authorization
+     * checks whether auth is required
      *
      * @return  bool
      */
     public function requiresAuth()
+    {
+        return $this->requiresLogin || $this->requiresRole();
+    }
+
+    /**
+     * checks if access to this route required authorization
+     *
+     * @return  bool
+     */
+    public function requiresRole()
     {
         return null !== $this->requiredRole;
     }
