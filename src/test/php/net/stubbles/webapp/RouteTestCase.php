@@ -11,6 +11,45 @@ namespace net\stubbles\webapp;
 use net\stubbles\input\web\WebRequest;
 use net\stubbles\webapp\response\Response;
 /**
+ * Class with annotations for tests.
+ *
+ * @RequiresHttps
+ * @RequiresLogin
+ */
+class AnnotatedProcessor implements Processor
+{
+    /**
+     * processes the request
+     *
+     * @param  WebRequest  $request   current request
+     * @param  Response    $response  response to send
+     * @param  UriPath     $uriPath   information about called uri path
+     */
+    public function process(WebRequest $request, Response $response, UriPath $uriPath)
+    {
+        // intentionally empty
+    }
+}
+/**
+ * Class with annotations for tests.
+ *
+ * @RequiresRole('superadmin')
+ */
+class OtherAnnotatedProcessor implements Processor
+{
+    /**
+     * processes the request
+     *
+     * @param  WebRequest  $request   current request
+     * @param  Response    $response  response to send
+     * @param  UriPath     $uriPath   information about called uri path
+     */
+    public function process(WebRequest $request, Response $response, UriPath $uriPath)
+    {
+        // intentionally empty
+    }
+}
+/**
  * Tests for net\stubbles\webapp\Route.
  *
  * @since  2.0.0
@@ -223,6 +262,32 @@ class RouteTestCase extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
+     * @since  3.1.0
+     */
+    public function requiresHttpsWhenCallbackInstanceAnnotatedWithRequiresHttps()
+    {
+        $route = new Route('/hello/{name}',
+                           new AnnotatedProcessor(),
+                           'GET'
+                 );
+        $this->assertTrue($route->requiresHttps());
+    }
+
+    /**
+     * @test
+     * @since  3.1.0
+     */
+    public function requiresHttpsWhenCallbackClassAnnotatedWithRequiresHttps()
+    {
+        $route = new Route('/hello/{name}',
+                           'net\stubbles\webapp\AnnotatedProcessor',
+                           'GET'
+                 );
+        $this->assertTrue($route->requiresHttps());
+    }
+
+    /**
+     * @test
      * @since  3.0.0
      */
     public function doesNotRequireAuthByDefault()
@@ -241,11 +306,63 @@ class RouteTestCase extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
+     * @since  3.1.0
+     */
+    public function requiresAuthWhenCallbackInstanceAnnotatedWithRequiresLogin()
+    {
+        $route = new Route('/hello/{name}',
+                           new AnnotatedProcessor(),
+                           'GET'
+                 );
+        $this->assertTrue($route->requiresAuth());
+    }
+
+    /**
+     * @test
+     * @since  3.1.0
+     */
+    public function requiresAuthWhenCallbackClassAnnotatedWithRequiresLogin()
+    {
+        $route = new Route('/hello/{name}',
+                           'net\stubbles\webapp\AnnotatedProcessor',
+                           'GET'
+                 );
+        $this->assertTrue($route->requiresAuth());
+    }
+
+    /**
+     * @test
      * @since  3.0.0
      */
     public function requiresAuthWhenRoleIsRequired()
     {
         $this->assertTrue($this->createRoute()->withRoleOnly('admin')->requiresAuth());
+    }
+
+    /**
+     * @test
+     * @since  3.1.0
+     */
+    public function requiresAuthWhenCallbackInstanceAnnotatedWithRequiresRole()
+    {
+        $route = new Route('/hello/{name}',
+                           new OtherAnnotatedProcessor(),
+                           'GET'
+                 );
+        $this->assertTrue($route->requiresAuth());
+    }
+
+    /**
+     * @test
+     * @since  3.1.0
+     */
+    public function requiresAuthWhenCallbackClassAnnotatedWithRequiresRole()
+    {
+        $route = new Route('/hello/{name}',
+                           'net\stubbles\webapp\OtherAnnotatedProcessor',
+                           'GET'
+                 );
+        $this->assertTrue($route->requiresAuth());
     }
 
     /**
@@ -291,6 +408,58 @@ class RouteTestCase extends \PHPUnit_Framework_TestCase
                                  ->withRoleOnly('admin')
                                  ->getRequiredRole()
         );
+    }
+
+    /**
+     * @test
+     * @since  3.1.0
+     */
+    public function requiresRoleWhenCallbackInstanceAnnotatedWithRequiresRole()
+    {
+        $route = new Route('/hello/{name}',
+                           new OtherAnnotatedProcessor(),
+                           'GET'
+                 );
+        $this->assertTrue($route->requiresRole());
+    }
+
+    /**
+     * @test
+     * @since  3.1.0
+     */
+    public function requiresRoleWhenCallbackClassAnnotatedWithRequiresRole()
+    {
+        $route = new Route('/hello/{name}',
+                           'net\stubbles\webapp\OtherAnnotatedProcessor',
+                           'GET'
+                 );
+        $this->assertTrue($route->requiresRole());
+    }
+
+    /**
+     * @test
+     * @since  3.1.0
+     */
+    public function returnsRoleWhenCallbackInstanceAnnotatedWithRequiresRole()
+    {
+        $route = new Route('/hello/{name}',
+                           new OtherAnnotatedProcessor(),
+                           'GET'
+                 );
+        $this->assertEquals('superadmin', $route->getRequiredRole());
+    }
+
+    /**
+     * @test
+     * @since  3.1.0
+     */
+    public function rreturnsRoleWhenCallbackClassAnnotatedWithRequiresRole()
+    {
+        $route = new Route('/hello/{name}',
+                           'net\stubbles\webapp\OtherAnnotatedProcessor',
+                           'GET'
+                 );
+        $this->assertEquals('superadmin', $route->getRequiredRole());
     }
 
     /**

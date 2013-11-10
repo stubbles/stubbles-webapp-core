@@ -26,4 +26,3 @@ interface Processor
      */
     public function process(WebRequest $request, Response $response, UriPath $uriPath);
 }
-?>

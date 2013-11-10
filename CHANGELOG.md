@@ -1,3 +1,9 @@
+3.1.0, (2013-11-03)
+-------------------
+
+   * implemented #35: enable annotations on processor classes to reduce route configuration
+
+
 3.0.0, (2013-11-01)
 -------------------
 
