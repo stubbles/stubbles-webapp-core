@@ -70,17 +70,31 @@ abstract class WebApp extends App
                     );
         $response = $this->responseNegotiator->negotiateMimeType($this->request, $route->getSupportedMimeTypes());
         if (!$response->isFixed()) {
-            if ($route->switchToHttps()) {
-                $response->redirect($route->getHttpsUri());
-            } elseif ($route->applyPreInterceptors($this->request, $response)) {
-                if ($route->process($this->request, $response)) {
-                    $route->applyPostInterceptors($this->request, $response);
-                }
-            }
+            $this->process($route, $response);
         }
 
         $this->send($response);
         return $response;
+    }
+
+    /**
+     * handles the request by processing the route
+     *
+     * @param  ProcessableRoute  $route
+     * @param  Response          $response
+     */
+    private function process(ProcessableRoute $route, Response $response)
+    {
+        if ($route->switchToHttps()) {
+            $response->redirect($route->getHttpsUri());
+            return;
+        }
+
+        if ($route->applyPreInterceptors($this->request, $response)) {
+            if ($route->process($this->request, $response)) {
+                $route->applyPostInterceptors($this->request, $response);
+            }
+        }
     }
 
     /**
