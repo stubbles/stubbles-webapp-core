@@ -2,6 +2,14 @@
 -------------------
 
    * implemented #35: enable annotations on processor classes to reduce route configuration
+   * Introduced fixed responses: a response is fixed when a final status has been set. A final status is set when one of the following methods is called:
+      * - forbidden()
+      * - notFound()
+      * - methodNotAllowed()
+      * - notAcceptable()
+      * - internalServerError()
+      * - httpVersionNotSupported()
+     This replaces checks on whether the request was cancelled, this is not used any more.
 
 
 3.0.0, (2013-11-01)

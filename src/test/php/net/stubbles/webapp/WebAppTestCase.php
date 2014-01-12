@@ -144,8 +144,8 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
     public function doesNothingIfResponseNegotiationFails()
     {
         $this->createMockRoute();
-        $this->mockRequest->expects($this->once())
-                          ->method('isCancelled')
+        $this->mockResponse->expects($this->once())
+                          ->method('isFixed')
                           ->will($this->returnValue(true));
         $this->mockResponse->expects($this->once())
                            ->method('send');

@@ -69,7 +69,7 @@ abstract class WebApp extends App
                                               )
                     );
         $response = $this->responseNegotiator->negotiateMimeType($this->request, $route->getSupportedMimeTypes());
-        if (!$this->request->isCancelled()) {
+        if (!$response->isFixed()) {
             if ($route->switchToHttps()) {
                 $response->redirect($route->getHttpsUri());
             } elseif ($route->applyPreInterceptors($this->request, $response)) {

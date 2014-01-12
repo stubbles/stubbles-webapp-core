@@ -254,6 +254,26 @@ class WebResponseTestCase extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @test
+     * @since  3.1.0
+     * @group  final_response
+     */
+    public function isNotFixedByDefault()
+    {
+        $this->assertFalse($this->response->isFixed());
+    }
+
+    /**
+     * @test
+     * @since  3.1.0
+     * @group  final_response
+     */
+    public function clearUnfixesResponse()
+    {
+        $this->assertFalse($this->response->forbidden()->clear()->isFixed());
+    }
+
+    /**
      * @since  1.3.0
      * @test
      */
@@ -309,6 +329,16 @@ class WebResponseTestCase extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @test
+     * @since  3.1.0
+     * @group  final_response
+     */
+    public function forbiddenFixatesResponse()
+    {
+        $this->assertTrue($this->response->forbidden()->isFixed());
+    }
+
+    /**
      * @since  2.0.0
      * @test
      */
@@ -319,6 +349,16 @@ class WebResponseTestCase extends \PHPUnit_Framework_TestCase
                        ->with($this->equalTo('HTTP/1.1 404 Not Found'));
         $this->response->notFound()
                        ->send();
+    }
+
+    /**
+     * @test
+     * @since  3.1.0
+     * @group  final_response
+     */
+    public function notFoundFixatesResponse()
+    {
+        $this->assertTrue($this->response->notFound()->isFixed());
     }
 
     /**
@@ -338,6 +378,16 @@ class WebResponseTestCase extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @test
+     * @since  3.1.0
+     * @group  final_response
+     */
+    public function methodNotAllowedFixatesResponse()
+    {
+        $this->assertTrue($this->response->methodNotAllowed('POST', array('GET', 'HEAD'))->isFixed());
+    }
+
+    /**
      * @since  2.0.0
      * @test
      */
@@ -348,6 +398,16 @@ class WebResponseTestCase extends \PHPUnit_Framework_TestCase
                        ->with($this->equalTo('HTTP/1.1 406 Not Acceptable'));
         $this->response->notAcceptable()
                        ->send();
+    }
+
+    /**
+     * @test
+     * @since  3.1.0
+     * @group  final_response
+     */
+    public function notAcceptableFixatesResponse()
+    {
+        $this->assertTrue($this->response->notAcceptable()->isFixed());
     }
 
     /**
@@ -383,6 +443,16 @@ class WebResponseTestCase extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @test
+     * @since  3.1.0
+     * @group  final_response
+     */
+    public function internalServerErrorFixatesResponse()
+    {
+        $this->assertTrue($this->response->internalServerError('ups')->isFixed());
+    }
+
+    /**
      * @since  2.0.0
      * @test
      */
@@ -396,6 +466,16 @@ class WebResponseTestCase extends \PHPUnit_Framework_TestCase
                        ->with($this->equalTo('Unsupported HTTP protocol version, expected HTTP/1.0 or HTTP/1.1'));
         $this->response->httpVersionNotSupported()
                        ->send();
+    }
+
+    /**
+     * @test
+     * @since  3.1.0
+     * @group  final_response
+     */
+    public function httpVersionNotSupportedFixatesResponse()
+    {
+        $this->assertTrue($this->response->httpVersionNotSupported()->isFixed());
     }
 
     /**

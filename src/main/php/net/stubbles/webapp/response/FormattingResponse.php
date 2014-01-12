@@ -28,7 +28,11 @@ class FormattingResponse implements Response
      * @type  Formatter
      */
     private $formatter;
-
+    /**
+     * actual mime type for the response
+     *
+     * @type  string
+     */
     private $mimeType;
 
     /**
@@ -119,6 +123,25 @@ class FormattingResponse implements Response
         $result = ((is_string($body)) ? ($body): ($this->formatter->format($body)));
         $this->response->write($result);
         return $this;
+    }
+
+    /**
+     * a response is fixed when a final status has been set
+     *
+     * A final status is set when one of the following methods is called:
+     * - forbidden()
+     * - notFound()
+     * - methodNotAllowed()
+     * - notAcceptable()
+     * - internalServerError()
+     * - httpVersionNotSupported()
+     *
+     * @return  bool
+     * @since   3.1.0
+     */
+    public function isFixed()
+    {
+        return $this->response->isFixed();
     }
 
     /**

@@ -145,6 +145,19 @@ class FormattingResponseTestCase extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
+     * @since  3.1.0
+     * @group  final_response
+     */
+    public function isFixedWhenDecoratedResponseIsFixed()
+    {
+        $this->decoratedResponse->expects($this->once())
+                                ->method('isFixed')
+                                ->will($this->returnValue(true));
+        $this->assertTrue($this->formattingResponse->isFixed());
+    }
+
+    /**
+     * @test
      */
     public function addsRedirectOnDecoratedResponseWithDefaultStatusCode()
     {
