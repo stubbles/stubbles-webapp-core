@@ -60,9 +60,7 @@ class ResponseNegotiator
         $httpVersion = $request->getProtocolVersion();
         if (null === $httpVersion) {
             $response = new $responseClass();
-            $response->httpVersionNotSupported();
-            $request->cancel();
-            return $response;
+            return $response->httpVersionNotSupported();
         }
 
         return new $responseClass($httpVersion);
@@ -89,22 +87,15 @@ class ResponseNegotiator
                                                            ->applyFilter(new \net\stubbles\input\filter\AcceptFilter())
                     );
         if (null === $mimeType) {
-            $this->response->notAcceptable($supportedMimeTypes->asArray());
-            $request->cancel();
-            return $this->response;
+            return $this->response->notAcceptable($supportedMimeTypes->asArray());
         }
 
         $formatter = $this->createFormatter($mimeType);
         if (null === $formatter) {
-            $this->response->internalServerError('No formatter defined for negotiated content type ' . $mimeType);
-            $request->cancel();
-            return $this->response;
+            return $this->response->internalServerError('No formatter defined for negotiated content type ' . $mimeType);
         }
 
-        return new FormattingResponse($this->response,
-                                      $formatter,
-                                      $mimeType
-        );
+        return new FormattingResponse($this->response, $formatter, $mimeType);
     }
 
     /**
@@ -126,4 +117,3 @@ class ResponseNegotiator
         return null;
     }
 }
-?>
