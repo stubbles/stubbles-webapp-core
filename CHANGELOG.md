@@ -1,14 +1,17 @@
 3.1.0, (2013-11-03)
 -------------------
 
-   * implemented #35: enable annotations on processor classes to reduce route configuration
+   * implemented #35: enable annotations on processor classes to reduce route configuration:
+      * `@RequiresHttps`
+      * `@RequiresLogin`
+      * `@RequiresRole`
    * Introduced fixed responses: a response is fixed when a final status has been set. A final status is set when one of the following methods is called:
-      * - forbidden()
-      * - notFound()
-      * - methodNotAllowed()
-      * - notAcceptable()
-      * - internalServerError()
-      * - httpVersionNotSupported()
+      * `forbidden()`
+      * `notFound()`
+      * `methodNotAllowed()`
+      * `notAcceptable()`
+      * `internalServerError()`
+      * `httpVersionNotSupported()`
      This replaces checks on whether the request was cancelled, this is not used any more.
 
 
