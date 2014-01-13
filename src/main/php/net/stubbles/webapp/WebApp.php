@@ -10,6 +10,7 @@
 namespace net\stubbles\webapp;
 use net\stubbles\input\web\WebRequest;
 use net\stubbles\ioc\App;
+use net\stubbles\lang\errorhandler\ExceptionLogger;
 use net\stubbles\webapp\ioc\IoBindingModule;
 use net\stubbles\webapp\response\Response;
 use net\stubbles\webapp\response\ResponseNegotiator;
@@ -38,22 +39,31 @@ abstract class WebApp extends App
      * @type  Routing
      */
     private $routing;
+    /**
+     * logger for logging uncatched exceptions
+     *
+     * @type  ExceptionLogger
+     */
+    private $exceptionLogger;
 
     /**
      * constructor
      *
      * @param  WebRequest          $request             request data container
      * @param  ResponseNegotiator  $responseNegotiator  negoatiates based on request
-     * @param  Routing             $routing
+     * @param  Routing             $routing             routes to logic based on request
+     * @param  ExceptionLogger     $exceptionLogger     logs uncatched exceptions
      * @Inject
      */
     public function __construct(WebRequest $request,
                                 ResponseNegotiator $responseNegotiator,
-                                Routing $routing)
+                                Routing $routing,
+                                ExceptionLogger $exceptionLogger)
     {
         $this->request            = $request;
         $this->responseNegotiator = $responseNegotiator;
         $this->routing            = $routing;
+        $this->exceptionLogger    = $exceptionLogger;
     }
 
     /**
@@ -69,18 +79,37 @@ abstract class WebApp extends App
                                               )
                     );
         $response = $this->responseNegotiator->negotiateMimeType($this->request, $route->getSupportedMimeTypes());
-        if (!$this->request->isCancelled()) {
-            if ($route->switchToHttps()) {
-                $response->redirect($route->getHttpsUri());
-            } elseif ($route->applyPreInterceptors($this->request, $response)) {
-                if ($route->process($this->request, $response)) {
-                    $route->applyPostInterceptors($this->request, $response);
-                }
-            }
+        if (!$response->isFixed()) {
+            $this->process($route, $response);
         }
 
         $this->send($response);
         return $response;
+    }
+
+    /**
+     * handles the request by processing the route
+     *
+     * @param  ProcessableRoute  $route
+     * @param  Response          $response
+     */
+    private function process(ProcessableRoute $route, Response $response)
+    {
+        if ($route->switchToHttps()) {
+            $response->redirect($route->getHttpsUri());
+            return;
+        }
+
+        try {
+            if ($route->applyPreInterceptors($this->request, $response)) {
+                if ($route->process($this->request, $response)) {
+                    $route->applyPostInterceptors($this->request, $response);
+                }
+            }
+        } catch (\Exception $e) {
+            $this->exceptionLogger->log($e);
+            $response->internalServerError($e->getMessage());
+        }
     }
 
     /**

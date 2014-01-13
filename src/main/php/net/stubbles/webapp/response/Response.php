@@ -69,6 +69,22 @@ interface Response
     public function write($body);
 
     /**
+     * a response is fixed when a final status has been set
+     *
+     * A final status is set when one of the following methods is called:
+     * - forbidden()
+     * - notFound()
+     * - methodNotAllowed()
+     * - notAcceptable()
+     * - internalServerError()
+     * - httpVersionNotSupported()
+     *
+     * @return  bool
+     * @since   3.1.0
+     */
+    public function isFixed();
+
+    /**
      * creates a Location header which causes a redirect when the response is send
      *
      * Status code is optional, default is 302.

@@ -61,6 +61,12 @@ class WebResponse implements Response
      * @type  string
      */
     private $body;
+    /**
+     * switch whether response is fixed or not
+     *
+     * @type  bool
+     */
+    private $fixed        = false;
 
     /**
      * constructor
@@ -85,6 +91,7 @@ class WebResponse implements Response
         $this->headers = array();
         $this->cookies = array();
         $this->body    = null;
+        $this->fixed   = false;
         return $this;
     }
 
@@ -157,6 +164,25 @@ class WebResponse implements Response
     }
 
     /**
+     * a response is fixed when a final status has been set
+     *
+     * A final status is set when one of the following methods is called:
+     * - forbidden()
+     * - notFound()
+     * - methodNotAllowed()
+     * - notAcceptable()
+     * - internalServerError()
+     * - httpVersionNotSupported()
+     *
+     * @return  bool
+     * @since   3.1.0
+     */
+    public function isFixed()
+    {
+        return $this->fixed;
+    }
+
+    /**
      * creates a Location header which causes a redirect when the response is send
      *
      * Status code is optional, default is 302.
@@ -182,6 +208,7 @@ class WebResponse implements Response
     public function forbidden()
     {
         $this->setStatusCode(403);
+        $this->fixed = true;
         return $this;
     }
 
@@ -194,6 +221,7 @@ class WebResponse implements Response
     public function notFound()
     {
         $this->setStatusCode(404);
+        $this->fixed = true;
         return $this;
     }
 
@@ -209,6 +237,7 @@ class WebResponse implements Response
     {
         $this->setStatusCode(405)
              ->addHeader('Allow', join(', ', $allowedMethods));
+        $this->fixed = true;
         return $this;
     }
 
@@ -226,6 +255,7 @@ class WebResponse implements Response
             $this->addHeader('X-Acceptable', join(', ', $supportedMimeTypes));
         }
 
+        $this->fixed = true;
         return $this;
     }
 
@@ -240,6 +270,7 @@ class WebResponse implements Response
     {
         $this->setStatusCode(500)
              ->write($errorMessage);
+        $this->fixed = true;
         return $this;
     }
 
@@ -253,6 +284,7 @@ class WebResponse implements Response
     {
         $this->setStatusCode(505)
              ->write('Unsupported HTTP protocol version, expected HTTP/1.0 or HTTP/1.1');
+        $this->fixed = true;
         return $this;
     }
 

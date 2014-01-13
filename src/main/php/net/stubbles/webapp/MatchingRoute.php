@@ -10,7 +10,6 @@
 namespace net\stubbles\webapp;
 use net\stubbles\input\web\WebRequest;
 use net\stubbles\ioc\Injector;
-use net\stubbles\webapp\auth\AuthHandler;
 use net\stubbles\webapp\interceptor\Interceptors;
 use net\stubbles\webapp\response\Response;
 use net\stubbles\webapp\response\SupportedMimeTypes;
@@ -84,30 +83,25 @@ class MatchingRoute extends AbstractProcessableRoute
     {
         $uriPath  = $this->route->getUriPath($this->calledUri);
         $callback = $this->route->getCallback();
-        try {
-            if ($callback instanceof \Closure) {
-                return $this->result($callback($request, $response, $uriPath));
-            }
+        if ($callback instanceof \Closure) {
+            return $this->result($callback($request, $response, $uriPath));
+        }
 
-            if (is_callable($callback)) {
-                return $this->result(call_user_func_array($callback, array($request, $response, $uriPath)));
-            }
+        if (is_callable($callback)) {
+            return $this->result(call_user_func_array($callback, array($request, $response, $uriPath)));
+        }
 
-            if ($callback instanceof Processor) {
-                return $this->result($callback->process($request, $response, $uriPath));
-            }
+        if ($callback instanceof Processor) {
+            return $this->result($callback->process($request, $response, $uriPath));
+        }
 
-            $processor = $this->injector->getInstance($callback);
-            if (!($processor instanceof Processor)) {
-                $response->internalServerError('Configured callback class ' . $callback . ' for route ' . $uriPath->getMatched() . ' is not an instance of net\stubbles\webapp\Processor');
-                return false;
-            }
-
-            return $this->result($processor->process($request, $response, $uriPath));
-        } catch (\Exception $e) {
-            $response->internalServerError($e->getMessage());
+        $processor = $this->injector->getInstance($callback);
+        if (!($processor instanceof Processor)) {
+            $response->internalServerError('Configured callback class ' . $callback . ' for route ' . $uriPath->getMatched() . ' is not an instance of net\stubbles\webapp\Processor');
             return false;
         }
+
+        return $this->result($processor->process($request, $response, $uriPath));
     }
 
     /**

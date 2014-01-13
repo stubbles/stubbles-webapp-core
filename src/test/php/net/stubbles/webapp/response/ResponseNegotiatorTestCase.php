@@ -71,8 +71,6 @@ class ResponseNegotiatorTestCase extends \PHPUnit_Framework_TestCase
         $this->mockRequest->expects($this->once())
                           ->method('getProtocolVersion')
                           ->will($this->returnValue(null));
-        $this->mockRequest->expects($this->once())
-                          ->method('cancel');
         $mockResponseClass = get_class($this->getMockBuilder('net\stubbles\webapp\response\WebResponse')
                                             ->setMethods(array('header', 'sendBody'))
                                             ->getMock()
@@ -95,8 +93,6 @@ class ResponseNegotiatorTestCase extends \PHPUnit_Framework_TestCase
         $this->mockRequest->expects($this->once())
                           ->method('getProtocolVersion')
                           ->will($this->returnValue('1.0'));
-        $this->mockRequest->expects($this->never())
-                          ->method('cancel');
         $mockResponseClass = get_class($this->getMockBuilder('net\stubbles\webapp\response\WebResponse')
                                             ->setMethods(array('header', 'sendBody'))
                                             ->getMock()
@@ -116,8 +112,6 @@ class ResponseNegotiatorTestCase extends \PHPUnit_Framework_TestCase
         $this->mockRequest->expects($this->once())
                           ->method('getProtocolVersion')
                           ->will($this->returnValue('1.1'));
-        $this->mockRequest->expects($this->never())
-                          ->method('cancel');
         $response = ResponseNegotiator::negotiateHttpVersion($this->mockRequest);
         $this->assertInstanceOf('net\stubbles\webapp\response\WebResponse',
                                 $response
@@ -157,9 +151,8 @@ class ResponseNegotiatorTestCase extends \PHPUnit_Framework_TestCase
         $this->mockAcceptHeader('text/html');
         $this->mockResponse->expects($this->once())
                            ->method('notAcceptable')
-                           ->with($this->equalTo(array('application/json', 'application/xml')));
-        $this->mockRequest->expects($this->once())
-                          ->method('cancel');
+                           ->with($this->equalTo(array('application/json', 'application/xml')))
+                           ->will($this->returnSelf());
         $this->assertSame($this->mockResponse,
                           $this->responseNegotiator->negotiateMimeType($this->mockRequest,
                                                                        new SupportedMimeTypes(array('application/json', 'application/xml'))
@@ -181,9 +174,8 @@ class ResponseNegotiatorTestCase extends \PHPUnit_Framework_TestCase
                            ->will($this->returnValue(false));
         $this->mockResponse->expects($this->once())
                            ->method('internalServerError')
-                           ->with($this->equalTo('No formatter defined for negotiated content type application/json'));
-        $this->mockRequest->expects($this->once())
-                          ->method('cancel');
+                           ->with($this->equalTo('No formatter defined for negotiated content type application/json'))
+                           ->will($this->returnSelf());
         $this->assertSame($this->mockResponse,
                           $this->responseNegotiator->negotiateMimeType($this->mockRequest,
                                                                        new SupportedMimeTypes(array('application/json', 'application/xml'))
@@ -209,11 +201,9 @@ class ResponseNegotiatorTestCase extends \PHPUnit_Framework_TestCase
                                   $this->equalTo('application/json')
                              )
                            ->will($this->returnValue($this->getMock('net\stubbles\webapp\response\format\Formatter')));
-        $this->mockRequest->expects($this->never())
-                          ->method('cancel');
         $this->assertInstanceOf('net\stubbles\webapp\response\FormattingResponse',
                                 $this->responseNegotiator->negotiateMimeType($this->mockRequest,
-                                                                       new SupportedMimeTypes(array('application/json', 'application/xml'))
+                                                                             new SupportedMimeTypes(array('application/json', 'application/xml'))
                           )
         );
     }

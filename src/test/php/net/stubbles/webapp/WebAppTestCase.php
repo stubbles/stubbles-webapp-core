@@ -60,6 +60,12 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
      * @type  Routing
      */
     private $routing;
+    /**
+     * mocked exception logger
+     *
+     * @type  \PHPUnit_Framework_MockObject_MockObject
+     */
+    private $mockExceptionLogger;
 
     /**
      * set up test environment
@@ -83,11 +89,15 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
         $this->routing = $this->getMockBuilder('net\stubbles\webapp\Routing')
                               ->disableOriginalConstructor()
                               ->getMock();
+        $this->mockExceptionLogger = $this->getMockBuilder('net\stubbles\lang\errorhandler\ExceptionLogger')
+                                          ->disableOriginalConstructor()
+                                          ->getMock();
         $this->webApp  = $this->getMock('net\stubbles\webapp\TestWebApp',
                                         array('configureRouting'),
                                         array($this->mockRequest,
                                               $mockResponseNegotiator,
-                                              $this->routing
+                                              $this->routing,
+                                              $this->mockExceptionLogger
                                         )
                          );
     }
@@ -144,8 +154,8 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
     public function doesNothingIfResponseNegotiationFails()
     {
         $this->createMockRoute();
-        $this->mockRequest->expects($this->once())
-                          ->method('isCancelled')
+        $this->mockResponse->expects($this->once())
+                          ->method('isFixed')
                           ->will($this->returnValue(true));
         $this->mockResponse->expects($this->once())
                            ->method('send');
@@ -199,6 +209,37 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function sendsInternalServerErrorIfExceptionThrownFromPreInterceptors()
+    {
+        $mockRoute = $this->createMockRoute();
+        $mockRoute->expects($this->once())
+                  ->method('switchToHttps')
+                  ->will($this->returnValue(false));
+        $exception = new \Exception('some error');
+        $mockRoute->expects($this->once())
+                  ->method('applyPreInterceptors')
+                  ->with($this->equalTo($this->mockRequest),
+                         $this->equalTo($this->mockResponse)
+                    )
+                  ->will($this->throwException($exception));
+        $mockRoute->expects($this->never())
+                  ->method('process');
+        $mockRoute->expects($this->never())
+                  ->method('applyPostInterceptors');
+        $this->mockExceptionLogger->expects($this->once())
+                                  ->method('log')
+                                  ->with($this->equalTo($exception));
+        $this->mockResponse->expects($this->once())
+                           ->method('internalServerError')
+                           ->with($this->equalTo('some error'));
+        $this->mockResponse->expects($this->once())
+                           ->method('send');
+        $this->assertSame($this->mockResponse, $this->webApp->run());
+    }
+
+    /**
+     * @test
+     */
     public function doesNotExecutePostInterceptorsIfRouteCancelsRequest()
     {
         $mockRoute = $this->createMockRoute();
@@ -219,6 +260,41 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
                   ->will($this->returnValue(false));
         $mockRoute->expects($this->never())
                   ->method('applyPostInterceptors');
+        $this->mockResponse->expects($this->once())
+                           ->method('send');
+        $this->assertSame($this->mockResponse, $this->webApp->run());
+    }
+
+    /**
+     * @test
+     */
+    public function sendsInternalServerErrorIfExceptionThrownFromRoute()
+    {
+        $mockRoute = $this->createMockRoute();
+        $mockRoute->expects($this->once())
+                  ->method('switchToHttps')
+                  ->will($this->returnValue(false));
+        $mockRoute->expects($this->once())
+                  ->method('applyPreInterceptors')
+                  ->with($this->equalTo($this->mockRequest),
+                         $this->equalTo($this->mockResponse)
+                    )
+                  ->will($this->returnValue(true));
+        $exception = new \Exception('some error');
+        $mockRoute->expects($this->once())
+                  ->method('process')
+                  ->with($this->equalTo($this->mockRequest),
+                         $this->equalTo($this->mockResponse)
+                    )
+                  ->will($this->throwException($exception));
+        $mockRoute->expects($this->never())
+                  ->method('applyPostInterceptors');
+        $this->mockExceptionLogger->expects($this->once())
+                                  ->method('log')
+                                  ->with($this->equalTo($exception));
+        $this->mockResponse->expects($this->once())
+                           ->method('internalServerError')
+                           ->with($this->equalTo('some error'));
         $this->mockResponse->expects($this->once())
                            ->method('send');
         $this->assertSame($this->mockResponse, $this->webApp->run());
@@ -258,6 +334,45 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function sendsInternalServerErrorIfExceptionThrownFromPostInterceptors()
+    {
+        $mockRoute = $this->createMockRoute();
+        $mockRoute->expects($this->once())
+                  ->method('switchToHttps')
+                  ->will($this->returnValue(false));
+        $mockRoute->expects($this->once())
+                  ->method('applyPreInterceptors')
+                  ->with($this->equalTo($this->mockRequest),
+                         $this->equalTo($this->mockResponse)
+                    )
+                  ->will($this->returnValue(true));
+        $mockRoute->expects($this->once())
+                  ->method('process')
+                  ->with($this->equalTo($this->mockRequest),
+                         $this->equalTo($this->mockResponse)
+                    )
+                  ->will($this->returnValue(true));
+        $exception = new \Exception('some error');
+        $mockRoute->expects($this->once())
+                  ->method('applyPostInterceptors')
+                  ->with($this->equalTo($this->mockRequest),
+                         $this->equalTo($this->mockResponse)
+                    )
+                  ->will($this->throwException($exception));
+        $this->mockExceptionLogger->expects($this->once())
+                                  ->method('log')
+                                  ->with($this->equalTo($exception));
+        $this->mockResponse->expects($this->once())
+                           ->method('internalServerError')
+                           ->with($this->equalTo('some error'));
+        $this->mockResponse->expects($this->once())
+                           ->method('send');
+        $this->assertSame($this->mockResponse, $this->webApp->run());
+    }
+
+    /**
+     * @test
+     */
     public function executesEverythingButSendsHeadOnlyWhenRequestMethodIsHead()
     {
         $this->mockRequest  = $this->getMock('net\stubbles\input\web\WebRequest');
@@ -277,7 +392,8 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
                                         array('configureRouting'),
                                         array($this->mockRequest,
                                               $mockResponseNegotiator,
-                                              $this->routing
+                                              $this->routing,
+                                              $this->mockExceptionLogger
                                         )
                          );
         $mockRoute = $this->createMockRoute();
