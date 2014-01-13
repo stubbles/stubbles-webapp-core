@@ -168,23 +168,6 @@ class MatchingRouteTestCase extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @test
-     */
-    public function respondsWithInternalServerErrorIfClosureThrowsException()
-    {
-        $this->mockResponse->expects($this->once())
-                           ->method('internalServerError')
-                           ->with($this->equalTo('some error occurred'));
-        $this->assertFalse($this->createMatchingRouteWithCallback(function(WebRequest $request, Response $response, UriPath $uriPath)
-                                                                  {
-                                                                      throw new \Exception('some error occurred');
-                                                                  }
-                              )
-                            ->process($this->mockRequest, $this->mockResponse)
-        );
-    }
-
-    /**
      * helper method for the test
      *
      * @param  WebRequest  $request
@@ -227,19 +210,6 @@ class MatchingRouteTestCase extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     */
-    public function respondsWithInternalServerErrorIfGivenCallbackThrowsException()
-    {
-        $this->mockResponse->expects($this->once())
-                           ->method('internalServerError')
-                           ->with($this->equalTo('some error occurred'));
-        $this->assertFalse($this->createMatchingRouteWithCallback(array($this, 'failingCallable'))
-                                ->process($this->mockRequest, $this->mockResponse)
-        );
-    }
-
-    /**
-     * @test
      * @dataProvider  returnValueAssertions
      */
     public function processCallsGivenProcessorInstance($assert, $returnValue)
@@ -257,27 +227,6 @@ class MatchingRouteTestCase extends \PHPUnit_Framework_TestCase
 
         $this->$assert($this->createMatchingRouteWithCallback($mockProcessor)
                             ->process($this->mockRequest, $this->mockResponse)
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function respondsWithInternalServerErrorIfGivenProcessorInstanceThrowsException()
-    {
-        $mockProcessor = $this->getMock('net\stubbles\webapp\Processor');
-        $mockProcessor->expects($this->once())
-                      ->method('process')
-                      ->with($this->equalTo($this->mockRequest),
-                             $this->equalTo($this->mockResponse),
-                             $this->equalTo(new UriPath('/hello/{name}', array('name' => 'world'), null))
-                        )
-                      ->will($this->throwException(new \Exception('some error occurred')));
-        $this->mockResponse->expects($this->once())
-                           ->method('internalServerError')
-                           ->with($this->equalTo('some error occurred'));
-        $this->assertFalse($this->createMatchingRouteWithCallback($mockProcessor)
-                                ->process($this->mockRequest, $this->mockResponse)
         );
     }
 
@@ -320,31 +269,6 @@ class MatchingRouteTestCase extends \PHPUnit_Framework_TestCase
                            ->will($this->returnValue($mockProcessor));
         $this->$assert($this->createMatchingRouteWithCallback(get_class($mockProcessor))
                             ->process($this->mockRequest, $this->mockResponse)
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function respondsWithInternalServerErrorGivenProcessorClassThrowsException()
-    {
-        $mockProcessor = $this->getMock('net\stubbles\webapp\Processor');
-        $mockProcessor->expects($this->once())
-                      ->method('process')
-                      ->with($this->equalTo($this->mockRequest),
-                             $this->equalTo($this->mockResponse),
-                             $this->equalTo(new UriPath('/hello/{name}', array('name' => 'world'), null))
-                        )
-                      ->will($this->throwException(new \Exception('some error occurred')));
-        $this->mockInjector->expects($this->once())
-                           ->method('getInstance')
-                           ->with($this->equalTo(get_class($mockProcessor)))
-                           ->will($this->returnValue($mockProcessor));
-        $this->mockResponse->expects($this->once())
-                           ->method('internalServerError')
-                           ->with($this->equalTo('some error occurred'));
-        $this->assertFalse($this->createMatchingRouteWithCallback(get_class($mockProcessor))
-                                ->process($this->mockRequest, $this->mockResponse)
         );
     }
 }

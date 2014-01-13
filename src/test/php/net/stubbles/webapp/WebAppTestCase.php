@@ -199,6 +199,33 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function sendsInternalServerErrorIfExceptionThrownFromPreInterceptors()
+    {
+        $mockRoute = $this->createMockRoute();
+        $mockRoute->expects($this->once())
+                  ->method('switchToHttps')
+                  ->will($this->returnValue(false));
+        $mockRoute->expects($this->once())
+                  ->method('applyPreInterceptors')
+                  ->with($this->equalTo($this->mockRequest),
+                         $this->equalTo($this->mockResponse)
+                    )
+                  ->will($this->throwException(new \Exception('some error')));
+        $mockRoute->expects($this->never())
+                  ->method('process');
+        $mockRoute->expects($this->never())
+                  ->method('applyPostInterceptors');
+        $this->mockResponse->expects($this->once())
+                           ->method('internalServerError')
+                           ->with($this->equalTo('some error'));
+        $this->mockResponse->expects($this->once())
+                           ->method('send');
+        $this->assertSame($this->mockResponse, $this->webApp->run());
+    }
+
+    /**
+     * @test
+     */
     public function doesNotExecutePostInterceptorsIfRouteCancelsRequest()
     {
         $mockRoute = $this->createMockRoute();
@@ -219,6 +246,37 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
                   ->will($this->returnValue(false));
         $mockRoute->expects($this->never())
                   ->method('applyPostInterceptors');
+        $this->mockResponse->expects($this->once())
+                           ->method('send');
+        $this->assertSame($this->mockResponse, $this->webApp->run());
+    }
+
+    /**
+     * @test
+     */
+    public function sendsInternalServerErrorIfExceptionThrownFromRoute()
+    {
+        $mockRoute = $this->createMockRoute();
+        $mockRoute->expects($this->once())
+                  ->method('switchToHttps')
+                  ->will($this->returnValue(false));
+        $mockRoute->expects($this->once())
+                  ->method('applyPreInterceptors')
+                  ->with($this->equalTo($this->mockRequest),
+                         $this->equalTo($this->mockResponse)
+                    )
+                  ->will($this->returnValue(true));
+        $mockRoute->expects($this->once())
+                  ->method('process')
+                  ->with($this->equalTo($this->mockRequest),
+                         $this->equalTo($this->mockResponse)
+                    )
+                  ->will($this->throwException(new \Exception('some error')));
+        $mockRoute->expects($this->never())
+                  ->method('applyPostInterceptors');
+        $this->mockResponse->expects($this->once())
+                           ->method('internalServerError')
+                           ->with($this->equalTo('some error'));
         $this->mockResponse->expects($this->once())
                            ->method('send');
         $this->assertSame($this->mockResponse, $this->webApp->run());
@@ -250,6 +308,41 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
                   ->with($this->equalTo($this->mockRequest),
                          $this->equalTo($this->mockResponse)
                     );
+        $this->mockResponse->expects($this->once())
+                           ->method('send');
+        $this->assertSame($this->mockResponse, $this->webApp->run());
+    }
+
+    /**
+     * @test
+     */
+    public function sendsInternalServerErrorIfExceptionThrownFromPostInterceptors()
+    {
+        $mockRoute = $this->createMockRoute();
+        $mockRoute->expects($this->once())
+                  ->method('switchToHttps')
+                  ->will($this->returnValue(false));
+        $mockRoute->expects($this->once())
+                  ->method('applyPreInterceptors')
+                  ->with($this->equalTo($this->mockRequest),
+                         $this->equalTo($this->mockResponse)
+                    )
+                  ->will($this->returnValue(true));
+        $mockRoute->expects($this->once())
+                  ->method('process')
+                  ->with($this->equalTo($this->mockRequest),
+                         $this->equalTo($this->mockResponse)
+                    )
+                  ->will($this->returnValue(true));
+        $mockRoute->expects($this->once())
+                  ->method('applyPostInterceptors')
+                  ->with($this->equalTo($this->mockRequest),
+                         $this->equalTo($this->mockResponse)
+                    )
+                  ->will($this->throwException(new \Exception('some error')));
+        $this->mockResponse->expects($this->once())
+                           ->method('internalServerError')
+                           ->with($this->equalTo('some error'));
         $this->mockResponse->expects($this->once())
                            ->method('send');
         $this->assertSame($this->mockResponse, $this->webApp->run());

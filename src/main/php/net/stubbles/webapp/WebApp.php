@@ -90,10 +90,14 @@ abstract class WebApp extends App
             return;
         }
 
-        if ($route->applyPreInterceptors($this->request, $response)) {
-            if ($route->process($this->request, $response)) {
-                $route->applyPostInterceptors($this->request, $response);
+        try {
+            if ($route->applyPreInterceptors($this->request, $response)) {
+                if ($route->process($this->request, $response)) {
+                    $route->applyPostInterceptors($this->request, $response);
+                }
             }
+        } catch (\Exception $e) {
+            $response->internalServerError($e->getMessage());
         }
     }
 
