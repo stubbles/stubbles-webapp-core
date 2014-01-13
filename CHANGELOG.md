@@ -1,4 +1,4 @@
-3.1.0, (2013-11-03)
+3.1.0, (2014-01-13)
 -------------------
 
    * implemented #35: enable annotations on processor classes to reduce route configuration:
@@ -13,6 +13,7 @@
       * `internalServerError()`
       * `httpVersionNotSupported()`
      This replaces checks on whether the request was cancelled, this is not used any more.
+   * uncatched exceptions from interceptors and processors are now logged via `net\stubbles\lang\errorhandler\ExceptionLogger`
 
 
 3.0.0, (2013-11-01)
