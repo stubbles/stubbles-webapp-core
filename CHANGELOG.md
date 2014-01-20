@@ -1,4 +1,4 @@
-3.1.0, (2014-01-13)
+3.1.0, (2014-01-??)
 -------------------
 
    * implemented #35: enable annotations on processor classes to reduce route configuration:
@@ -14,6 +14,7 @@
       * `httpVersionNotSupported()`
      This replaces checks on whether the request was cancelled, this is not used any more.
    * uncatched exceptions from interceptors and processors are now logged via `net\stubbles\lang\errorhandler\ExceptionLogger`
+   * `net\stubbles\webapp\Webapp::$request` can now be accessed by subclasses
 
 
 3.0.0, (2013-11-01)
