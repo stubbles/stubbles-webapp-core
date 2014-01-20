@@ -26,7 +26,7 @@ abstract class WebApp extends App
      *
      * @type  WebRequest
      */
-    private $request;
+    protected $request;
     /**
      * response negotiator
      *
