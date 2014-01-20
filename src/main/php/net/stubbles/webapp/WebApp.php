@@ -26,7 +26,7 @@ abstract class WebApp extends App
      *
      * @type  WebRequest
      */
-    private $request;
+    protected $request;
     /**
      * response negotiator
      *
@@ -95,7 +95,7 @@ abstract class WebApp extends App
      */
     private function process(ProcessableRoute $route, Response $response)
     {
-        if ($route->switchToHttps()) {
+        if ($this->switchToHttps($route)) {
             $response->redirect($route->getHttpsUri());
             return;
         }
@@ -110,6 +110,17 @@ abstract class WebApp extends App
             $this->exceptionLogger->log($e);
             $response->internalServerError($e->getMessage());
         }
+    }
+
+    /**
+     * checks whether a switch to https must be made
+     *
+     * @param   ProcessableRoute  $route
+     * @return  bool
+     */
+    protected function switchToHttps(ProcessableRoute $route)
+    {
+        return $route->switchToHttps();
     }
 
     /**
