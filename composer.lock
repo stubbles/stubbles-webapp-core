@@ -3,20 +3,20 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "7aafa9ccd57f527045d2f495a65e9b4c",
+    "hash": "5eaacd9cc498ac6ce81b187b40b44e57",
     "packages": [
         {
             "name": "stubbles/core",
-            "version": "v3.3.1",
+            "version": "v3.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/stubbles/stubbles-core.git",
-                "reference": "3223116591c099eadc541f9772588b33ef901340"
+                "reference": "31f9fe1c75a3470e4cd6d7c28d50a46379c14656"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/stubbles/stubbles-core/zipball/3223116591c099eadc541f9772588b33ef901340",
-                "reference": "3223116591c099eadc541f9772588b33ef901340",
+                "url": "https://api.github.com/repos/stubbles/stubbles-core/zipball/31f9fe1c75a3470e4cd6d7c28d50a46379c14656",
+                "reference": "31f9fe1c75a3470e4cd6d7c28d50a46379c14656",
                 "shasum": ""
             },
             "require": {
@@ -29,7 +29,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "3.3.x-dev"
+                    "dev-master": "3.4.x-dev"
                 }
             },
             "autoload": {
@@ -48,25 +48,25 @@
             ],
             "description": "Provides base classes for Stubbles packages.",
             "homepage": "http://stubbles.net/",
-            "time": "2014-01-13 09:55:39"
+            "time": "2014-01-21 21:19:10"
         },
         {
             "name": "stubbles/input",
-            "version": "v2.3.3",
+            "version": "v2.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/stubbles/stubbles-input.git",
-                "reference": "d5bb1346a6a854bd68b3dea106bba12a74331cab"
+                "reference": "268bf704896b65802bb9743c19381e926c989419"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/stubbles/stubbles-input/zipball/d5bb1346a6a854bd68b3dea106bba12a74331cab",
-                "reference": "d5bb1346a6a854bd68b3dea106bba12a74331cab",
+                "url": "https://api.github.com/repos/stubbles/stubbles-input/zipball/268bf704896b65802bb9743c19381e926c989419",
+                "reference": "268bf704896b65802bb9743c19381e926c989419",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.0",
-                "stubbles/core": "~3.1"
+                "stubbles/core": "~3.4"
             },
             "require-dev": {
                 "mikey179/vfsstream": "~1.2",
@@ -75,7 +75,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.3.x-dev"
+                    "dev-master": "2.4.x-dev"
                 }
             },
             "autoload": {
@@ -90,7 +90,7 @@
             ],
             "description": "Stubbles Input enables to handle input data via validation and filtering.",
             "homepage": "http://stubbles.net/",
-            "time": "2013-12-02 16:59:09"
+            "time": "2014-01-21 21:32:18"
         }
     ],
     "packages-dev": [
@@ -340,16 +340,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "3.7.28",
+            "version": "3.7.29",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "3b97c8492bcafbabe6b6fbd2ab35f2f04d932a8d"
+                "reference": "faeb2d9f15dc83830d2db5e4c67acf1d68c9b5ac"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/3b97c8492bcafbabe6b6fbd2ab35f2f04d932a8d",
-                "reference": "3b97c8492bcafbabe6b6fbd2ab35f2f04d932a8d",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/faeb2d9f15dc83830d2db5e4c67acf1d68c9b5ac",
+                "reference": "faeb2d9f15dc83830d2db5e4c67acf1d68c9b5ac",
                 "shasum": ""
             },
             "require": {
@@ -410,7 +410,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2013-10-17 07:27:40"
+            "time": "2014-01-15 06:46:38"
         },
         {
             "name": "phpunit/phpunit-mock-objects",
