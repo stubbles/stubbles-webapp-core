@@ -1,4 +1,4 @@
-3.1.0, (2014-01-??)
+3.1.0, (2014-01-21)
 -------------------
 
    * implemented #35: enable annotations on processor classes to reduce route configuration:
@@ -16,6 +16,7 @@
    * uncatched exceptions from interceptors and processors are now logged via `net\stubbles\lang\errorhandler\ExceptionLogger`
    * `net\stubbles\webapp\Webapp::$request` can now be accessed by subclasses
    * added possibility to overwrite decision about ssl switch via `net\stubbles\webapp\Webapp::switchToHttps()`
+   * upgraded stubbles/core to ~3.4
 
 
 3.0.0, (2013-11-01)

@@ -6,8 +6,8 @@
     "description": "Base classes for Stubbles based web applications.",
     "require": {
         "php": ">=5.3.0",
-        "stubbles/core": "~3.3",
-        "stubbles/input": "~2.3"
+        "stubbles/core": "~3.4",
+        "stubbles/input": "~2.4"
     },
     "suggest": {
         "stubbles/xml": "~2.1"
