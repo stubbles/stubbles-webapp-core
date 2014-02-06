@@ -10,7 +10,6 @@
 namespace net\stubbles\webapp\response;
 use net\stubbles\input\web\WebRequest;
 use net\stubbles\ioc\Injector;
-use net\stubbles\webapp\ProcessableRoute;
 /**
  * Negotiates correct response for request.
  *
@@ -90,7 +89,7 @@ class ResponseNegotiator
             return $this->response->notAcceptable($supportedMimeTypes->asArray());
         }
 
-        $formatter = $this->createFormatter($mimeType);
+        $formatter = $this->createFormatter($mimeType, $supportedMimeTypes);
         if (null === $formatter) {
             return $this->response->internalServerError('No formatter defined for negotiated content type ' . $mimeType);
         }
@@ -104,10 +103,10 @@ class ResponseNegotiator
      * @param   string  $mimeType
      * @return  format\Formatter
      */
-    private function createFormatter($mimeType)
+    private function createFormatter($mimeType, SupportedMimeTypes $supportedMimeTypes)
     {
-        if (null === $mimeType) {
-            return new format\VoidFormatter();
+        if ($supportedMimeTypes->hasFormatter($mimeType)) {
+            return $this->injector->getInstance($supportedMimeTypes->getFormatter($mimeType));
         }
 
         if ($this->injector->hasBinding('net\stubbles\webapp\response\format\Formatter', $mimeType)) {

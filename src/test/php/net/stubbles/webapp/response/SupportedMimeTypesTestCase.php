@@ -54,7 +54,9 @@ class SupportedMimeTypesTestCase extends \PHPUnit_Framework_TestCase
      */
     private function createInstance()
     {
-        return new SupportedMimeTypes(array('application/xml', 'application/json'));
+        return new SupportedMimeTypes(array('application/xml', 'application/json'),
+                                      array('application/xml' => 'example\SpecialFormatter')
+        );
     }
 
     /**
@@ -108,6 +110,44 @@ class SupportedMimeTypesTestCase extends \PHPUnit_Framework_TestCase
         $this->assertEquals(array('application/xml', 'application/json'),
                             $this->createInstance()
                                  ->asArray()
+        );
+    }
+
+    /**
+     * @test
+     * @since  3.2.0
+     */
+    public function hasNoSpecialFormatterWhenNonDefinedForMimeType()
+    {
+        $this->assertFalse($this->createInstance()->hasFormatter('application/json'));
+    }
+
+    /**
+     * @test
+     * @since  3.2.0
+     */
+    public function specialFormatterClassIsNullWhenNonDefinedForMimeType()
+    {
+        $this->assertNull($this->createInstance()->getFormatter('application/json'));
+    }
+
+    /**
+     * @test
+     * @since  3.2.0
+     */
+    public function hasSpecialFormatterWhenDefinedForMimeType()
+    {
+        $this->assertTrue($this->createInstance()->hasFormatter('application/xml'));
+    }
+
+    /**
+     * @test
+     * @since  3.2.0
+     */
+    public function specialFormatterClassIsEqualsDefinedForMimeType()
+    {
+        $this->assertEquals('example\SpecialFormatter',
+                            $this->createInstance()->getFormatter('application/xml')
         );
     }
 }
