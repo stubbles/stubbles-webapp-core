@@ -453,7 +453,7 @@ class RouteTestCase extends \PHPUnit_Framework_TestCase
      * @test
      * @since  3.1.0
      */
-    public function rreturnsRoleWhenCallbackClassAnnotatedWithRequiresRole()
+    public function returnsRoleWhenCallbackClassAnnotatedWithRequiresRole()
     {
         $route = new Route('/hello/{name}',
                            'net\stubbles\webapp\OtherAnnotatedProcessor',
@@ -468,7 +468,9 @@ class RouteTestCase extends \PHPUnit_Framework_TestCase
     public function supportNoMimeTypeByDefault()
     {
         $this->assertEquals(array(),
-                            $this->createRoute()->getSupportedMimeTypes()
+                            $this->createRoute()
+                                 ->getSupportedMimeTypes()
+                                 ->asArray()
         );
     }
 
@@ -482,6 +484,34 @@ class RouteTestCase extends \PHPUnit_Framework_TestCase
                                  ->supportsMimeType('application/json')
                                  ->supportsMimeType('application/xml')
                                  ->getSupportedMimeTypes()
+                                 ->asArray()
+        );
+    }
+
+    /**
+     * @test
+     * @since  3.2.0
+     */
+    public function supportedMimeTypesContainSpecialFormatter()
+    {
+        $this->assertTrue($this->createRoute()
+                               ->supportsMimeType('foo/bar', 'example\FooBarFormatter')
+                               ->getSupportedMimeTypes()
+                               ->hasFormatter('foo/bar')
+        );
+    }
+
+    /**
+     * @test
+     * @since  3.2.0
+     */
+    public function supportedMimeTypesContainSpecialFormatterClass()
+    {
+        $this->assertEquals('example\FooBarFormatter',
+                            $this->createRoute()
+                                 ->supportsMimeType('foo/bar', 'example\FooBarFormatter')
+                                 ->getSupportedMimeTypes()
+                                 ->getFormatter('foo/bar')
         );
     }
 
@@ -491,7 +521,7 @@ class RouteTestCase extends \PHPUnit_Framework_TestCase
      */
     public function contentNegotationIsEnabledByDefault()
     {
-        $this->assertFalse($this->createRoute()->isContentNegotationDisabled());
+        $this->assertFalse($this->createRoute()->getSupportedMimeTypes()->isContentNegotationDisabled());
     }
 
     /**
@@ -502,6 +532,7 @@ class RouteTestCase extends \PHPUnit_Framework_TestCase
     {
         $this->assertTrue($this->createRoute()
                                ->disableContentNegotiation()
+                               ->getSupportedMimeTypes()
                                ->isContentNegotationDisabled()
         );
     }

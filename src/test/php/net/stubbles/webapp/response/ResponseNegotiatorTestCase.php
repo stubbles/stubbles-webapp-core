@@ -204,7 +204,27 @@ class ResponseNegotiatorTestCase extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('net\stubbles\webapp\response\FormattingResponse',
                                 $this->responseNegotiator->negotiateMimeType($this->mockRequest,
                                                                              new SupportedMimeTypes(array('application/json', 'application/xml'))
-                          )
+                                )
+        );
+    }
+
+    /**
+     * @test
+     * @since  3.2.0
+     */
+    public function createsSpecializedFormatterForNegotiatedMimeTypeAndReturnsFormattingResponse()
+    {
+        $this->mockAcceptHeader('application/xml');
+        $this->mockInjector->expects($this->once())
+                           ->method('getInstance')
+                           ->with($this->equalTo('example\SpecialFormatter'))
+                           ->will($this->returnValue($this->getMock('net\stubbles\webapp\response\format\Formatter')));
+        $this->assertInstanceOf('net\stubbles\webapp\response\FormattingResponse',
+                                $this->responseNegotiator->negotiateMimeType($this->mockRequest,
+                                                                             new SupportedMimeTypes(array('application/json', 'application/xml'),
+                                                                                                    array('application/xml' => 'example\SpecialFormatter')
+                                                                             )
+                                )
         );
     }
 }

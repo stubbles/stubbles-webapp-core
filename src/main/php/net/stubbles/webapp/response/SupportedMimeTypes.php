@@ -28,15 +28,23 @@ class SupportedMimeTypes
      * @type  bool
      */
     private $disableContentNegotation = false;
+    /**
+     * map of formatters
+     *
+     * @type  array
+     */
+    private $formatter;
 
     /**
      * constructor
      *
      * @param  string[]  $mimeTypes
+     * @param  array     $formatter
      */
-    public function __construct(array $mimeTypes)
+    public function __construct(array $mimeTypes, array $formatter = array())
     {
         $this->mimeTypes = $mimeTypes;
+        $this->formatter = $formatter;
     }
 
     /**
@@ -79,6 +87,34 @@ class SupportedMimeTypes
         }
 
         return $acceptedMimeTypes->findMatchWithGreatestPriority($this->mimeTypes);
+    }
+
+    /**
+     * checks if a special formatter was defined for given mime type
+     *
+     * @param   string  $mimeType
+     * @return  bool
+     * @since   3.2.0
+     */
+    public function hasFormatter($mimeType)
+    {
+        return isset($this->formatter[$mimeType]);
+    }
+
+    /**
+     * returns special formatter was defined for given mime type or null if none defined
+     *
+     * @param   string  $mimeType
+     * @return  string
+     * @since   3.2.0
+     */
+    public function getFormatter($mimeType)
+    {
+        if ($this->hasFormatter($mimeType)) {
+            return $this->formatter[$mimeType];
+        }
+
+        return null;
     }
 
     /**

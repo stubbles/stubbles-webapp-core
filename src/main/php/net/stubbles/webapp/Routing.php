@@ -556,14 +556,10 @@ class Routing implements RoutingConfigurator
             return SupportedMimeTypes::createWithDisabledContentNegotation();
         }
 
-        if (null !== $routeConfig && $routeConfig->isContentNegotationDisabled()) {
-            return SupportedMimeTypes::createWithDisabledContentNegotation();
+        if (null !== $routeConfig) {
+            return $routeConfig->getSupportedMimeTypes($this->mimeTypes);
         }
 
-        $routeMimeTypes = (($routeConfig !== null) ? ($routeConfig->getSupportedMimeTypes()) : (array()));
-        return new SupportedMimeTypes(array_merge($routeMimeTypes,
-                                                  $this->mimeTypes
-                                      )
-        );
+        return new SupportedMimeTypes($this->mimeTypes);
     }
 }

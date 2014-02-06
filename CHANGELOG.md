@@ -1,3 +1,9 @@
+3.2.0, (2014-02-06)
+-------------------
+
+   * added possibility to have route specific formatters for mime types
+
+
 3.1.0, (2014-01-21)
 -------------------
 

@@ -10,6 +10,7 @@
 namespace net\stubbles\webapp;
 use net\stubbles\lang;
 use net\stubbles\lang\exception\IllegalArgumentException;
+use net\stubbles\webapp\response\SupportedMimeTypes;
 /**
  * Represents information about a route that can be called.
  *
@@ -40,25 +41,25 @@ class Route implements ConfigurableRoute
      *
      * @type  string[]|Closure[]
      */
-    private $preInterceptors  = array();
+    private $preInterceptors          = array();
     /**
      * list of post interceptors which should be applied to this route
      *
      * @type  string[]|Closure[]
      */
-    private $postInterceptors = array();
+    private $postInterceptors         = array();
     /**
      * whether route requires https
      *
      * @type  bool
      */
-    private $requiresHttps    = false;
+    private $requiresHttps            = false;
     /**
      * switch whether login is required for this route
      *
      * @type  bool
      */
-    private $requiresLogin    = false;
+    private $requiresLogin            = false;
     /**
      * required role to access the route
      *
@@ -70,13 +71,19 @@ class Route implements ConfigurableRoute
      *
      * @type  string[]
      */
-    private $mimeTypes        = array();
+    private $mimeTypes                = array();
     /**
      * whether content negotation is disabled or not
      *
      * @type  bool
      */
     private $disableContentNegotation = false;
+    /**
+     * map of additional formatters for this route
+     *
+     * @type  array
+     */
+    private $formatter                = array();
 
     /**
      * constructor
@@ -341,22 +348,36 @@ class Route implements ConfigurableRoute
      * add a mime type which this route supports
      *
      * @param   string  $mimeType
+     * @param   string  $formatterClass  optional  special formatter class to be used for given mime type on this route
      * @return  Route
      */
-    public function supportsMimeType($mimeType)
+    public function supportsMimeType($mimeType, $formatterClass = null)
     {
         $this->mimeTypes[] = $mimeType;
+        if (null !== $formatterClass) {
+            $this->formatter[$mimeType] = $formatterClass;
+        }
+
         return $this;
     }
 
     /**
      * returns list of mime types supported by this route
      *
-     * @return  string[]
+     * @param   string[]  $globalMimeTypes  list of globally supported mime types
+     * @return  SupportedMimeTypes
      */
-    public function getSupportedMimeTypes()
+    public function getSupportedMimeTypes(array $globalMimeTypes = array())
     {
-        return $this->mimeTypes;
+        if ($this->disableContentNegotation) {
+            return SupportedMimeTypes::createWithDisabledContentNegotation();
+        }
+
+        return new SupportedMimeTypes(array_merge($this->mimeTypes,
+                                                  $globalMimeTypes
+                                      ),
+                                      $this->formatter
+        );
     }
 
     /**
@@ -369,16 +390,5 @@ class Route implements ConfigurableRoute
     {
         $this->disableContentNegotation = true;
         return $this;
-    }
-
-    /**
-     * checks whether content negotation is disabled
-     *
-     * @return  bool
-     * @since   2.1.1
-     */
-    public function isContentNegotationDisabled()
-    {
-        return $this->disableContentNegotation;
     }
 }
