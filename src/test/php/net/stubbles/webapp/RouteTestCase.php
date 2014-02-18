@@ -78,7 +78,7 @@ class RouteTestCase extends \PHPUnit_Framework_TestCase
                          function(WebRequest $request, Response $response, UriPath $uriPath)
                          {
                              $response->setStatusCode(418)
-                                      ->write('Hello ' . $uriPath->getArgument('name'));
+                                      ->write('Hello ' . $uriPath->readArgument('name')->asString());
                              $request->cancel();
                          },
                          $method

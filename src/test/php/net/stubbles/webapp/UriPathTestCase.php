@@ -57,6 +57,7 @@ class UriPathTestCase extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
+     * @deprecated  will be removed with 4.0.0
      */
     public function returnsGivenArgument()
     {
@@ -65,6 +66,7 @@ class UriPathTestCase extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
+     * @deprecated  will be removed with 4.0.0
      */
     public function returnsNullForNonGivenArgument()
     {
@@ -73,10 +75,41 @@ class UriPathTestCase extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
+     * @deprecated  will be removed with 4.0.0
      */
     public function returnsDefaultForGivenArgument()
     {
         $this->assertEquals(303, $this->uriPath->getArgument('id', 303));
+    }
+
+    /**
+     * @test
+     * @since  3.3.0
+     * @group  issue_41
+     */
+    public function readsGivenArgument()
+    {
+        $this->assertEquals('world', $this->uriPath->readArgument('name')->asString());
+    }
+
+    /**
+     * @test
+     * @since  3.3.0
+     * @group  issue_41
+     */
+    public function readsNullForNonGivenArgument()
+    {
+        $this->assertNull($this->uriPath->readArgument('id')->unsecure());
+    }
+
+    /**
+     * @test
+     * @since  3.3.0
+     * @group  issue_41
+     */
+    public function readsDefaultForGivenArgument()
+    {
+        $this->assertEquals(303, $this->uriPath->readArgument('id', 303)->asInt());
     }
 
     /**

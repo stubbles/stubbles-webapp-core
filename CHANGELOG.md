@@ -1,3 +1,11 @@
+3.3.0, (2014-02-18)
+-------------------
+
+   * implemented #41 `UriPath::getArgument()` should return `ValueReader`
+      * deprecated `net\stubbles\webapp\UriPath::getArgument()`, will be removed with 4.0.0
+      * added `net\stubbles\webapp\UriPath::readArgument()` which returns a `net\stubbles\input\ValueReader`
+
+
 3.2.0, (2014-02-06)
 -------------------
 
