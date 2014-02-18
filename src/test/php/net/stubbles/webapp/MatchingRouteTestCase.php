@@ -157,7 +157,7 @@ class MatchingRouteTestCase extends \PHPUnit_Framework_TestCase
                                                               use($returnValue)
                                                               {
                                                                   $response->setStatusCode(418)
-                                                                           ->write('Hello ' . $uriPath->getArgument('name'));
+                                                                           ->write('Hello ' . $uriPath->readArgument('name')->asString());
                                                                   if (null !== $returnValue) {
                                                                       return $returnValue;
                                                                   }
@@ -176,7 +176,7 @@ class MatchingRouteTestCase extends \PHPUnit_Framework_TestCase
     public function theCallable(WebRequest $request, Response $response, UriPath $uriPath)
     {
         $response->setStatusCode(418)
-                 ->write('Hello ' . $uriPath->getArgument('name'));
+                 ->write('Hello ' . $uriPath->readArgument('name')->asString());
     }
 
     /**
