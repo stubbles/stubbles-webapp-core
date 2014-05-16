@@ -77,11 +77,28 @@ class UriRequest
      */
     public function satisfiesPath($expectedPath)
     {
+        if (empty($expectedPath)) {
+            return true;
+        }
+
         if (preg_match('/^' . $this->createPathPattern($expectedPath) . '/', $this->uri->getPath()) >= 1) {
             return true;
         }
 
         return false;
+    }
+
+    /**
+     * checks if given method and path is satisfied by request
+     *
+     * @param   string  $method
+     * @param   string  $expectedPath
+     * @return  bool
+     * @since   3.4.0
+     */
+    public function satisfies($method, $expectedPath)
+    {
+        return $this->methodEquals($method) && $this->satisfiesPath($expectedPath);
     }
 
     /**
@@ -184,4 +201,3 @@ class UriRequest
         return (string) $this->uri;
     }
 }
-?>

@@ -305,150 +305,164 @@ class Routing implements RoutingConfigurator
     /**
      * pre intercept with given class or callable on all GET requests
      *
-     * @param   string|callable  $preInterceptor
+     * @param   string|callable|PreInterceptor  $preInterceptor  pre interceptor to add
+     * @param   string                          $path            optional  path for which pre interceptor should be executed
      * @return  RoutingConfigurator
      */
-    public function preInterceptOnGet($preInterceptor)
+    public function preInterceptOnGet($preInterceptor, $path = null)
     {
-        return $this->preIntercept($preInterceptor, 'GET');
+        return $this->preIntercept($preInterceptor, $path, 'GET');
     }
 
     /**
      * pre intercept with given class or callable on all HEAD requests
      *
-     * @param   string|callable  $preInterceptor
+     * @param   string|callable|PreInterceptor  $preInterceptor  pre interceptor to add
+     * @param   string                          $path            optional  path for which pre interceptor should be executed
      * @return  RoutingConfigurator
      */
-    public function preInterceptOnHead($preInterceptor)
+    public function preInterceptOnHead($preInterceptor, $path = null)
     {
-        return $this->preIntercept($preInterceptor, 'HEAD');
+        return $this->preIntercept($preInterceptor, $path, 'HEAD');
     }
 
     /**
      * pre intercept with given class or callable on all POST requests
      *
-     * @param   string|callable  $preInterceptor
+     * @param   string|callable|PreInterceptor  $preInterceptor  pre interceptor to add
+     * @param   string                          $path            optional  path for which pre interceptor should be executed
      * @return  RoutingConfigurator
      */
-    public function preInterceptOnPost($preInterceptor)
+    public function preInterceptOnPost($preInterceptor, $path = null)
     {
-        return $this->preIntercept($preInterceptor, 'POST');
+        return $this->preIntercept($preInterceptor, $path, 'POST');
     }
 
     /**
      * pre intercept with given class or callable on all PUT requests
      *
-     * @param   string|callable  $preInterceptor
+     * @param   string|callable|PreInterceptor  $preInterceptor  pre interceptor to add
+     * @param   string                          $path            optional  path for which pre interceptor should be executed
      * @return  RoutingConfigurator
      */
-    public function preInterceptOnPut($preInterceptor)
+    public function preInterceptOnPut($preInterceptor, $path = null)
     {
-        return $this->preIntercept($preInterceptor, 'PUT');
+        return $this->preIntercept($preInterceptor, $path, 'PUT');
     }
 
     /**
      * pre intercept with given class or callable on all DELETE requests
      *
-     * @param   string|callable  $preInterceptor
+     * @param   string|callable|PreInterceptor  $preInterceptor  pre interceptor to add
+     * @param   string                          $path            optional  path for which pre interceptor should be executed
      * @return  RoutingConfigurator
      */
-    public function preInterceptOnDelete($preInterceptor)
+    public function preInterceptOnDelete($preInterceptor, $path = null)
     {
-        return $this->preIntercept($preInterceptor, 'DELETE');
+        return $this->preIntercept($preInterceptor, $path, 'DELETE');
     }
 
     /**
      * pre intercept with given class or callable on all requests
      *
      * @param   string|callable|PreInterceptor  $preInterceptor  pre interceptor to add
+     * @param   string                          $path            optional  path for which pre interceptor should be executed
      * @param   string                          $requestMethod   request method for which interceptor should be executed
      * @return  RoutingConfigurator
      * @throws  IllegalArgumentException
      */
-    public function preIntercept($preInterceptor, $requestMethod = null)
+    public function preIntercept($preInterceptor, $path = null, $requestMethod = null)
     {
         if (!is_callable($preInterceptor) && !($preInterceptor instanceof PreInterceptor) && !class_exists($preInterceptor)) {
             throw new IllegalArgumentException('Given pre interceptor must be a callable, an instance of net\stubbles\webapp\interceptor\PreInterceptor or a class name of an existing pre interceptor class');
         }
 
-        $this->preInterceptors[] = array('interceptor'   => $preInterceptor,
-                                         'requestMethod' => $requestMethod
-                                   );
+        $this->preInterceptors[] = ['interceptor'   => $preInterceptor,
+                                    'requestMethod' => $requestMethod,
+                                    'path'          => $path
+                                   ];
         return $this;
     }
 
     /**
      * post intercept with given class or callable on all GET requests
      *
-     * @param   string|callable  $postInterceptor
+     * @param   string|callable|PostInterceptor  $postInterceptor  post interceptor to add
+     * @param   string                           $path             optional  path for which post interceptor should be executed
      * @return  RoutingConfigurator
      */
-    public function postInterceptOnGet($postInterceptor)
+    public function postInterceptOnGet($postInterceptor, $path = null)
     {
-        return $this->postIntercept($postInterceptor, 'GET');
+        return $this->postIntercept($postInterceptor, $path, 'GET');
     }
 
     /**
      * post intercept with given class or callable on all HEAD requests
      *
-     * @param   string|callable  $postInterceptor
+     * @param   string|callable|PostInterceptor  $postInterceptor  post interceptor to add
+     * @param   string                           $path             optional  path for which post interceptor should be executed
      * @return  RoutingConfigurator
      */
-    public function postInterceptOnHead($postInterceptor)
+    public function postInterceptOnHead($postInterceptor, $path = null)
     {
-        return $this->postIntercept($postInterceptor, 'HEAD');
+        return $this->postIntercept($postInterceptor, $path, 'HEAD');
     }
 
     /**
      * post intercept with given class or callable on all POST requests
      *
-     * @param   string|callable  $postInterceptor
+     * @param   string|callable|PostInterceptor  $postInterceptor  post interceptor to add
+     * @param   string                           $path             optional  path for which post interceptor should be executed
      * @return  RoutingConfigurator
      */
-    public function postInterceptOnPost($postInterceptor)
+    public function postInterceptOnPost($postInterceptor, $path = null)
     {
-        return $this->postIntercept($postInterceptor, 'POST');
+        return $this->postIntercept($postInterceptor, $path, 'POST');
     }
 
     /**
      * post intercept with given class or callable on all PUT requests
      *
-     * @param   string|callable  $postInterceptor
+     * @param   string|callable|PostInterceptor  $postInterceptor  post interceptor to add
+     * @param   string                           $path             optional  path for which post interceptor should be executed
      * @return  RoutingConfigurator
      */
-    public function postInterceptOnPut($postInterceptor)
+    public function postInterceptOnPut($postInterceptor, $path = null)
     {
-        return $this->postIntercept($postInterceptor, 'PUT');
+        return $this->postIntercept($postInterceptor, $path, 'PUT');
     }
 
     /**
      * post intercept with given class or callable on all DELETE requests
      *
-     * @param   string|callable  $postInterceptor
+     * @param   string|callable|PostInterceptor  $postInterceptor  post interceptor to add
+     * @param   string                           $path             optional  path for which post interceptor should be executed
      * @return  RoutingConfigurator
      */
-    public function postInterceptOnDelete($postInterceptor)
+    public function postInterceptOnDelete($postInterceptor, $path = null)
     {
-        return $this->postIntercept($postInterceptor, 'DELETE');
+        return $this->postIntercept($postInterceptor, $path, 'DELETE');
     }
 
     /**
      * post intercept with given class or callable on all requests
      *
      * @param   string|callable|PostInterceptor  $postInterceptor  post interceptor to add
-     * @param   string                           $requestMethod    request method for which interceptor should be executed
+     * @param   string                           $path             optional  path for which post interceptor should be executed
+     * @param   string                           $requestMethod    optional  request method for which interceptor should be executed
      * @return  RoutingConfigurator
      * @throws  IllegalArgumentException
      */
-    public function postIntercept($postInterceptor, $requestMethod = null)
+    public function postIntercept($postInterceptor, $path = null, $requestMethod = null)
     {
         if (!is_callable($postInterceptor) && !($postInterceptor instanceof PostInterceptor) && !class_exists($postInterceptor)) {
             throw new IllegalArgumentException('Given pre interceptor must be a callable, an instance of net\stubbles\webapp\interceptor\PostInterceptor or a class name of an existing post interceptor class');
         }
 
-        $this->postInterceptors[] = array('interceptor'   => $postInterceptor,
-                                          'requestMethod' => $requestMethod
-                                   );
+        $this->postInterceptors[] = ['interceptor'   => $postInterceptor,
+                                     'requestMethod' => $requestMethod,
+                                     'path'          => $path
+                                    ];
         return $this;
     }
 
@@ -510,9 +524,9 @@ class Routing implements RoutingConfigurator
      */
     private function getApplicable(UriRequest $calledUri, array $interceptors)
     {
-        $applicable = array();
+        $applicable = [];
         foreach ($interceptors as  $interceptor) {
-            if ($calledUri->methodEquals($interceptor['requestMethod'])) {
+            if ($calledUri->satisfies($interceptor['requestMethod'], $interceptor['path'])) {
                 $applicable[] = $interceptor['interceptor'];
             }
         }
