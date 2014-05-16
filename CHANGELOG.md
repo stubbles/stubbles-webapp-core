@@ -1,3 +1,11 @@
+3.4.0, (2014-05-16)
+-------------------
+
+   * now requires PHP 5.4
+   * added possibility to restrict global pre and post interceptors to certain pathes
+   * added `net\stubbles\webapp\interceptor\AddAccessControlAllowOriginHeader`
+
+
 3.3.0, (2014-02-18)
 -------------------
 

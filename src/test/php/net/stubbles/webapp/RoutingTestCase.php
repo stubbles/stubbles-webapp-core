@@ -126,7 +126,7 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
      * @test
      * @since  3.0.0
      */
-    public function returnsAuthorizungRouteWhenMatchingRouteRequiresAuthButNoAuthHandlerSet()
+    public function returnsAuthorizingRouteWhenMatchingRouteRequiresAuthButNoAuthHandlerSet()
     {
         $this->routing->onGet('/hello', function() {})->withRoleOnly('admin');
         $this->assertInstanceOf('net\stubbles\webapp\auth\AuthorizingRoute',
@@ -207,6 +207,23 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
+     * @since  3.4.0
+     */
+    public function hasGlobalPreInterceptorsWithMatchingPath()
+    {
+        $preInterceptor = function() {};
+        $route = $this->createProcessableRoute($this->routing->onGet('/hello', function() {}),
+                                               ['array_map']
+        );
+        $this->assertEquals($route,
+                            $this->routing->preIntercept('array_map', '/hello')
+                                          ->preInterceptOnGet($preInterceptor, '/world')
+                                          ->findRoute($this->calledUri)
+        );
+    }
+
+    /**
+     * @test
      */
     public function hasGlobalPreInterceptorsEvenWhenRouteSelected()
     {
@@ -278,6 +295,24 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
         $this->assertEquals($route,
                             $this->routing->postIntercept('array_map')
                                           ->postInterceptOnGet($postInterceptor)
+                                          ->findRoute($this->calledUri)
+        );
+    }
+
+    /**
+     * @test
+     * @since  3.4.0
+     */
+    public function hasGlobalPostInterceptorsWithMatchingPath()
+    {
+        $postInterceptor = function() {};
+        $route = $this->createProcessableRoute($this->routing->onGet('/hello', function() {}),
+                                               [],
+                                               ['array_map']
+                 );
+        $this->assertEquals($route,
+                            $this->routing->postIntercept('array_map', '/hello')
+                                          ->postInterceptOnGet($postInterceptor, '/world')
                                           ->findRoute($this->calledUri)
         );
     }

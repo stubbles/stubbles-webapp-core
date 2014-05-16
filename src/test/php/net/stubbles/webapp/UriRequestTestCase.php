@@ -104,12 +104,15 @@ class UriRequestTestCase extends \PHPUnit_Framework_TestCase
      */
     public function provideSatisfiedPathPattern()
     {
-        return array(array('/hello/mikey', '/hello/{name}$'),
-                     array('/hello/mikey/foo', '/hello/{name}'),
-                     array('/hello', '/hello'),
-                     array('/hello/world303', '/hello/[a-z0-9]+'),
-                     array('/', '/')
-        );
+        return [
+            ['/hello/mikey', '/hello/{name}$'],
+            ['/hello/mikey/foo', '/hello/{name}'],
+            ['/hello', '/hello'],
+            ['/hello/world303', '/hello/[a-z0-9]+'],
+            ['/', '/'],
+            ['/hello', ''],
+            ['/hello', null]
+        ];
     }
 
     /**
@@ -248,4 +251,3 @@ class UriRequestTestCase extends \PHPUnit_Framework_TestCase
         $this->assertEquals('http://example.net/foo/bar', (string) $this->uriRequest);
     }
 }
-?>

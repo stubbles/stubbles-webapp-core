@@ -164,4 +164,15 @@ abstract class WebApp extends App
     {
         return IoBindingModule::createWithoutSession();
     }
+
+    /**
+     * returns post interceptor class which adds Access-Control-Allow-Origin header to the response
+     *
+     * @return  string
+     * @since   3.4.0
+     */
+    protected static function addAccessControlAllowOriginHeaderClass()
+    {
+        return 'net\stubbles\webapp\interceptor\AddAccessControlAllowOriginHeader';
+    }
 }
