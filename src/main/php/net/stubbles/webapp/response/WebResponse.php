@@ -189,7 +189,7 @@ class WebResponse implements Response
      */
     public function redirect($uri, $statusCode = 302)
     {
-        $this->addHeader('Location', (($uri instanceof HttpUri) ? ($uri->asStringWithNonDefaultPort()) : ($uri)));
+        $this->headers->location($uri);
         $this->setStatusCode($statusCode);
         return $this;
     }
@@ -230,8 +230,8 @@ class WebResponse implements Response
      */
     public function methodNotAllowed($requestMethod, array $allowedMethods)
     {
-        $this->setStatusCode(405)
-             ->addHeader('Allow', join(', ', $allowedMethods));
+        $this->setStatusCode(405);
+        $this->headers->allow($allowedMethods);
         $this->fixed = true;
         return $this;
     }
@@ -246,10 +246,7 @@ class WebResponse implements Response
     public function notAcceptable(array $supportedMimeTypes = array())
     {
         $this->setStatusCode(406);
-        if (count($supportedMimeTypes) > 0) {
-            $this->addHeader('X-Acceptable', join(', ', $supportedMimeTypes));
-        }
-
+        $this->headers->acceptable($supportedMimeTypes);
         $this->fixed = true;
         return $this;
     }

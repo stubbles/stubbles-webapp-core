@@ -8,6 +8,7 @@
  * @package  net\stubbles\webapp
  */
 namespace net\stubbles\webapp\response;
+use net\stubbles\peer\http\HttpUri;
 /**
  * List of response headers.
  *
@@ -32,6 +33,43 @@ class Headers implements \IteratorAggregate
     public function add($name, $value)
     {
         $this->headers[$name] = $value;
+        return $this;
+    }
+
+    /**
+     * adds location header with given uri
+     *
+     * @param   string|HttpUri  $uri
+     * @return  Headers
+     */
+    public function location($uri)
+    {
+        return $this->add('Location', (($uri instanceof HttpUri) ? ($uri->asStringWithNonDefaultPort()) : ($uri)));
+    }
+
+    /**
+     * adds allow header with list of allowed methods
+     *
+     * @param   string[]  $allowedMethods
+     * @return  Headers
+     */
+    public function allow(array $allowedMethods)
+    {
+        return $this->add('Allow', join(', ', $allowedMethods));
+    }
+
+    /**
+     * adds non-standard acceptable header with list of supported mime types
+     *
+     * @param   string[]  $supportedMimeTypes
+     * @return  Headers
+     */
+    public function acceptable(array $supportedMimeTypes)
+    {
+        if (count($supportedMimeTypes) > 0) {
+            $this->add('X-Acceptable', join(', ', $supportedMimeTypes));
+        }
+
         return $this;
     }
 
