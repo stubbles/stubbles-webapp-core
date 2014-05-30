@@ -46,15 +46,15 @@ class WebResponse implements Response
     /**
      * list of headers for this response
      *
-     * @type  array
+     * @type  Headers
      */
-    private $headers      = array();
+    private $headers;
     /**
      * list of cookies for this response
      *
      * @type  Cookie[]
      */
-    private $cookies      = array();
+    private $cookies      = [];
     /**
      * data to send as body of response
      *
@@ -78,6 +78,7 @@ class WebResponse implements Response
     {
         $this->version = $version;
         $this->sapi    = $sapi;
+        $this->headers = new Headers();
     }
 
     /**
@@ -88,8 +89,8 @@ class WebResponse implements Response
     public function clear()
     {
         $this->setStatusCode(200);
-        $this->headers = array();
-        $this->cookies = array();
+        $this->headers = new Headers();
+        $this->cookies = [];
         $this->body    = null;
         $this->fixed   = false;
         return $this;
@@ -120,7 +121,7 @@ class WebResponse implements Response
      */
     public function addHeader($name, $value)
     {
-        $this->headers[$name] = $value;
+        $this->headers->add($name, $value);
         return $this;
     }
 
@@ -353,4 +354,3 @@ class WebResponse implements Response
         flush();
     }
 }
-?>
