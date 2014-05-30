@@ -74,6 +74,17 @@ class Headers implements \IteratorAggregate
     }
 
     /**
+     * enforce a download and suggest given file name
+     *
+     * @param   string  $filename
+     * @return  Headers
+     */
+    public function forceDownload($filename)
+    {
+        return $this->add('Content-Disposition', 'attachment; filename=' . $filename);
+    }
+
+    /**
      * checks if header with given name is present
      *
      * @param   string  $name

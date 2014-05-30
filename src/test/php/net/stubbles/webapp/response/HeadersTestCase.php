@@ -113,6 +113,18 @@ class HeadersTestCase extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function forceDownloadAddesContentDispositionHeaderWithGivenFilename()
+    {
+        $this->headers->forceDownload('example.csv');
+        foreach ($this->headers as $name => $value) {
+            $this->assertEquals('Content-Disposition', $name);
+            $this->assertEquals('attachment; filename=example.csv', $value);
+        }
+    }
+
+    /**
+     * @test
+     */
     public function isIterable()
     {
         $this->headers->add('X-Foo', 'bar');
