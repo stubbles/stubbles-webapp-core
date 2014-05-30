@@ -144,6 +144,19 @@ class WebResponseTestCase extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
+     * @since  4.0.0
+     */
+    public function headersReturnsHeaderList()
+    {
+        $this->assertTrue(
+                $this->response->addHeader('X-Foo', 'bar')
+                               ->headers()
+                               ->contain('X-Foo')
+        );
+    }
+
+    /**
+     * @test
      */
     public function clearingResponseRemovesAllHeaders()
     {

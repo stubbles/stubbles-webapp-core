@@ -44,6 +44,14 @@ interface Response
     public function addHeader($name, $value);
 
     /**
+     * returns list of headers
+     *
+     * @return  Headers
+     * @since   4.0.0
+     */
+    public function headers();
+
+    /**
      * add a cookie to the response
      *
      * @param   Cookie  $cookie  the cookie to set

@@ -120,6 +120,17 @@ class WebResponse implements Response
     }
 
     /**
+     * returns list of headers
+     *
+     * @return  Headers
+     * @since   4.0.0
+     */
+    public function headers()
+    {
+        return $this->headers;
+    }
+
+    /**
      * add a cookie to the response
      *
      * @param   Cookie  $cookie  the cookie to set

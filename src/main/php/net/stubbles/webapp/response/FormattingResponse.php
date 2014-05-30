@@ -89,6 +89,17 @@ class FormattingResponse implements Response
     }
 
     /**
+     * returns list of headers
+     *
+     * @return  Headers
+     * @since   4.0.0
+     */
+    public function headers()
+    {
+        return $this->response->headers();
+    }
+
+    /**
      * add a cookie to the response
      *
      * @param   Cookie  $cookie  the cookie to set

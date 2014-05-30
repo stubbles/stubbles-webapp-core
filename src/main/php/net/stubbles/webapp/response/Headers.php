@@ -12,7 +12,7 @@ use net\stubbles\peer\http\HttpUri;
 /**
  * List of response headers.
  *
- * @since  3.5.0
+ * @since  4.0.0
  */
 class Headers implements \IteratorAggregate
 {

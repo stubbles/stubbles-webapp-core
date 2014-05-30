@@ -13,7 +13,7 @@ use net\stubbles\peer\http\HttpUri;
  * Tests for net\stubbles\webapp\response\Headers.
  *
  * @group  response
- * @sicne  3.5.0
+ * @sicne  4.0.0
  */
 class HeadersTestCase extends \PHPUnit_Framework_TestCase
 {

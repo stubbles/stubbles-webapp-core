@@ -86,6 +86,22 @@ class FormattingResponseTestCase extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
+     * @since  4.0.0
+     */
+    public function headersReturnsHeaderList()
+    {
+        $headers = new Headers();
+        $this->decoratedResponse->expects($this->once())
+                                ->method('headers')
+                                ->will($this->returnValue($headers));
+        $this->assertSame(
+                $headers,
+                $this->formattingResponse->headers()
+        );
+    }
+
+    /**
+     * @test
      */
     public function addsCookieOnDecoratedResponse()
     {
