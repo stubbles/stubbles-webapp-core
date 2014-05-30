@@ -27,7 +27,7 @@ interface Response
      * sets the status code to be send
      *
      * This needs only to be done if another status code then the default one
-     * 200 Found should be send.
+     * 200 OK should be send.
      *
      * @param   int  $statusCode
      * @return  Response

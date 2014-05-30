@@ -36,13 +36,7 @@ class WebResponse implements Response
      *
      * @type  int
      */
-    private $statusCode   = 200;
-    /**
-     * status message to be send
-     *
-     * @type  string
-     */
-    private $reasonPhrase = 'OK';
+    private $status   = 200;
     /**
      * list of headers for this response
      *
@@ -54,7 +48,7 @@ class WebResponse implements Response
      *
      * @type  Cookie[]
      */
-    private $cookies      = [];
+    private $cookies  = [];
     /**
      * data to send as body of response
      *
@@ -66,7 +60,7 @@ class WebResponse implements Response
      *
      * @type  bool
      */
-    private $fixed        = false;
+    private $fixed    = false;
 
     /**
      * constructor
@@ -79,6 +73,7 @@ class WebResponse implements Response
         $this->version = $version;
         $this->sapi    = $sapi;
         $this->headers = new Headers();
+        $this->setStatusCode(200);
     }
 
     /**
@@ -100,15 +95,14 @@ class WebResponse implements Response
      * sets the status code to be send
      *
      * This needs only to be done if another status code then the default one
-     * 200 Found should be send.
+     * 200 OK should be send.
      *
      * @param   int  $statusCode
      * @return  Response
      */
     public function setStatusCode($statusCode)
     {
-        $this->reasonPhrase = Http::getReasonPhrase($statusCode);
-        $this->statusCode   = $statusCode;
+        $this->status = $statusCode . ' ' . Http::getReasonPhrase($statusCode);
         return $this;
     }
 
@@ -313,9 +307,9 @@ class WebResponse implements Response
     public function sendHead()
     {
         if ('cgi' === $this->sapi) {
-            $this->header('Status: ' . $this->statusCode . ' ' . $this->reasonPhrase);
+            $this->header('Status: ' . $this->status);
         } else {
-            $this->header('HTTP/' . $this->version . ' ' . $this->statusCode . ' ' . $this->reasonPhrase);
+            $this->header('HTTP/' . $this->version . ' ' . $this->status);
         }
 
         foreach ($this->headers as $name => $value) {
