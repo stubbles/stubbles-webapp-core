@@ -8,13 +8,12 @@
  * @package  net\stubbles\webapp
  */
 namespace net\stubbles\webapp\response\format;
-use net\stubbles\lang\BaseObject;
 /**
  * Formats resource to empty string.
  *
  * @since  1.1.0
  */
-class VoidFormatter extends BaseObject implements Formatter
+class VoidFormatter implements Formatter
 {
     /**
      * formats resource for response
@@ -70,4 +69,3 @@ class VoidFormatter extends BaseObject implements Formatter
         return '';
     }
 }
-?>

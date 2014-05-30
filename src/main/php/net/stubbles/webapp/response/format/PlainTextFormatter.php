@@ -8,13 +8,12 @@
  * @package  net\stubbles\webapp
  */
 namespace net\stubbles\webapp\response\format;
-use net\stubbles\lang\BaseObject;
 /**
  * Formats resource as plain text.
  *
  * @since  1.1.2
  */
-class PlainTextFormatter extends BaseObject implements Formatter
+class PlainTextFormatter implements Formatter
 {
     /**
      * formats resource for response
@@ -86,4 +85,3 @@ class PlainTextFormatter extends BaseObject implements Formatter
         return 'Internal Server Error: ' . $message;
     }
 }
-?>

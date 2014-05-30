@@ -8,13 +8,12 @@
  * @package  net\stubbles\webapp
  */
 namespace net\stubbles\webapp\response\format;
-use net\stubbles\lang\BaseObject;
 /**
  * Formats resource to JSON.
  *
  * @since  1.1.0
  */
-class JsonFormatter extends BaseObject implements Formatter
+class JsonFormatter implements Formatter
 {
     /**
      * formats resource for response
@@ -70,4 +69,3 @@ class JsonFormatter extends BaseObject implements Formatter
         return json_encode(array('error' => 'Internal Server Error: ' . $message));
     }
 }
-?>

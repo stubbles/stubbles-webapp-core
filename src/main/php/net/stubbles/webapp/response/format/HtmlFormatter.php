@@ -8,13 +8,12 @@
  * @package  net\stubbles\webapp
  */
 namespace net\stubbles\webapp\response\format;
-use net\stubbles\lang\BaseObject;
 /**
  * Formats resource as HTML.
  *
  * @since  2.0.0
  */
-class HtmlFormatter extends BaseObject implements Formatter
+class HtmlFormatter implements Formatter
 {
     /**
      * template to be used for output
@@ -178,4 +177,3 @@ class HtmlFormatter extends BaseObject implements Formatter
         );
     }
 }
-?>

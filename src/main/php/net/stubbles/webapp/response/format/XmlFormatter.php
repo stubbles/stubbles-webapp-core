@@ -8,7 +8,6 @@
  * @package  net\stubbles\webapp
  */
 namespace net\stubbles\webapp\response\format;
-use net\stubbles\lang\BaseObject;
 use net\stubbles\xml\serializer\XmlSerializerFacade;
 /**
  * Formats resource in XML.
@@ -19,7 +18,7 @@ use net\stubbles\xml\serializer\XmlSerializerFacade;
  *
  * @since  1.1.0
  */
-class XmlFormatter extends BaseObject implements Formatter
+class XmlFormatter implements Formatter
 {
     /**
      * serializer to be used
@@ -93,4 +92,3 @@ class XmlFormatter extends BaseObject implements Formatter
         return $this->xmlSerializerFacade->serializeToXml(array('error' => 'Internal Server Error: ' . $message));
     }
 }
-?>
