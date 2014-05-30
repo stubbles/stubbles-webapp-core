@@ -75,24 +75,6 @@ class UriPath
      *
      * @param   string  $name
      * @param   bool    $default
-     * @return  string
-     * @deprecated  use readArgument() instead, will be removed with 4.0.0
-     */
-    public function getArgument($name, $default = null)
-    {
-        if (isset($this->arguments[$name])) {
-            return $this->arguments[$name];
-        }
-
-        return $default;
-    }
-
-
-    /**
-     * returns argument with given name or default if not set
-     *
-     * @param   string  $name
-     * @param   bool    $default
      * @return  ValueReader
      * @since   3.3.0
      */

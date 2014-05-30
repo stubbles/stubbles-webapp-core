@@ -1,6 +1,12 @@
 4.0.0, (2014-06-??)
 -------------------
 
+### BC breaks
+
+   * removed `net\stubbles\webapp\UriPath::getArgument()`, deprecated since 3.3.0, use `net\stubbles\webapp\UriPath::readArgument()` instead
+
+### Other changes
+
    * added `net\stubbles\webapp\response\Response::headers()`
 
 

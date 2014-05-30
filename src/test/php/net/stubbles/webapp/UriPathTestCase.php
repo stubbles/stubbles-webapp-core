@@ -57,33 +57,6 @@ class UriPathTestCase extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @deprecated  will be removed with 4.0.0
-     */
-    public function returnsGivenArgument()
-    {
-        $this->assertEquals('world', $this->uriPath->getArgument('name'));
-    }
-
-    /**
-     * @test
-     * @deprecated  will be removed with 4.0.0
-     */
-    public function returnsNullForNonGivenArgument()
-    {
-        $this->assertNull($this->uriPath->getArgument('id'));
-    }
-
-    /**
-     * @test
-     * @deprecated  will be removed with 4.0.0
-     */
-    public function returnsDefaultForGivenArgument()
-    {
-        $this->assertEquals(303, $this->uriPath->getArgument('id', 303));
-    }
-
-    /**
-     * @test
      * @since  3.3.0
      * @group  issue_41
      */
