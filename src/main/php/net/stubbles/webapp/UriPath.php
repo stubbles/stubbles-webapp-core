@@ -101,4 +101,3 @@ class UriPath
         return $default;
     }
 }
-?>

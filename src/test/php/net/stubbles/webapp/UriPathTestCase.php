@@ -111,4 +111,3 @@ class UriPathTestCase extends \PHPUnit_Framework_TestCase
         $this->assertEquals('index.html', $this->uriPath->getRemaining('index.html'));
     }
 }
-?>
