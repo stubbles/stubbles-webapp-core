@@ -1,3 +1,9 @@
+4.0.0, (2014-06-??)
+-------------------
+
+   * added `net\stubbles\webapp\response\Response::headers()`
+
+
 3.4.0, (2014-05-16)
 -------------------
 
