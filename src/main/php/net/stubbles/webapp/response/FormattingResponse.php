@@ -275,8 +275,6 @@ class FormattingResponse implements Response
      */
     private function addContentType()
     {
-        if (null !== $this->mimeType) {
-            $this->response->addHeader('Content-type', $this->mimeType);
-        }
+        $this->response->addHeader('Content-type', $this->mimeType);
     }
 }
