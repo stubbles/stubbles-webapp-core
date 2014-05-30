@@ -42,7 +42,8 @@ class FormattingResponseTestCase extends \PHPUnit_Framework_TestCase
         $this->decoratedResponse  = $this->getMock('net\stubbles\webapp\response\WebResponse');
         $this->mockFormatter      = $this->getMock('net\stubbles\webapp\response\format\Formatter');
         $this->formattingResponse = new FormattingResponse($this->decoratedResponse,
-                                                           $this->mockFormatter
+                                                           $this->mockFormatter,
+                                                           'text/plain'
                                     );
     }
 
@@ -329,31 +330,23 @@ class FormattingResponseTestCase extends \PHPUnit_Framework_TestCase
      * @test
      * @since  2.2.0
      */
-    public function addsContentTypeHeaderOnSendWhenMimeTypeInitiallyGiven()
+    public function addsContentTypeHeaderOnSend()
     {
-         $formattingResponse = new FormattingResponse($this->decoratedResponse,
-                                                      $this->mockFormatter,
-                                                      'text/plain'
-                               );
          $this->decoratedResponse->expects($this->once())
                                  ->method('addHeader')
                                  ->with($this->equalTo('Content-type'), $this->equalTo('text/plain'));
-         $formattingResponse->send();
+         $this->formattingResponse->send();
     }
 
     /**
      * @test
      * @since  2.2.0
      */
-    public function addsContentTypeHeaderOnSendHeadWhenMimeTypeInitiallyGiven()
+    public function addsContentTypeHeaderOnSendHead()
     {
-         $formattingResponse = new FormattingResponse($this->decoratedResponse,
-                                                      $this->mockFormatter,
-                                                      'text/plain'
-                               );
          $this->decoratedResponse->expects($this->once())
                                  ->method('addHeader')
                                  ->with($this->equalTo('Content-type'), $this->equalTo('text/plain'));
-         $formattingResponse->sendHead();
+         $this->formattingResponse->sendHead();
     }
 }

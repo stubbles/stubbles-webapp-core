@@ -42,7 +42,7 @@ class FormattingResponse implements Response
      * @param  Formatter  $formatter
      * @param  string     $mimeType
      */
-    public function __construct(Response $response, Formatter $formatter, $mimeType = null)
+    public function __construct(Response $response, Formatter $formatter, $mimeType)
     {
         $this->response  = $response;
         $this->formatter = $formatter;
