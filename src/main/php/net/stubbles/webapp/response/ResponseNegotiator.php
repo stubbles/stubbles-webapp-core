@@ -72,8 +72,8 @@ class ResponseNegotiator
      * agent mime types is supported. Forces a 500 Internal Server Error
      * response in case a mime type but no suitable formatter was found.
      *
-     * @param   WebRequest  $request
-     * @param   Routing     $routing
+     * @param   WebRequest          $request
+     * @param   SupportedMimeTypes  $supportedMimeTypes
      * @return  Response
      */
     public function negotiateMimeType(WebRequest $request, SupportedMimeTypes $supportedMimeTypes)
