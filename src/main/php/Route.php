@@ -5,12 +5,12 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @package  net\stubbles\webapp
+ * @package  stubbles\webapp
  */
-namespace net\stubbles\webapp;
+namespace stubbles\webapp;
 use stubbles\lang;
 use stubbles\lang\exception\IllegalArgumentException;
-use net\stubbles\webapp\response\SupportedMimeTypes;
+use stubbles\webapp\response\SupportedMimeTypes;
 /**
  * Represents information about a route that can be called.
  *
@@ -98,7 +98,7 @@ class Route implements ConfigurableRoute
     public function __construct($path, $callback, $requestMethod = null)
     {
         if (!is_callable($callback) && !($callback instanceof Processor) && !class_exists($callback)) {
-            throw new IllegalArgumentException('Given callback must be a callable, an instance of net\stubbles\webapp\Processor or a class name of an existing processor class');
+            throw new IllegalArgumentException('Given callback must be a callable, an instance of stubbles\webapp\Processor or a class name of an existing processor class');
         }
 
         $this->path          = $path;
@@ -184,7 +184,7 @@ class Route implements ConfigurableRoute
     public function preIntercept($preInterceptor)
     {
         if (!is_callable($preInterceptor) && !($preInterceptor instanceof interceptor\PreInterceptor) && !class_exists($preInterceptor)) {
-            throw new IllegalArgumentException('Given pre interceptor must be a callable, an instance of net\stubbles\webapp\interceptor\PreInterceptor or a class name of an existing pre interceptor class');
+            throw new IllegalArgumentException('Given pre interceptor must be a callable, an instance of stubbles\webapp\interceptor\PreInterceptor or a class name of an existing pre interceptor class');
         }
 
         $this->preInterceptors[] = $preInterceptor;
@@ -211,7 +211,7 @@ class Route implements ConfigurableRoute
     public function postIntercept($postInterceptor)
     {
         if (!is_callable($postInterceptor) && !($postInterceptor instanceof interceptor\PostInterceptor) && !class_exists($postInterceptor)) {
-            throw new IllegalArgumentException('Given pre interceptor must be a callable, an instance of net\stubbles\webapp\interceptor\PostInterceptor or a class name of an existing post interceptor class');
+            throw new IllegalArgumentException('Given pre interceptor must be a callable, an instance of stubbles\webapp\interceptor\PostInterceptor or a class name of an existing post interceptor class');
         }
 
         $this->postInterceptors[] = $postInterceptor;

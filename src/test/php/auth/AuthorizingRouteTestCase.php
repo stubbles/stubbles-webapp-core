@@ -5,14 +5,14 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @package  net\stubbles\webapp
+ * @package  stubbles\webapp
  */
-namespace net\stubbles\webapp\auth;
+namespace stubbles\webapp\auth;
 use stubbles\peer\http\HttpUri;
-use net\stubbles\webapp\Route;
-use net\stubbles\webapp\response\SupportedMimeTypes;
+use stubbles\webapp\Route;
+use stubbles\webapp\response\SupportedMimeTypes;
 /**
- * Tests for net\stubbles\webapp\auth\AuthorizingRoute.
+ * Tests for stubbles\webapp\auth\AuthorizingRoute.
  *
  * @since  3.0.0
  * @group  auth
@@ -61,15 +61,15 @@ class AuthorizingRouteTestCase extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->mockAuthHandler  = $this->getMock('net\stubbles\webapp\auth\AuthHandler');
+        $this->mockAuthHandler  = $this->getMock('stubbles\webapp\auth\AuthHandler');
         $this->routeConfig      = new Route('/hello', function() {});
-        $this->mockActualRoute  = $this->getMock('net\stubbles\webapp\ProcessableRoute');
+        $this->mockActualRoute  = $this->getMock('stubbles\webapp\ProcessableRoute');
         $this->authorizingRoute = new AuthorizingRoute($this->mockAuthHandler,
                                                        $this->routeConfig,
                                                        $this->mockActualRoute
                                   );
         $this->mockRequest      = $this->getMock('stubbles\input\web\WebRequest');
-        $this->mockResponse     = $this->getMock('net\stubbles\webapp\response\Response');
+        $this->mockResponse     = $this->getMock('stubbles\webapp\response\Response');
     }
 
     /**

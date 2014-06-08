@@ -5,12 +5,12 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @package  net\stubbles\webapp
+ * @package  stubbles\webapp
  */
-namespace net\stubbles\webapp\session;
+namespace stubbles\webapp\session;
 use stubbles\input\web\WebRequest;
-use net\stubbles\webapp\response\Cookie;
-use net\stubbles\webapp\response\Response;
+use stubbles\webapp\response\Cookie;
+use stubbles\webapp\response\Response;
 /**
  * Session id which is stored in a cookie.
  *

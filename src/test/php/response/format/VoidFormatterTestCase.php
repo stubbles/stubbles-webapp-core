@@ -5,11 +5,11 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @package  net\stubbles\webapp
+ * @package  stubbles\webapp
  */
-namespace net\stubbles\webapp\response\format;
+namespace stubbles\webapp\response\format;
 /**
- * Tests for net\stubbles\webapp\response\format\VoidFormatter.
+ * Tests for stubbles\webapp\response\format\VoidFormatter.
  *
  * @since  1.1.0
  * @group  format

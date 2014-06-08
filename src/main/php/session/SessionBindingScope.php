@@ -5,13 +5,13 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @package  net\stubbles\webapp
+ * @package  stubbles\webapp
  */
-namespace net\stubbles\webapp\session;
+namespace stubbles\webapp\session;
 use stubbles\ioc\InjectionProvider;
 use stubbles\ioc\binding\BindingScope;
 use stubbles\lang\reflect\BaseReflectionClass;
-use net\stubbles\webapp\session\Session;
+use stubbles\webapp\session\Session;
 /**
  * Interface for session storages.
  */
@@ -20,7 +20,7 @@ class SessionBindingScope implements BindingScope
     /**
      * session prefix key
      */
-    const SESSION_KEY  = 'net.stubbles.webapp.session.ioc.scope#';
+    const SESSION_KEY  = 'stubbles.webapp.session.ioc.scope#';
     /**
      * session instance to store instances in
      *

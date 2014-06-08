@@ -5,14 +5,14 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @package  net\stubbles\webapp
+ * @package  stubbles\webapp
  */
-namespace net\stubbles\webapp;
+namespace stubbles\webapp;
 use stubbles\input\web\WebRequest;
 use stubbles\ioc\Injector;
-use net\stubbles\webapp\interceptor\Interceptors;
-use net\stubbles\webapp\response\Response;
-use net\stubbles\webapp\response\SupportedMimeTypes;
+use stubbles\webapp\interceptor\Interceptors;
+use stubbles\webapp\response\Response;
+use stubbles\webapp\response\SupportedMimeTypes;
 /**
  * Contains logic to process the route.
  *
@@ -97,7 +97,7 @@ class MatchingRoute extends AbstractProcessableRoute
 
         $processor = $this->injector->getInstance($callback);
         if (!($processor instanceof Processor)) {
-            $response->internalServerError('Configured callback class ' . $callback . ' for route ' . $uriPath->getMatched() . ' is not an instance of net\stubbles\webapp\Processor');
+            $response->internalServerError('Configured callback class ' . $callback . ' for route ' . $uriPath->getMatched() . ' is not an instance of stubbles\webapp\Processor');
             return false;
         }
 

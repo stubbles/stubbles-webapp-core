@@ -5,13 +5,13 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @package  net\stubbles\webapp
+ * @package  stubbles\webapp
  */
-namespace net\stubbles\webapp\interceptor;
+namespace stubbles\webapp\interceptor;
 use stubbles\input\web\WebRequest;
-use net\stubbles\webapp\response\Response;
+use stubbles\webapp\response\Response;
 /**
- * Tests for net\stubbles\webapp\interceptor\Interceptors.
+ * Tests for stubbles\webapp\interceptor\Interceptors.
  *
  * @since  2.2.0
  * @group  interceptor
@@ -43,7 +43,7 @@ class InterceptorsTestCase extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->mockRequest  = $this->getMock('stubbles\input\web\WebRequest');
-        $this->mockResponse = $this->getMock('net\stubbles\webapp\response\Response');
+        $this->mockResponse = $this->getMock('stubbles\webapp\response\Response');
         $this->mockInjector = $this->getMockBuilder('stubbles\ioc\Injector')
                                    ->disableOriginalConstructor()
                                    ->getMock();
@@ -98,7 +98,7 @@ class InterceptorsTestCase extends \PHPUnit_Framework_TestCase
      */
     public function doesNotCallOtherPreInterceptorsIfOneReturnsFalse()
     {
-        $preInterceptor = $this->getMock('net\stubbles\webapp\interceptor\PreInterceptor');
+        $preInterceptor = $this->getMock('stubbles\webapp\interceptor\PreInterceptor');
         $preInterceptor->expects($this->once())
                        ->method('preProcess')
                        ->with($this->equalTo($this->mockRequest), $this->equalTo($this->mockResponse))
@@ -122,7 +122,7 @@ class InterceptorsTestCase extends \PHPUnit_Framework_TestCase
      */
     public function returnsTrueWhenNoPreInterceptorReturnsFalse()
     {
-        $mockPreInterceptor = $this->getMock('net\stubbles\webapp\interceptor\PreInterceptor');
+        $mockPreInterceptor = $this->getMock('stubbles\webapp\interceptor\PreInterceptor');
         $mockPreInterceptor->expects($this->exactly(2))
                            ->method('preProcess')
                            ->with($this->equalTo($this->mockRequest), $this->equalTo($this->mockResponse));
@@ -176,7 +176,7 @@ class InterceptorsTestCase extends \PHPUnit_Framework_TestCase
      */
     public function doesNotCallOtherPostInterceptorsIfOneReturnsFalse()
     {
-        $postInterceptor = $this->getMock('net\stubbles\webapp\interceptor\PostInterceptor');
+        $postInterceptor = $this->getMock('stubbles\webapp\interceptor\PostInterceptor');
         $postInterceptor->expects($this->once())
                         ->method('postProcess')
                         ->with($this->equalTo($this->mockRequest), $this->equalTo($this->mockResponse))
@@ -201,7 +201,7 @@ class InterceptorsTestCase extends \PHPUnit_Framework_TestCase
      */
     public function returnsTrueWhenNoPostInterceptorReturnsFalse()
     {
-        $mockPostInterceptor = $this->getMock('net\stubbles\webapp\interceptor\PostInterceptor');
+        $mockPostInterceptor = $this->getMock('stubbles\webapp\interceptor\PostInterceptor');
         $mockPostInterceptor->expects($this->exactly(2))
                             ->method('postProcess')
                             ->with($this->equalTo($this->mockRequest), $this->equalTo($this->mockResponse));

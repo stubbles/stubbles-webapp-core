@@ -5,9 +5,9 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @package  net\stubbles\webapp
+ * @package  stubbles\webapp
  */
-namespace net\stubbles\webapp\session;
+namespace stubbles\webapp\session;
 /**
  * Session storage using default PHP sessions.
  *
@@ -149,7 +149,7 @@ class NativeSessionStorage implements SessionStorage, SessionId
      *
      * @param   string  $key    key to store value under
      * @param   mixed   $value  data to store
-     * @return  net\stubbles\webapp\io\session\SessionStorage
+     * @return  stubbles\webapp\io\session\SessionStorage
      */
     public function putValue($key, $value)
     {
@@ -162,7 +162,7 @@ class NativeSessionStorage implements SessionStorage, SessionId
      * removes a value from the session
      *
      * @param   string  $key  key where value is stored under
-     * @return  net\stubbles\webapp\io\session\SessionStorage
+     * @return  stubbles\webapp\io\session\SessionStorage
      */
     public function removeValue($key)
     {

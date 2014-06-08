@@ -5,16 +5,16 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @package  net\stubbles\webapp
+ * @package  stubbles\webapp
  */
-namespace net\stubbles\webapp;
+namespace stubbles\webapp;
 use stubbles\input\web\WebRequest;
 use stubbles\ioc\App;
 use stubbles\lang\errorhandler\ExceptionLogger;
 use stubbles\peer\http\Http;
-use net\stubbles\webapp\ioc\IoBindingModule;
-use net\stubbles\webapp\response\Response;
-use net\stubbles\webapp\response\ResponseNegotiator;
+use stubbles\webapp\ioc\IoBindingModule;
+use stubbles\webapp\response\Response;
+use stubbles\webapp\response\ResponseNegotiator;
 /**
  * Abstract base class for web applications.
  *
@@ -174,6 +174,6 @@ abstract class WebApp extends App
      */
     protected static function addAccessControlAllowOriginHeaderClass()
     {
-        return 'net\stubbles\webapp\interceptor\AddAccessControlAllowOriginHeader';
+        return 'stubbles\webapp\interceptor\AddAccessControlAllowOriginHeader';
     }
 }

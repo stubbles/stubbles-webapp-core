@@ -5,11 +5,11 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @package  net\stubbles\webapp
+ * @package  stubbles\webapp
  */
-namespace net\stubbles\webapp\response;
+namespace stubbles\webapp\response;
 /**
- * Tests for net\stubbles\webapp\response\FormattingResponse.
+ * Tests for stubbles\webapp\response\FormattingResponse.
  *
  * @group  response
  */
@@ -39,8 +39,8 @@ class FormattingResponseTestCase extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->decoratedResponse  = $this->getMock('net\stubbles\webapp\response\WebResponse');
-        $this->mockFormatter      = $this->getMock('net\stubbles\webapp\response\format\Formatter');
+        $this->decoratedResponse  = $this->getMock('stubbles\webapp\response\WebResponse');
+        $this->mockFormatter      = $this->getMock('stubbles\webapp\response\format\Formatter');
         $this->formattingResponse = new FormattingResponse($this->decoratedResponse,
                                                            $this->mockFormatter,
                                                            'text/plain'

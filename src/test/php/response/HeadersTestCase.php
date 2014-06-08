@@ -5,12 +5,12 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @package  net\stubbles\webapp
+ * @package  stubbles\webapp
  */
-namespace net\stubbles\webapp\response;#
+namespace stubbles\webapp\response;#
 use stubbles\peer\http\HttpUri;
 /**
- * Tests for net\stubbles\webapp\response\Headers.
+ * Tests for stubbles\webapp\response\Headers.
  *
  * @group  response
  * @sicne  4.0.0

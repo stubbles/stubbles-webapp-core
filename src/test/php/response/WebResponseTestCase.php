@@ -5,11 +5,11 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @package  net\stubbles\webapp
+ * @package  stubbles\webapp
  */
-namespace net\stubbles\webapp\response;
+namespace stubbles\webapp\response;
 /**
- * Tests for net\stubbles\webapp\response\WebResponse.
+ * Tests for stubbles\webapp\response\WebResponse.
  *
  * @group  response
  */
@@ -27,7 +27,7 @@ class WebResponseTestCase extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->response = $this->getMock('net\stubbles\webapp\response\WebResponse',
+        $this->response = $this->getMock('stubbles\webapp\response\WebResponse',
                                          ['header', 'sendBody']
                           );
     }
@@ -48,7 +48,7 @@ class WebResponseTestCase extends \PHPUnit_Framework_TestCase
      */
     public function versionCanBeSetOnConstruction()
     {
-        $response = $this->getMock('net\stubbles\webapp\response\WebResponse',
+        $response = $this->getMock('stubbles\webapp\response\WebResponse',
                                    ['header', 'sendBody'],
                                    ['1.0']
                           );
@@ -63,7 +63,7 @@ class WebResponseTestCase extends \PHPUnit_Framework_TestCase
      */
     public function clearingResponseDoesNotResetVersion()
     {
-        $response = $this->getMock('net\stubbles\webapp\response\WebResponse',
+        $response = $this->getMock('stubbles\webapp\response\WebResponse',
                                    ['header', 'sendBody'],
                                    ['1.0']
                           );
@@ -107,7 +107,7 @@ class WebResponseTestCase extends \PHPUnit_Framework_TestCase
      */
     public function statusCodeInCgiSapi()
     {
-        $this->response = $this->getMock('net\\stubbles\\webapp\\response\\WebResponse',
+        $this->response = $this->getMock('stubbles\webapp\response\WebResponse',
                                          ['header', 'sendBody'],
                                          ['1.1', 'cgi']
                           );
@@ -174,7 +174,7 @@ class WebResponseTestCase extends \PHPUnit_Framework_TestCase
      */
     protected function createMockCookie()
     {
-        $mockCookie = $this->getMock('net\\stubbles\\webapp\\response\\Cookie',
+        $mockCookie = $this->getMock('stubbles\webapp\response\Cookie',
                                      [],
                                      ['foo', 'bar']
                       );

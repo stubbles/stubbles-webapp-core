@@ -3,6 +3,7 @@
 
 ### BC breaks
 
+   * removed namespace prefix `net`, base namespace is now `stubbles\webapp` only
    * removed `net\stubbles\webapp\UriPath::getArgument()`, deprecated since 3.3.0, use `net\stubbles\webapp\UriPath::readArgument()` instead
 
 ### Other changes

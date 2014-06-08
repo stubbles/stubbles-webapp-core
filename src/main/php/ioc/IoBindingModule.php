@@ -5,15 +5,15 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @package  net\stubbles\webapp
+ * @package  stubbles\webapp
  */
-namespace net\stubbles\webapp\ioc;
+namespace stubbles\webapp\ioc;
 use stubbles\input\web\BaseWebRequest;
 use stubbles\input\web\WebRequest;
 use stubbles\ioc\Binder;
 use stubbles\ioc\module\BindingModule;
-use net\stubbles\webapp\response\Response;
-use net\stubbles\webapp\response\ResponseNegotiator;
+use stubbles\webapp\response\Response;
+use stubbles\webapp\response\ResponseNegotiator;
 /**
  * Module to configure the binder with instances for request, session and response.
  *
@@ -26,25 +26,25 @@ class IoBindingModule implements BindingModule
      *
      * @type  string
      */
-    private $responseClass  = 'net\stubbles\webapp\response\WebResponse';
+    private $responseClass  = 'stubbles\webapp\response\WebResponse';
     /**
      * map of formatters for mime types
      *
      * @type  array
      */
-    private $formatter      = ['application/json'    => 'net\stubbles\webapp\response\format\JsonFormatter',
-                               'text/json'           => 'net\stubbles\webapp\response\format\JsonFormatter',
-                               'text/html'           => 'net\stubbles\webapp\response\format\HtmlFormatter',
-                               'text/plain'          => 'net\stubbles\webapp\response\format\PlainTextFormatter'
+    private $formatter      = ['application/json'    => 'stubbles\webapp\response\format\JsonFormatter',
+                               'text/json'           => 'stubbles\webapp\response\format\JsonFormatter',
+                               'text/html'           => 'stubbles\webapp\response\format\HtmlFormatter',
+                               'text/plain'          => 'stubbles\webapp\response\format\PlainTextFormatter'
                               ];
     /**
      * map of xml formatters for mime types
      *
      * @var  array
      */
-    private $xmlFormatter   = ['text/xml'            => 'net\stubbles\webapp\response\format\XmlFormatter',
-                               'application/xml'     => 'net\stubbles\webapp\response\format\XmlFormatter',
-                               'application/rss+xml' => 'net\stubbles\webapp\response\format\XmlFormatter'
+    private $xmlFormatter   = ['text/xml'            => 'stubbles\webapp\response\format\XmlFormatter',
+                               'application/xml'     => 'stubbles\webapp\response\format\XmlFormatter',
+                               'application/rss+xml' => 'stubbles\webapp\response\format\XmlFormatter'
                               ];
     /**
      * name for the session
@@ -128,8 +128,8 @@ class IoBindingModule implements BindingModule
     {
         $this->sessionCreator = function(WebRequest $request, Response $response, $sessionName)
                                 {
-                                    $native = new \net\stubbles\webapp\session\NativeSessionStorage($sessionName);
-                                    return new \net\stubbles\webapp\session\WebSession($native,
+                                    $native = new \stubbles\webapp\session\NativeSessionStorage($sessionName);
+                                    return new \stubbles\webapp\session\WebSession($native,
                                                                                        $native,
                                                                                        md5($request->readHeader('HTTP_USER_AGENT')->unsecure())
                                     );
@@ -147,7 +147,7 @@ class IoBindingModule implements BindingModule
     {
         $this->sessionCreator = function(WebRequest $request, Response $response, $sessionName)
                                 {
-                                    return new \net\stubbles\webapp\session\NullSession(new \net\stubbles\webapp\session\NoneDurableSessionId($sessionName));
+                                    return new \stubbles\webapp\session\NullSession(new \stubbles\webapp\session\NoneDurableSessionId($sessionName));
                                 };
         return $this;
     }
@@ -162,7 +162,7 @@ class IoBindingModule implements BindingModule
     {
         $this->sessionCreator = function(WebRequest $request, Response $response, $sessionName)
                                 {
-                                    return new \net\stubbles\webapp\session\NullSession(new \net\stubbles\webapp\session\WebBoundSessionId($request, $response, $sessionName));
+                                    return new \stubbles\webapp\session\NullSession(new \stubbles\webapp\session\WebBoundSessionId($request, $response, $sessionName));
                                 };
         return $this;
     }
@@ -193,13 +193,13 @@ class IoBindingModule implements BindingModule
                ->toInstance($request);
         $binder->bind('stubbles\input\Request')
                ->toInstance($request);
-        $binder->bind('net\stubbles\webapp\response\Response')
+        $binder->bind('stubbles\webapp\response\Response')
                ->toInstance($response);
         $formatters = $this->getAvailableFormatters();
-        $binder->bindConstant('net.stubbles.webapp.response.format.mimetypes')
+        $binder->bindConstant('stubbles.webapp.response.format.mimetypes')
                ->to(array_keys($formatters));
         foreach ($formatters as $mimeType => $formatter) {
-            $binder->bind('net\stubbles\webapp\response\format\Formatter')
+            $binder->bind('stubbles\webapp\response\format\Formatter')
                    ->named($mimeType)
                    ->to($formatter);
         }
@@ -207,9 +207,9 @@ class IoBindingModule implements BindingModule
         if (null !== $this->sessionCreator) {
             $sessionCreator = $this->sessionCreator;
             $session        = $sessionCreator($request, $response, $this->sessionName);
-            $binder->bind('net\stubbles\webapp\session\Session')
+            $binder->bind('stubbles\webapp\session\Session')
                    ->toInstance($session);
-            $binder->setSessionScope(new \net\stubbles\webapp\session\SessionBindingScope($session));
+            $binder->setSessionScope(new \stubbles\webapp\session\SessionBindingScope($session));
         }
     }
 

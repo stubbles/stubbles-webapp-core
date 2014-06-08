@@ -5,12 +5,12 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @package  net\stubbles\webapp
+ * @package  stubbles\webapp
  */
-namespace net\stubbles\webapp;
-use net\stubbles\webapp\response\SupportedMimeTypes;
+namespace stubbles\webapp;
+use stubbles\webapp\response\SupportedMimeTypes;
 /**
- * Tests for net\stubbles\webapp\InternalServerErrorRoute.
+ * Tests for stubbles\webapp\InternalServerErrorRoute.
  *
  * @since  3.0.0
  * @group  core
@@ -46,7 +46,7 @@ class InternalServerErrorRouteTestCase extends \PHPUnit_Framework_TestCase
                                                                        new SupportedMimeTypes([])
                                           );
         $this->mockRequest  = $this->getMock('stubbles\input\web\WebRequest');
-        $this->mockResponse = $this->getMock('net\stubbles\webapp\response\Response');
+        $this->mockResponse = $this->getMock('stubbles\webapp\response\Response');
     }
 
     /**

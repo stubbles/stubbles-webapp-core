@@ -5,9 +5,9 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @package  net\stubbles\webapp
+ * @package  stubbles\webapp
  */
-namespace net\stubbles\webapp\response\format;
+namespace stubbles\webapp\response\format;
 /**
  * Helper class for the test.
  */
@@ -24,7 +24,7 @@ class StringConversionTestHelper
     }
 }
 /**
- * Tests for net\stubbles\webapp\response\format\PlainTextFormatter.
+ * Tests for stubbles\webapp\response\format\PlainTextFormatter.
  *
  * @since  1.1.2
  * @group  response

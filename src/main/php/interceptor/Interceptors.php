@@ -5,12 +5,12 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @package  net\stubbles\webapp
+ * @package  stubbles\webapp
  */
-namespace net\stubbles\webapp\interceptor;
+namespace stubbles\webapp\interceptor;
 use stubbles\input\web\WebRequest;
 use stubbles\ioc\Injector;
-use net\stubbles\webapp\response\Response;
+use stubbles\webapp\response\Response;
 /**
  * Interceptor handler.
  */
@@ -93,7 +93,7 @@ class Interceptors
 
         $instance = $this->injector->getInstance($preInterceptor);
         if (!($instance instanceof PreInterceptor)) {
-            $response->internalServerError('Configured pre interceptor ' . $preInterceptor . ' is not an instance of net\stubbles\webapp\interceptor\PreInterceptor');
+            $response->internalServerError('Configured pre interceptor ' . $preInterceptor . ' is not an instance of stubbles\webapp\interceptor\PreInterceptor');
             return false;
         }
 
@@ -142,7 +142,7 @@ class Interceptors
 
         $instance = $this->injector->getInstance($postInterceptor);
         if (!($instance instanceof PostInterceptor)) {
-            $response->internalServerError('Configured post interceptor ' . $postInterceptor . ' is not an instance of net\stubbles\webapp\interceptor\PostInterceptor');
+            $response->internalServerError('Configured post interceptor ' . $postInterceptor . ' is not an instance of stubbles\webapp\interceptor\PostInterceptor');
             return false;
         }
 

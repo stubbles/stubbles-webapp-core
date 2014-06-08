@@ -5,13 +5,13 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @package  net\stubbles\webapp
+ * @package  stubbles\webapp
  */
-namespace net\stubbles\webapp\auth;
+namespace stubbles\webapp\auth;
 use stubbles\input\web\WebRequest;
-use net\stubbles\webapp\ProcessableRoute;
-use net\stubbles\webapp\Route;
-use net\stubbles\webapp\response\Response;
+use stubbles\webapp\ProcessableRoute;
+use stubbles\webapp\Route;
+use stubbles\webapp\response\Response;
 /**
  * Description of AuthorizingRoute
  *
@@ -71,7 +71,7 @@ class AuthorizingRoute implements ProcessableRoute
     /**
      * returns https uri of current route
      *
-     * @return  \net\stubbles\peer\http\HttpUri
+     * @return  \stubbles\peer\http\HttpUri
      */
     public function getHttpsUri()
     {
@@ -81,7 +81,7 @@ class AuthorizingRoute implements ProcessableRoute
     /**
      * returns list of supported mime types
      *
-     * @return  \net\stubbles\webapp\response\SupportedMimeTypes
+     * @return  \stubbles\webapp\response\SupportedMimeTypes
      */
     public function getSupportedMimeTypes()
     {

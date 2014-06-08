@@ -5,11 +5,11 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @package  net\stubbles\webapp
+ * @package  stubbles\webapp
  */
-namespace net\stubbles\webapp;
+namespace stubbles\webapp;
 /**
- * Tests for net\stubbles\webapp\UriPath.
+ * Tests for stubbles\webapp\UriPath.
  *
  * @since  2.0.0
  * @group  core

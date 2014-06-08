@@ -5,12 +5,12 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @package  net\stubbles\webapp
+ * @package  stubbles\webapp
  */
-namespace net\stubbles\webapp\session;
+namespace stubbles\webapp\session;
 use stubbles\input\ValueReader;
 /**
- * Tests for net\stubbles\webapp\session\WebBoundSessionId.
+ * Tests for stubbles\webapp\session\WebBoundSessionId.
  *
  * @since  2.0.0
  * @group  session
@@ -42,7 +42,7 @@ class WebBoundSessionIdTestCase extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->mockWebRequest    = $this->getMock('stubbles\input\web\WebRequest');
-        $this->mockResponse      = $this->getMock('net\stubbles\webapp\response\Response');
+        $this->mockResponse      = $this->getMock('stubbles\webapp\response\Response');
         $this->webBoundSessionId = new WebBoundSessionId($this->mockWebRequest,
                                                          $this->mockResponse,
                                                          'foo'

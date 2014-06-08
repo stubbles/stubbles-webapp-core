@@ -5,11 +5,11 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @package  net\stubbles\webapp
+ * @package  stubbles\webapp
  */
-namespace net\stubbles\webapp\session;
+namespace stubbles\webapp\session;
 /**
- * Tests for net\stubbles\webapp\session\NoneDurableSessionId.
+ * Tests for stubbles\webapp\session\NoneDurableSessionId.
  *
  * @since  2.0.0
  * @group  session

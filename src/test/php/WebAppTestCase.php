@@ -5,9 +5,9 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @package  net\stubbles\webapp
+ * @package  stubbles\webapp
  */
-namespace net\stubbles\webapp;
+namespace stubbles\webapp;
 use stubbles\lang;
 use stubbles\peer\http\HttpUri;
 /**
@@ -29,7 +29,7 @@ abstract class TestWebApp extends WebApp
     }
 }
 /**
- * Tests for net\stubbles\webapp\WebApp.
+ * Tests for stubbles\webapp\WebApp.
  *
  * @since  1.7.0
  * @group  core
@@ -79,20 +79,20 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
         $this->mockRequest->expects($this->any())
                           ->method('uri')
                           ->will($this->returnValue(HttpUri::fromString('http://example.com/hello')));
-        $this->mockResponse     = $this->getMock('net\stubbles\webapp\response\Response');
-        $mockResponseNegotiator = $this->getMockBuilder('net\stubbles\webapp\response\ResponseNegotiator')
+        $this->mockResponse     = $this->getMock('stubbles\webapp\response\Response');
+        $mockResponseNegotiator = $this->getMockBuilder('stubbles\webapp\response\ResponseNegotiator')
                                        ->disableOriginalConstructor()
                                        ->getMock();
         $mockResponseNegotiator->expects($this->any())
                                ->method('negotiateMimeType')
                                ->will($this->returnValue($this->mockResponse));
-        $this->routing = $this->getMockBuilder('net\stubbles\webapp\Routing')
+        $this->routing = $this->getMockBuilder('stubbles\webapp\Routing')
                               ->disableOriginalConstructor()
                               ->getMock();
         $this->mockExceptionLogger = $this->getMockBuilder('stubbles\lang\errorhandler\ExceptionLogger')
                                           ->disableOriginalConstructor()
                                           ->getMock();
-        $this->webApp  = $this->getMock('net\stubbles\webapp\TestWebApp',
+        $this->webApp  = $this->getMock('stubbles\webapp\TestWebApp',
                                         ['configureRouting'],
                                         [$this->mockRequest,
                                          $mockResponseNegotiator,
@@ -115,7 +115,7 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
      */
     public function canCreateIoBindingModuleWithSession()
     {
-        $this->assertInstanceOf('net\stubbles\webapp\ioc\IoBindingModule',
+        $this->assertInstanceOf('stubbles\webapp\ioc\IoBindingModule',
                                 TestWebApp::callMethod('createIoBindingModuleWithSession')
         );
     }
@@ -125,7 +125,7 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
      */
     public function canCreateIoBindingModuleWithoutSession()
     {
-        $this->assertInstanceOf('net\stubbles\webapp\ioc\IoBindingModule',
+        $this->assertInstanceOf('stubbles\webapp\ioc\IoBindingModule',
                                 TestWebApp::callMethod('createIoBindingModuleWithoutSession')
         );
     }
@@ -136,7 +136,7 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
      */
     private function createMockRoute()
     {
-        $mockRoute = $this->getMockBuilder('net\stubbles\webapp\ProcessableRoute')
+        $mockRoute = $this->getMockBuilder('stubbles\webapp\ProcessableRoute')
                           ->disableOriginalConstructor()
                           ->getMock();
         $mockRoute->expects($this->once())
@@ -382,13 +382,13 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
         $this->mockRequest->expects($this->any())
                           ->method('uri')
                           ->will($this->returnValue(HttpUri::fromString('http://example.com/hello')));
-        $mockResponseNegotiator = $this->getMockBuilder('net\stubbles\webapp\response\ResponseNegotiator')
+        $mockResponseNegotiator = $this->getMockBuilder('stubbles\webapp\response\ResponseNegotiator')
                                        ->disableOriginalConstructor()
                                        ->getMock();
         $mockResponseNegotiator->expects($this->any())
                                ->method('negotiateMimeType')
                                ->will($this->returnValue($this->mockResponse));
-        $this->webApp  = $this->getMock('net\stubbles\webapp\TestWebApp',
+        $this->webApp  = $this->getMock('stubbles\webapp\TestWebApp',
                                         ['configureRouting'],
                                         [$this->mockRequest,
                                          $mockResponseNegotiator,

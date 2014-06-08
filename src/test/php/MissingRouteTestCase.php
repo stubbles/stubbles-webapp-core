@@ -5,12 +5,12 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @package  net\stubbles\webapp
+ * @package  stubbles\webapp
  */
-namespace net\stubbles\webapp;
-use net\stubbles\webapp\response\SupportedMimeTypes;
+namespace stubbles\webapp;
+use stubbles\webapp\response\SupportedMimeTypes;
 /**
- * Tests for net\stubbles\webapp\MissingRoute.
+ * Tests for stubbles\webapp\MissingRoute.
  *
  * @since  2.2.0
  * @group  core
@@ -42,13 +42,13 @@ class MissingRouteTestCase extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->missingRoute = new MissingRoute(UriRequest::fromString('http://example.com/hello/world', 'GET'),
-                                               $this->getMockBuilder('net\stubbles\webapp\interceptor\Interceptors')
+                                               $this->getMockBuilder('stubbles\webapp\interceptor\Interceptors')
                                                     ->disableOriginalConstructor()
                                                     ->getMock(),
                                                new SupportedMimeTypes([])
                               );
         $this->mockRequest  = $this->getMock('stubbles\input\web\WebRequest');
-        $this->mockResponse = $this->getMock('net\stubbles\webapp\response\Response');
+        $this->mockResponse = $this->getMock('stubbles\webapp\response\Response');
     }
 
     /**

@@ -5,11 +5,11 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @package  net\stubbles\webapp
+ * @package  stubbles\webapp
  */
-namespace net\stubbles\webapp;
+namespace stubbles\webapp;
 use stubbles\input\web\WebRequest;
-use net\stubbles\webapp\response\Response;
+use stubbles\webapp\response\Response;
 /**
  * Processable route which denotes a 404 Not Found.
  *

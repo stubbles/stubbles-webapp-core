@@ -5,12 +5,12 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @package  net\stubbles\webapp
+ * @package  stubbles\webapp
  */
-namespace net\stubbles\webapp;
+namespace stubbles\webapp;
 use stubbles\lang;
 /**
- * Tests for net\stubbles\webapp\Routing.
+ * Tests for stubbles\webapp\Routing.
  *
  * @since  2.0.0
  * @group  core
@@ -67,7 +67,7 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
      */
     public function returnsMissingRouteOnRouteSelectionWhenNoRouteAdded()
     {
-        $this->assertInstanceOf('net\stubbles\webapp\MissingRoute',
+        $this->assertInstanceOf('stubbles\webapp\MissingRoute',
                                 $this->routing->findRoute($this->calledUri)
         );
     }
@@ -79,7 +79,7 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
     {
         $this->routing->onHead('/bar', function() {});
         $this->routing->onGet('/foo', function() {});
-        $this->assertInstanceOf('net\stubbles\webapp\MissingRoute',
+        $this->assertInstanceOf('stubbles\webapp\MissingRoute',
                                 $this->routing->findRoute($this->calledUri)
         );
     }
@@ -92,7 +92,7 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
     {
         $this->routing->onHead('/hello', function() {});
         $this->routing->onGet('/foo', function() {});
-        $this->assertInstanceOf('net\stubbles\webapp\OptionsRoute',
+        $this->assertInstanceOf('stubbles\webapp\OptionsRoute',
                                 $this->routing->findRoute(UriRequest::fromString('http://example.net/hello', 'OPTIONS'))
         );
     }
@@ -105,7 +105,7 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
     {
         $this->routing->onHead('/hello', function() {});
         $this->routing->onGet('/foo', function() {});
-        $this->assertInstanceOf('net\stubbles\webapp\MethodNotAllowedRoute',
+        $this->assertInstanceOf('stubbles\webapp\MethodNotAllowedRoute',
                                 $this->routing->findRoute($this->calledUri)
         );
     }
@@ -117,7 +117,7 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
     public function returnsInternalServerErrorRouteWhenMatchingRouteRequiresAuthButNoAuthHandlerSet()
     {
         $this->routing->onGet('/hello', function() {})->withRoleOnly('admin');
-        $this->assertInstanceOf('net\stubbles\webapp\InternalServerErrorRoute',
+        $this->assertInstanceOf('stubbles\webapp\InternalServerErrorRoute',
                                 $this->routing->findRoute($this->calledUri)
         );
     }
@@ -129,8 +129,8 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
     public function returnsAuthorizingRouteWhenMatchingRouteRequiresAuthButNoAuthHandlerSet()
     {
         $this->routing->onGet('/hello', function() {})->withRoleOnly('admin');
-        $this->assertInstanceOf('net\stubbles\webapp\auth\AuthorizingRoute',
-                                $this->routing->setAuthHandler($this->getMock('net\stubbles\webapp\auth\AuthHandler'))
+        $this->assertInstanceOf('stubbles\webapp\auth\AuthorizingRoute',
+                                $this->routing->setAuthHandler($this->getMock('stubbles\webapp\auth\AuthHandler'))
                                               ->findRoute($this->calledUri)
         );
     }

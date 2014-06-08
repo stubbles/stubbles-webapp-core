@@ -5,25 +5,25 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @package  net\stubbles\webapp
+ * @package  stubbles\webapp
  */
-namespace net\stubbles\webapp\interceptor;
+namespace stubbles\webapp\interceptor;
 use stubbles\input\web\WebRequest;
-use net\stubbles\webapp\response\Response;
+use stubbles\webapp\response\Response;
 /**
  * Allows to add a Access-Control-Allow-Origin header to the response.
  *
  * A header is added if the ORIGIN header in the request matches a list of
  * allowed origin hosts which can be configured in the project's properties with
- * key net.stubbles.webapp.origin.hosts. The following example allows origin
+ * key stubbles.webapp.origin.hosts. The following example allows origin
  * hosts to be any subdomain of example.com with any port:
  * <code>
- * net.stubbles.webapp.origin.hosts = "^http://[a-zA-Z0-9-\.]+example\.com(:[0-9]{4})?$"
+ * stubbles.webapp.origin.hosts = "^http://[a-zA-Z0-9-\.]+example\.com(:[0-9]{4})?$"
  * </code>
  *
  * If you need more than one expression, you can separate them with |:
  * <code>
- * net.stubbles.webapp.origin.hosts = "^http://example\.com$|^http://example\.net$"
+ * stubbles.webapp.origin.hosts = "^http://example\.com$|^http://example\.net$"
  * </code>
  *
  * If no origin hosts are configured no header will be added.
@@ -45,7 +45,7 @@ class AddAccessControlAllowOriginHeader implements PostInterceptor
      * @param   string[]  $allowedOriginHosts
      * @return  AddAccessControlAllowOriginHeader
      * @Inject(optional=true)
-     * @Property('net.stubbles.webapp.origin.hosts')
+     * @Property('stubbles.webapp.origin.hosts')
      */
     public function allowOriginHosts($allowedOriginHosts)
     {

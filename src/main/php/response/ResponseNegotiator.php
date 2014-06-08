@@ -5,9 +5,9 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @package  net\stubbles\webapp
+ * @package  stubbles\webapp
  */
-namespace net\stubbles\webapp\response;
+namespace stubbles\webapp\response;
 use stubbles\input\filter\AcceptFilter;
 use stubbles\input\web\WebRequest;
 use stubbles\ioc\Injector;
@@ -55,7 +55,7 @@ class ResponseNegotiator
      * @param   string      $responseClass
      * @return  Response
      */
-    public static function negotiateHttpVersion(WebRequest $request, $responseClass = 'net\stubbles\webapp\response\WebResponse')
+    public static function negotiateHttpVersion(WebRequest $request, $responseClass = 'stubbles\webapp\response\WebResponse')
     {
         $httpVersion = $request->protocolVersion();
         if (null === $httpVersion) {
@@ -110,8 +110,8 @@ class ResponseNegotiator
             return $this->injector->getInstance($supportedMimeTypes->getFormatter($mimeType));
         }
 
-        if ($this->injector->hasBinding('net\stubbles\webapp\response\format\Formatter', $mimeType)) {
-            return $this->injector->getInstance('net\stubbles\webapp\response\format\Formatter', $mimeType);
+        if ($this->injector->hasBinding('stubbles\webapp\response\format\Formatter', $mimeType)) {
+            return $this->injector->getInstance('stubbles\webapp\response\format\Formatter', $mimeType);
         }
 
         return null;

@@ -5,10 +5,10 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @package  net\stubbles\webapp
+ * @package  stubbles\webapp
  */
-namespace net\stubbles\webapp\response;
-use net\stubbles\webapp\response\format\Formatter;
+namespace stubbles\webapp\response;
+use stubbles\webapp\response\format\Formatter;
 /**
  * Response which is able to format the response body if it is not a string.
  *

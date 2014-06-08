@@ -5,11 +5,11 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @package  net\stubbles\webapp
+ * @package  stubbles\webapp
  */
-namespace net\stubbles\webapp\session;
+namespace stubbles\webapp\session;
 /**
- * Tests for net\stubbles\webapp\session\NullSession.
+ * Tests for stubbles\webapp\session\NullSession.
  *
  * @since  2.0.0
  * @group  session
@@ -34,7 +34,7 @@ class NullSessionTestCase extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->mockSessionId = $this->getMock('net\\stubbles\\webapp\\session\\SessionId');
+        $this->mockSessionId = $this->getMock('stubbles\webapp\session\SessionId');
         $this->nullSession   = new NullSession($this->mockSessionId);
     }
 

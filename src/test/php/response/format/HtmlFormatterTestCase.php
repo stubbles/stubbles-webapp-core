@@ -5,12 +5,12 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @package  net\stubbles\webapp
+ * @package  stubbles\webapp
  */
-namespace net\stubbles\webapp\response\format;
+namespace stubbles\webapp\response\format;
 use stubbles\lang;
 /**
- * Tests for net\stubbles\webapp\response\format\HtmlFormatter.
+ * Tests for stubbles\webapp\response\format\HtmlFormatter.
  *
  * @since  2.0.0
  * @group  response
@@ -42,7 +42,7 @@ class HtmlFormatterTestCase extends \PHPUnit_Framework_TestCase
         $this->assertTrue($method->hasAnnotation('Inject'));
         $this->assertTrue($method->getAnnotation('Inject')->isOptional());
         $this->assertTrue($method->hasAnnotation('Named'));
-        $this->assertEquals('net.stubbles.webapp.response.format.html.template',
+        $this->assertEquals('stubbles.webapp.response.format.html.template',
                             $method->getAnnotation('Named')->getName()
         );
     }
@@ -56,7 +56,7 @@ class HtmlFormatterTestCase extends \PHPUnit_Framework_TestCase
         $this->assertTrue($method->hasAnnotation('Inject'));
         $this->assertTrue($method->getAnnotation('Inject')->isOptional());
         $this->assertTrue($method->hasAnnotation('Named'));
-        $this->assertEquals('net.stubbles.webapp.response.format.html.title',
+        $this->assertEquals('stubbles.webapp.response.format.html.title',
                             $method->getAnnotation('Named')->getName()
         );
     }

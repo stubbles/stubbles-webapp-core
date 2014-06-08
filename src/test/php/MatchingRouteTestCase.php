@@ -5,14 +5,14 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @package  net\stubbles\webapp
+ * @package  stubbles\webapp
  */
-namespace net\stubbles\webapp;
+namespace stubbles\webapp;
 use stubbles\input\web\WebRequest;
-use net\stubbles\webapp\response\Response;
-use net\stubbles\webapp\response\SupportedMimeTypes;
+use stubbles\webapp\response\Response;
+use stubbles\webapp\response\SupportedMimeTypes;
 /**
- * Tests for net\stubbles\webapp\MatchingRoute.
+ * Tests for stubbles\webapp\MatchingRoute.
  *
  * @since  2.0.0
  * @group  core
@@ -44,7 +44,7 @@ class MatchingRouteTestCase extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->mockRequest  = $this->getMock('stubbles\input\web\WebRequest');
-        $this->mockResponse = $this->getMock('net\stubbles\webapp\response\Response');
+        $this->mockResponse = $this->getMock('stubbles\webapp\response\Response');
         $this->mockInjector = $this->getMockBuilder('stubbles\ioc\Injector')
                                    ->disableOriginalConstructor()
                                    ->getMock();
@@ -59,7 +59,7 @@ class MatchingRouteTestCase extends \PHPUnit_Framework_TestCase
     private function createMatchingRoute(Route $routeConfig, $uri = 'http://example.com/hello/world')
     {
         return new MatchingRoute(UriRequest::fromString($uri, 'GET'),
-                                 $this->getMockBuilder('net\stubbles\webapp\interceptor\Interceptors')
+                                 $this->getMockBuilder('stubbles\webapp\interceptor\Interceptors')
                                       ->disableOriginalConstructor()
                                       ->getMock(),
                                  new SupportedMimeTypes([]),
@@ -214,7 +214,7 @@ class MatchingRouteTestCase extends \PHPUnit_Framework_TestCase
      */
     public function processCallsGivenProcessorInstance($assert, $returnValue)
     {
-        $mockProcessor = $this->getMock('net\stubbles\webapp\Processor');
+        $mockProcessor = $this->getMock('stubbles\webapp\Processor');
         $mocked = $mockProcessor->expects($this->once())
                                 ->method('process')
                                 ->with($this->equalTo($this->mockRequest),
@@ -252,7 +252,7 @@ class MatchingRouteTestCase extends \PHPUnit_Framework_TestCase
      */
     public function processCreatesAndCallsGivenProcessorClass($assert, $returnValue)
     {
-        $mockProcessor = $this->getMock('net\stubbles\webapp\Processor');
+        $mockProcessor = $this->getMock('stubbles\webapp\Processor');
         $mocked = $mockProcessor->expects($this->once())
                                 ->method('process')
                                 ->with($this->equalTo($this->mockRequest),

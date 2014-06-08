@@ -5,11 +5,11 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @package  net\stubbles\webapp
+ * @package  stubbles\webapp
  */
-namespace net\stubbles\webapp;
+namespace stubbles\webapp;
 /**
- * Tests for net\stubbles\webapp\UriRequest.
+ * Tests for stubbles\webapp\UriRequest.
  *
  * @since  1.7.0
  * @group  core
@@ -44,7 +44,7 @@ class UriRequestTestCase extends \PHPUnit_Framework_TestCase
      */
     public function canCreateInstanceFromString()
     {
-        $this->assertInstanceOf('net\\stubbles\\webapp\\UriRequest',
+        $this->assertInstanceOf('stubbles\webapp\UriRequest',
                                 UriRequest::fromString('http://example.net/', 'GET')
         );
     }
@@ -219,7 +219,7 @@ class UriRequestTestCase extends \PHPUnit_Framework_TestCase
      */
     public function toHttpReturnsTransformedUri()
     {
-        $mockHttpUri = $this->getMock('net\stubbles\peer\http\HttpUri');
+        $mockHttpUri = $this->getMock('stubbles\peer\http\HttpUri');
         $this->mockHttpUri->expects($this->once())
                           ->method('toHttp')
                           ->will($this->returnValue($mockHttpUri));
@@ -232,7 +232,7 @@ class UriRequestTestCase extends \PHPUnit_Framework_TestCase
      */
     public function toHttpsReturnsTransformedUri()
     {
-        $mockHttpUri = $this->getMock('net\stubbles\peer\http\HttpUri');
+        $mockHttpUri = $this->getMock('stubbles\peer\http\HttpUri');
         $this->mockHttpUri->expects($this->once())
                           ->method('toHttps')
                           ->will($this->returnValue($mockHttpUri));

@@ -5,12 +5,12 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @package  net\stubbles\webapp\rest
+ * @package  stubbles\webapp\rest
  */
-namespace net\stubbles\webapp\response\format;
+namespace stubbles\webapp\response\format;
 use stubbles\lang;
 /**
- * Tests for net\stubbles\webapp\response\format\XmlFormatter.
+ * Tests for stubbles\webapp\response\format\XmlFormatter.
  *
  * @since  1.1.0
  * @group  format

@@ -5,11 +5,11 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @package  net\stubbles\webapp
+ * @package  stubbles\webapp
  */
-namespace net\stubbles\webapp\session;
+namespace stubbles\webapp\session;
 /**
- * Tests for net\stubbles\webapp\session\WebSession.
+ * Tests for stubbles\webapp\session\WebSession.
  *
  * @group  session
  */
@@ -33,8 +33,8 @@ class WebSessionTestCase extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->mockSessionStorage = $this->getMock('net\\stubbles\\webapp\\session\\SessionStorage');
-        $this->mockSessionId      = $this->getMock('net\\stubbles\\webapp\\session\\SessionId');
+        $this->mockSessionStorage = $this->getMock('stubbles\webapp\session\SessionStorage');
+        $this->mockSessionId      = $this->getMock('stubbles\webapp\session\SessionId');
     }
 
     /**

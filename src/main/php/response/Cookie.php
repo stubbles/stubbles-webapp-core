@@ -5,9 +5,9 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @package  net\stubbles\webapp
+ * @package  tubbles\webapp
  */
-namespace net\stubbles\webapp\response;
+namespace stubbles\webapp\response;
 /**
  * Container for cookies to be send out to the user.
  *

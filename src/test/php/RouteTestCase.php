@@ -5,11 +5,11 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @package  net\stubbles\webapp
+ * @package  stubbles\webapp
  */
-namespace net\stubbles\webapp;
+namespace stubbles\webapp;
 use stubbles\input\web\WebRequest;
-use net\stubbles\webapp\response\Response;
+use stubbles\webapp\response\Response;
 /**
  * Class with annotations for tests.
  *
@@ -50,7 +50,7 @@ class OtherAnnotatedProcessor implements Processor
     }
 }
 /**
- * Tests for net\stubbles\webapp\Route.
+ * Tests for stubbles\webapp\Route.
  *
  * @since  2.0.0
  * @group  core
@@ -189,7 +189,7 @@ class RouteTestCase extends \PHPUnit_Framework_TestCase
     public function hasGivenListOfPreInterceptors()
     {
         $preInterceptor     = function() {};
-        $mockPreInterceptor = $this->getMock('net\stubbles\webapp\interceptor\PreInterceptor');
+        $mockPreInterceptor = $this->getMock('stubbles\webapp\interceptor\PreInterceptor');
         $mockPreFunction    = 'array_map';
         $this->assertEquals([get_class($mockPreInterceptor),
                              $preInterceptor,
@@ -229,7 +229,7 @@ class RouteTestCase extends \PHPUnit_Framework_TestCase
     public function hasGivenListOfPostInterceptors()
     {
         $postInterceptor     = function() {};
-        $mockPostInterceptor = $this->getMock('net\stubbles\webapp\interceptor\PostInterceptor');
+        $mockPostInterceptor = $this->getMock('stubbles\webapp\interceptor\PostInterceptor');
         $mockPostFunction    = 'array_map';
         $this->assertEquals([get_class($mockPostInterceptor),
                              $postInterceptor,
@@ -280,7 +280,7 @@ class RouteTestCase extends \PHPUnit_Framework_TestCase
     public function requiresHttpsWhenCallbackClassAnnotatedWithRequiresHttps()
     {
         $route = new Route('/hello/{name}',
-                           'net\stubbles\webapp\AnnotatedProcessor',
+                           'stubbles\webapp\AnnotatedProcessor',
                            'GET'
                  );
         $this->assertTrue($route->requiresHttps());
@@ -324,7 +324,7 @@ class RouteTestCase extends \PHPUnit_Framework_TestCase
     public function requiresAuthWhenCallbackClassAnnotatedWithRequiresLogin()
     {
         $route = new Route('/hello/{name}',
-                           'net\stubbles\webapp\AnnotatedProcessor',
+                           'stubbles\webapp\AnnotatedProcessor',
                            'GET'
                  );
         $this->assertTrue($route->requiresAuth());
@@ -359,7 +359,7 @@ class RouteTestCase extends \PHPUnit_Framework_TestCase
     public function requiresAuthWhenCallbackClassAnnotatedWithRequiresRole()
     {
         $route = new Route('/hello/{name}',
-                           'net\stubbles\webapp\OtherAnnotatedProcessor',
+                           'stubbles\webapp\OtherAnnotatedProcessor',
                            'GET'
                  );
         $this->assertTrue($route->requiresAuth());
@@ -430,7 +430,7 @@ class RouteTestCase extends \PHPUnit_Framework_TestCase
     public function requiresRoleWhenCallbackClassAnnotatedWithRequiresRole()
     {
         $route = new Route('/hello/{name}',
-                           'net\stubbles\webapp\OtherAnnotatedProcessor',
+                           'stubbles\webapp\OtherAnnotatedProcessor',
                            'GET'
                  );
         $this->assertTrue($route->requiresRole());
@@ -456,7 +456,7 @@ class RouteTestCase extends \PHPUnit_Framework_TestCase
     public function returnsRoleWhenCallbackClassAnnotatedWithRequiresRole()
     {
         $route = new Route('/hello/{name}',
-                           'net\stubbles\webapp\OtherAnnotatedProcessor',
+                           'stubbles\webapp\OtherAnnotatedProcessor',
                            'GET'
                  );
         $this->assertEquals('superadmin', $route->getRequiredRole());

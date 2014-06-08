@@ -5,13 +5,13 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @package  net\stubbles\webapp
+ * @package  stubbles\webapp
  */
-namespace net\stubbles\webapp;
+namespace stubbles\webapp;
 use stubbles\input\web\WebRequest;
-use net\stubbles\webapp\interceptor\Interceptors;
-use net\stubbles\webapp\response\Response;
-use net\stubbles\webapp\response\SupportedMimeTypes;
+use stubbles\webapp\interceptor\Interceptors;
+use stubbles\webapp\response\Response;
+use stubbles\webapp\response\SupportedMimeTypes;
 /**
  * Processable route which denotes a 405 Method Not Allowed route.
  *

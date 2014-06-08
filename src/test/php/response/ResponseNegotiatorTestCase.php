@@ -5,13 +5,13 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @package  net\stubbles\webapp
+ * @package  stubbles\webapp
  */
-namespace net\stubbles\webapp\response;
+namespace stubbles\webapp\response;
 use stubbles\input\ValueReader;
 use stubbles\lang;
 /**
- * Tests for net\stubbles\webapp\response\ResponseNegotiator.
+ * Tests for stubbles\webapp\response\ResponseNegotiator.
  *
  * @since  2.0.0
  * @group  response
@@ -48,7 +48,7 @@ class ResponseNegotiatorTestCase extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->mockResponse       = $this->getMock('net\stubbles\webapp\response\Response');
+        $this->mockResponse       = $this->getMock('stubbles\webapp\response\Response');
         $this->mockInjector       = $this->getMockBuilder('stubbles\ioc\Injector')
                                          ->disableOriginalConstructor()
                                          ->getMock();
@@ -72,7 +72,7 @@ class ResponseNegotiatorTestCase extends \PHPUnit_Framework_TestCase
         $this->mockRequest->expects($this->once())
                           ->method('protocolVersion')
                           ->will($this->returnValue(null));
-        $mockResponseClass = get_class($this->getMockBuilder('net\stubbles\webapp\response\WebResponse')
+        $mockResponseClass = get_class($this->getMockBuilder('stubbles\webapp\response\WebResponse')
                                             ->setMethods(['header', 'sendBody'])
                                             ->getMock()
                              );
@@ -94,7 +94,7 @@ class ResponseNegotiatorTestCase extends \PHPUnit_Framework_TestCase
         $this->mockRequest->expects($this->once())
                           ->method('protocolVersion')
                           ->will($this->returnValue('1.0'));
-        $mockResponseClass = get_class($this->getMockBuilder('net\stubbles\webapp\response\WebResponse')
+        $mockResponseClass = get_class($this->getMockBuilder('stubbles\webapp\response\WebResponse')
                                             ->setMethods(['header', 'sendBody'])
                                             ->getMock()
                              );
@@ -114,7 +114,7 @@ class ResponseNegotiatorTestCase extends \PHPUnit_Framework_TestCase
                           ->method('protocolVersion')
                           ->will($this->returnValue('1.1'));
         $response = ResponseNegotiator::negotiateHttpVersion($this->mockRequest);
-        $this->assertInstanceOf('net\stubbles\webapp\response\WebResponse',
+        $this->assertInstanceOf('stubbles\webapp\response\WebResponse',
                                 $response
         );
     }
@@ -169,7 +169,7 @@ class ResponseNegotiatorTestCase extends \PHPUnit_Framework_TestCase
         $this->mockAcceptHeader('application/json');
         $this->mockInjector->expects($this->once())
                            ->method('hasBinding')
-                           ->with($this->equalTo('net\stubbles\webapp\response\format\Formatter'),
+                           ->with($this->equalTo('stubbles\webapp\response\format\Formatter'),
                                   $this->equalTo('application/json')
                              )
                            ->will($this->returnValue(false));
@@ -192,17 +192,17 @@ class ResponseNegotiatorTestCase extends \PHPUnit_Framework_TestCase
         $this->mockAcceptHeader('application/json');
         $this->mockInjector->expects($this->once())
                            ->method('hasBinding')
-                           ->with($this->equalTo('net\stubbles\webapp\response\format\Formatter'),
+                           ->with($this->equalTo('stubbles\webapp\response\format\Formatter'),
                                   $this->equalTo('application/json')
                              )
                            ->will($this->returnValue(true));
         $this->mockInjector->expects($this->once())
                            ->method('getInstance')
-                           ->with($this->equalTo('net\stubbles\webapp\response\format\Formatter'),
+                           ->with($this->equalTo('stubbles\webapp\response\format\Formatter'),
                                   $this->equalTo('application/json')
                              )
-                           ->will($this->returnValue($this->getMock('net\stubbles\webapp\response\format\Formatter')));
-        $this->assertInstanceOf('net\stubbles\webapp\response\FormattingResponse',
+                           ->will($this->returnValue($this->getMock('stubbles\webapp\response\format\Formatter')));
+        $this->assertInstanceOf('stubbles\webapp\response\FormattingResponse',
                                 $this->responseNegotiator->negotiateMimeType($this->mockRequest,
                                                                              new SupportedMimeTypes(['application/json', 'application/xml'])
                                 )
@@ -219,8 +219,8 @@ class ResponseNegotiatorTestCase extends \PHPUnit_Framework_TestCase
         $this->mockInjector->expects($this->once())
                            ->method('getInstance')
                            ->with($this->equalTo('example\SpecialFormatter'))
-                           ->will($this->returnValue($this->getMock('net\stubbles\webapp\response\format\Formatter')));
-        $this->assertInstanceOf('net\stubbles\webapp\response\FormattingResponse',
+                           ->will($this->returnValue($this->getMock('stubbles\webapp\response\format\Formatter')));
+        $this->assertInstanceOf('stubbles\webapp\response\FormattingResponse',
                                 $this->responseNegotiator->negotiateMimeType($this->mockRequest,
                                                                              new SupportedMimeTypes(['application/json', 'application/xml'],
                                                                                                     ['application/xml' => 'example\SpecialFormatter']

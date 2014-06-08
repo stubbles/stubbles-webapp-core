@@ -5,12 +5,12 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @package  net\stubbles\webapp
+ * @package  stubbles\webapp
  */
-namespace net\stubbles\webapp\session;
+namespace stubbles\webapp\session;
 use stubbles\lang;
 /**
- * Tests for net\stubbles\webapp\session\Token.
+ * Tests for stubbles\webapp\session\Token.
  *
  * @since  2.0.0
  * @group  session
@@ -35,7 +35,7 @@ class TokenTestCase extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->mockSession = $this->getMock('net\\stubbles\\webapp\\session\\Session');
+        $this->mockSession = $this->getMock('stubbles\webapp\session\Session');
         $this->token       = new Token($this->mockSession);
     }
 

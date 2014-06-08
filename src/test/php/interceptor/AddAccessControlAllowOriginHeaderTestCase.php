@@ -5,13 +5,13 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @package  net\stubbles\webapp
+ * @package  stubbles\webapp
  */
-namespace net\stubbles\webapp\interceptor;
+namespace stubbles\webapp\interceptor;
 use stubbles\input\ValueReader;
 use stubbles\lang;
 /**
- * Tests for net\stubbles\webapp\interceptor\AddAccessControlAllowOriginHeader.
+ * Tests for stubbles\webapp\interceptor\AddAccessControlAllowOriginHeader.
  *
  * @since  3.4.0
  * @group  interceptor
@@ -44,7 +44,7 @@ class AddAccessControlAllowOriginHeaderTestCase extends \PHPUnit_Framework_TestC
     {
         $this->addAccessControlAllowOriginHeader = new AddAccessControlAllowOriginHeader();
         $this->mockRequest  = $this->getMock('stubbles\input\web\WebRequest');
-        $this->mockResponse = $this->getMock('net\stubbles\webapp\response\Response');
+        $this->mockResponse = $this->getMock('stubbles\webapp\response\Response');
     }
 
     /**
@@ -57,7 +57,7 @@ class AddAccessControlAllowOriginHeaderTestCase extends \PHPUnit_Framework_TestC
         $this->assertTrue($method->getAnnotation('Inject')->isOptional());
         $this->assertTrue($method->hasAnnotation('Property'));
         $this->assertEquals(
-                'net.stubbles.webapp.origin.hosts',
+                'stubbles.webapp.origin.hosts',
                 $method->getAnnotation('Property')->getValue()
         );
     }

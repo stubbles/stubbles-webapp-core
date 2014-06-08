@@ -5,12 +5,12 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @package  net\stubbles\webapp
+ * @package  stubbles\webapp
  */
-namespace net\stubbles\webapp\session;
+namespace stubbles\webapp\session;
 use stubbles\lang\reflect\ReflectionClass;
 /**
- * Tests for net\stubbles\webapp\session\SessionBindingScope.
+ * Tests for stubbles\webapp\session\SessionBindingScope.
  *
  * @group  session
  */
@@ -46,7 +46,7 @@ class SessionBindingScopeTestCase extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->mockSession           = $this->getMock('net\\stubbles\\webapp\\session\\Session');
+        $this->mockSession           = $this->getMock('stubbles\webapp\session\Session');
         $this->sessionScope          = new SessionBindingScope($this->mockSession);
         $this->mockInjectionProvider = $this->getMock('stubbles\ioc\InjectionProvider');
         $this->refClass              = new ReflectionClass('\\stdClass');
