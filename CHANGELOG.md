@@ -17,6 +17,7 @@
 
    * upgraded to stubbles/core 4.x and stubbles/input 3.x
    * added `net\stubbles\webapp\response\Response::headers()`
+   * fixed bug with route selection when no method restriction was set on a route
 
 
 3.4.0, (2014-05-16)

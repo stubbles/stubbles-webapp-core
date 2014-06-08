@@ -33,9 +33,9 @@ class Route implements ConfigurableRoute
     /**
      * request method this route is applicable for
      *
-     * @type  string
+     * @type  string[]
      */
-    private $requestMethod;
+    private $allowedRequestMethods;
     /**
      * list of pre interceptors which should be applied to this route
      *
@@ -92,7 +92,7 @@ class Route implements ConfigurableRoute
      *
      * @param   string                     $path           path this route is applicable for
      * @param   string|callback|Processor  $callback       code to be executed when the route is active
-     * @param   string                     $requestMethod  request method this route is applicable for
+     * @param   string|string[]            $requestMethod  request method or methods this route is applicable for
      * @throws  IllegalArgumentException
      */
     public function __construct($path, $callback, $requestMethod = null)
@@ -101,19 +101,43 @@ class Route implements ConfigurableRoute
             throw new IllegalArgumentException('Given callback must be a callable, an instance of stubbles\webapp\Processor or a class name of an existing processor class');
         }
 
-        $this->path          = $path;
-        $this->callback      = $callback;
-        $this->requestMethod = $requestMethod;
+        $this->path                  = $path;
+        $this->callback              = $callback;
+        $this->allowedRequestMethods = $this->arrayFrom($requestMethod);
+    }
+
+    /**
+     * turns given value into a list
+     *
+     * @param   string|string[]  $requestMethod
+     * @return  string
+     * @throws  IllegalArgumentException
+     */
+    private function arrayFrom($requestMethod)
+    {
+        if (is_string($requestMethod)) {
+            return [$requestMethod];
+        }
+
+        if (null === $requestMethod) {
+            return ['GET', 'HEAD', 'POST', 'PUT', 'DELETE'];
+        }
+
+        if (is_array($requestMethod)) {
+            return $requestMethod;
+        }
+
+        throw new IllegalArgumentException('Given request method must be null, a string or an array, but received ' . lang\getType($requestMethod));
     }
 
     /**
      * returns request method
      *
-     * @return  string
+     * @return  string[]
      */
-    public function getMethod()
+    public function allowedRequestMethods()
     {
-        return $this->requestMethod;
+        return $this->allowedRequestMethods;
     }
 
     /**
@@ -128,11 +152,11 @@ class Route implements ConfigurableRoute
             return false;
         }
 
-        if ($calledUri->methodEquals($this->requestMethod)) {
+        if (in_array($calledUri->method(), $this->allowedRequestMethods)) {
             return true;
         }
 
-        if ('GET' === $this->requestMethod) {
+        if (in_array('GET', $this->allowedRequestMethods)) {
             return $calledUri->methodEquals('HEAD');
         }
 

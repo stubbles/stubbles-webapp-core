@@ -67,6 +67,16 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @test
+     * @expectedException  stubbles\lang\exception\IllegalArgumentException
+     * @since  4.0.0
+     */
+    public function constructRouteWithInvalidRequestMethodThrowsIllegalArgumentException()
+    {
+        new Route('/hello', function() {}, 500);
+    }
+
+    /**
      * creates instance to test
      *
      * @param   string  $method
@@ -88,17 +98,29 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function methodIsNullIfNoneGiven()
+    public function allowedRequestMethodsContainAllIfNoneGiven()
     {
-        $this->assertNull($this->createRoute(null)->getMethod());
+        $this->assertEquals(
+                ['GET', 'HEAD', 'POST', 'PUT', 'DELETE'],
+                $this->createRoute(null)->allowedRequestMethods()
+        );
     }
 
     /**
      * @test
      */
-    public function returnsGivenMethod()
+    public function allowedRequestMethodsContainGivenSingleMethodOnly()
     {
-        $this->assertEquals('GET', $this->createRoute()->getMethod());
+        $this->assertEquals(['GET'], $this->createRoute()->allowedRequestMethods());
+    }
+
+    /**
+     * @test
+     * @since  4.0.0
+     */
+    public function allowedRequestMethodsContainGivenListOfMethodOnly()
+    {
+        $this->assertEquals(['POST', 'PUT'], $this->createRoute(['POST', 'PUT'])->allowedRequestMethods());
     }
 
     /**

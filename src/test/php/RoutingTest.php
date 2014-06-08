@@ -47,8 +47,8 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
      */
     public function annotationsPresentOnConstructor()
     {
-        $this->assertTrue(lang\reflectConstructor($this->routing)
-                              ->hasAnnotation('Inject')
+        $this->assertTrue(
+                lang\reflectConstructor($this->routing)->hasAnnotation('Inject')
         );
     }
 
@@ -133,6 +133,35 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
                                 $this->routing->setAuthHandler($this->getMock('stubbles\webapp\auth\AuthHandler'))
                                               ->findRoute($this->calledUri)
         );
+    }
+
+    /**
+     * @test
+     * @since  4.0.0
+     */
+    public function routeWithoutMethodRestrictionReturnsOptionRouteOnOptionRequest()
+    {
+        $this->routing->addRoute(new Route('/hello', function() { }));
+        $this->assertInstanceOf(
+                'stubbles\webapp\OptionsRoute',
+                $this->routing->findRoute(UriRequest::fromString('http://example.net/hello', 'OPTIONS'))
+        );
+    }
+
+    /**
+     * @test
+     * @since  4.0.0
+     */
+    public function routeWithoutMethodRestrictionProvidesListOfAllMethodsOnOptionRequest()
+    {
+        $this->routing->addRoute(new Route('/hello', function() { }));
+        $mockResponse = $this->getMock('stubbles\webapp\response\Response');
+        $mockResponse->expects($this->at(0))
+                     ->method('addHeader')
+                     ->with($this->equalTo('Allow'), $this->equalTo('GET, HEAD, POST, PUT, DELETE, OPTIONS'))
+                     ->will($this->returnSelf());
+        $this->routing->findRoute(UriRequest::fromString('http://example.net/hello', 'OPTIONS'))
+                      ->process($this->getMock('stubbles\input\web\WebRequest'), $mockResponse);
     }
 
     /**

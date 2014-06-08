@@ -280,7 +280,7 @@ class Routing implements RoutingConfigurator
         $allowedMethods = [];
         foreach ($this->routes as $route) {
             if ($route->matchesPath($calledUri)) {
-                $allowedMethods[] = $route->getMethod();
+                $allowedMethods = array_merge($allowedMethods, $route->allowedRequestMethods());
             }
         }
 

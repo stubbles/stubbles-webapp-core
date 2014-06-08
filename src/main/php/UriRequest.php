@@ -55,6 +55,17 @@ class UriRequest
     }
 
     /**
+     * returns called method
+     *
+     * @return  string
+     * @since   4.0.0
+     */
+    public function method()
+    {
+        return $this->method;
+    }
+
+    /**
      * checks if request method equals given method
      *
      * @param   string  $method
