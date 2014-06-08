@@ -145,4 +145,3 @@ class CookieTestCase extends \PHPUnit_Framework_TestCase
          );
     }
 }
-?>

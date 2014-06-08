@@ -57,4 +57,3 @@ class SessionBindingScope implements BindingScope
         return $instance;
     }
 }
-?>

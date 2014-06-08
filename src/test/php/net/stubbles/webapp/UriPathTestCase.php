@@ -28,7 +28,7 @@ class UriPathTestCase extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->uriPath = new UriPath('/hello/{name}', array('name' => 'world'), '/foo');
+        $this->uriPath = new UriPath('/hello/{name}', ['name' => 'world'], '/foo');
     }
 
     /**
@@ -98,7 +98,7 @@ class UriPathTestCase extends \PHPUnit_Framework_TestCase
      */
     public function returnsNullIfRemainingPathIsNull()
     {
-        $this->uriPath = new UriPath('/hello/{name}', array('name' => 'world'), null);
+        $this->uriPath = new UriPath('/hello/{name}', ['name' => 'world'], null);
         $this->assertNull($this->uriPath->getRemaining());
     }
 
@@ -107,7 +107,7 @@ class UriPathTestCase extends \PHPUnit_Framework_TestCase
      */
     public function returnsDefaultIfRemainingPathIsNull()
     {
-        $this->uriPath = new UriPath('/hello/{name}', array('name' => 'world'), null);
+        $this->uriPath = new UriPath('/hello/{name}', ['name' => 'world'], null);
         $this->assertEquals('index.html', $this->uriPath->getRemaining('index.html'));
     }
 }

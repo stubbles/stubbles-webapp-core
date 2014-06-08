@@ -37,8 +37,8 @@ class JsonFormatterTestCase extends \PHPUnit_Framework_TestCase
      */
     public function formatsJson()
     {
-        $this->assertEquals(json_encode(array('foo', 'bar' => 313)),
-                            $this->jsonFormatter->format(array('foo', 'bar' => 313))
+        $this->assertEquals(json_encode(['foo', 'bar' => 313]),
+                            $this->jsonFormatter->format(['foo', 'bar' => 313])
         );
     }
 
@@ -47,7 +47,7 @@ class JsonFormatterTestCase extends \PHPUnit_Framework_TestCase
      */
     public function formatForbiddenError()
     {
-        $this->assertEquals(json_encode(array('error' => 'You are not allowed to access this resource.')),
+        $this->assertEquals(json_encode(['error' => 'You are not allowed to access this resource.']),
                             $this->jsonFormatter->formatForbiddenError()
         );
     }
@@ -57,7 +57,7 @@ class JsonFormatterTestCase extends \PHPUnit_Framework_TestCase
      */
     public function formatNotFoundError()
     {
-        $this->assertEquals(json_encode(array('error' => 'Given resource could not be found.')),
+        $this->assertEquals(json_encode(['error' => 'Given resource could not be found.']),
                             $this->jsonFormatter->formatNotFoundError()
         );
     }
@@ -67,8 +67,8 @@ class JsonFormatterTestCase extends \PHPUnit_Framework_TestCase
      */
     public function formatMethodNotAllowedError()
     {
-        $this->assertEquals(json_encode(array('error' => 'The given request method PUT is not valid. Please use one of GET, POST, DELETE.')),
-                            $this->jsonFormatter->formatMethodNotAllowedError('PUT', array('GET', 'POST', 'DELETE'))
+        $this->assertEquals(json_encode(['error' => 'The given request method PUT is not valid. Please use one of GET, POST, DELETE.']),
+                            $this->jsonFormatter->formatMethodNotAllowedError('PUT', ['GET', 'POST', 'DELETE'])
         );
     }
 
@@ -77,9 +77,8 @@ class JsonFormatterTestCase extends \PHPUnit_Framework_TestCase
      */
     public function formatInternalServerError()
     {
-        $this->assertEquals(json_encode(array('error' => 'Internal Server Error: Error message')),
+        $this->assertEquals(json_encode(['error' => 'Internal Server Error: Error message']),
                             $this->jsonFormatter->formatInternalServerError('Error message')
         );
     }
 }
-?>

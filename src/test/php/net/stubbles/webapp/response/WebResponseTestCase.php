@@ -28,7 +28,7 @@ class WebResponseTestCase extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->response = $this->getMock('net\stubbles\webapp\response\WebResponse',
-                                         array('header', 'sendBody')
+                                         ['header', 'sendBody']
                           );
     }
 
@@ -49,8 +49,8 @@ class WebResponseTestCase extends \PHPUnit_Framework_TestCase
     public function versionCanBeSetOnConstruction()
     {
         $response = $this->getMock('net\stubbles\webapp\response\WebResponse',
-                                   array('header', 'sendBody'),
-                                   array('1.0')
+                                   ['header', 'sendBody'],
+                                   ['1.0']
                           );
         $response->expects($this->at(0))
                  ->method('header')
@@ -64,8 +64,8 @@ class WebResponseTestCase extends \PHPUnit_Framework_TestCase
     public function clearingResponseDoesNotResetVersion()
     {
         $response = $this->getMock('net\stubbles\webapp\response\WebResponse',
-                                   array('header', 'sendBody'),
-                                   array('1.0')
+                                   ['header', 'sendBody'],
+                                   ['1.0']
                           );
         $response->expects($this->at(0))
                  ->method('header')
@@ -108,8 +108,8 @@ class WebResponseTestCase extends \PHPUnit_Framework_TestCase
     public function statusCodeInCgiSapi()
     {
         $this->response = $this->getMock('net\\stubbles\\webapp\\response\\WebResponse',
-                                         array('header', 'sendBody'),
-                                         array('1.1', 'cgi')
+                                         ['header', 'sendBody'],
+                                         ['1.1', 'cgi']
                           );
         $this->response->expects($this->once())
                        ->method('header')
@@ -175,8 +175,8 @@ class WebResponseTestCase extends \PHPUnit_Framework_TestCase
     protected function createMockCookie()
     {
         $mockCookie = $this->getMock('net\\stubbles\\webapp\\response\\Cookie',
-                                     array(),
-                                     array('foo', 'bar')
+                                     [],
+                                     ['foo', 'bar']
                       );
         $mockCookie->expects($this->any())
                    ->method('getName')
@@ -386,7 +386,7 @@ class WebResponseTestCase extends \PHPUnit_Framework_TestCase
         $this->response->expects($this->at(1))
                        ->method('header')
                        ->with($this->equalTo('Allow: GET, HEAD'));
-        $this->response->methodNotAllowed('POST', array('GET', 'HEAD'))
+        $this->response->methodNotAllowed('POST', ['GET', 'HEAD'])
                        ->send();
     }
 
@@ -397,7 +397,7 @@ class WebResponseTestCase extends \PHPUnit_Framework_TestCase
      */
     public function methodNotAllowedFixatesResponse()
     {
-        $this->assertTrue($this->response->methodNotAllowed('POST', array('GET', 'HEAD'))->isFixed());
+        $this->assertTrue($this->response->methodNotAllowed('POST', ['GET', 'HEAD'])->isFixed());
     }
 
     /**
@@ -435,7 +435,7 @@ class WebResponseTestCase extends \PHPUnit_Framework_TestCase
         $this->response->expects($this->at(1))
                        ->method('header')
                        ->with($this->equalTo('X-Acceptable: application/json, application/xml'));
-        $this->response->notAcceptable(array('application/json', 'application/xml'))
+        $this->response->notAcceptable(['application/json', 'application/xml'])
                        ->send();
     }
 
@@ -508,4 +508,3 @@ class WebResponseTestCase extends \PHPUnit_Framework_TestCase
         $this->response->write('foo')->sendHead();
     }
 }
-?>

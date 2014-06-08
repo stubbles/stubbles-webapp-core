@@ -33,7 +33,7 @@ class JsonFormatter implements Formatter
      */
     public function formatForbiddenError()
     {
-        return json_encode(array('error' => 'You are not allowed to access this resource.'));
+        return json_encode(['error' => 'You are not allowed to access this resource.']);
     }
 
     /**
@@ -43,7 +43,7 @@ class JsonFormatter implements Formatter
      */
     public function formatNotFoundError()
     {
-        return json_encode(array('error' => 'Given resource could not be found.'));
+        return json_encode(['error' => 'Given resource could not be found.']);
     }
 
     /**
@@ -55,7 +55,7 @@ class JsonFormatter implements Formatter
      */
     public function formatMethodNotAllowedError($requestMethod, array $allowedMethods)
     {
-        return json_encode(array('error' => 'The given request method ' . strtoupper($requestMethod) . ' is not valid. Please use one of ' . join(', ', $allowedMethods) . '.'));
+        return json_encode(['error' => 'The given request method ' . strtoupper($requestMethod) . ' is not valid. Please use one of ' . join(', ', $allowedMethods) . '.']);
     }
 
     /**
@@ -66,6 +66,6 @@ class JsonFormatter implements Formatter
      */
     public function formatInternalServerError($message)
     {
-        return json_encode(array('error' => 'Internal Server Error: ' . $message));
+        return json_encode(['error' => 'Internal Server Error: ' . $message]);
     }
 }

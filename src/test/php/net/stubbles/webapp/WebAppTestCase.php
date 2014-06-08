@@ -93,12 +93,12 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
                                           ->disableOriginalConstructor()
                                           ->getMock();
         $this->webApp  = $this->getMock('net\stubbles\webapp\TestWebApp',
-                                        array('configureRouting'),
-                                        array($this->mockRequest,
-                                              $mockResponseNegotiator,
-                                              $this->routing,
-                                              $this->mockExceptionLogger
-                                        )
+                                        ['configureRouting'],
+                                        [$this->mockRequest,
+                                         $mockResponseNegotiator,
+                                         $this->routing,
+                                         $this->mockExceptionLogger
+                                        ]
                          );
     }
 
@@ -141,7 +141,7 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
                           ->getMock();
         $mockRoute->expects($this->once())
                   ->method('getSupportedMimeTypes')
-                  ->will($this->returnValue(new response\SupportedMimeTypes(array())));
+                  ->will($this->returnValue(new response\SupportedMimeTypes([])));
         $this->routing->expects($this->once())
                       ->method('findRoute')
                       ->will($this->returnValue($mockRoute));
@@ -389,12 +389,12 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
                                ->method('negotiateMimeType')
                                ->will($this->returnValue($this->mockResponse));
         $this->webApp  = $this->getMock('net\stubbles\webapp\TestWebApp',
-                                        array('configureRouting'),
-                                        array($this->mockRequest,
-                                              $mockResponseNegotiator,
-                                              $this->routing,
-                                              $this->mockExceptionLogger
-                                        )
+                                        ['configureRouting'],
+                                        [$this->mockRequest,
+                                         $mockResponseNegotiator,
+                                         $this->routing,
+                                         $this->mockExceptionLogger
+                                        ]
                          );
         $mockRoute = $this->createMockRoute();
         $mockRoute->expects($this->once())

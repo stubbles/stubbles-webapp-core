@@ -141,4 +141,3 @@ class WebBoundSessionId implements SessionId
         return $this;
     }
 }
-?>

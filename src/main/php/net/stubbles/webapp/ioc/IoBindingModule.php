@@ -32,20 +32,20 @@ class IoBindingModule implements BindingModule
      *
      * @type  array
      */
-    private $formatter      = array('application/json'    => 'net\stubbles\webapp\response\format\JsonFormatter',
-                                    'text/json'           => 'net\stubbles\webapp\response\format\JsonFormatter',
-                                    'text/html'           => 'net\stubbles\webapp\response\format\HtmlFormatter',
-                                    'text/plain'          => 'net\stubbles\webapp\response\format\PlainTextFormatter'
-                              );
+    private $formatter      = ['application/json'    => 'net\stubbles\webapp\response\format\JsonFormatter',
+                               'text/json'           => 'net\stubbles\webapp\response\format\JsonFormatter',
+                               'text/html'           => 'net\stubbles\webapp\response\format\HtmlFormatter',
+                               'text/plain'          => 'net\stubbles\webapp\response\format\PlainTextFormatter'
+                              ];
     /**
      * map of xml formatters for mime types
      *
      * @var  array
      */
-    private $xmlFormatter   = array('text/xml'            => 'net\stubbles\webapp\response\format\XmlFormatter',
-                                    'application/xml'     => 'net\stubbles\webapp\response\format\XmlFormatter',
-                                    'application/rss+xml' => 'net\stubbles\webapp\response\format\XmlFormatter'
-                              );
+    private $xmlFormatter   = ['text/xml'            => 'net\stubbles\webapp\response\format\XmlFormatter',
+                               'application/xml'     => 'net\stubbles\webapp\response\format\XmlFormatter',
+                               'application/rss+xml' => 'net\stubbles\webapp\response\format\XmlFormatter'
+                              ];
     /**
      * name for the session
      *
@@ -230,4 +230,3 @@ class IoBindingModule implements BindingModule
         return $formatter;
     }
 }
-?>

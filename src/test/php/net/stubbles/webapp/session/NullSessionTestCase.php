@@ -141,7 +141,6 @@ class NullSessionTestCase extends \PHPUnit_Framework_TestCase
      */
     public function hasNoValueKeys()
     {
-        $this->assertEquals(array(), $this->nullSession->getValueKeys());
+        $this->assertEquals([], $this->nullSession->getValueKeys());
     }
 }
-?>

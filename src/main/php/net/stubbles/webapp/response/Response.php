@@ -137,7 +137,7 @@ interface Response
      * @return  Response
      * @since   2.0.0
      */
-    public function notAcceptable(array $supportedMimeTypes = array());
+    public function notAcceptable(array $supportedMimeTypes = []);
 
     /**
      * creates a 500 Internal Server Error message
@@ -171,4 +171,3 @@ interface Response
      */
     public function sendHead();
 }
-?>

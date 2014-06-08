@@ -45,8 +45,8 @@ class MethodNotAllowedRouteTestCase extends \PHPUnit_Framework_TestCase
                                                                  $this->getMockBuilder('net\stubbles\webapp\interceptor\Interceptors')
                                                                       ->disableOriginalConstructor()
                                                                       ->getMock(),
-                                                                 new SupportedMimeTypes(array()),
-                                                                 array('GET', 'POST', 'HEAD')
+                                                                 new SupportedMimeTypes([]),
+                                                                 ['GET', 'POST', 'HEAD']
                                        );
         $this->mockRequest  = $this->getMock('stubbles\input\web\WebRequest');
         $this->mockResponse = $this->getMock('net\stubbles\webapp\response\Response');
@@ -70,7 +70,7 @@ class MethodNotAllowedRouteTestCase extends \PHPUnit_Framework_TestCase
                           ->will($this->returnValue('DELETE'));
         $this->mockResponse->expects($this->once())
                            ->method('methodNotAllowed')
-                           ->with($this->equalTo('DELETE'), $this->equalTo(array('GET', 'POST', 'HEAD', 'OPTIONS')));
+                           ->with($this->equalTo('DELETE'), $this->equalTo(['GET', 'POST', 'HEAD', 'OPTIONS']));
         $this->assertTrue($this->methodNotAllowedRoute->process($this->mockRequest, $this->mockResponse));
     }
 }

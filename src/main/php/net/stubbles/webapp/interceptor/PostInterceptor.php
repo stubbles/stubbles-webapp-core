@@ -26,4 +26,3 @@ interface PostInterceptor
      */
     public function postProcess(WebRequest $request, Response $response);
 }
-?>

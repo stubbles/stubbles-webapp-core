@@ -27,7 +27,7 @@ class ArraySessionStorage implements SessionStorage
      */
     public function __construct()
     {
-        $this->data = array(Session::FINGERPRINT => '');
+        $this->data = [Session::FINGERPRINT => ''];
     }
 
     /**
@@ -37,7 +37,7 @@ class ArraySessionStorage implements SessionStorage
      */
     public function clear()
     {
-        $this->data = array();
+        $this->data = [];
         return $this;
     }
 
@@ -102,4 +102,3 @@ class ArraySessionStorage implements SessionStorage
         return array_keys($this->data);
     }
 }
-?>

@@ -98,4 +98,3 @@ class TokenTestCase extends \PHPUnit_Framework_TestCase
         $this->assertEquals('nextToken', $this->token->next());
     }
 }
-?>

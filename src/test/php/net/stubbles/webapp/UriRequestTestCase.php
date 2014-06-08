@@ -132,9 +132,9 @@ class UriRequestTestCase extends \PHPUnit_Framework_TestCase
      */
     public function providePathArguments()
     {
-        return array(array('/hello/mikey', '/hello/{name}', array('name' => 'mikey')),
-                     array('/hello/303/mikey', '/hello/{id}/{name}', array('id' => '303', 'name' => 'mikey'))
-        );
+        return [['/hello/mikey', '/hello/{name}', ['name' => 'mikey']],
+                ['/hello/303/mikey', '/hello/{id}/{name}', ['id' => '303', 'name' => 'mikey']]
+        ];
     }
 
     /**
@@ -154,12 +154,12 @@ class UriRequestTestCase extends \PHPUnit_Framework_TestCase
      */
     public function provideNonSatisfiedPathPattern()
     {
-        return array(array('/rss/articles', '/hello/{name}'),
-                     array('/hello/mikey', '/hello$'),
-                     array('/hello/', '/hello/{name}$'),
-                     array('/hello/mikey', '/$'),
-                     array('/hello/mikey', '$')
-        );
+        return [['/rss/articles', '/hello/{name}'],
+                ['/hello/mikey', '/hello$'],
+                ['/hello/', '/hello/{name}$'],
+                ['/hello/mikey', '/$'],
+                ['/hello/mikey', '$']
+        ];
     }
 
     /**
@@ -179,14 +179,14 @@ class UriRequestTestCase extends \PHPUnit_Framework_TestCase
      */
     public function provideRemainingUris()
     {
-        return array(array('/hello/mikey', '/hello/{name}', ''),
-                     array('/hello/303/mikey', '/hello/{id}/{name}', ''),
-                     array('/hello/303/mikey/foo', '/hello/{id}/{name}', '/foo'),
-                     array('/hello', '/hello', ''),
-                     array('/hello/world;name', '/hello/[a-z0-9]+;?', 'name'),
-                     array('/hello/world', '/hello/?', 'world'),
-                     array('/', '/', '')
-        );
+        return [['/hello/mikey', '/hello/{name}', ''],
+                ['/hello/303/mikey', '/hello/{id}/{name}', ''],
+                ['/hello/303/mikey/foo', '/hello/{id}/{name}', '/foo'],
+                ['/hello', '/hello', ''],
+                ['/hello/world;name', '/hello/[a-z0-9]+;?', 'name'],
+                ['/hello/world', '/hello/?', 'world'],
+                ['/', '/', '']
+        ];
     }
 
     /**

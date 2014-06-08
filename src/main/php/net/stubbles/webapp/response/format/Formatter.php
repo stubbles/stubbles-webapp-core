@@ -54,4 +54,3 @@ interface Formatter
      */
     public function formatInternalServerError($message);
 }
-?>

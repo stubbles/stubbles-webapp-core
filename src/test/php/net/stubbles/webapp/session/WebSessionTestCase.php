@@ -355,13 +355,13 @@ class WebSessionTestCase extends \PHPUnit_Framework_TestCase
     {
         $this->mockSessionStorage->expects($this->once())
                                  ->method('getValueKeys')
-                                 ->will($this->returnValue(array(Session::FINGERPRINT,
-                                                                 'foo'
-                                                           )
+                                 ->will($this->returnValue([Session::FINGERPRINT,
+                                                            'foo'
+                                                           ]
 
                                         )
                                    );
-        $this->assertEquals(array('foo'),
+        $this->assertEquals(['foo'],
                             $this->createWebSession()->getValueKeys()
         );
     }
@@ -375,4 +375,3 @@ class WebSessionTestCase extends \PHPUnit_Framework_TestCase
         $this->createInvalidWebSession()->getValueKeys();
     }
 }
-?>

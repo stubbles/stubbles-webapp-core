@@ -86,7 +86,7 @@ class PlainTextFormatterTestCase extends \PHPUnit_Framework_TestCase
     public function usesVarExportForArrays()
     {
         $this->assertEquals("array (\n  303 => 'cool',\n)",
-                            $this->plainTextFormatter->format(array(303 => 'cool'))
+                            $this->plainTextFormatter->format([303 => 'cool'])
         );
     }
 
@@ -138,7 +138,7 @@ class PlainTextFormatterTestCase extends \PHPUnit_Framework_TestCase
     public function formatMethodNotAllowedError()
     {
         $this->assertEquals('The given request method PUT is not valid. Please use one of GET, POST, DELETE.',
-                            $this->plainTextFormatter->formatMethodNotAllowedError('PUT', array('GET', 'POST', 'DELETE'))
+                            $this->plainTextFormatter->formatMethodNotAllowedError('PUT', ['GET', 'POST', 'DELETE'])
         );
     }
 
@@ -152,4 +152,3 @@ class PlainTextFormatterTestCase extends \PHPUnit_Framework_TestCase
         );
     }
 }
-?>

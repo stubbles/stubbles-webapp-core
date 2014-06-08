@@ -93,4 +93,3 @@ class NoneDurableSessionId implements SessionId
         return $this;
     }
 }
-?>

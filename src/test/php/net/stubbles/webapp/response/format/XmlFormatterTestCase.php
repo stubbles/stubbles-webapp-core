@@ -70,7 +70,7 @@ class XmlFormatterTestCase extends \PHPUnit_Framework_TestCase
     {
         $this->mockXmlSerializerFacade->expects($this->once())
                                       ->method('serializeToXml')
-                                      ->with($this->equalTo(array('error' => 'You are not allowed to access this resource.')))
+                                      ->with($this->equalTo(['error' => 'You are not allowed to access this resource.']))
                                       ->will($this->returnValue('<xml/>'));
         $this->assertEquals('<xml/>',
                             $this->xmlFormatter->formatForbiddenError()
@@ -84,7 +84,7 @@ class XmlFormatterTestCase extends \PHPUnit_Framework_TestCase
     {
         $this->mockXmlSerializerFacade->expects($this->once())
                                       ->method('serializeToXml')
-                                      ->with($this->equalTo(array('error' => 'Given resource could not be found.')))
+                                      ->with($this->equalTo(['error' => 'Given resource could not be found.']))
                                       ->will($this->returnValue('<xml/>'));
         $this->assertEquals('<xml/>',
                             $this->xmlFormatter->formatNotFoundError()
@@ -98,10 +98,10 @@ class XmlFormatterTestCase extends \PHPUnit_Framework_TestCase
     {
         $this->mockXmlSerializerFacade->expects($this->once())
                                       ->method('serializeToXml')
-                                      ->with($this->equalTo(array('error' => 'The given request method PUT is not valid. Please use one of GET, POST, DELETE.')))
+                                      ->with($this->equalTo(['error' => 'The given request method PUT is not valid. Please use one of GET, POST, DELETE.']))
                                       ->will($this->returnValue('<xml/>'));
         $this->assertEquals('<xml/>',
-                            $this->xmlFormatter->formatMethodNotAllowedError('put', array('GET', 'POST', 'DELETE'))
+                            $this->xmlFormatter->formatMethodNotAllowedError('put', ['GET', 'POST', 'DELETE'])
         );
     }
 
@@ -112,11 +112,10 @@ class XmlFormatterTestCase extends \PHPUnit_Framework_TestCase
     {
         $this->mockXmlSerializerFacade->expects($this->once())
                                       ->method('serializeToXml')
-                                      ->with($this->equalTo(array('error' => 'Internal Server Error: Error message')))
+                                      ->with($this->equalTo(['error' => 'Internal Server Error: Error message']))
                                       ->will($this->returnValue('<xml/>'));
         $this->assertEquals('<xml/>',
                             $this->xmlFormatter->formatInternalServerError('Error message')
         );
     }
 }
-?>

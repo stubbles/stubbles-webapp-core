@@ -67,7 +67,7 @@ class HtmlFormatterTestCase extends \PHPUnit_Framework_TestCase
     public function formatArrayWithoutTitle()
     {
         $this->assertEquals('<!DOCTYPE html><html><head><title></title></head><body><h1>Hello</h1><p>Hello world!</p></body></html>',
-                            $this->htmlFormatter->format(array('content' => '<h1>Hello</h1><p>Hello world!</p>'))
+                            $this->htmlFormatter->format(['content' => '<h1>Hello</h1><p>Hello world!</p>'])
         );
     }
 
@@ -78,7 +78,7 @@ class HtmlFormatterTestCase extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals('<!DOCTYPE html><html><head><title>Cool Web App</title></head><body><h1>Hello</h1><p>Hello world!</p></body></html>',
                             $this->htmlFormatter->setBaseTitle('Cool Web App')
-                                                ->format(array('content' => '<h1>Hello</h1><p>Hello world!</p>'))
+                                                ->format(['content' => '<h1>Hello</h1><p>Hello world!</p>'])
         );
     }
 
@@ -88,9 +88,11 @@ class HtmlFormatterTestCase extends \PHPUnit_Framework_TestCase
     public function formatArrayWithTitle()
     {
         $this->assertEquals('<!DOCTYPE html><html><head><title>Hello world</title><meta name="robots" content="index, follow"/></head><body><h1>Hello</h1><p>Hello world!</p></body></html>',
-                            $this->htmlFormatter->format(array('title'   => 'Hello world',
-                                                               'meta'    => '<meta name="robots" content="index, follow"/>',
-                                                               'content' => '<h1>Hello</h1><p>Hello world!</p>'))
+                            $this->htmlFormatter->format(['title'   => 'Hello world',
+                                                          'meta'    => '<meta name="robots" content="index, follow"/>',
+                                                          'content' => '<h1>Hello</h1><p>Hello world!</p>'
+                                                          ]
+                            )
         );
     }
 
@@ -101,9 +103,11 @@ class HtmlFormatterTestCase extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals('<!DOCTYPE html><html><head><title>Cool Web App Hello world</title><meta name="robots" content="index, follow"/></head><body><h1>Hello</h1><p>Hello world!</p></body></html>',
                             $this->htmlFormatter->setBaseTitle('Cool Web App')
-                                                ->format(array('title'   => 'Hello world',
-                                                               'meta'    => '<meta name="robots" content="index, follow"/>',
-                                                               'content' => '<h1>Hello</h1><p>Hello world!</p>'))
+                                                ->format(['title'   => 'Hello world',
+                                                          'meta'    => '<meta name="robots" content="index, follow"/>',
+                                                          'content' => '<h1>Hello</h1><p>Hello world!</p>'
+                                                          ]
+                            )
         );
     }
 
@@ -165,7 +169,7 @@ class HtmlFormatterTestCase extends \PHPUnit_Framework_TestCase
     public function methodNotAllowedWithDefaultTemplate()
     {
         $this->assertEquals('<!DOCTYPE html><html><head><title>405 Method Not Allowed</title><meta name="robots" content="noindex"/></head><body><h1>405 Method Not Allowed</h1><p>The given request method POST is not valid. Please use one of GET, HEAD.</p></body></html>',
-                            $this->htmlFormatter->formatMethodNotAllowedError('POST', array('GET', 'HEAD'))
+                            $this->htmlFormatter->formatMethodNotAllowedError('POST', ['GET', 'HEAD'])
         );
     }
 
@@ -179,4 +183,3 @@ class HtmlFormatterTestCase extends \PHPUnit_Framework_TestCase
         );
     }
 }
-?>

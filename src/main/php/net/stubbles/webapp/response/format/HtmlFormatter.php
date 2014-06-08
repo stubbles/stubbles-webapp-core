@@ -112,9 +112,9 @@ class HtmlFormatter implements Formatter
             return $this->parse($resource);
         }
 
-        return $this->parse(array('title'   => $this->title,
-                                  'content' => (string) $resource
-                            )
+        return $this->parse(['title'   => $this->title,
+                             'content' => (string) $resource
+                            ]
         );
     }
 
@@ -125,10 +125,10 @@ class HtmlFormatter implements Formatter
      */
     public function formatForbiddenError()
     {
-        return $this->parse(array('title'   => '403 Forbidden',
-                                  'meta'    => '<meta name="robots" content="noindex"/>',
-                                  'content' => '<h1>403 Forbidden</h1><p>You are not allowed to access this resource.</p>'
-                            )
+        return $this->parse(['title'   => '403 Forbidden',
+                             'meta'    => '<meta name="robots" content="noindex"/>',
+                             'content' => '<h1>403 Forbidden</h1><p>You are not allowed to access this resource.</p>'
+                            ]
         );
     }
 
@@ -139,10 +139,10 @@ class HtmlFormatter implements Formatter
      */
     public function formatNotFoundError()
     {
-        return $this->parse(array('title'   => '404 Not Found',
-                                  'meta'    => '<meta name="robots" content="noindex"/>',
-                                  'content' => '<h1>404 Not Found</h1><p>The requested resource could not be found.</p>'
-                            )
+        return $this->parse(['title'   => '404 Not Found',
+                             'meta'    => '<meta name="robots" content="noindex"/>',
+                             'content' => '<h1>404 Not Found</h1><p>The requested resource could not be found.</p>'
+                            ]
         );
     }
 
@@ -155,10 +155,10 @@ class HtmlFormatter implements Formatter
      */
     public function formatMethodNotAllowedError($requestMethod, array $allowedMethods)
     {
-        return $this->parse(array('title'   => '405 Method Not Allowed',
-                                  'meta'    => '<meta name="robots" content="noindex"/>',
-                                  'content' => '<h1>405 Method Not Allowed</h1><p>The given request method ' . strtoupper($requestMethod) . ' is not valid. Please use one of ' . join(', ', $allowedMethods) . '.</p>'
-                            )
+        return $this->parse(['title'   => '405 Method Not Allowed',
+                             'meta'    => '<meta name="robots" content="noindex"/>',
+                             'content' => '<h1>405 Method Not Allowed</h1><p>The given request method ' . strtoupper($requestMethod) . ' is not valid. Please use one of ' . join(', ', $allowedMethods) . '.</p>'
+                            ]
         );
     }
 
@@ -170,10 +170,10 @@ class HtmlFormatter implements Formatter
      */
     public function formatInternalServerError($message)
     {
-        return $this->parse(array('title'   => '500 Internal Server Error',
-                                  'meta'    => '<meta name="robots" content="noindex"/>',
-                                  'content' => '<h1>500 Internal Server Error</h1><p>' . $message . '</p>'
-                            )
+        return $this->parse(['title'   => '500 Internal Server Error',
+                             'meta'    => '<meta name="robots" content="noindex"/>',
+                             'content' => '<h1>500 Internal Server Error</h1><p>' . $message . '</p>'
+                            ]
         );
     }
 }

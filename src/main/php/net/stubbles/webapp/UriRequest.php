@@ -109,15 +109,15 @@ class UriRequest
      */
     public function getPathArguments($expectedPath)
     {
-        $arguments = array();
+        $arguments = [];
         preg_match('/^' . $this->createPathPattern($expectedPath) . '/', $this->uri->path(), $arguments);
         array_shift($arguments);
-        $names  = array();
-        $result = array();
+        $names  = [];
+        $result = [];
         preg_match_all('/[{][^}]*[}]/', str_replace('/', '\/', $expectedPath), $names);
         foreach ($names[0] as $key => $name) {
             if (isset($arguments[$key])) {
-                $result[str_replace(array('{', '}'), '', $name)] = $arguments[$key];
+                $result[str_replace(['{', '}'], '', $name)] = $arguments[$key];
             }
         }
 
@@ -132,7 +132,7 @@ class UriRequest
      */
     public function getRemainingPath($expectedPath)
     {
-        $matches = array();
+        $matches = [];
         preg_match('/(' . $this->createPathPattern($expectedPath) . ')([^?]*)?/', $this->uri->path(), $matches);
         $last = count($matches) - 1;
         if (2 > $last) {

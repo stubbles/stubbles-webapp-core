@@ -150,7 +150,6 @@ class NullSession implements Session
      */
     public function getValueKeys()
     {
-        return array();
+        return [];
     }
 }
-?>

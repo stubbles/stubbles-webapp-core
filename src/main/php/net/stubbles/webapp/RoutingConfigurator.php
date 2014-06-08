@@ -198,4 +198,3 @@ interface RoutingConfigurator
      */
     public function disableContentNegotiation();
 }
-?>

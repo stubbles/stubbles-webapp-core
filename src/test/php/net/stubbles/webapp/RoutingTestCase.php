@@ -142,14 +142,14 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
      * @param   array  $postInterceptors
      * @return  ProcessableRoute
      */
-    private function createProcessableRoute(Route $route, array $preInterceptors = array(), array $postInterceptors = array())
+    private function createProcessableRoute(Route $route, array $preInterceptors = [], array $postInterceptors = [])
     {
         $mockInjector = $this->getMockBuilder('stubbles\ioc\Injector')
                              ->disableOriginalConstructor()
                              ->getMock();
         return new MatchingRoute(UriRequest::fromString('http://example.net/hello', 'GET'),
                                  new interceptor\Interceptors($mockInjector, $preInterceptors, $postInterceptors),
-                                 new response\SupportedMimeTypes(array()),
+                                 new response\SupportedMimeTypes([]),
                                  $route,
                                  $mockInjector
         );
@@ -196,7 +196,7 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
     {
         $preInterceptor = function() {};
         $route = $this->createProcessableRoute($this->routing->onGet('/hello', function() {}),
-                                               array('array_map', $preInterceptor)
+                                               ['array_map', $preInterceptor]
         );
         $this->assertEquals($route,
                             $this->routing->preIntercept('array_map')
@@ -230,9 +230,9 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
         $preInterceptor     = function() {};
         $mockPreFunction    = 'array_map';
         $route = $this->createProcessableRoute($this->routing->onGet('/hello', function() {}),
-                                               array($preInterceptor,
-                                                     $mockPreFunction
-                                               )
+                                               [$preInterceptor,
+                                                $mockPreFunction
+                                               ]
                  );
         $this->assertEquals($route,
                             $this->routing->preIntercept($preInterceptor)
@@ -249,7 +249,7 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
         $preInterceptor = function() {};
         $route = $this->createProcessableRoute($this->routing->onGet('/hello', function() {})
                                                              ->preIntercept('array_map'),
-                                               array($preInterceptor, 'array_map')
+                                               [$preInterceptor, 'array_map']
                  );
         $this->assertEquals($route,
                             $this->routing->preInterceptOnGet($preInterceptor)
@@ -289,8 +289,8 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
     {
         $postInterceptor = function() {};
         $route = $this->createProcessableRoute($this->routing->onGet('/hello', function() {}),
-                                               array(),
-                                               array('array_map', $postInterceptor)
+                                               [],
+                                               ['array_map', $postInterceptor]
                  );
         $this->assertEquals($route,
                             $this->routing->postIntercept('array_map')
@@ -325,10 +325,10 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
         $postInterceptor  = function() {};
         $mockPostFunction = 'array_map';
         $route = $this->createProcessableRoute($this->routing->onGet('/hello', function() {}),
-                                               array(),
-                                               array($postInterceptor,
-                                                     $mockPostFunction
-                                               )
+                                               [],
+                                               [$postInterceptor,
+                                                $mockPostFunction
+                                               ]
                  );
         $this->assertEquals($route,
                             $this->routing->postIntercept($postInterceptor)
@@ -345,8 +345,8 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
         $postInterceptor = function() {};
         $route = $this->createProcessableRoute($this->routing->onGet('/hello', function() {})
                                                              ->postIntercept('array_map'),
-                                               array(),
-                                               array('array_map', $postInterceptor)
+                                               [],
+                                               ['array_map', $postInterceptor]
                  );
         $this->assertEquals($route,
                             $this->routing->postInterceptOnGet($postInterceptor)
@@ -359,7 +359,7 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
      */
     public function supportsNoMimeTypeByDefault()
     {
-        $this->assertEquals(array(),
+        $this->assertEquals([],
                             $this->routing->findRoute($this->calledUri)
                                           ->getSupportedMimeTypes()
                                           ->asArray()
@@ -373,9 +373,9 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
     {
         $this->routing->onGet('/hello', function() {})
                       ->supportsMimeType('application/json');
-        $this->assertEquals(array('application/json',
-                                  'application/xml'
-                            ),
+        $this->assertEquals(['application/json',
+                             'application/xml'
+                            ],
                             $this->routing->supportsMimeType('application/xml')
                                           ->findRoute($this->calledUri)
                                           ->getSupportedMimeTypes()

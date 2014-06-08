@@ -41,7 +41,7 @@ class SupportedMimeTypes
      * @param  string[]  $mimeTypes
      * @param  array     $formatter
      */
-    public function __construct(array $mimeTypes, array $formatter = array())
+    public function __construct(array $mimeTypes, array $formatter = [])
     {
         $this->mimeTypes = $mimeTypes;
         $this->formatter = $formatter;
@@ -54,7 +54,7 @@ class SupportedMimeTypes
      */
     public static function createWithDisabledContentNegotation()
     {
-        $self = new self(array());
+        $self = new self([]);
         $self->disableContentNegotation = true;
         return $self;
     }

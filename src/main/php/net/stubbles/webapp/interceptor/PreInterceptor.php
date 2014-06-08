@@ -26,4 +26,3 @@ interface PreInterceptor
      */
     public function preProcess(WebRequest $request, Response $response);
 }
-?>

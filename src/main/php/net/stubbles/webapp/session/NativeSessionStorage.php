@@ -110,7 +110,7 @@ class NativeSessionStorage implements SessionStorage, SessionId
     public function clear()
     {
         if ($this->initialized) {
-            $_SESSION = array();
+            $_SESSION = [];
         }
 
         return $this;
@@ -182,4 +182,3 @@ class NativeSessionStorage implements SessionStorage, SessionId
         return array_keys($_SESSION);
     }
 }
-?>

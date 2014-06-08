@@ -28,25 +28,25 @@ class Routing implements RoutingConfigurator
      *
      * @type  Route[]
      */
-    private $routes           = array();
+    private $routes                   = [];
     /**
      * list of global pre interceptors and to which request method they respond
      *
      * @type  array
      */
-    private $preInterceptors  = array();
+    private $preInterceptors          = [];
     /**
      * list of global post interceptors and to which request method they respond
      *
      * @type  array
      */
-    private $postInterceptors = array();
+    private $postInterceptors         = [];
     /**
      * list of route-independent supported mime types
      *
      * @type  string[]
      */
-    private $mimeTypes        = array();
+    private $mimeTypes                = [];
     /**
      * whether content negotation is disabled or not
      *
@@ -277,7 +277,7 @@ class Routing implements RoutingConfigurator
      */
     private function getAllowedMethods(UriRequest $calledUri)
     {
-        $allowedMethods = array();
+        $allowedMethods = [];
         foreach ($this->routes as $route) {
             if ($route->matchesPath($calledUri)) {
                 $allowedMethods[] = $route->getMethod();

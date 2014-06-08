@@ -254,7 +254,7 @@ class WebResponse implements Response
      * @return  Response
      * @since   2.0.0
      */
-    public function notAcceptable(array $supportedMimeTypes = array())
+    public function notAcceptable(array $supportedMimeTypes = [])
     {
         $this->setStatusCode(406);
         $this->headers->acceptable($supportedMimeTypes);

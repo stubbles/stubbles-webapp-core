@@ -88,7 +88,7 @@ class MatchingRoute extends AbstractProcessableRoute
         }
 
         if (is_callable($callback)) {
-            return $this->result(call_user_func_array($callback, array($request, $response, $uriPath)));
+            return $this->result(call_user_func_array($callback, [$request, $response, $uriPath]));
         }
 
         if ($callback instanceof Processor) {

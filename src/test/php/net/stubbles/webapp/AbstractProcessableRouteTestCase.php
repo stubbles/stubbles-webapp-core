@@ -99,7 +99,7 @@ class AbstractProcessableRouteTestCase extends \PHPUnit_Framework_TestCase
         $this->mockInterceptors = $this->getMockBuilder('net\stubbles\webapp\interceptor\Interceptors')
                                    ->disableOriginalConstructor()
                                    ->getMock();
-        $this->supportedMimeTypes = new SupportedMimeTypes(array());
+        $this->supportedMimeTypes = new SupportedMimeTypes([]);
     }
 
     /**

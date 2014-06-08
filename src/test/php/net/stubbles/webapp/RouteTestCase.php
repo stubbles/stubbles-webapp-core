@@ -154,7 +154,7 @@ class RouteTestCase extends \PHPUnit_Framework_TestCase
      */
     public function returnsUriPath()
     {
-        $this->assertEquals(new UriPath('/hello/{name}', array('name' => 'world'), null),
+        $this->assertEquals(new UriPath('/hello/{name}', ['name' => 'world'], null),
                             $this->createRoute()->getUriPath(UriRequest::fromString('http://example.com/hello/world', 'GET'))
         );
     }
@@ -169,7 +169,7 @@ class RouteTestCase extends \PHPUnit_Framework_TestCase
      */
     public function hasNoPreInterceptorsByDefault()
     {
-        $this->assertEquals(array(),
+        $this->assertEquals([],
                             $this->createRoute()->getPreInterceptors()
         );
     }
@@ -191,11 +191,11 @@ class RouteTestCase extends \PHPUnit_Framework_TestCase
         $preInterceptor     = function() {};
         $mockPreInterceptor = $this->getMock('net\stubbles\webapp\interceptor\PreInterceptor');
         $mockPreFunction    = 'array_map';
-        $this->assertEquals(array(get_class($mockPreInterceptor),
-                                  $preInterceptor,
-                                  $mockPreInterceptor,
-                                  $mockPreFunction
-                            ),
+        $this->assertEquals([get_class($mockPreInterceptor),
+                             $preInterceptor,
+                             $mockPreInterceptor,
+                             $mockPreFunction
+                            ],
                             $this->createRoute()->preIntercept(get_class($mockPreInterceptor))
                                                 ->preIntercept($preInterceptor)
                                                 ->preIntercept($mockPreInterceptor)
@@ -209,7 +209,7 @@ class RouteTestCase extends \PHPUnit_Framework_TestCase
      */
     public function hasNoPostInterceptorsByDefault()
     {
-        $this->assertEquals(array(),
+        $this->assertEquals([],
                             $this->createRoute()->getPostInterceptors()
         );
     }
@@ -231,11 +231,11 @@ class RouteTestCase extends \PHPUnit_Framework_TestCase
         $postInterceptor     = function() {};
         $mockPostInterceptor = $this->getMock('net\stubbles\webapp\interceptor\PostInterceptor');
         $mockPostFunction    = 'array_map';
-        $this->assertEquals(array(get_class($mockPostInterceptor),
-                                  $postInterceptor,
-                                  $mockPostInterceptor,
-                                  $mockPostFunction
-                            ),
+        $this->assertEquals([get_class($mockPostInterceptor),
+                             $postInterceptor,
+                             $mockPostInterceptor,
+                             $mockPostFunction
+                            ],
                             $this->createRoute()->postIntercept(get_class($mockPostInterceptor))
                                                 ->postIntercept($postInterceptor)
                                                 ->postIntercept($mockPostInterceptor)
@@ -467,7 +467,7 @@ class RouteTestCase extends \PHPUnit_Framework_TestCase
      */
     public function supportNoMimeTypeByDefault()
     {
-        $this->assertEquals(array(),
+        $this->assertEquals([],
                             $this->createRoute()
                                  ->getSupportedMimeTypes()
                                  ->asArray()
@@ -479,7 +479,7 @@ class RouteTestCase extends \PHPUnit_Framework_TestCase
      */
     public function returnsListOfAddedSupportedMimeTypes()
     {
-        $this->assertEquals(array('application/json', 'application/xml'),
+        $this->assertEquals(['application/json', 'application/xml'],
                             $this->createRoute()
                                  ->supportsMimeType('application/json')
                                  ->supportsMimeType('application/xml')

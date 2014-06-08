@@ -43,4 +43,3 @@ interface SessionId
      */
     public function invalidate();
 }
-?>

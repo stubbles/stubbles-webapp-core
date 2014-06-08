@@ -84,7 +84,7 @@ class Interceptors
         }
 
         if (is_callable($preInterceptor)) {
-            return call_user_func_array($preInterceptor, array($request, $response));
+            return call_user_func_array($preInterceptor, [$request, $response]);
         }
 
         if ($preInterceptor instanceof PreInterceptor) {
@@ -133,7 +133,7 @@ class Interceptors
         }
 
         if (is_callable($postInterceptor)) {
-            return call_user_func_array($postInterceptor, array($request, $response));
+            return call_user_func_array($postInterceptor, [$request, $response]);
         }
 
         if ($postInterceptor instanceof PostInterceptor) {

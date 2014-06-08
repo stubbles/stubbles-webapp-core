@@ -36,7 +36,7 @@ class VoidFormatterTestCase extends \PHPUnit_Framework_TestCase
      */
     public function formatReturnsEmptyString()
     {
-        $this->assertEquals('', $this->voidFormatter->format(array('foo', 'bar' => 313)));
+        $this->assertEquals('', $this->voidFormatter->format(['foo', 'bar' => 313]));
     }
 
     /**
@@ -60,7 +60,7 @@ class VoidFormatterTestCase extends \PHPUnit_Framework_TestCase
      */
     public function formatMethodNotAllowedErrorReturnsEmptyString()
     {
-        $this->assertEquals('', $this->voidFormatter->formatMethodNotAllowedError('PUT', array('GET', 'POST', 'DELETE')));
+        $this->assertEquals('', $this->voidFormatter->formatMethodNotAllowedError('PUT', ['GET', 'POST', 'DELETE']));
     }
 
     /**
@@ -71,4 +71,3 @@ class VoidFormatterTestCase extends \PHPUnit_Framework_TestCase
         $this->assertEquals('', $this->voidFormatter->formatInternalServerError(new \Exception('Error  message')));
     }
 }
-?>

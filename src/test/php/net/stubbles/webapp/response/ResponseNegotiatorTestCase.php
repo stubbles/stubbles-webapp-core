@@ -73,7 +73,7 @@ class ResponseNegotiatorTestCase extends \PHPUnit_Framework_TestCase
                           ->method('protocolVersion')
                           ->will($this->returnValue(null));
         $mockResponseClass = get_class($this->getMockBuilder('net\stubbles\webapp\response\WebResponse')
-                                            ->setMethods(array('header', 'sendBody'))
+                                            ->setMethods(['header', 'sendBody'])
                                             ->getMock()
                              );
         $response = ResponseNegotiator::negotiateHttpVersion($this->mockRequest, $mockResponseClass);
@@ -95,7 +95,7 @@ class ResponseNegotiatorTestCase extends \PHPUnit_Framework_TestCase
                           ->method('protocolVersion')
                           ->will($this->returnValue('1.0'));
         $mockResponseClass = get_class($this->getMockBuilder('net\stubbles\webapp\response\WebResponse')
-                                            ->setMethods(array('header', 'sendBody'))
+                                            ->setMethods(['header', 'sendBody'])
                                             ->getMock()
                              );
         $response = ResponseNegotiator::negotiateHttpVersion($this->mockRequest, $mockResponseClass);
@@ -152,11 +152,11 @@ class ResponseNegotiatorTestCase extends \PHPUnit_Framework_TestCase
         $this->mockAcceptHeader('text/html');
         $this->mockResponse->expects($this->once())
                            ->method('notAcceptable')
-                           ->with($this->equalTo(array('application/json', 'application/xml')))
+                           ->with($this->equalTo(['application/json', 'application/xml']))
                            ->will($this->returnSelf());
         $this->assertSame($this->mockResponse,
                           $this->responseNegotiator->negotiateMimeType($this->mockRequest,
-                                                                       new SupportedMimeTypes(array('application/json', 'application/xml'))
+                                                                       new SupportedMimeTypes(['application/json', 'application/xml'])
                           )
         );
     }
@@ -179,7 +179,7 @@ class ResponseNegotiatorTestCase extends \PHPUnit_Framework_TestCase
                            ->will($this->returnSelf());
         $this->assertSame($this->mockResponse,
                           $this->responseNegotiator->negotiateMimeType($this->mockRequest,
-                                                                       new SupportedMimeTypes(array('application/json', 'application/xml'))
+                                                                       new SupportedMimeTypes(['application/json', 'application/xml'])
                           )
         );
     }
@@ -204,7 +204,7 @@ class ResponseNegotiatorTestCase extends \PHPUnit_Framework_TestCase
                            ->will($this->returnValue($this->getMock('net\stubbles\webapp\response\format\Formatter')));
         $this->assertInstanceOf('net\stubbles\webapp\response\FormattingResponse',
                                 $this->responseNegotiator->negotiateMimeType($this->mockRequest,
-                                                                             new SupportedMimeTypes(array('application/json', 'application/xml'))
+                                                                             new SupportedMimeTypes(['application/json', 'application/xml'])
                                 )
         );
     }
@@ -222,8 +222,8 @@ class ResponseNegotiatorTestCase extends \PHPUnit_Framework_TestCase
                            ->will($this->returnValue($this->getMock('net\stubbles\webapp\response\format\Formatter')));
         $this->assertInstanceOf('net\stubbles\webapp\response\FormattingResponse',
                                 $this->responseNegotiator->negotiateMimeType($this->mockRequest,
-                                                                             new SupportedMimeTypes(array('application/json', 'application/xml'),
-                                                                                                    array('application/xml' => 'example\SpecialFormatter')
+                                                                             new SupportedMimeTypes(['application/json', 'application/xml'],
+                                                                                                    ['application/xml' => 'example\SpecialFormatter']
                                                                              )
                                 )
         );

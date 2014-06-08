@@ -150,13 +150,13 @@ class FormattingResponseTestCase extends \PHPUnit_Framework_TestCase
     {
         $this->mockFormatter->expects($this->once())
                             ->method('format')
-                            ->with($this->equalTo(array('foo' => 'bar')))
+                            ->with($this->equalTo(['foo' => 'bar']))
                             ->will($this->returnValue('foo: bar'));
         $this->decoratedResponse->expects($this->once())
                                 ->method('write')
                                 ->with($this->equalTo('foo: bar'));
         $this->assertSame($this->formattingResponse,
-                          $this->formattingResponse->write(array('foo' => 'bar'))
+                          $this->formattingResponse->write(['foo' => 'bar'])
         );
     }
 
@@ -244,17 +244,17 @@ class FormattingResponseTestCase extends \PHPUnit_Framework_TestCase
     {
         $this->decoratedResponse->expects($this->once())
                                 ->method('methodNotAllowed')
-                                ->with($this->equalTo('POST'), $this->equalTo(array('GET', 'HEAD')))
+                                ->with($this->equalTo('POST'), $this->equalTo(['GET', 'HEAD']))
                                 ->will($this->returnSelf());
         $this->mockFormatter->expects($this->once())
                             ->method('formatMethodNotAllowedError')
-                            ->with($this->equalTo('POST'), $this->equalTo(array('GET', 'HEAD')))
+                            ->with($this->equalTo('POST'), $this->equalTo(['GET', 'HEAD']))
                             ->will($this->returnValue('No way to POST here, use GET or HEAD'));
         $this->decoratedResponse->expects($this->once())
                                 ->method('write')
                                 ->with($this->equalTo('No way to POST here, use GET or HEAD'));
         $this->assertSame($this->formattingResponse,
-                          $this->formattingResponse->methodNotAllowed('POST', array('GET', 'HEAD'))
+                          $this->formattingResponse->methodNotAllowed('POST', ['GET', 'HEAD'])
         );
     }
 
@@ -265,9 +265,9 @@ class FormattingResponseTestCase extends \PHPUnit_Framework_TestCase
     {
         $this->decoratedResponse->expects($this->once())
                                 ->method('notAcceptable')
-                                ->with($this->equalTo(array('application/json', 'application/xml')));
+                                ->with($this->equalTo(['application/json', 'application/xml']));
         $this->assertSame($this->formattingResponse,
-                          $this->formattingResponse->notAcceptable(array('application/json', 'application/xml'))
+                          $this->formattingResponse->notAcceptable(['application/json', 'application/xml'])
         );
     }
 

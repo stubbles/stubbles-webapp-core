@@ -52,7 +52,7 @@ class ArraySessionStorageTestCase extends \PHPUnit_Framework_TestCase
      */
     public function isEmptyAfterClear()
     {
-        $this->assertEquals(array(),
+        $this->assertEquals([],
                             $this->arraySessionStorage->putValue('foo', 'bar')
                                                       ->clear()
                                                       ->getValueKeys()
@@ -122,7 +122,7 @@ class ArraySessionStorageTestCase extends \PHPUnit_Framework_TestCase
      */
     public function returnsDefaultValueKeysAfterCreation()
     {
-        $this->assertEquals(array(Session::FINGERPRINT),
+        $this->assertEquals([Session::FINGERPRINT],
                             $this->arraySessionStorage->getValueKeys()
         );
     }
@@ -132,12 +132,11 @@ class ArraySessionStorageTestCase extends \PHPUnit_Framework_TestCase
      */
     public function valueKeysIncludeKeysOfAddedValues()
     {
-        $this->assertEquals(array(Session::FINGERPRINT,
+        $this->assertEquals([Session::FINGERPRINT,
                                   'foo'
-                            ),
+                            ],
                             $this->arraySessionStorage->putValue('foo', 'bar')
                                                       ->getValueKeys()
         );
     }
 }
-?>

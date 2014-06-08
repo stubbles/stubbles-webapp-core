@@ -56,7 +56,7 @@ class XmlFormatter implements Formatter
      */
     public function formatForbiddenError()
     {
-        return $this->xmlSerializerFacade->serializeToXml(array('error' => 'You are not allowed to access this resource.'));
+        return $this->xmlSerializerFacade->serializeToXml(['error' => 'You are not allowed to access this resource.']);
     }
 
     /**
@@ -66,7 +66,7 @@ class XmlFormatter implements Formatter
      */
     public function formatNotFoundError()
     {
-        return $this->xmlSerializerFacade->serializeToXml(array('error' => 'Given resource could not be found.'));
+        return $this->xmlSerializerFacade->serializeToXml(['error' => 'Given resource could not be found.']);
     }
 
     /**
@@ -78,7 +78,7 @@ class XmlFormatter implements Formatter
      */
     public function formatMethodNotAllowedError($requestMethod, array $allowedMethods)
     {
-        return $this->xmlSerializerFacade->serializeToXml(array('error' => 'The given request method ' . strtoupper($requestMethod) . ' is not valid. Please use one of ' . join(', ', $allowedMethods) . '.'));
+        return $this->xmlSerializerFacade->serializeToXml(['error' => 'The given request method ' . strtoupper($requestMethod) . ' is not valid. Please use one of ' . join(', ', $allowedMethods) . '.']);
     }
 
     /**
@@ -89,6 +89,6 @@ class XmlFormatter implements Formatter
      */
     public function formatInternalServerError($message)
     {
-        return $this->xmlSerializerFacade->serializeToXml(array('error' => 'Internal Server Error: ' . $message));
+        return $this->xmlSerializerFacade->serializeToXml(['error' => 'Internal Server Error: ' . $message]);
     }
 }

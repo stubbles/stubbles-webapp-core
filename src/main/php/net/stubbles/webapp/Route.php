@@ -41,13 +41,13 @@ class Route implements ConfigurableRoute
      *
      * @type  string[]|Closure[]
      */
-    private $preInterceptors          = array();
+    private $preInterceptors          = [];
     /**
      * list of post interceptors which should be applied to this route
      *
      * @type  string[]|Closure[]
      */
-    private $postInterceptors         = array();
+    private $postInterceptors         = [];
     /**
      * whether route requires https
      *
@@ -71,7 +71,7 @@ class Route implements ConfigurableRoute
      *
      * @type  string[]
      */
-    private $mimeTypes                = array();
+    private $mimeTypes                = [];
     /**
      * whether content negotation is disabled or not
      *
@@ -83,7 +83,7 @@ class Route implements ConfigurableRoute
      *
      * @type  array
      */
-    private $formatter                = array();
+    private $formatter                = [];
 
     /**
      * constructor
@@ -367,7 +367,7 @@ class Route implements ConfigurableRoute
      * @param   string[]  $globalMimeTypes  list of globally supported mime types
      * @return  SupportedMimeTypes
      */
-    public function getSupportedMimeTypes(array $globalMimeTypes = array())
+    public function getSupportedMimeTypes(array $globalMimeTypes = [])
     {
         if ($this->disableContentNegotation) {
             return SupportedMimeTypes::createWithDisabledContentNegotation();

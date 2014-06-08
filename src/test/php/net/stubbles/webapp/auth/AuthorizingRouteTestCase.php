@@ -100,7 +100,7 @@ class AuthorizingRouteTestCase extends \PHPUnit_Framework_TestCase
      */
     public function returnsSupportedMimeTypesOfActualRoute()
     {
-        $supportedMimeTypes = new SupportedMimeTypes(array());
+        $supportedMimeTypes = new SupportedMimeTypes([]);
         $this->mockActualRoute->expects($this->once())
                               ->method('getSupportedMimeTypes')
                               ->will($this->returnValue($supportedMimeTypes));

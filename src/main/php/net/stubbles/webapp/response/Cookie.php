@@ -240,4 +240,3 @@ class Cookie
         setcookie($this->name, $this->value, $this->expires, $this->path, $this->domain, $this->secure, $this->httpOnly);
     }
 }
-?>

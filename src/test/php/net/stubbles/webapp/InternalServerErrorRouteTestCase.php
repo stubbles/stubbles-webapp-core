@@ -43,7 +43,7 @@ class InternalServerErrorRouteTestCase extends \PHPUnit_Framework_TestCase
     {
         $this->internalServerErrorRoute = new InternalServerErrorRoute('error',
                                                                        UriRequest::fromString('http://example.com/hello/world', 'GET'),
-                                                                       new SupportedMimeTypes(array())
+                                                                       new SupportedMimeTypes([])
                                           );
         $this->mockRequest  = $this->getMock('stubbles\input\web\WebRequest');
         $this->mockResponse = $this->getMock('net\stubbles\webapp\response\Response');
@@ -72,7 +72,7 @@ class InternalServerErrorRouteTestCase extends \PHPUnit_Framework_TestCase
      */
     public function returnsGivenListOfSupportedMimeTypes()
     {
-        $this->assertEquals(new SupportedMimeTypes(array()),
+        $this->assertEquals(new SupportedMimeTypes([]),
                             $this->internalServerErrorRoute->getSupportedMimeTypes()
         );
     }

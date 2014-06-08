@@ -200,14 +200,14 @@ class IoBindingModuleTestCase extends \PHPUnit_Framework_TestCase
     {
         $injector = $this->createInjector(IoBindingModule::createWithoutSession());
         $this->assertTrue($injector->hasConstant('net.stubbles.webapp.response.format.mimetypes'));
-        $this->assertEquals(array('application/json',
-                                  'text/json',
-                                  'text/html',
-                                  'text/plain',
-                                  'text/xml',
-                                  'application/xml',
-                                  'application/rss+xml'
-                            ),
+        $this->assertEquals(['application/json',
+                             'text/json',
+                             'text/html',
+                             'text/plain',
+                             'text/xml',
+                             'application/xml',
+                             'application/rss+xml'
+                            ],
                             $injector->getConstant('net.stubbles.webapp.response.format.mimetypes')
         );
     }
@@ -222,15 +222,15 @@ class IoBindingModuleTestCase extends \PHPUnit_Framework_TestCase
                                                          ->addFormatter('foo/bar', 'foo\BarFormatter')
                     );
         $this->assertTrue($injector->hasConstant('net.stubbles.webapp.response.format.mimetypes'));
-        $this->assertEquals(array('application/json',
-                                  'text/json',
-                                  'text/html',
-                                  'text/plain',
-                                  'foo/bar',
-                                  'text/xml',
-                                  'application/xml',
-                                  'application/rss+xml'
-                            ),
+        $this->assertEquals(['application/json',
+                             'text/json',
+                             'text/html',
+                             'text/plain',
+                             'foo/bar',
+                             'text/xml',
+                             'application/xml',
+                             'application/rss+xml'
+                            ],
                             $injector->getConstant('net.stubbles.webapp.response.format.mimetypes')
         );
     }
@@ -261,4 +261,3 @@ class IoBindingModuleTestCase extends \PHPUnit_Framework_TestCase
         }
     }
 }
-?>

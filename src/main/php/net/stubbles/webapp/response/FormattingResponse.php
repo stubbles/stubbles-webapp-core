@@ -215,7 +215,7 @@ class FormattingResponse implements Response
      * @return  Response
      * @since   2.0.0
      */
-    public function notAcceptable(array $supportedMimeTypes = array())
+    public function notAcceptable(array $supportedMimeTypes = [])
     {
         $this->response->notAcceptable($supportedMimeTypes);
         return $this;

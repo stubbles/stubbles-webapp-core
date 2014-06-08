@@ -43,7 +43,7 @@ class SupportedMimeTypesTestCase extends \PHPUnit_Framework_TestCase
      */
     public function listOfSupportedMimeTypedWithDisabledContentNegotationIsEmpty()
     {
-        $this->assertEquals(array(),
+        $this->assertEquals([],
                             SupportedMimeTypes::createWithDisabledContentNegotation()
                                               ->asArray()
         );
@@ -54,8 +54,8 @@ class SupportedMimeTypesTestCase extends \PHPUnit_Framework_TestCase
      */
     private function createInstance()
     {
-        return new SupportedMimeTypes(array('application/xml', 'application/json'),
-                                      array('application/xml' => 'example\SpecialFormatter')
+        return new SupportedMimeTypes(['application/xml', 'application/json'],
+                                      ['application/xml' => 'example\SpecialFormatter']
         );
     }
 
@@ -107,7 +107,7 @@ class SupportedMimeTypesTestCase extends \PHPUnit_Framework_TestCase
      */
     public function listOfSupportedMimeTypedContainsListFromCreation()
     {
-        $this->assertEquals(array('application/xml', 'application/json'),
+        $this->assertEquals(['application/xml', 'application/json'],
                             $this->createInstance()
                                  ->asArray()
         );

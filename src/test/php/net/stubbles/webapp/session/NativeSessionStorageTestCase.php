@@ -28,7 +28,7 @@ class NativeSessionStorageTestCase extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $_SESSION = array();
+        $_SESSION = [];
         $this->nativeSessionStorage = new NativeSessionStorage('foo');
     }
 
@@ -37,7 +37,7 @@ class NativeSessionStorageTestCase extends \PHPUnit_Framework_TestCase
      */
     public function tearDown()
     {
-        $_SESSION = array();
+        $_SESSION = [];
     }
 
     /**
@@ -91,7 +91,7 @@ class NativeSessionStorageTestCase extends \PHPUnit_Framework_TestCase
      */
     public function isEmptyAfterClear()
     {
-        $this->assertEquals(array(),
+        $this->assertEquals([],
                             $this->nativeSessionStorage->putValue('foo', 'bar')
                                                        ->clear()
                                                        ->getValueKeys()
@@ -161,7 +161,7 @@ class NativeSessionStorageTestCase extends \PHPUnit_Framework_TestCase
      */
     public function hasNoValueKeysByDefault()
     {
-        $this->assertEquals(array(),
+        $this->assertEquals([],
                             $this->nativeSessionStorage->getValueKeys()
         );
     }
@@ -171,10 +171,9 @@ class NativeSessionStorageTestCase extends \PHPUnit_Framework_TestCase
      */
     public function valueKeysIncludeKeysOfAddedValues()
     {
-        $this->assertEquals(array('foo'),
+        $this->assertEquals(['foo'],
                             $this->nativeSessionStorage->putValue('foo', 'bar')
                                                        ->getValueKeys()
         );
     }
 }
-?>

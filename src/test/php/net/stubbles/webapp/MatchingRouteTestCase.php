@@ -62,7 +62,7 @@ class MatchingRouteTestCase extends \PHPUnit_Framework_TestCase
                                  $this->getMockBuilder('net\stubbles\webapp\interceptor\Interceptors')
                                       ->disableOriginalConstructor()
                                       ->getMock(),
-                                 new SupportedMimeTypes(array()),
+                                 new SupportedMimeTypes([]),
                                  $routeConfig,
                                  $this->mockInjector
         );
@@ -134,10 +134,10 @@ class MatchingRouteTestCase extends \PHPUnit_Framework_TestCase
      */
     public function returnValueAssertions()
     {
-        return array(array('assertFalse', false),
-                     array('assertTrue', true),
-                     array('assertTrue', null)
-        );
+        return [['assertFalse', false],
+                ['assertTrue', true],
+                ['assertTrue', null]
+        ];
     }
 
     /**
@@ -191,7 +191,7 @@ class MatchingRouteTestCase extends \PHPUnit_Framework_TestCase
         $this->mockResponse->expects($this->once())
                            ->method('write')
                            ->with($this->equalTo('Hello world'));
-        $this->assertTrue($this->createMatchingRouteWithCallback(array($this, 'theCallable'))
+        $this->assertTrue($this->createMatchingRouteWithCallback([$this, 'theCallable'])
                                ->process($this->mockRequest, $this->mockResponse)
         );
     }
@@ -219,7 +219,7 @@ class MatchingRouteTestCase extends \PHPUnit_Framework_TestCase
                                 ->method('process')
                                 ->with($this->equalTo($this->mockRequest),
                                        $this->equalTo($this->mockResponse),
-                                       $this->equalTo(new UriPath('/hello/{name}', array('name' => 'world'), null))
+                                       $this->equalTo(new UriPath('/hello/{name}', ['name' => 'world'], null))
                                   );
         if (null !== $returnValue) {
             $mocked->will($this->returnValue($returnValue));
@@ -257,7 +257,7 @@ class MatchingRouteTestCase extends \PHPUnit_Framework_TestCase
                                 ->method('process')
                                 ->with($this->equalTo($this->mockRequest),
                                        $this->equalTo($this->mockResponse),
-                                       $this->equalTo(new UriPath('/hello/{name}', array('name' => 'world'), null))
+                                       $this->equalTo(new UriPath('/hello/{name}', ['name' => 'world'], null))
                                   );
         if (null !== $returnValue) {
             $mocked->will($this->returnValue($returnValue));
