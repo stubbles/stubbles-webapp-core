@@ -57,7 +57,7 @@ class OptionsRouteTest extends \PHPUnit_Framework_TestCase
      */
     public function doesNotRequireSwitchToHttps()
     {
-        $this->assertFalse($this->optionsRoute->switchToHttps());
+        $this->assertFalse($this->optionsRoute->requiresHttps());
     }
 
     /**

@@ -138,7 +138,7 @@ class WebResponse implements Response
      */
     public function addCookie(Cookie $cookie)
     {
-        $this->cookies[$cookie->getName()] = $cookie;
+        $this->cookies[$cookie->name()] = $cookie;
         return $this;
     }
 

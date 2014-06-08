@@ -56,7 +56,7 @@ class MissingRouteTest extends \PHPUnit_Framework_TestCase
      */
     public function doesNotRequireSwitchToHttps()
     {
-        $this->assertFalse($this->missingRoute->switchToHttps());
+        $this->assertFalse($this->missingRoute->requiresHttps());
     }
 
     /**

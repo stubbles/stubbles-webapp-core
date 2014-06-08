@@ -96,7 +96,7 @@ class SupportedMimeTypes
      * @return  bool
      * @since   3.2.0
      */
-    public function hasFormatter($mimeType)
+    public function provideFormatter($mimeType)
     {
         return isset($this->formatter[$mimeType]);
     }
@@ -108,9 +108,9 @@ class SupportedMimeTypes
      * @return  string
      * @since   3.2.0
      */
-    public function getFormatter($mimeType)
+    public function formatterFor($mimeType)
     {
-        if ($this->hasFormatter($mimeType)) {
+        if ($this->provideFormatter($mimeType)) {
             return $this->formatter[$mimeType];
         }
 

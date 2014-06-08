@@ -79,7 +79,7 @@ abstract class WebApp extends App
                                                              $this->request->method()
                                               )
                     );
-        $response = $this->responseNegotiator->negotiateMimeType($this->request, $route->getSupportedMimeTypes());
+        $response = $this->responseNegotiator->negotiateMimeType($this->request, $route->supportedMimeTypes());
         if (!$response->isFixed()) {
             $this->process($route, $response);
         }
@@ -97,7 +97,7 @@ abstract class WebApp extends App
     private function process(ProcessableRoute $route, Response $response)
     {
         if ($this->switchToHttps($route)) {
-            $response->redirect($route->getHttpsUri());
+            $response->redirect($route->httpsUri());
             return;
         }
 
@@ -121,7 +121,7 @@ abstract class WebApp extends App
      */
     protected function switchToHttps(ProcessableRoute $route)
     {
-        return $route->switchToHttps();
+        return $route->requiresHttps();
     }
 
     /**

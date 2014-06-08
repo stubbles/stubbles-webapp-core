@@ -106,8 +106,8 @@ class ResponseNegotiator
      */
     private function createFormatter($mimeType, SupportedMimeTypes $supportedMimeTypes)
     {
-        if ($supportedMimeTypes->hasFormatter($mimeType)) {
-            return $this->injector->getInstance($supportedMimeTypes->getFormatter($mimeType));
+        if ($supportedMimeTypes->provideFormatter($mimeType)) {
+            return $this->injector->getInstance($supportedMimeTypes->formatterFor($mimeType));
         }
 
         if ($this->injector->hasBinding('stubbles\webapp\response\format\Formatter', $mimeType)) {

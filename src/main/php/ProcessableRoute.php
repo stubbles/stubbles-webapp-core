@@ -22,21 +22,21 @@ interface ProcessableRoute
      *
      * @return  bool
      */
-    public function switchToHttps();
+    public function requiresHttps();
 
     /**
      * returns https uri of current route
      *
      * @return  HttpUri
      */
-    public function getHttpsUri();
+    public function httpsUri();
 
     /**
      * returns list of supported mime types
      *
      * @return  SupportedMimeTypes
      */
-    public function getSupportedMimeTypes();
+    public function supportedMimeTypes();
 
     /**
      * apply pre interceptors

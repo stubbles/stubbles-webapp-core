@@ -140,7 +140,7 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
                           ->disableOriginalConstructor()
                           ->getMock();
         $mockRoute->expects($this->once())
-                  ->method('getSupportedMimeTypes')
+                  ->method('supportedMimeTypes')
                   ->will($this->returnValue(new response\SupportedMimeTypes([])));
         $this->routing->expects($this->once())
                       ->method('findRoute')
@@ -169,10 +169,10 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
     {
         $mockRoute = $this->createMockRoute();
         $mockRoute->expects($this->once())
-                  ->method('switchToHttps')
+                  ->method('requiresHttps')
                   ->will($this->returnValue(true));
         $mockRoute->expects($this->once())
-                  ->method('getHttpsUri')
+                  ->method('httpsUri')
                   ->will($this->returnValue('https://example.net/admin'));
         $this->mockResponse->expects($this->once())
                            ->method('redirect')
@@ -189,7 +189,7 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
     {
         $mockRoute = $this->createMockRoute();
         $mockRoute->expects($this->once())
-                  ->method('switchToHttps')
+                  ->method('requiresHttps')
                   ->will($this->returnValue(false));
         $mockRoute->expects($this->once())
                   ->method('applyPreInterceptors')
@@ -213,7 +213,7 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
     {
         $mockRoute = $this->createMockRoute();
         $mockRoute->expects($this->once())
-                  ->method('switchToHttps')
+                  ->method('requiresHttps')
                   ->will($this->returnValue(false));
         $exception = new \Exception('some error');
         $mockRoute->expects($this->once())
@@ -244,7 +244,7 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
     {
         $mockRoute = $this->createMockRoute();
         $mockRoute->expects($this->once())
-                  ->method('switchToHttps')
+                  ->method('requiresHttps')
                   ->will($this->returnValue(false));
         $mockRoute->expects($this->once())
                   ->method('applyPreInterceptors')
@@ -272,7 +272,7 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
     {
         $mockRoute = $this->createMockRoute();
         $mockRoute->expects($this->once())
-                  ->method('switchToHttps')
+                  ->method('requiresHttps')
                   ->will($this->returnValue(false));
         $mockRoute->expects($this->once())
                   ->method('applyPreInterceptors')
@@ -307,7 +307,7 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
     {
         $mockRoute = $this->createMockRoute();
         $mockRoute->expects($this->once())
-                  ->method('switchToHttps')
+                  ->method('requiresHttps')
                   ->will($this->returnValue(false));
         $mockRoute->expects($this->once())
                   ->method('applyPreInterceptors')
@@ -338,7 +338,7 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
     {
         $mockRoute = $this->createMockRoute();
         $mockRoute->expects($this->once())
-                  ->method('switchToHttps')
+                  ->method('requiresHttps')
                   ->will($this->returnValue(false));
         $mockRoute->expects($this->once())
                   ->method('applyPreInterceptors')
@@ -398,7 +398,7 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
                          );
         $mockRoute = $this->createMockRoute();
         $mockRoute->expects($this->once())
-                  ->method('switchToHttps')
+                  ->method('requiresHttps')
                   ->will($this->returnValue(false));
         $mockRoute->expects($this->once())
                   ->method('applyPreInterceptors')

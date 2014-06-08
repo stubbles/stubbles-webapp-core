@@ -57,7 +57,7 @@ class MethodNotAllowedRouteTest extends \PHPUnit_Framework_TestCase
      */
     public function doesNotRequireSwitchToHttps()
     {
-        $this->assertFalse($this->methodNotAllowedRoute->switchToHttps());
+        $this->assertFalse($this->methodNotAllowedRoute->requiresHttps());
     }
 
     /**

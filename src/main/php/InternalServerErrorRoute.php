@@ -58,7 +58,7 @@ class InternalServerErrorRoute implements ProcessableRoute
      *
      * @return  bool
      */
-    public function switchToHttps()
+    public function requiresHttps()
     {
         return false;
     }
@@ -68,7 +68,7 @@ class InternalServerErrorRoute implements ProcessableRoute
      *
      * @return  HttpUri
      */
-    public function getHttpsUri()
+    public function httpsUri()
     {
         return $this->calledUri->toHttps();
     }
@@ -78,7 +78,7 @@ class InternalServerErrorRoute implements ProcessableRoute
      *
      * @return  SupportedMimeTypes
      */
-    public function getSupportedMimeTypes()
+    public function supportedMimeTypes()
     {
         return $this->supportedMimeTypes;
     }

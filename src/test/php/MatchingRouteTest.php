@@ -78,7 +78,7 @@ class MatchingRouteTest extends \PHPUnit_Framework_TestCase
                            'GET'
                  );
         $processableRoute = $this->createMatchingRoute($route->httpsOnly());
-        $this->assertTrue($processableRoute->switchToHttps());
+        $this->assertTrue($processableRoute->requiresHttps());
     }
 
     /**
@@ -86,7 +86,7 @@ class MatchingRouteTest extends \PHPUnit_Framework_TestCase
      */
     public function doesNotrequireSwitchToHttpsIfCalledUriIsNotHttpsAndRouteDoesNotRequireHttps()
     {
-        $this->assertFalse($this->createMatchingRouteWithCallback(function() {})->switchToHttps());
+        $this->assertFalse($this->createMatchingRouteWithCallback(function() {})->requiresHttps());
     }
 
     /**
@@ -99,7 +99,7 @@ class MatchingRouteTest extends \PHPUnit_Framework_TestCase
                            'GET'
                  );
         $processableRoute = $this->createMatchingRoute($route->httpsOnly(), 'https://example.com/hello/world');
-        $this->assertFalse($processableRoute->switchToHttps());
+        $this->assertFalse($processableRoute->requiresHttps());
     }
 
     /**
@@ -108,7 +108,7 @@ class MatchingRouteTest extends \PHPUnit_Framework_TestCase
     public function returnsHttpsUriFromCalledUri()
     {
         $this->assertEquals('https://example.com/hello/world',
-                            (string) $this->createMatchingRouteWithCallback(function() {})->getHttpsUri()
+                            (string) $this->createMatchingRouteWithCallback(function() {})->httpsUri()
         );
     }
 

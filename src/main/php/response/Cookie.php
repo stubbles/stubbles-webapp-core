@@ -167,9 +167,20 @@ class Cookie
      *
      * @return  string
      */
-    public function getName()
+    public function name()
     {
         return $this->name;
+    }
+
+    /**
+     * returns name of cookie
+     *
+     * @return  string
+     * @deprecated since 4.0.0, use name() instead, will be removed with 5.0.0
+     */
+    public function getName()
+    {
+        return $this->name();
     }
 
     /**
@@ -177,9 +188,20 @@ class Cookie
      *
      * @return  string
      */
-    public function getValue()
+    public function value()
     {
         return $this->value;
+    }
+
+    /**
+     * returns value of cookie
+     *
+     * @return  string
+     * @deprecated since 4.0.0, use value() instead, will be removed with 5.0.0
+     */
+    public function getValue()
+    {
+        return $this->value();
     }
 
     /**
@@ -187,15 +209,37 @@ class Cookie
      *
      * @return  int
      */
-    public function getExpiration()
+    public function expiration()
     {
         return $this->expires;
+    }
+
+    /**
+     * returns expiration timestamp of cookie
+     *
+     * @return  int
+     * @deprecated since 4.0.0, use expiration() instead, will be removed with 5.0.0
+     */
+    public function getExpiration()
+    {
+        return $this->expiration();
     }
 
     /**
      * returns path of cookie
      *
      * @return  string
+     */
+    public function path()
+    {
+        return $this->path;
+    }
+
+    /**
+     * returns path of cookie
+     *
+     * @return  string
+     * @deprecated since 4.0.0, use path() instead, will be removed with 5.0.0
      */
     public function getPath()
     {
@@ -206,6 +250,17 @@ class Cookie
      * returns domain of cookie
      *
      * @return  string
+     */
+    public function domain()
+    {
+        return $this->domain;
+    }
+
+    /**
+     * returns domain of cookie
+     *
+     * @return  string
+     * @deprecated since 4.0.0, use domain() instead, will be removed with 5.0.0
      */
     public function getDomain()
     {

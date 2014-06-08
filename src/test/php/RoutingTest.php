@@ -361,7 +361,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals([],
                             $this->routing->findRoute($this->calledUri)
-                                          ->getSupportedMimeTypes()
+                                          ->supportedMimeTypes()
                                           ->asArray()
         );
     }
@@ -378,7 +378,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
                             ],
                             $this->routing->supportsMimeType('application/xml')
                                           ->findRoute($this->calledUri)
-                                          ->getSupportedMimeTypes()
+                                          ->supportedMimeTypes()
                                           ->asArray()
         );
     }
@@ -391,7 +391,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
     {
         $this->routing->onGet('/hello', function() {});
         $this->assertFalse($this->routing->findRoute($this->calledUri)
-                                         ->getSupportedMimeTypes()
+                                         ->supportedMimeTypes()
                                          ->isContentNegotationDisabled()
         );
     }
@@ -405,7 +405,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
         $this->routing->onGet('/hello', function() {});
         $this->assertTrue($this->routing->disableContentNegotiation()
                                         ->findRoute($this->calledUri)
-                                        ->getSupportedMimeTypes()
+                                        ->supportedMimeTypes()
                                         ->isContentNegotationDisabled()
         );
     }
@@ -420,7 +420,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
                       ->disableContentNegotiation();
         $this->assertTrue($this->routing->disableContentNegotiation()
                                         ->findRoute($this->calledUri)
-                                        ->getSupportedMimeTypes()
+                                        ->supportedMimeTypes()
                                         ->isContentNegotationDisabled()
         );
     }

@@ -54,7 +54,7 @@ class MethodNotAllowedRoute extends AbstractProcessableRoute
      *
      * @return  bool
      */
-    public function switchToHttps()
+    public function requiresHttps()
     {
         return false;
     }

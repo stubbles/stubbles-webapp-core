@@ -78,9 +78,9 @@ class AuthorizingRouteTest extends \PHPUnit_Framework_TestCase
     public function requiresSwitchToHttpsWhenActualRouteDoes()
     {
         $this->mockActualRoute->expects($this->once())
-                              ->method('switchToHttps')
+                              ->method('requiresHttps')
                               ->will($this->returnValue(true));
-        $this->assertTrue($this->authorizingRoute->switchToHttps());
+        $this->assertTrue($this->authorizingRoute->requiresHttps());
     }
 
     /**
@@ -90,9 +90,9 @@ class AuthorizingRouteTest extends \PHPUnit_Framework_TestCase
     {
         $httpsUri = HttpUri::fromString('https://example.com/hello');
         $this->mockActualRoute->expects($this->once())
-                              ->method('getHttpsUri')
+                              ->method('httpsUri')
                               ->will($this->returnValue($httpsUri));
-        $this->assertSame($httpsUri, $this->authorizingRoute->getHttpsUri());
+        $this->assertSame($httpsUri, $this->authorizingRoute->httpsUri());
     }
 
     /**
@@ -102,9 +102,9 @@ class AuthorizingRouteTest extends \PHPUnit_Framework_TestCase
     {
         $supportedMimeTypes = new SupportedMimeTypes([]);
         $this->mockActualRoute->expects($this->once())
-                              ->method('getSupportedMimeTypes')
+                              ->method('supportedMimeTypes')
                               ->will($this->returnValue($supportedMimeTypes));
-        $this->assertSame($supportedMimeTypes, $this->authorizingRoute->getSupportedMimeTypes());
+        $this->assertSame($supportedMimeTypes, $this->authorizingRoute->supportedMimeTypes());
     }
 
     /**

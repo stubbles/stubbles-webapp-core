@@ -61,7 +61,7 @@ class MatchingRoute extends AbstractProcessableRoute
      *
      * @return  bool
      */
-    public function switchToHttps()
+    public function requiresHttps()
     {
         return (!$this->calledUri->isHttps() && $this->route->requiresHttps());
     }

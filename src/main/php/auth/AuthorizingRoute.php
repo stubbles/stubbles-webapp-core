@@ -63,9 +63,9 @@ class AuthorizingRoute implements ProcessableRoute
      *
      * @return  bool
      */
-    public function switchToHttps()
+    public function requiresHttps()
     {
-        return $this->actualRoute->switchToHttps();
+        return $this->actualRoute->requiresHttps();
     }
 
     /**
@@ -73,9 +73,9 @@ class AuthorizingRoute implements ProcessableRoute
      *
      * @return  \stubbles\peer\http\HttpUri
      */
-    public function getHttpsUri()
+    public function httpsUri()
     {
-        return $this->actualRoute->getHttpsUri();
+        return $this->actualRoute->httpsUri();
     }
 
     /**
@@ -83,9 +83,9 @@ class AuthorizingRoute implements ProcessableRoute
      *
      * @return  \stubbles\webapp\response\SupportedMimeTypes
      */
-    public function getSupportedMimeTypes()
+    public function supportedMimeTypes()
     {
-        return $this->actualRoute->getSupportedMimeTypes();
+        return $this->actualRoute->supportedMimeTypes();
     }
 
     /**

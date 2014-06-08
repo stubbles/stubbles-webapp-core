@@ -59,7 +59,7 @@ abstract class AbstractProcessableRoute implements ProcessableRoute
      *
      * @return  HttpUri
      */
-    public function getHttpsUri()
+    public function httpsUri()
     {
         return $this->calledUri->toHttps();
     }
@@ -69,7 +69,7 @@ abstract class AbstractProcessableRoute implements ProcessableRoute
      *
      * @return  SupportedMimeTypes
      */
-    public function getSupportedMimeTypes()
+    public function supportedMimeTypes()
     {
         return $this->supportedMimeTypes;
     }

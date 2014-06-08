@@ -54,7 +54,7 @@ class InternalServerErrorRouteTest extends \PHPUnit_Framework_TestCase
      */
     public function doesNotRequireSwitchToHttps()
     {
-        $this->assertFalse($this->internalServerErrorRoute->switchToHttps());
+        $this->assertFalse($this->internalServerErrorRoute->requiresHttps());
     }
 
     /**
@@ -63,7 +63,7 @@ class InternalServerErrorRouteTest extends \PHPUnit_Framework_TestCase
     public function returnsHttpsUriFromCalledUri()
     {
         $this->assertEquals('https://example.com/hello/world',
-                            (string) $this->internalServerErrorRoute->getHttpsUri()
+                            (string) $this->internalServerErrorRoute->httpsUri()
         );
     }
 
@@ -73,7 +73,7 @@ class InternalServerErrorRouteTest extends \PHPUnit_Framework_TestCase
     public function returnsGivenListOfSupportedMimeTypes()
     {
         $this->assertEquals(new SupportedMimeTypes([]),
-                            $this->internalServerErrorRoute->getSupportedMimeTypes()
+                            $this->internalServerErrorRoute->supportedMimeTypes()
         );
     }
 

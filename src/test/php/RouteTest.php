@@ -497,7 +497,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($this->createRoute()
                                ->supportsMimeType('foo/bar', 'example\FooBarFormatter')
                                ->getSupportedMimeTypes()
-                               ->hasFormatter('foo/bar')
+                               ->provideFormatter('foo/bar')
         );
     }
 
@@ -511,7 +511,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                             $this->createRoute()
                                  ->supportsMimeType('foo/bar', 'example\FooBarFormatter')
                                  ->getSupportedMimeTypes()
-                                 ->getFormatter('foo/bar')
+                                 ->formatterFor('foo/bar')
         );
     }
 

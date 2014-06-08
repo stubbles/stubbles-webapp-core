@@ -119,7 +119,7 @@ class SupportedMimeTypesTest extends \PHPUnit_Framework_TestCase
      */
     public function hasNoSpecialFormatterWhenNonDefinedForMimeType()
     {
-        $this->assertFalse($this->createInstance()->hasFormatter('application/json'));
+        $this->assertFalse($this->createInstance()->provideFormatter('application/json'));
     }
 
     /**
@@ -128,7 +128,7 @@ class SupportedMimeTypesTest extends \PHPUnit_Framework_TestCase
      */
     public function specialFormatterClassIsNullWhenNonDefinedForMimeType()
     {
-        $this->assertNull($this->createInstance()->getFormatter('application/json'));
+        $this->assertNull($this->createInstance()->formatterFor('application/json'));
     }
 
     /**
@@ -137,7 +137,7 @@ class SupportedMimeTypesTest extends \PHPUnit_Framework_TestCase
      */
     public function hasSpecialFormatterWhenDefinedForMimeType()
     {
-        $this->assertTrue($this->createInstance()->hasFormatter('application/xml'));
+        $this->assertTrue($this->createInstance()->provideFormatter('application/xml'));
     }
 
     /**
@@ -147,7 +147,7 @@ class SupportedMimeTypesTest extends \PHPUnit_Framework_TestCase
     public function specialFormatterClassIsEqualsDefinedForMimeType()
     {
         $this->assertEquals('example\SpecialFormatter',
-                            $this->createInstance()->getFormatter('application/xml')
+                            $this->createInstance()->formatterFor('application/xml')
         );
     }
 }

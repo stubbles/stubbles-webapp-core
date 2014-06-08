@@ -22,7 +22,7 @@ class TestAbstractProcessableRoute extends AbstractProcessableRoute
      *
      * @return  bool
      */
-    public function switchToHttps() {}
+    public function requiresHttps() {}
 
     /**
      * checks if access to this route required authorization
@@ -124,7 +124,7 @@ class AbstractProcessableRouteTest extends \PHPUnit_Framework_TestCase
     public function returnsHttpsUriFromCalledUri()
     {
         $this->assertEquals('https://example.com/hello/world',
-                            (string) $this->createRoute()->getHttpsUri()
+                            (string) $this->createRoute()->httpsUri()
         );
     }
 
@@ -135,7 +135,7 @@ class AbstractProcessableRouteTest extends \PHPUnit_Framework_TestCase
     public function returnsGivenListOfSupportedMimeTypes()
     {
         $this->assertSame($this->supportedMimeTypes,
-                          $this->createRoute()->getSupportedMimeTypes()
+                          $this->createRoute()->supportedMimeTypes()
         );
     }
 
