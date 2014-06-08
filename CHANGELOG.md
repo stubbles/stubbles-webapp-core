@@ -7,6 +7,7 @@
 
 ### Other changes
 
+   * upgraded to stubbles/core 4.x and stubbles/input 3.x
    * added `net\stubbles\webapp\response\Response::headers()`
 
 
