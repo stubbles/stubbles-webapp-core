@@ -6,6 +6,7 @@
    * removed namespace prefix `net`, base namespace is now `stubbles\webapp` only
    * removed `net\stubbles\webapp\UriPath::getArgument()`, deprecated since 3.3.0, use `net\stubbles\webapp\UriPath::readArgument()` instead
    * api rework:
+     * deprecated `stubbles\webapp\UriPath::getRemaining()`, use `stubbles\webapp\UriPath::remaining()` instead, will be removed with 5.0.0
      * deprecated `stubbles\webapp\response\Cookie::getName()`, use `stubbles\webapp\response\Cookie::name()` instead, will be removed with 5.0.0
      * deprecated `stubbles\webapp\response\Cookie::getValue()`, use `stubbles\webapp\response\Cookie::value()` instead, will be removed with 5.0.0
      * deprecated `stubbles\webapp\response\Cookie::getExpiration()`, use `stubbles\webapp\response\Cookie::expiration()` instead, will be removed with 5.0.0
