@@ -20,8 +20,8 @@ interface RoutingConfigurator
     /**
      * reply with given class or callable for GET request on given path
      *
-     * @param   string           $path
-     * @param   string|callable  $callback
+     * @param   string                     $path      path this route is applicable for
+     * @param   string|callable|Processor  $callback  code to be executed when the route is active
      * @return  ConfigurableRoute
      */
     public function onGet($path, $callback);
@@ -29,8 +29,8 @@ interface RoutingConfigurator
     /**
      * reply with given class or callable for HEAD request on given path
      *
-     * @param   string           $path
-     * @param   string|callable  $callback
+     * @param   string                     $path      path this route is applicable for
+     * @param   string|callable|Processor  $callback  code to be executed when the route is active
      * @return  ConfigurableRoute
      */
     public function onHead($path, $callback);
@@ -38,8 +38,8 @@ interface RoutingConfigurator
     /**
      * reply with given class or callable for POST request on given path
      *
-     * @param   string           $path
-     * @param   string|callable  $callback
+     * @param   string                     $path      path this route is applicable for
+     * @param   string|callable|Processor  $callback  code to be executed when the route is active
      * @return  ConfigurableRoute
      */
     public function onPost($path, $callback);
@@ -47,8 +47,8 @@ interface RoutingConfigurator
     /**
      * reply with given class or callable for PUT request on given path
      *
-     * @param   string           $path
-     * @param   string|callable  $callback
+     * @param   string                     $path      path this route is applicable for
+     * @param   string|callable|Processor  $callback  code to be executed when the route is active
      * @return  ConfigurableRoute
      */
     public function onPut($path, $callback);
@@ -56,11 +56,25 @@ interface RoutingConfigurator
     /**
      * reply with given class or callable for DELETE request on given path
      *
-     * @param   string           $path
-     * @param   string|callable  $callback
+     * @param   string                     $path      path this route is applicable for
+     * @param   string|callable|Processor  $callback  code to be executed when the route is active
      * @return  ConfigurableRoute
      */
     public function onDelete($path, $callback);
+
+    /**
+     * reply with given class or callable for given request method(s) on given path
+     *
+     * If no request method(s) specified it replies to request methods GET, HEAD,
+     * POST, PUT and DELETE.
+     *
+     * @param   string                     $path           path this route is applicable for
+     * @param   string|callable|Processor  $callback       code to be executed when the route is active
+     * @param   string|string[]            $requestMethod  optional  request method(s) this route is applicable for
+     * @return  ConfigurableRoute
+     * @since   4.0.0
+     */
+    public function onAll($path, $callback, $requestMethod = null);
 
     /**
      * add a route definition

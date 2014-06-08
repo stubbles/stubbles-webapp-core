@@ -88,11 +88,12 @@ class Route implements ConfigurableRoute
     /**
      * constructor
      *
-     * If no request method is provided this route matches all request methods.
+     * If no request method(s) specified it matches request methods GET, HEAD,
+     * POST, PUT and DELETE.
      *
      * @param   string                     $path           path this route is applicable for
-     * @param   string|callback|Processor  $callback       code to be executed when the route is active
-     * @param   string|string[]            $requestMethod  request method or methods this route is applicable for
+     * @param   string|callable|Processor  $callback       code to be executed when the route is active
+     * @param   string|string[]            $requestMethod  optional  request method(s) this route is applicable for
      * @throws  IllegalArgumentException
      */
     public function __construct($path, $callback, $requestMethod = null)
