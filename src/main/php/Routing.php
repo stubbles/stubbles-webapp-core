@@ -512,7 +512,7 @@ class Routing implements RoutingConfigurator
             return $global;
         }
 
-        return array_merge($global, $routeConfig->getPreInterceptors());
+        return array_merge($global, $routeConfig->preInterceptors());
     }
 
     /**
@@ -529,7 +529,7 @@ class Routing implements RoutingConfigurator
             return $global;
         }
 
-        return array_merge($routeConfig->getPostInterceptors(), $global);
+        return array_merge($routeConfig->postInterceptors(), $global);
     }
 
     /**
@@ -588,7 +588,7 @@ class Routing implements RoutingConfigurator
         }
 
         if (null !== $routeConfig) {
-            return $routeConfig->getSupportedMimeTypes($this->mimeTypes);
+            return $routeConfig->supportedMimeTypes($this->mimeTypes);
         }
 
         return new SupportedMimeTypes($this->mimeTypes);

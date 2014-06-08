@@ -81,8 +81,8 @@ class MatchingRoute extends AbstractProcessableRoute
      */
     public function process(WebRequest $request, Response $response)
     {
-        $uriPath  = $this->route->getUriPath($this->calledUri);
-        $callback = $this->route->getCallback();
+        $uriPath  = $this->calledUri->path($this->route->configuredPath());
+        $callback = $this->route->callback();
         if (is_callable($callback)) {
             return $this->result(call_user_func_array($callback, [$request, $response, $uriPath]));
         }

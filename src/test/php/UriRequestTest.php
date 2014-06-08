@@ -144,7 +144,11 @@ class UriRequestTest extends \PHPUnit_Framework_TestCase
     public function returnsPathArguments($mockPath, $path, array $arguments)
     {
         $this->mockUriPath($mockPath);
-        $this->assertEquals($arguments, $this->uriRequest->getPathArguments($path));
+        $uriPath = $this->uriRequest->path($path);
+        foreach ($arguments as $name => $value) {
+            $this->assertTrue($uriPath->hasArgument($name));
+            $this->assertEquals($value, $uriPath->readArgument($name)->unsecure());
+        }
     }
 
     /**
@@ -196,8 +200,9 @@ class UriRequestTest extends \PHPUnit_Framework_TestCase
     public function returnsRemainingUri($mockPath, $pathPattern, $expected)
     {
         $this->mockUriPath($mockPath);
-        $this->assertEquals($expected,
-                            $this->uriRequest->getRemainingPath($pathPattern)
+        $this->assertEquals(
+                $expected,
+                $this->uriRequest->path($pathPattern)->getRemaining()
         );
     }
 

@@ -174,16 +174,18 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function returnsUriPath()
+    public function returnsGivenPath()
     {
-        $this->assertEquals(new UriPath('/hello/{name}', ['name' => 'world'], null),
-                            $this->createRoute()->getUriPath(UriRequest::fromString('http://example.com/hello/world', 'GET'))
-        );
+        $this->assertEquals('/hello/{name}', $this->createRoute()->configuredPath());
     }
 
+    /**
+     * @test
+     */
     public function returnsGivenCallback()
     {
-        $this->assertEquals($this->createRoute()->getCallback());
+        $route = new Route('/hello/{name}', __CLASS__);
+        $this->assertEquals(__CLASS__, $route->callback());
     }
 
     /**
@@ -192,7 +194,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     public function hasNoPreInterceptorsByDefault()
     {
         $this->assertEquals([],
-                            $this->createRoute()->getPreInterceptors()
+                            $this->createRoute()->preInterceptors()
         );
     }
 
@@ -222,7 +224,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                                                 ->preIntercept($preInterceptor)
                                                 ->preIntercept($mockPreInterceptor)
                                                 ->preIntercept($mockPreFunction)
-                                                ->getPreInterceptors()
+                                                ->preInterceptors()
         );
     }
 
@@ -232,7 +234,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     public function hasNoPostInterceptorsByDefault()
     {
         $this->assertEquals([],
-                            $this->createRoute()->getPostInterceptors()
+                            $this->createRoute()->postInterceptors()
         );
     }
 
@@ -262,7 +264,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                                                 ->postIntercept($postInterceptor)
                                                 ->postIntercept($mockPostInterceptor)
                                                 ->postIntercept($mockPostFunction)
-                                                ->getPostInterceptors()
+                                                ->postInterceptors()
         );
     }
 
@@ -409,7 +411,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsNullForRequiredRoleByDefault()
     {
-        $this->assertNull($this->createRoute()->getRequiredRole());
+        $this->assertNull($this->createRoute()->requiredRole());
     }
 
     /**
@@ -428,7 +430,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('admin',
                             $this->createRoute()
                                  ->withRoleOnly('admin')
-                                 ->getRequiredRole()
+                                 ->requiredRole()
         );
     }
 
@@ -468,7 +470,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                            new OtherAnnotatedProcessor(),
                            'GET'
                  );
-        $this->assertEquals('superadmin', $route->getRequiredRole());
+        $this->assertEquals('superadmin', $route->requiredRole());
     }
 
     /**
@@ -481,7 +483,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                            'stubbles\webapp\OtherAnnotatedProcessor',
                            'GET'
                  );
-        $this->assertEquals('superadmin', $route->getRequiredRole());
+        $this->assertEquals('superadmin', $route->requiredRole());
     }
 
     /**
@@ -491,7 +493,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals([],
                             $this->createRoute()
-                                 ->getSupportedMimeTypes()
+                                 ->supportedMimeTypes()
                                  ->asArray()
         );
     }
@@ -505,7 +507,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                             $this->createRoute()
                                  ->supportsMimeType('application/json')
                                  ->supportsMimeType('application/xml')
-                                 ->getSupportedMimeTypes()
+                                 ->supportedMimeTypes()
                                  ->asArray()
         );
     }
@@ -518,7 +520,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertTrue($this->createRoute()
                                ->supportsMimeType('foo/bar', 'example\FooBarFormatter')
-                               ->getSupportedMimeTypes()
+                               ->supportedMimeTypes()
                                ->provideFormatter('foo/bar')
         );
     }
@@ -532,7 +534,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('example\FooBarFormatter',
                             $this->createRoute()
                                  ->supportsMimeType('foo/bar', 'example\FooBarFormatter')
-                                 ->getSupportedMimeTypes()
+                                 ->supportedMimeTypes()
                                  ->formatterFor('foo/bar')
         );
     }
@@ -543,7 +545,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
      */
     public function contentNegotationIsEnabledByDefault()
     {
-        $this->assertFalse($this->createRoute()->getSupportedMimeTypes()->isContentNegotationDisabled());
+        $this->assertFalse($this->createRoute()->supportedMimeTypes()->isContentNegotationDisabled());
     }
 
     /**
@@ -554,7 +556,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertTrue($this->createRoute()
                                ->disableContentNegotiation()
-                               ->getSupportedMimeTypes()
+                               ->supportedMimeTypes()
                                ->isContentNegotationDisabled()
         );
     }

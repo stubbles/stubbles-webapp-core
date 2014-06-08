@@ -132,7 +132,7 @@ class AuthorizingRoute implements ProcessableRoute
     private function isAuthorized()
     {
         if ($this->routeConfig->requiresRole()) {
-            return $this->authHandler->isAuthorized($this->routeConfig->getRequiredRole());
+            return $this->authHandler->isAuthorized($this->routeConfig->requiredRole());
         }
 
         return true;

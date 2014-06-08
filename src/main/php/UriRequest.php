@@ -113,19 +113,34 @@ class UriRequest
     }
 
     /**
+     * return path part of called uri
+     *
+     * @param   string  $configuredPath
+     * @return  UriPath
+     * @since   4.0.0
+     */
+    public function path($configuredPath)
+    {
+        return new UriPath($configuredPath,
+                           $this->parsePathArguments($configuredPath),
+                           $this->extractRemainingPath($configuredPath)
+        );
+    }
+
+    /**
      * gets path arguments from uri
      *
-     * @param   string  $expectedPath
+     * @param   string  $configuredPath
      * @return  string[]
      */
-    public function getPathArguments($expectedPath)
+    private function parsePathArguments($configuredPath)
     {
         $arguments = [];
-        preg_match('/^' . $this->createPathPattern($expectedPath) . '/', $this->uri->path(), $arguments);
+        preg_match('/^' . $this->createPathPattern($configuredPath) . '/', $this->uri->path(), $arguments);
         array_shift($arguments);
         $names  = [];
         $result = [];
-        preg_match_all('/[{][^}]*[}]/', str_replace('/', '\/', $expectedPath), $names);
+        preg_match_all('/[{][^}]*[}]/', str_replace('/', '\/', $configuredPath), $names);
         foreach ($names[0] as $key => $name) {
             if (isset($arguments[$key])) {
                 $result[str_replace(['{', '}'], '', $name)] = $arguments[$key];
@@ -138,13 +153,13 @@ class UriRequest
     /**
      * returns remaining path if there is any
      *
-     * @param   string  $expectedPath
+     * @param   string  $configuredPath
      * @return  string
      */
-    public function getRemainingPath($expectedPath)
+    private function extractRemainingPath($configuredPath)
     {
         $matches = [];
-        preg_match('/(' . $this->createPathPattern($expectedPath) . ')([^?]*)?/', $this->uri->path(), $matches);
+        preg_match('/(' . $this->createPathPattern($configuredPath) . ')([^?]*)?/', $this->uri->path(), $matches);
         $last = count($matches) - 1;
         if (2 > $last) {
             return null;

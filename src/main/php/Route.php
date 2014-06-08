@@ -176,17 +176,13 @@ class Route implements ConfigurableRoute
     }
 
     /**
-     * returns uri path for this route on given request uri
+     * returns path this route is applicable for
      *
-     * @param   UriRequest  $calledUri
-     * @return  UriPath
+     * @return  string
      */
-    public function getUriPath(UriRequest $calledUri)
+    public function configuredPath()
     {
-        return new UriPath($this->path,
-                           $calledUri->getPathArguments($this->path),
-                           $calledUri->getRemainingPath($this->path)
-        );
+        return $this->path;
     }
 
     /**
@@ -194,7 +190,7 @@ class Route implements ConfigurableRoute
      *
      * @return  string|callable|Processor
      */
-    public function getCallback()
+    public function callback()
     {
         return $this->callback;
     }
@@ -221,7 +217,7 @@ class Route implements ConfigurableRoute
      *
      * @return  string[]|Closure[]
      */
-    public function getPreInterceptors()
+    public function preInterceptors()
     {
         return $this->preInterceptors;
     }
@@ -248,7 +244,7 @@ class Route implements ConfigurableRoute
      *
      * @return  string[]|Closure[]
      */
-    public function getPostInterceptors()
+    public function postInterceptors()
     {
         return $this->postInterceptors;
     }
@@ -343,7 +339,7 @@ class Route implements ConfigurableRoute
      */
     public function requiresRole()
     {
-        return null !== $this->getRequiredRole();
+        return null !== $this->requiredRole();
     }
 
     /**
@@ -351,7 +347,7 @@ class Route implements ConfigurableRoute
      *
      * @return  string
      */
-    public function getRequiredRole()
+    public function requiredRole()
     {
         if (null !== $this->requiredRole) {
             return $this->requiredRole;
@@ -392,7 +388,7 @@ class Route implements ConfigurableRoute
      * @param   string[]  $globalMimeTypes  list of globally supported mime types
      * @return  SupportedMimeTypes
      */
-    public function getSupportedMimeTypes(array $globalMimeTypes = [])
+    public function supportedMimeTypes(array $globalMimeTypes = [])
     {
         if ($this->disableContentNegotation) {
             return SupportedMimeTypes::createWithDisabledContentNegotation();
