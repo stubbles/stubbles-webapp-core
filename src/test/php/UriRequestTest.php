@@ -126,32 +126,6 @@ class UriRequestTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * data provider for satisfying path pattern tests
-     *
-     * @return  array
-     */
-    public function providePathArguments()
-    {
-        return [['/hello/mikey', '/hello/{name}', ['name' => 'mikey']],
-                ['/hello/303/mikey', '/hello/{id}/{name}', ['id' => '303', 'name' => 'mikey']]
-        ];
-    }
-
-    /**
-     * @test
-     * @dataProvider  providePathArguments
-     */
-    public function returnsPathArguments($mockPath, $path, array $arguments)
-    {
-        $this->mockUriPath($mockPath);
-        $uriPath = $this->uriRequest->path($path);
-        foreach ($arguments as $name => $value) {
-            $this->assertTrue($uriPath->hasArgument($name));
-            $this->assertEquals($value, $uriPath->readArgument($name)->unsecure());
-        }
-    }
-
-    /**
      * data provider for non satisfying path pattern tests
      *
      * @return  array
@@ -174,36 +148,6 @@ class UriRequestTest extends \PHPUnit_Framework_TestCase
     {
         $this->mockUriPath($mockPath);
         $this->assertFalse($this->uriRequest->satisfiesPath($pathPattern));
-    }
-
-    /**
-     * data provider for remaining uri tests
-     *
-     * @return  array
-     */
-    public function provideRemainingUris()
-    {
-        return [['/hello/mikey', '/hello/{name}', ''],
-                ['/hello/303/mikey', '/hello/{id}/{name}', ''],
-                ['/hello/303/mikey/foo', '/hello/{id}/{name}', '/foo'],
-                ['/hello', '/hello', ''],
-                ['/hello/world;name', '/hello/[a-z0-9]+;?', 'name'],
-                ['/hello/world', '/hello/?', 'world'],
-                ['/', '/', '']
-        ];
-    }
-
-    /**
-     * @test
-     * @dataProvider  provideRemainingUris
-     */
-    public function returnsRemainingUri($mockPath, $pathPattern, $expected)
-    {
-        $this->mockUriPath($mockPath);
-        $this->assertEquals(
-                $expected,
-                $this->uriRequest->path($pathPattern)->getRemaining()
-        );
     }
 
     /**

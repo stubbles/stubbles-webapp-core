@@ -92,7 +92,7 @@ class UriRequest
             return true;
         }
 
-        if (preg_match('/^' . $this->createPathPattern($expectedPath) . '/', $this->uri->path()) >= 1) {
+        if (preg_match('/^' . UriPath::pattern($expectedPath) . '/', $this->uri->path()) >= 1) {
             return true;
         }
 
@@ -121,66 +121,7 @@ class UriRequest
      */
     public function path($configuredPath)
     {
-        return new UriPath($configuredPath,
-                           $this->parsePathArguments($configuredPath),
-                           $this->extractRemainingPath($configuredPath)
-        );
-    }
-
-    /**
-     * gets path arguments from uri
-     *
-     * @param   string  $configuredPath
-     * @return  string[]
-     */
-    private function parsePathArguments($configuredPath)
-    {
-        $arguments = [];
-        preg_match('/^' . $this->createPathPattern($configuredPath) . '/', $this->uri->path(), $arguments);
-        array_shift($arguments);
-        $names  = [];
-        $result = [];
-        preg_match_all('/[{][^}]*[}]/', str_replace('/', '\/', $configuredPath), $names);
-        foreach ($names[0] as $key => $name) {
-            if (isset($arguments[$key])) {
-                $result[str_replace(['{', '}'], '', $name)] = $arguments[$key];
-            }
-        }
-
-        return $result;
-    }
-
-    /**
-     * returns remaining path if there is any
-     *
-     * @param   string  $configuredPath
-     * @return  string
-     */
-    private function extractRemainingPath($configuredPath)
-    {
-        $matches = [];
-        preg_match('/(' . $this->createPathPattern($configuredPath) . ')([^?]*)?/', $this->uri->path(), $matches);
-        $last = count($matches) - 1;
-        if (2 > $last) {
-            return null;
-        }
-
-        if (isset($matches[$last]) && !empty($matches[$last])) {
-            return $matches[$last];
-        }
-
-        return null;
-    }
-
-    /**
-     * creates a pattern for given path
-     *
-     * @param   string  $path
-     * @return  string
-     */
-    private function createPathPattern($path)
-    {
-        return preg_replace('/[{][^}]*[}]/', '([^\/]+)', str_replace('/', '\/', $path));
+        return UriPath::from($configuredPath, $this->uri->path());
     }
 
     /**

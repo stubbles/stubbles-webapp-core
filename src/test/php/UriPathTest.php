@@ -90,7 +90,7 @@ class UriPathTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsGivenRemainingPath()
     {
-        $this->assertEquals('/foo', $this->uriPath->getRemaining());
+        $this->assertEquals('/foo', $this->uriPath->remaining());
     }
 
     /**
@@ -99,7 +99,7 @@ class UriPathTest extends \PHPUnit_Framework_TestCase
     public function returnsNullIfRemainingPathIsNull()
     {
         $this->uriPath = new UriPath('/hello/{name}', ['name' => 'world'], null);
-        $this->assertNull($this->uriPath->getRemaining());
+        $this->assertNull($this->uriPath->remaining());
     }
 
     /**
@@ -108,6 +108,60 @@ class UriPathTest extends \PHPUnit_Framework_TestCase
     public function returnsDefaultIfRemainingPathIsNull()
     {
         $this->uriPath = new UriPath('/hello/{name}', ['name' => 'world'], null);
-        $this->assertEquals('index.html', $this->uriPath->getRemaining('index.html'));
+        $this->assertEquals('index.html', $this->uriPath->remaining('index.html'));
+    }
+
+    /**
+     * data provider for satisfying path pattern tests
+     *
+     * @return  array
+     */
+    public function providePathArguments()
+    {
+        return [['/hello/mikey', '/hello/{name}', ['name' => 'mikey']],
+                ['/hello/303/mikey', '/hello/{id}/{name}', ['id' => '303', 'name' => 'mikey']]
+        ];
+    }
+
+    /**
+     * @test
+     * @dataProvider  providePathArguments
+     */
+    public function returnsPathArguments($calledPath, $configuredPath, array $expectedArguments)
+    {
+        $uriPath = UriPath::from($configuredPath, $calledPath);
+        foreach ($expectedArguments as $name => $value) {
+            $this->assertTrue($uriPath->hasArgument($name));
+            $this->assertEquals($value, $uriPath->readArgument($name)->unsecure());
+        }
+    }
+
+    /**
+     * data provider for remaining uri tests
+     *
+     * @return  array
+     */
+    public function provideRemainingUris()
+    {
+        return [['/hello/mikey', '/hello/{name}', null],
+                ['/hello/303/mikey', '/hello/{id}/{name}', null],
+                ['/hello/303/mikey/foo', '/hello/{id}/{name}', '/foo'],
+                ['/hello', '/hello', null],
+                ['/hello/world;name', '/hello/[a-z0-9]+;?', 'name'],
+                ['/hello/world', '/hello/?', 'world'],
+                ['/', '/', null]
+        ];
+    }
+
+    /**
+     * @test
+     * @dataProvider  provideRemainingUris
+     */
+    public function returnsRemainingUri($calledPath, $configuredPath, $expected)
+    {
+        $this->assertEquals(
+                $expected,
+                UriPath::from($configuredPath, $calledPath)->remaining()
+        );
     }
 }

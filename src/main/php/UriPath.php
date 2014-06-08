@@ -36,6 +36,17 @@ class UriPath
     private $remaining;
 
     /**
+     * creates a pattern for given path
+     *
+     * @param   string  $path
+     * @return  string
+     */
+    public static function pattern($path)
+    {
+        return preg_replace('/[{][^}]*[}]/', '([^\/]+)', str_replace('/', '\/', $path));
+    }
+
+    /**
      * constructor
      *
      * @param  string    $matched
@@ -47,6 +58,22 @@ class UriPath
         $this->matched   = $matched;
         $this->arguments = $arguments;
         $this->remaining = $remaining;
+    }
+
+    /**
+     * creates instance from given pathes
+     *
+     * @param   string  $configuredPath
+     * @param   string  $calledPath
+     * @return  UriPath
+     */
+    public static function from($configuredPath, $calledPath)
+    {
+        return new self(
+                $configuredPath,
+                self::parsePathArguments($configuredPath, $calledPath),
+                self::extractRemainingPath($configuredPath, $calledPath)
+        );
     }
 
     /**
@@ -86,18 +113,76 @@ class UriPath
 
         return ValueReader::forValue($default);
     }
+
     /**
      * returns remaining path that was not matched by original path
      *
      * @param   string  $default
      * @return  string
      */
-    public function getRemaining($default = null)
+    public function remaining($default = null)
     {
         if (null !== $this->remaining) {
             return $this->remaining;
         }
 
         return $default;
+    }
+
+    /**
+     * returns remaining path that was not matched by original path
+     *
+     * @param   string  $default
+     * @return  string
+     * @deprecated since 4.0.0, use remaining() instead, will be removed with 5.0.0
+     */
+    public function getRemaining($default = null)
+    {
+        return $this->remaining($default);
+    }
+
+    /**
+     * gets path arguments from uri
+     *
+     * @param   string  $configuredPath
+     * @return  string[]
+     */
+    private static function parsePathArguments($configuredPath, $calledPath)
+    {
+        $arguments = [];
+        preg_match('/^' . self::pattern($configuredPath) . '/', $calledPath, $arguments);
+        array_shift($arguments);
+        $names  = [];
+        $result = [];
+        preg_match_all('/[{][^}]*[}]/', str_replace('/', '\/', $configuredPath), $names);
+        foreach ($names[0] as $key => $name) {
+            if (isset($arguments[$key])) {
+                $result[str_replace(['{', '}'], '', $name)] = $arguments[$key];
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * returns remaining path if there is any
+     *
+     * @param   string  $configuredPath
+     * @return  string
+     */
+    private static function extractRemainingPath($configuredPath, $calledPath)
+    {
+        $matches = [];
+        preg_match('/(' . self::pattern($configuredPath) . ')([^?]*)?/', $calledPath, $matches);
+        $last = count($matches) - 1;
+        if (2 > $last) {
+            return null;
+        }
+
+        if (isset($matches[$last]) && !empty($matches[$last])) {
+            return $matches[$last];
+        }
+
+        return null;
     }
 }
