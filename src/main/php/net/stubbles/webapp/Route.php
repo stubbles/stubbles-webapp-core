@@ -8,8 +8,8 @@
  * @package  net\stubbles\webapp
  */
 namespace net\stubbles\webapp;
-use net\stubbles\lang;
-use net\stubbles\lang\exception\IllegalArgumentException;
+use stubbles\lang;
+use stubbles\lang\exception\IllegalArgumentException;
 use net\stubbles\webapp\response\SupportedMimeTypes;
 /**
  * Represents information about a route that can be called.

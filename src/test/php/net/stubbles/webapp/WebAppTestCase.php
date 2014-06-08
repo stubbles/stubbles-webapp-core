@@ -8,8 +8,8 @@
  * @package  net\stubbles\webapp
  */
 namespace net\stubbles\webapp;
-use net\stubbles\lang;
-use net\stubbles\peer\http\HttpUri;
+use stubbles\lang;
+use stubbles\peer\http\HttpUri;
 /**
  * Helper class for the test.
  */
@@ -72,12 +72,12 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->mockRequest  = $this->getMock('net\stubbles\input\web\WebRequest');
+        $this->mockRequest  = $this->getMock('stubbles\input\web\WebRequest');
         $this->mockRequest->expects($this->any())
                           ->method('getMethod')
                           ->will($this->returnValue('GET'));
         $this->mockRequest->expects($this->any())
-                          ->method('getUri')
+                          ->method('uri')
                           ->will($this->returnValue(HttpUri::fromString('http://example.com/hello')));
         $this->mockResponse     = $this->getMock('net\stubbles\webapp\response\Response');
         $mockResponseNegotiator = $this->getMockBuilder('net\stubbles\webapp\response\ResponseNegotiator')
@@ -89,7 +89,7 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
         $this->routing = $this->getMockBuilder('net\stubbles\webapp\Routing')
                               ->disableOriginalConstructor()
                               ->getMock();
-        $this->mockExceptionLogger = $this->getMockBuilder('net\stubbles\lang\errorhandler\ExceptionLogger')
+        $this->mockExceptionLogger = $this->getMockBuilder('stubbles\lang\errorhandler\ExceptionLogger')
                                           ->disableOriginalConstructor()
                                           ->getMock();
         $this->webApp  = $this->getMock('net\stubbles\webapp\TestWebApp',
@@ -375,12 +375,12 @@ class WebAppTestCase extends \PHPUnit_Framework_TestCase
      */
     public function executesEverythingButSendsHeadOnlyWhenRequestMethodIsHead()
     {
-        $this->mockRequest  = $this->getMock('net\stubbles\input\web\WebRequest');
+        $this->mockRequest  = $this->getMock('stubbles\input\web\WebRequest');
         $this->mockRequest->expects($this->any())
-                          ->method('getMethod')
+                          ->method('method')
                           ->will($this->returnValue('HEAD'));
         $this->mockRequest->expects($this->any())
-                          ->method('getUri')
+                          ->method('uri')
                           ->will($this->returnValue(HttpUri::fromString('http://example.com/hello')));
         $mockResponseNegotiator = $this->getMockBuilder('net\stubbles\webapp\response\ResponseNegotiator')
                                        ->disableOriginalConstructor()

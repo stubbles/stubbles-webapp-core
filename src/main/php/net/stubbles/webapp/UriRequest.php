@@ -8,7 +8,7 @@
  * @package  net\stubbles\webapp
  */
 namespace net\stubbles\webapp;
-use net\stubbles\peer\http\HttpUri;
+use stubbles\peer\http\HttpUri;
 /**
  * Utility methods to handle operations based on the uri called in the current request.
  *
@@ -81,7 +81,7 @@ class UriRequest
             return true;
         }
 
-        if (preg_match('/^' . $this->createPathPattern($expectedPath) . '/', $this->uri->getPath()) >= 1) {
+        if (preg_match('/^' . $this->createPathPattern($expectedPath) . '/', $this->uri->path()) >= 1) {
             return true;
         }
 
@@ -110,7 +110,7 @@ class UriRequest
     public function getPathArguments($expectedPath)
     {
         $arguments = array();
-        preg_match('/^' . $this->createPathPattern($expectedPath) . '/', $this->uri->getPath(), $arguments);
+        preg_match('/^' . $this->createPathPattern($expectedPath) . '/', $this->uri->path(), $arguments);
         array_shift($arguments);
         $names  = array();
         $result = array();
@@ -133,7 +133,7 @@ class UriRequest
     public function getRemainingPath($expectedPath)
     {
         $matches = array();
-        preg_match('/(' . $this->createPathPattern($expectedPath) . ')([^?]*)?/', $this->uri->getPath(), $matches);
+        preg_match('/(' . $this->createPathPattern($expectedPath) . ')([^?]*)?/', $this->uri->path(), $matches);
         $last = count($matches) - 1;
         if (2 > $last) {
             return null;

@@ -8,8 +8,8 @@
  * @package  net\stubbles\webapp
  */
 namespace net\stubbles\webapp;
-use net\stubbles\ioc\Injector;
-use net\stubbles\lang\exception\IllegalArgumentException;
+use stubbles\ioc\Injector;
+use stubbles\lang\exception\IllegalArgumentException;
 use net\stubbles\webapp\auth\AuthHandler;
 use net\stubbles\webapp\auth\AuthorizingRoute;
 use net\stubbles\webapp\interceptor\Interceptors;

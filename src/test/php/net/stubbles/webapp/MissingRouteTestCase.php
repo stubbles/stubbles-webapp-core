@@ -47,7 +47,7 @@ class MissingRouteTestCase extends \PHPUnit_Framework_TestCase
                                                     ->getMock(),
                                                new SupportedMimeTypes(array())
                               );
-        $this->mockRequest  = $this->getMock('net\stubbles\input\web\WebRequest');
+        $this->mockRequest  = $this->getMock('stubbles\input\web\WebRequest');
         $this->mockResponse = $this->getMock('net\stubbles\webapp\response\Response');
     }
 

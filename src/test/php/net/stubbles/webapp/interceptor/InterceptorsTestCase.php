@@ -8,7 +8,7 @@
  * @package  net\stubbles\webapp
  */
 namespace net\stubbles\webapp\interceptor;
-use net\stubbles\input\web\WebRequest;
+use stubbles\input\web\WebRequest;
 use net\stubbles\webapp\response\Response;
 /**
  * Tests for net\stubbles\webapp\interceptor\Interceptors.
@@ -42,9 +42,9 @@ class InterceptorsTestCase extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->mockRequest  = $this->getMock('net\stubbles\input\web\WebRequest');
+        $this->mockRequest  = $this->getMock('stubbles\input\web\WebRequest');
         $this->mockResponse = $this->getMock('net\stubbles\webapp\response\Response');
-        $this->mockInjector = $this->getMockBuilder('net\stubbles\ioc\Injector')
+        $this->mockInjector = $this->getMockBuilder('stubbles\ioc\Injector')
                                    ->disableOriginalConstructor()
                                    ->getMock();
     }

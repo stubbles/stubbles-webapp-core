@@ -8,7 +8,7 @@
  * @package  net\stubbles\webapp
  */
 namespace net\stubbles\webapp;
-use net\stubbles\input\web\WebRequest;
+use stubbles\input\web\WebRequest;
 use net\stubbles\webapp\interceptor\Interceptors;
 use net\stubbles\webapp\response\Response;
 use net\stubbles\webapp\response\SupportedMimeTypes;

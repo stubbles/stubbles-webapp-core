@@ -8,7 +8,7 @@
  * @package  net\stubbles\webapp
  */
 namespace net\stubbles\webapp\auth;
-use net\stubbles\lang\exception\Exception;
+use stubbles\lang\exception\Exception;
 /**
  * Can be thrown when auth handler experiences a problem which it can not solve.
  *

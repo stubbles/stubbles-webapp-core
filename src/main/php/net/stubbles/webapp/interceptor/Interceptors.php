@@ -8,8 +8,8 @@
  * @package  net\stubbles\webapp
  */
 namespace net\stubbles\webapp\interceptor;
-use net\stubbles\input\web\WebRequest;
-use net\stubbles\ioc\Injector;
+use stubbles\input\web\WebRequest;
+use stubbles\ioc\Injector;
 use net\stubbles\webapp\response\Response;
 /**
  * Interceptor handler.

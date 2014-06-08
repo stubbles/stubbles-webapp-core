@@ -8,7 +8,7 @@
  * @package  net\stubbles\webapp
  */
 namespace net\stubbles\webapp\session;
-use net\stubbles\lang\reflect\ReflectionClass;
+use stubbles\lang\reflect\ReflectionClass;
 /**
  * Tests for net\stubbles\webapp\session\SessionBindingScope.
  *
@@ -48,7 +48,7 @@ class SessionBindingScopeTestCase extends \PHPUnit_Framework_TestCase
     {
         $this->mockSession           = $this->getMock('net\\stubbles\\webapp\\session\\Session');
         $this->sessionScope          = new SessionBindingScope($this->mockSession);
-        $this->mockInjectionProvider = $this->getMock('net\\stubbles\\ioc\\InjectionProvider');
+        $this->mockInjectionProvider = $this->getMock('stubbles\ioc\InjectionProvider');
         $this->refClass              = new ReflectionClass('\\stdClass');
     }
 

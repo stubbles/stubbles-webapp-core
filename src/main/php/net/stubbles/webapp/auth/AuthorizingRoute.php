@@ -8,7 +8,7 @@
  * @package  net\stubbles\webapp
  */
 namespace net\stubbles\webapp\auth;
-use net\stubbles\input\web\WebRequest;
+use stubbles\input\web\WebRequest;
 use net\stubbles\webapp\ProcessableRoute;
 use net\stubbles\webapp\Route;
 use net\stubbles\webapp\response\Response;

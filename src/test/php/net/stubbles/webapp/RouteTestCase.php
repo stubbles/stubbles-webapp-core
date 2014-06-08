@@ -8,7 +8,7 @@
  * @package  net\stubbles\webapp
  */
 namespace net\stubbles\webapp;
-use net\stubbles\input\web\WebRequest;
+use stubbles\input\web\WebRequest;
 use net\stubbles\webapp\response\Response;
 /**
  * Class with annotations for tests.
@@ -59,7 +59,7 @@ class RouteTestCase extends \PHPUnit_Framework_TestCase
 {
     /**
      * @test
-     * @expectedException  net\stubbles\lang\exception\IllegalArgumentException
+     * @expectedException  stubbles\lang\exception\IllegalArgumentException
      */
     public function constructRouteWithInvalidCallbackThrowsIllegalArgumentException()
     {
@@ -176,7 +176,7 @@ class RouteTestCase extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @expectedException  net\stubbles\lang\exception\IllegalArgumentException
+     * @expectedException  stubbles\lang\exception\IllegalArgumentException
      */
     public function addInvalidPreInterceptorThrowsIllegalArgumentException()
     {
@@ -216,7 +216,7 @@ class RouteTestCase extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @expectedException  net\stubbles\lang\exception\IllegalArgumentException
+     * @expectedException  stubbles\lang\exception\IllegalArgumentException
      */
     public function addInvalidPostInterceptorThrowsIllegalArgumentException()
     {

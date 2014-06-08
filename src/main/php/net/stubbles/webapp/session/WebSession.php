@@ -8,7 +8,7 @@
  * @package  net\stubbles\webapp
  */
 namespace net\stubbles\webapp\session;
-use net\stubbles\lang\exception\IllegalStateException;
+use stubbles\lang\exception\IllegalStateException;
 /**
  * Base class for session implementations.
  *

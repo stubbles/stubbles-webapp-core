@@ -8,8 +8,8 @@
  * @package  net\stubbles\webapp
  */
 namespace net\stubbles\webapp\response;
-use net\stubbles\peer\http\Http;
-use net\stubbles\peer\http\HttpUri;
+use stubbles\peer\http\Http;
+use stubbles\peer\http\HttpUri;
 /**
  * Base class for a response to a request.
  *
@@ -102,7 +102,7 @@ class WebResponse implements Response
      */
     public function setStatusCode($statusCode)
     {
-        $this->status = $statusCode . ' ' . Http::getReasonPhrase($statusCode);
+        $this->status = $statusCode . ' ' . Http::reasonPhraseFor($statusCode);
         return $this;
     }
 

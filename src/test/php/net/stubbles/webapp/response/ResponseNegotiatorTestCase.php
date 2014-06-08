@@ -8,7 +8,8 @@
  * @package  net\stubbles\webapp
  */
 namespace net\stubbles\webapp\response;
-use net\stubbles\lang;
+use stubbles\input\ValueReader;
+use stubbles\lang;
 /**
  * Tests for net\stubbles\webapp\response\ResponseNegotiator.
  *
@@ -48,11 +49,11 @@ class ResponseNegotiatorTestCase extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->mockResponse       = $this->getMock('net\stubbles\webapp\response\Response');
-        $this->mockInjector       = $this->getMockBuilder('net\stubbles\ioc\Injector')
+        $this->mockInjector       = $this->getMockBuilder('stubbles\ioc\Injector')
                                          ->disableOriginalConstructor()
                                          ->getMock();
         $this->responseNegotiator = new ResponseNegotiator($this->mockResponse, $this->mockInjector);
-        $this->mockRequest        = $this->getMock('net\stubbles\input\web\WebRequest');
+        $this->mockRequest        = $this->getMock('stubbles\input\web\WebRequest');
     }
 
     /**
@@ -69,7 +70,7 @@ class ResponseNegotiatorTestCase extends \PHPUnit_Framework_TestCase
     public function createWithUnsupportedProtocolRespondsWithHttpVersionNotSupported()
     {
         $this->mockRequest->expects($this->once())
-                          ->method('getProtocolVersion')
+                          ->method('protocolVersion')
                           ->will($this->returnValue(null));
         $mockResponseClass = get_class($this->getMockBuilder('net\stubbles\webapp\response\WebResponse')
                                             ->setMethods(array('header', 'sendBody'))
@@ -91,7 +92,7 @@ class ResponseNegotiatorTestCase extends \PHPUnit_Framework_TestCase
     public function createWithSupportedProtocolVersion1_0()
     {
         $this->mockRequest->expects($this->once())
-                          ->method('getProtocolVersion')
+                          ->method('protocolVersion')
                           ->will($this->returnValue('1.0'));
         $mockResponseClass = get_class($this->getMockBuilder('net\stubbles\webapp\response\WebResponse')
                                             ->setMethods(array('header', 'sendBody'))
@@ -110,7 +111,7 @@ class ResponseNegotiatorTestCase extends \PHPUnit_Framework_TestCase
     public function createWithSupportedProtocolVersionAndDefaultClass()
     {
         $this->mockRequest->expects($this->once())
-                          ->method('getProtocolVersion')
+                          ->method('protocolVersion')
                           ->will($this->returnValue('1.1'));
         $response = ResponseNegotiator::negotiateHttpVersion($this->mockRequest);
         $this->assertInstanceOf('net\stubbles\webapp\response\WebResponse',
@@ -128,7 +129,7 @@ class ResponseNegotiatorTestCase extends \PHPUnit_Framework_TestCase
         $this->mockRequest->expects($this->once())
                           ->method('readHeader')
                           ->with($this->equalTo('HTTP_ACCEPT'))
-                          ->will($this->returnValue(\net\stubbles\input\ValueReader::forValue($value)));
+                          ->will($this->returnValue(ValueReader::forValue($value)));
     }
 
     /**

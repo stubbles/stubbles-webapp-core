@@ -34,7 +34,7 @@ class UriRequestTestCase extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->mockHttpUri = $this->getMock('net\stubbles\peer\http\HttpUri');
+        $this->mockHttpUri = $this->getMock('stubbles\peer\http\HttpUri');
         $this->uriRequest  = new UriRequest($this->mockHttpUri, 'GET');
     }
 
@@ -57,7 +57,7 @@ class UriRequestTestCase extends \PHPUnit_Framework_TestCase
     private function mockUriPath($path)
     {
         $this->mockHttpUri->expects($this->any())
-                          ->method('getPath')
+                          ->method('path')
                           ->will($this->returnValue($path));
     }
 

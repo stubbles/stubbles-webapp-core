@@ -8,7 +8,7 @@
  * @package  net\stubbles\webapp
  */
 namespace net\stubbles\webapp;
-use net\stubbles\lang;
+use stubbles\lang;
 /**
  * Tests for net\stubbles\webapp\Routing.
  *
@@ -35,7 +35,7 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->routing   = new Routing($this->getMockBuilder('net\stubbles\ioc\Injector')
+        $this->routing   = new Routing($this->getMockBuilder('stubbles\ioc\Injector')
                                             ->disableOriginalConstructor()
                                             ->getMock()
                            );
@@ -144,7 +144,7 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
      */
     private function createProcessableRoute(Route $route, array $preInterceptors = array(), array $postInterceptors = array())
     {
-        $mockInjector = $this->getMockBuilder('net\stubbles\ioc\Injector')
+        $mockInjector = $this->getMockBuilder('stubbles\ioc\Injector')
                              ->disableOriginalConstructor()
                              ->getMock();
         return new MatchingRoute(UriRequest::fromString('http://example.net/hello', 'GET'),
@@ -166,7 +166,7 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @expectedException  net\stubbles\lang\exception\IllegalArgumentException
+     * @expectedException  stubbles\lang\exception\IllegalArgumentException
      */
     public function addInvalidPreInterceptorThrowsIllegalArgumentException()
     {
@@ -259,7 +259,7 @@ class RoutingTestCase extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @expectedException  net\stubbles\lang\exception\IllegalArgumentException
+     * @expectedException  stubbles\lang\exception\IllegalArgumentException
      */
     public function addInvalidPostInterceptorThrowsIllegalArgumentException()
     {

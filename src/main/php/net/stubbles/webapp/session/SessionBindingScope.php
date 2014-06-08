@@ -8,9 +8,9 @@
  * @package  net\stubbles\webapp
  */
 namespace net\stubbles\webapp\session;
-use net\stubbles\ioc\InjectionProvider;
-use net\stubbles\ioc\binding\BindingScope;
-use net\stubbles\lang\reflect\BaseReflectionClass;
+use stubbles\ioc\InjectionProvider;
+use stubbles\ioc\binding\BindingScope;
+use stubbles\lang\reflect\BaseReflectionClass;
 use net\stubbles\webapp\session\Session;
 /**
  * Interface for session storages.

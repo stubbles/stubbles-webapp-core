@@ -8,10 +8,10 @@
  * @package  net\stubbles\webapp
  */
 namespace net\stubbles\webapp\ioc;
-use net\stubbles\input\web\BaseWebRequest;
-use net\stubbles\input\web\WebRequest;
-use net\stubbles\ioc\Binder;
-use net\stubbles\ioc\module\BindingModule;
+use stubbles\input\web\BaseWebRequest;
+use stubbles\input\web\WebRequest;
+use stubbles\ioc\Binder;
+use stubbles\ioc\module\BindingModule;
 use net\stubbles\webapp\response\Response;
 use net\stubbles\webapp\response\ResponseNegotiator;
 /**
@@ -189,9 +189,9 @@ class IoBindingModule implements BindingModule
     {
         $request  = BaseWebRequest::fromRawSource();
         $response = ResponseNegotiator::negotiateHttpVersion($request, $this->responseClass);
-        $binder->bind('net\stubbles\input\web\WebRequest')
+        $binder->bind('stubbles\input\web\WebRequest')
                ->toInstance($request);
-        $binder->bind('net\stubbles\input\Request')
+        $binder->bind('stubbles\input\Request')
                ->toInstance($request);
         $binder->bind('net\stubbles\webapp\response\Response')
                ->toInstance($response);
@@ -222,7 +222,7 @@ class IoBindingModule implements BindingModule
     {
         $formatter = $this->formatter;
         foreach ($this->xmlFormatter as $mimeType => $xmlFormatter) {
-            if (!isset($formatter[$mimeType]) && class_exists('net\stubbles\xml\serializer\XmlSerializerFacade')) {
+            if (!isset($formatter[$mimeType]) && class_exists('stubbles\xml\serializer\XmlSerializerFacade')) {
                 $formatter[$mimeType] = $xmlFormatter;
             }
         }

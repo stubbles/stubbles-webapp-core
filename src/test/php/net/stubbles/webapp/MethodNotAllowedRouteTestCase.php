@@ -48,7 +48,7 @@ class MethodNotAllowedRouteTestCase extends \PHPUnit_Framework_TestCase
                                                                  new SupportedMimeTypes(array()),
                                                                  array('GET', 'POST', 'HEAD')
                                        );
-        $this->mockRequest  = $this->getMock('net\stubbles\input\web\WebRequest');
+        $this->mockRequest  = $this->getMock('stubbles\input\web\WebRequest');
         $this->mockResponse = $this->getMock('net\stubbles\webapp\response\Response');
     }
 
@@ -66,7 +66,7 @@ class MethodNotAllowedRouteTestCase extends \PHPUnit_Framework_TestCase
     public function processTriggers405MethodNotAllowedResponse()
     {
         $this->mockRequest->expects($this->once())
-                          ->method('getMethod')
+                          ->method('method')
                           ->will($this->returnValue('DELETE'));
         $this->mockResponse->expects($this->once())
                            ->method('methodNotAllowed')

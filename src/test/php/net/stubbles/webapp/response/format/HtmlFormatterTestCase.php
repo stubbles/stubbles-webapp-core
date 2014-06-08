@@ -8,7 +8,7 @@
  * @package  net\stubbles\webapp
  */
 namespace net\stubbles\webapp\response\format;
-use net\stubbles\lang;
+use stubbles\lang;
 /**
  * Tests for net\stubbles\webapp\response\format\HtmlFormatter.
  *

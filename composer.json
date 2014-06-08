@@ -6,14 +6,14 @@
     "description": "Base classes for Stubbles based web applications.",
     "require": {
         "php": ">=5.4.0",
-        "stubbles/core": "~3.5",
-        "stubbles/input": "~2.5"
+        "stubbles/core": "~4.0",
+        "stubbles/input": "~3.0"
     },
     "suggest": {
-        "stubbles/xml": "~2.1"
+        "stubbles/xml": "~3.0"
     },
     "require-dev": {
-        "stubbles/xml": "~2.1",
+        "stubbles/xml": "~3.0",
         "phpunit/phpunit": "~4.1"
     },
     "autoload": {

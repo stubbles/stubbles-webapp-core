@@ -8,7 +8,7 @@
  * @package  net\stubbles\webapp
  */
 namespace net\stubbles\webapp\response;
-use net\stubbles\peer\http\AcceptHeader;
+use stubbles\peer\http\AcceptHeader;
 /**
  * Tests for net\stubbles\webapp\response\SupportedMimeTypes.
  *

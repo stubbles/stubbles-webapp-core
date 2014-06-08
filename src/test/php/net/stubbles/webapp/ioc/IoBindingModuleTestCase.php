@@ -8,7 +8,7 @@
  * @package  net\stubbles\webapp
  */
 namespace net\stubbles\webapp\ioc;
-use net\stubbles\ioc\Binder;
+use stubbles\ioc\Binder;
 /**
  * Tests for net\stubbles\webapp\ioc\IoBindingModule.
  *
@@ -56,8 +56,8 @@ class IoBindingModuleTestCase extends \PHPUnit_Framework_TestCase
     public function bindsRequestAndResponseWhenCreatedWithoutSession()
     {
         $injector = $this->createInjector(IoBindingModule::createWithoutSession());
-        $this->assertTrue($injector->hasExplicitBinding('net\stubbles\input\Request'));
-        $this->assertTrue($injector->hasExplicitBinding('net\stubbles\input\web\WebRequest'));
+        $this->assertTrue($injector->hasExplicitBinding('stubbles\input\Request'));
+        $this->assertTrue($injector->hasExplicitBinding('stubbles\input\web\WebRequest'));
         $this->assertTrue($injector->hasExplicitBinding('net\stubbles\webapp\response\Response'));
     }
 
@@ -72,7 +72,7 @@ class IoBindingModuleTestCase extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @expectedException net\stubbles\lang\exception\RuntimeException
+     * @expectedException  stubbles\lang\exception\RuntimeException
      */
     public function doesNotAddSessionBindingScopeWhenCreatedWithoutSession()
     {
@@ -90,8 +90,8 @@ class IoBindingModuleTestCase extends \PHPUnit_Framework_TestCase
     public function bindsRequestAndResponseWhenCreatedWithSession()
     {
         $injector = $this->createInjector(IoBindingModule::createWithSession());
-        $this->assertTrue($injector->hasExplicitBinding('net\stubbles\input\Request'));
-        $this->assertTrue($injector->hasExplicitBinding('net\stubbles\input\web\WebRequest'));
+        $this->assertTrue($injector->hasExplicitBinding('stubbles\input\Request'));
+        $this->assertTrue($injector->hasExplicitBinding('stubbles\input\web\WebRequest'));
         $this->assertTrue($injector->hasExplicitBinding('net\stubbles\webapp\response\Response'));
     }
 

@@ -77,7 +77,7 @@ class WebResponseTestCase extends \PHPUnit_Framework_TestCase
     /**
      * @since  1.5.0
      * @test
-     * @expectedException  net\stubbles\lang\exception\IllegalArgumentException
+     * @expectedException  stubbles\lang\exception\IllegalArgumentException
      * @group  bug251
      */
     public function settingStatusCodeToInvalidValueThrowsIllegalArgumentException()

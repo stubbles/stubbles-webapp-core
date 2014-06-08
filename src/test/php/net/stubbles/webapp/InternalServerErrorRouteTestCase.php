@@ -45,7 +45,7 @@ class InternalServerErrorRouteTestCase extends \PHPUnit_Framework_TestCase
                                                                        UriRequest::fromString('http://example.com/hello/world', 'GET'),
                                                                        new SupportedMimeTypes(array())
                                           );
-        $this->mockRequest  = $this->getMock('net\stubbles\input\web\WebRequest');
+        $this->mockRequest  = $this->getMock('stubbles\input\web\WebRequest');
         $this->mockResponse = $this->getMock('net\stubbles\webapp\response\Response');
     }
 

@@ -8,7 +8,7 @@
  * @package  net\stubbles\webapp
  */
 namespace net\stubbles\webapp\interceptor;
-use net\stubbles\input\web\WebRequest;
+use stubbles\input\web\WebRequest;
 use net\stubbles\webapp\response\Response;
 /**
  * Allows to add a Access-Control-Allow-Origin header to the response.

@@ -8,8 +8,8 @@
  * @package  net\stubbles\webapp
  */
 namespace net\stubbles\webapp\interceptor;
-use net\stubbles\input\ValueReader;
-use net\stubbles\lang;
+use stubbles\input\ValueReader;
+use stubbles\lang;
 /**
  * Tests for net\stubbles\webapp\interceptor\AddAccessControlAllowOriginHeader.
  *
@@ -43,7 +43,7 @@ class AddAccessControlAllowOriginHeaderTestCase extends \PHPUnit_Framework_TestC
     public function setUp()
     {
         $this->addAccessControlAllowOriginHeader = new AddAccessControlAllowOriginHeader();
-        $this->mockRequest  = $this->getMock('net\stubbles\input\web\WebRequest');
+        $this->mockRequest  = $this->getMock('stubbles\input\web\WebRequest');
         $this->mockResponse = $this->getMock('net\stubbles\webapp\response\Response');
     }
 

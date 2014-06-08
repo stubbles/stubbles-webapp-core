@@ -8,8 +8,9 @@
  * @package  net\stubbles\webapp
  */
 namespace net\stubbles\webapp\response;
-use net\stubbles\input\web\WebRequest;
-use net\stubbles\ioc\Injector;
+use stubbles\input\filter\AcceptFilter;
+use stubbles\input\web\WebRequest;
+use stubbles\ioc\Injector;
 /**
  * Negotiates correct response for request.
  *
@@ -56,7 +57,7 @@ class ResponseNegotiator
      */
     public static function negotiateHttpVersion(WebRequest $request, $responseClass = 'net\stubbles\webapp\response\WebResponse')
     {
-        $httpVersion = $request->getProtocolVersion();
+        $httpVersion = $request->protocolVersion();
         if (null === $httpVersion) {
             $response = new $responseClass();
             return $response->httpVersionNotSupported();
@@ -83,7 +84,7 @@ class ResponseNegotiator
         }
 
         $mimeType = $supportedMimeTypes->findMatch($request->readHeader('HTTP_ACCEPT')
-                                                           ->applyFilter(new \net\stubbles\input\filter\AcceptFilter())
+                                                           ->withFilter(new AcceptFilter())
                     );
         if (null === $mimeType) {
             return $this->response->notAcceptable($supportedMimeTypes->asArray());

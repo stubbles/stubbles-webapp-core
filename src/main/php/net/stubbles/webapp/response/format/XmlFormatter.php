@@ -8,7 +8,7 @@
  * @package  net\stubbles\webapp
  */
 namespace net\stubbles\webapp\response\format;
-use net\stubbles\xml\serializer\XmlSerializerFacade;
+use stubbles\xml\serializer\XmlSerializerFacade;
 /**
  * Formats resource in XML.
  *

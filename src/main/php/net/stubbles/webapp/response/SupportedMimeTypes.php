@@ -8,7 +8,7 @@
  * @package  net\stubbles\webapp
  */
 namespace net\stubbles\webapp\response;
-use net\stubbles\peer\http\AcceptHeader;
+use stubbles\peer\http\AcceptHeader;
 /**
  * Handles list of supported mime types.
  *

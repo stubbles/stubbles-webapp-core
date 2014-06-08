@@ -40,8 +40,8 @@ class WebSessionTestCase extends \PHPUnit_Framework_TestCase
     /**
      * creates valid web session
      *
-     * @param   string  $storageFingerprint
      * @param   string  $givenFingerprint
+     * @param   string  $storageFingerprint
      * @return  WebSession
      */
     private function createWebSession($givenFingerprint = 'aFingerprint',
@@ -292,7 +292,7 @@ class WebSessionTestCase extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @expectedException  net\stubbles\lang\exception\IllegalStateException
+     * @expectedException  stubbles\lang\exception\IllegalStateException
      */
     public function getValueThrowsIllegalStateExceptionFalseOnInvalidSession()
     {
@@ -313,7 +313,7 @@ class WebSessionTestCase extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @expectedException  net\stubbles\lang\exception\IllegalStateException
+     * @expectedException  stubbles\lang\exception\IllegalStateException
      */
     public function putValueThrowsIllegalStateExceptionFalseOnInvalidSession()
     {
@@ -341,7 +341,7 @@ class WebSessionTestCase extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @expectedException  net\stubbles\lang\exception\IllegalStateException
+     * @expectedException  stubbles\lang\exception\IllegalStateException
      */
     public function removeValueThrowsIllegalStateExceptionFalseOnInvalidSession()
     {
@@ -368,7 +368,7 @@ class WebSessionTestCase extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @expectedException  net\stubbles\lang\exception\IllegalStateException
+     * @expectedException  stubbles\lang\exception\IllegalStateException
      */
     public function getValueKeysThrowsIllegalStateExceptionFalseOnInvalidSession()
     {

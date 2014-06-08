@@ -8,7 +8,9 @@
  * @package  net\stubbles\webapp
  */
 namespace net\stubbles\webapp\auth;
+use stubbles\peer\http\HttpUri;
 use net\stubbles\webapp\Route;
+use net\stubbles\webapp\response\SupportedMimeTypes;
 /**
  * Tests for net\stubbles\webapp\auth\AuthorizingRoute.
  *
@@ -66,7 +68,7 @@ class AuthorizingRouteTestCase extends \PHPUnit_Framework_TestCase
                                                        $this->routeConfig,
                                                        $this->mockActualRoute
                                   );
-        $this->mockRequest      = $this->getMock('net\stubbles\input\web\WebRequest');
+        $this->mockRequest      = $this->getMock('stubbles\input\web\WebRequest');
         $this->mockResponse     = $this->getMock('net\stubbles\webapp\response\Response');
     }
 
@@ -86,7 +88,7 @@ class AuthorizingRouteTestCase extends \PHPUnit_Framework_TestCase
      */
     public function returnsHttpsUriOfActualRoute()
     {
-        $httpsUri = \net\stubbles\peer\http\HttpUri::fromString('https://example.com/hello');
+        $httpsUri = HttpUri::fromString('https://example.com/hello');
         $this->mockActualRoute->expects($this->once())
                               ->method('getHttpsUri')
                               ->will($this->returnValue($httpsUri));
@@ -98,7 +100,7 @@ class AuthorizingRouteTestCase extends \PHPUnit_Framework_TestCase
      */
     public function returnsSupportedMimeTypesOfActualRoute()
     {
-        $supportedMimeTypes = new \net\stubbles\webapp\response\SupportedMimeTypes(array());
+        $supportedMimeTypes = new SupportedMimeTypes(array());
         $this->mockActualRoute->expects($this->once())
                               ->method('getSupportedMimeTypes')
                               ->will($this->returnValue($supportedMimeTypes));

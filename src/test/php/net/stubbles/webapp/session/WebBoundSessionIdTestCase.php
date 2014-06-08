@@ -8,7 +8,7 @@
  * @package  net\stubbles\webapp
  */
 namespace net\stubbles\webapp\session;
-use net\stubbles\input\ValueReader;
+use stubbles\input\ValueReader;
 /**
  * Tests for net\stubbles\webapp\session\WebBoundSessionId.
  *
@@ -41,8 +41,8 @@ class WebBoundSessionIdTestCase extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->mockWebRequest    = $this->getMock('net\\stubbles\\input\\web\\WebRequest');
-        $this->mockResponse      = $this->getMock('net\\stubbles\\webapp\\response\\Response');
+        $this->mockWebRequest    = $this->getMock('stubbles\input\web\WebRequest');
+        $this->mockResponse      = $this->getMock('net\stubbles\webapp\response\Response');
         $this->webBoundSessionId = new WebBoundSessionId($this->mockWebRequest,
                                                          $this->mockResponse,
                                                          'foo'

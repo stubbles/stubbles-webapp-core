@@ -8,7 +8,7 @@
  * @package  net\stubbles\webapp
  */
 namespace net\stubbles\webapp\response;
-use net\stubbles\peer\http\HttpUri;
+use stubbles\peer\http\HttpUri;
 /**
  * List of response headers.
  *

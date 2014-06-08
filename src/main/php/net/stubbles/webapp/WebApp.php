@@ -8,9 +8,10 @@
  * @package  net\stubbles\webapp
  */
 namespace net\stubbles\webapp;
-use net\stubbles\input\web\WebRequest;
-use net\stubbles\ioc\App;
-use net\stubbles\lang\errorhandler\ExceptionLogger;
+use stubbles\input\web\WebRequest;
+use stubbles\ioc\App;
+use stubbles\lang\errorhandler\ExceptionLogger;
+use stubbles\peer\http\Http;
 use net\stubbles\webapp\ioc\IoBindingModule;
 use net\stubbles\webapp\response\Response;
 use net\stubbles\webapp\response\ResponseNegotiator;
@@ -74,8 +75,8 @@ abstract class WebApp extends App
     public function run()
     {
         $this->configureRouting($this->routing);
-        $route    = $this->routing->findRoute(new UriRequest($this->request->getUri(),
-                                                             $this->request->getMethod()
+        $route    = $this->routing->findRoute(new UriRequest($this->request->uri(),
+                                                             $this->request->method()
                                               )
                     );
         $response = $this->responseNegotiator->negotiateMimeType($this->request, $route->getSupportedMimeTypes());
@@ -130,7 +131,7 @@ abstract class WebApp extends App
      */
     protected function send(Response $response)
     {
-        if ($this->request->getMethod() === 'HEAD') {
+        if ($this->request->method() === Http::HEAD) {
             $response->sendHead();
         } else {
             $response->send();

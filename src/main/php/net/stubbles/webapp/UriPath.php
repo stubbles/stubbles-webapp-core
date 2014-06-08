@@ -8,7 +8,7 @@
  * @package  net\stubbles\webapp
  */
 namespace net\stubbles\webapp;
-use net\stubbles\input\ValueReader;
+use stubbles\input\ValueReader;
 /**
  * Called path.
  *

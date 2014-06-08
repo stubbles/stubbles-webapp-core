@@ -8,7 +8,7 @@
  * @package  net\stubbles\webapp\rest
  */
 namespace net\stubbles\webapp\response\format;
-use net\stubbles\lang;
+use stubbles\lang;
 /**
  * Tests for net\stubbles\webapp\response\format\XmlFormatter.
  *
@@ -35,7 +35,7 @@ class XmlFormatterTestCase extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->mockXmlSerializerFacade = $this->getMockBuilder('net\stubbles\xml\serializer\XmlSerializerFacade')
+        $this->mockXmlSerializerFacade = $this->getMockBuilder('stubbles\xml\serializer\XmlSerializerFacade')
                                               ->disableOriginalConstructor()
                                               ->getMock();
         $this->xmlFormatter            = new XmlFormatter($this->mockXmlSerializerFacade);
