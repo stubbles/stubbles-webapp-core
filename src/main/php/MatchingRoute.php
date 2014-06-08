@@ -83,10 +83,6 @@ class MatchingRoute extends AbstractProcessableRoute
     {
         $uriPath  = $this->route->getUriPath($this->calledUri);
         $callback = $this->route->getCallback();
-        if ($callback instanceof \Closure) {
-            return $this->result($callback($request, $response, $uriPath));
-        }
-
         if (is_callable($callback)) {
             return $this->result(call_user_func_array($callback, [$request, $response, $uriPath]));
         }

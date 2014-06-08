@@ -79,10 +79,6 @@ class Interceptors
      */
     private function executePreInterceptor($preInterceptor, WebRequest $request, Response $response)
     {
-        if ($preInterceptor instanceof \Closure) {
-            return $preInterceptor($request, $response);
-        }
-
         if (is_callable($preInterceptor)) {
             return call_user_func_array($preInterceptor, [$request, $response]);
         }
@@ -128,10 +124,6 @@ class Interceptors
      */
     private function executePostInterceptor($postInterceptor, WebRequest $request, Response $response)
     {
-        if ($postInterceptor instanceof \Closure) {
-            return $postInterceptor($request, $response);
-        }
-
         if (is_callable($postInterceptor)) {
             return call_user_func_array($postInterceptor, [$request, $response]);
         }
