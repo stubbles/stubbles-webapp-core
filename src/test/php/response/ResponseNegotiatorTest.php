@@ -10,6 +10,7 @@
 namespace stubbles\webapp\response;
 use stubbles\input\ValueReader;
 use stubbles\lang;
+use stubbles\peer\http\HttpVersion;
 /**
  * Tests for stubbles\webapp\response\ResponseNegotiator.
  *
@@ -93,7 +94,7 @@ class ResponseNegotiatorTest extends \PHPUnit_Framework_TestCase
     {
         $this->mockRequest->expects($this->once())
                           ->method('protocolVersion')
-                          ->will($this->returnValue('1.0'));
+                          ->will($this->returnValue(HttpVersion::fromString(HttpVersion::HTTP_1_0)));
         $mockResponseClass = get_class($this->getMockBuilder('stubbles\webapp\response\WebResponse')
                                             ->setMethods(['header', 'sendBody'])
                                             ->getMock()
@@ -112,7 +113,7 @@ class ResponseNegotiatorTest extends \PHPUnit_Framework_TestCase
     {
         $this->mockRequest->expects($this->once())
                           ->method('protocolVersion')
-                          ->will($this->returnValue('1.1'));
+                          ->will($this->returnValue(HttpVersion::fromString(HttpVersion::HTTP_1_1)));
         $response = ResponseNegotiator::negotiateHttpVersion($this->mockRequest);
         $this->assertInstanceOf('stubbles\webapp\response\WebResponse',
                                 $response

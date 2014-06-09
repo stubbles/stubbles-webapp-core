@@ -15,6 +15,7 @@
      * deprecated `stubbles\webapp\response\Cookie::getPath()`, use `stubbles\webapp\response\Cookie::path()` instead, will be removed with 5.0.0
      * deprecated `stubbles\webapp\response\Cookie::getDomain()`, use `stubbles\webapp\response\Cookie::domain()` instead, will be removed with 5.0.0
      * deprecated `stubbles\webapp\response\Cookie::getDomain()`, use `stubbles\webapp\response\Cookie::domain()` instead, will be removed with 5.0.0
+   * constructor of `stubbles\webapp\response\WebResponse` now accepts correct http version strings only according to RFC 7230
 
 ### Other changes
 

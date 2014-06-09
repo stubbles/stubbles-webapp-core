@@ -10,6 +10,7 @@
 namespace stubbles\webapp\response;
 use stubbles\peer\http\Http;
 use stubbles\peer\http\HttpUri;
+use stubbles\peer\http\HttpVersion;
 /**
  * Base class for a response to a request.
  *
@@ -28,7 +29,7 @@ class WebResponse implements Response
     /**
      * http version to be used
      *
-     * @type  string
+     * @type  HttpVersion
      */
     private $version;
     /**
@@ -65,12 +66,12 @@ class WebResponse implements Response
     /**
      * constructor
      *
-     * @param  string  $version  http version      should be a string like '1.0' or '1.1'
-     * @param  string  $sapi     current php sapi
+     * @param  string|HttpVersion  $version  optional  http version to use for response, defaults to HTTP/1.1
+     * @param  string              $sapi     optional  current php sapi, defaults to value of PHP_SAPI constant
      */
-    public function __construct($version = '1.1', $sapi = PHP_SAPI)
+    public function __construct($version = HttpVersion::HTTP_1_1, $sapi = PHP_SAPI)
     {
-        $this->version = $version;
+        $this->version = HttpVersion::castFrom($version);
         $this->sapi    = $sapi;
         $this->headers = new Headers();
         $this->setStatusCode(200);
@@ -317,7 +318,7 @@ class WebResponse implements Response
         if ('cgi' === $this->sapi) {
             $this->header('Status: ' . $this->status);
         } else {
-            $this->header('HTTP/' . $this->version . ' ' . $this->status);
+            $this->header($this->version . ' ' . $this->status);
         }
 
         foreach ($this->headers as $name => $value) {

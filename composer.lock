@@ -11,12 +11,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/stubbles/stubbles-core.git",
-                "reference": "7749a02c05913783fdde54f36a696c2afc6a7d79"
+                "reference": "0a9220d22cbaf942cc3e3f524241eccc196c41a8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/stubbles/stubbles-core/zipball/7749a02c05913783fdde54f36a696c2afc6a7d79",
-                "reference": "7749a02c05913783fdde54f36a696c2afc6a7d79",
+                "url": "https://api.github.com/repos/stubbles/stubbles-core/zipball/0a9220d22cbaf942cc3e3f524241eccc196c41a8",
+                "reference": "0a9220d22cbaf942cc3e3f524241eccc196c41a8",
                 "shasum": ""
             },
             "require": {
@@ -48,7 +48,7 @@
             ],
             "description": "Provides base classes for Stubbles packages.",
             "homepage": "http://stubbles.net/",
-            "time": "2014-06-08 14:45:58"
+            "time": "2014-06-09 12:30:55"
         },
         {
             "name": "stubbles/input",
@@ -56,12 +56,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/stubbles/stubbles-input.git",
-                "reference": "29441c30e36a0868e38c26119860102fab1db604"
+                "reference": "9515717724922ee9326b1053b22b20de84aa60d3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/stubbles/stubbles-input/zipball/29441c30e36a0868e38c26119860102fab1db604",
-                "reference": "29441c30e36a0868e38c26119860102fab1db604",
+                "url": "https://api.github.com/repos/stubbles/stubbles-input/zipball/9515717724922ee9326b1053b22b20de84aa60d3",
+                "reference": "9515717724922ee9326b1053b22b20de84aa60d3",
                 "shasum": ""
             },
             "require": {
@@ -93,7 +93,7 @@
             ],
             "description": "Stubbles Input enables to handle input data via validation and filtering.",
             "homepage": "http://stubbles.net/",
-            "time": "2014-06-08 14:50:45"
+            "time": "2014-06-09 12:54:27"
         }
     ],
     "packages-dev": [

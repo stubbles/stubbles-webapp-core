@@ -8,6 +8,7 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\response;
+use stubbles\peer\http\HttpVersion;
 /**
  * Tests for stubbles\webapp\response\WebResponse.
  *
@@ -50,7 +51,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     {
         $response = $this->getMock('stubbles\webapp\response\WebResponse',
                                    ['header', 'sendBody'],
-                                   ['1.0']
+                                   [HttpVersion::HTTP_1_0]
                           );
         $response->expects($this->at(0))
                  ->method('header')
@@ -65,7 +66,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     {
         $response = $this->getMock('stubbles\webapp\response\WebResponse',
                                    ['header', 'sendBody'],
-                                   ['1.0']
+                                   [HttpVersion::HTTP_1_0]
                           );
         $response->expects($this->at(0))
                  ->method('header')
@@ -109,7 +110,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     {
         $this->response = $this->getMock('stubbles\webapp\response\WebResponse',
                                          ['header', 'sendBody'],
-                                         ['1.1', 'cgi']
+                                         [HttpVersion::HTTP_1_1, 'cgi']
                           );
         $this->response->expects($this->once())
                        ->method('header')
