@@ -28,9 +28,23 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->response = $this->getMock('stubbles\webapp\response\WebResponse',
-                                         ['header', 'sendBody']
-                          );
+        $this->response = $this->createResponse();
+    }
+
+    /**
+     * creates response where output facing methods are mocked
+     *
+     * @param   string|HttpVersion  $version  optional  http version to use for response, defaults to HTTP/1.1
+     * @param   string              $sapi     optional  current php sapi, defaults to value of PHP_SAPI constant
+     * @return  WebResponse
+     */
+    private function createResponse($httpVersion = HttpVersion::HTTP_1_1, $sapi = null)
+    {
+        return $this->getMock(
+                'stubbles\webapp\response\WebResponse',
+                ['header', 'sendBody'],
+                [$httpVersion, $sapi]
+        );
     }
 
     /**
@@ -49,10 +63,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function versionCanBeSetOnConstruction()
     {
-        $response = $this->getMock('stubbles\webapp\response\WebResponse',
-                                   ['header', 'sendBody'],
-                                   [HttpVersion::HTTP_1_0]
-                          );
+        $response = $this->createResponse(HttpVersion::HTTP_1_0);
         $response->expects($this->at(0))
                  ->method('header')
                  ->with($this->equalTo('HTTP/1.0 200 OK'));
@@ -64,10 +75,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function clearingResponseDoesNotResetVersion()
     {
-        $response = $this->getMock('stubbles\webapp\response\WebResponse',
-                                   ['header', 'sendBody'],
-                                   [HttpVersion::HTTP_1_0]
-                          );
+        $response = $this->createResponse(HttpVersion::HTTP_1_0);
         $response->expects($this->at(0))
                  ->method('header')
                  ->with($this->equalTo('HTTP/1.0 200 OK'));
@@ -108,10 +116,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function statusCodeInCgiSapi()
     {
-        $this->response = $this->getMock('stubbles\webapp\response\WebResponse',
-                                         ['header', 'sendBody'],
-                                         [HttpVersion::HTTP_1_1, 'cgi']
-                          );
+        $this->response = $this->createResponse(HttpVersion::HTTP_1_1, 'cgi');
         $this->response->expects($this->once())
                        ->method('header')
                        ->with($this->equalTo('Status: 200 OK'));
@@ -507,5 +512,35 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
         $this->response->expects($this->never())
                        ->method('sendBody');
         $this->response->write('foo')->sendHead();
+    }
+
+    /**
+     * @return  array
+     */
+    public function unsupportedHttpVersions()
+    {
+        return [
+            [HttpVersion::fromString('HTTP/0.9')],
+            [HttpVersion::fromString('HTTP/2.0')]
+        ];
+    }
+
+    /**
+     * @since  4.0.0
+     * @param  HttpVersion  $unsupportedHttpVersion
+     * @test
+     * @dataProvider  unsupportedHttpVersions
+     */
+    public function createInstanceWithHttpMajorVersionOtherThanOneFixatesResponseToHttpVersionNotSupported(HttpVersion $unsupportedHttpVersion)
+    {
+        $response = $this->createResponse($unsupportedHttpVersion);
+        $this->assertTrue($response->isFixed());
+        $response->expects($this->at(0))
+                 ->method('header')
+                 ->with($this->equalTo('HTTP/1.1 505 HTTP Version Not Supported'));
+        $response->expects($this->once())
+                 ->method('sendBody')
+                 ->with($this->equalTo('Unsupported HTTP protocol version, expected HTTP/1.0 or HTTP/1.1'));
+        $response->send();
     }
 }

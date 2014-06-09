@@ -79,22 +79,36 @@ class ResponseNegotiatorTest extends \PHPUnit_Framework_TestCase
                              );
         $response = ResponseNegotiator::negotiateHttpVersion($this->mockRequest, $mockResponseClass);
         $this->assertInstanceOf($mockResponseClass, $response);
-        $response->expects($this->once())
+        $response->expects($this->at(0))
                  ->method('header')
                  ->with($this->equalTo('HTTP/1.1 505 HTTP Version Not Supported'));
         $response->expects($this->once())
                  ->method('sendBody')
                  ->with($this->equalTo('Unsupported HTTP protocol version, expected HTTP/1.0 or HTTP/1.1'));
+        $response->send();
+    }
+
+    /**
+     * @return  array
+     */
+    public function supportedHttpVersions()
+    {
+        return [
+            [HttpVersion::fromString(HttpVersion::HTTP_1_0)],
+            [HttpVersion::fromString(HttpVersion::HTTP_1_1)],
+            [HttpVersion::fromString('HTTP/1.2')]
+        ];
     }
 
     /**
      * @test
+     * @dataProvider  supportedHttpVersions
      */
-    public function createWithSupportedProtocolVersion1_0()
+    public function createWithSupportedProtocolVersions(HttpVersion $httpVersion)
     {
         $this->mockRequest->expects($this->once())
                           ->method('protocolVersion')
-                          ->will($this->returnValue(HttpVersion::fromString(HttpVersion::HTTP_1_0)));
+                          ->will($this->returnValue($httpVersion));
         $mockResponseClass = get_class($this->getMockBuilder('stubbles\webapp\response\WebResponse')
                                             ->setMethods(['header', 'sendBody'])
                                             ->getMock()
@@ -103,21 +117,8 @@ class ResponseNegotiatorTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf($mockResponseClass, $response);
         $response->expects($this->once())
                  ->method('header')
-                 ->with($this->equalTo('HTTP/1.0 200 OK'));
-    }
-
-    /**
-     * @test
-     */
-    public function createWithSupportedProtocolVersionAndDefaultClass()
-    {
-        $this->mockRequest->expects($this->once())
-                          ->method('protocolVersion')
-                          ->will($this->returnValue(HttpVersion::fromString(HttpVersion::HTTP_1_1)));
-        $response = ResponseNegotiator::negotiateHttpVersion($this->mockRequest);
-        $this->assertInstanceOf('stubbles\webapp\response\WebResponse',
-                                $response
-        );
+                 ->with($this->equalTo($httpVersion . ' 200 OK'));
+        $response->send();
     }
 
     /**
