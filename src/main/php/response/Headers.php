@@ -87,6 +87,8 @@ class Headers implements \IteratorAggregate
     /**
      * checks if header with given name is present
      *
+     * Please note that header names are treated case sensitive.
+     *
      * @param   string  $name
      * @return  bool
      */
