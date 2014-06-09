@@ -25,6 +25,7 @@
    * fixed bug with route selection when no method restriction was set on a route
    * added `net\stubbles\webapp\RoutingConfigurator::onAll()`
    * added `stubbles\webapp\UriPath::actual()`
+   * fixed bug: response should not add content length header automatically when already added before
 
 
 3.4.0, (2014-05-16)

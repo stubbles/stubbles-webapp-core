@@ -253,6 +253,29 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function sendBodyDoesNotAddContentLengthHeaderWhenAlreadyInHeadersSetBefore()
+    {
+        // used wrong content length on purpose to distinguish between
+        // internally added header which has correct length
+        $this->response->addHeader('Content-Length', 10);
+        $this->response->expects($this->at(0))
+                       ->method('header')
+                       ->with($this->equalTo('HTTP/1.1 200 OK'));
+        $this->response->expects($this->at(1))
+                       ->method('header')
+                       ->with($this->equalTo('Content-Length: 10'));
+        $this->response->expects($this->exactly(2))
+                       ->method('header');
+        $this->response->expects($this->once())
+                       ->method('sendBody')
+                       ->with($this->equalTo('foo'));
+        $this->response->write('foo')
+                       ->send();
+    }
+
+    /**
+     * @test
+     */
     public function doesNotWriteBodyIfNoBodyPresent()
     {
         $this->response->expects($this->never())

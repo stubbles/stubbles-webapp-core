@@ -334,7 +334,7 @@ class WebResponse implements Response
             $cookie->send();
         }
 
-        if (null != $this->body) {
+        if (null != $this->body && !$this->headers->contain('Content-Length')) {
             $this->header('Content-Length: ' . strlen($this->body));
         }
 
