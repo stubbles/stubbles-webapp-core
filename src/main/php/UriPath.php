@@ -17,23 +17,23 @@ use stubbles\input\ValueReader;
 class UriPath
 {
     /**
-     * matched path from route configuration
+     * path configured in routing
      *
      * @type  string
      */
-    private $matched;
+    private $configuredPath;
+    /**
+     * complete called path from request
+     *
+     * @type  string
+     */
+    private $calledPath;
     /**
      * map of path arguments
      *
      * @type  string[]
      */
     private $arguments;
-    /**
-     * remaining path that was not matched by original path
-     *
-     * @type  string
-     */
-    private $remaining;
 
     /**
      * creates a pattern for given path
@@ -49,31 +49,13 @@ class UriPath
     /**
      * constructor
      *
-     * @param  string    $matched
-     * @param  string[]  $arguments
-     * @param  string    $remaining
+     * @param  string    $configuredPath  path configured in routing
+     * @param  string    $calledPath      complete called path from request
      */
-    public function __construct($matched, array $arguments, $remaining)
+    public function __construct($configuredPath, $calledPath)
     {
-        $this->matched   = $matched;
-        $this->arguments = $arguments;
-        $this->remaining = $remaining;
-    }
-
-    /**
-     * creates instance from given pathes
-     *
-     * @param   string  $configuredPath
-     * @param   string  $calledPath
-     * @return  UriPath
-     */
-    public static function from($configuredPath, $calledPath)
-    {
-        return new self(
-                $configuredPath,
-                self::parsePathArguments($configuredPath, $calledPath),
-                self::extractRemainingPath($configuredPath, $calledPath)
-        );
+        $this->configuredPath = $configuredPath;
+        $this->calledPath     = $calledPath;
     }
 
     /**
@@ -81,9 +63,41 @@ class UriPath
      *
      * @return  string
      */
+    public function configured()
+    {
+        return $this->configuredPath;
+    }
+
+    /**
+     * returns matched path from route configuration
+     *
+     * @return  string
+     * @deprecated  since 4.0.0, use configured() instead, will be removed with 5.0.0
+     */
     public function getMatched()
     {
-        return $this->matched;
+        return $this->configuredPath;
+    }
+
+    /**
+     * returns actual path that was called
+     *
+     * @return  string
+     * @since   4.0.0
+     */
+    public function actual()
+    {
+        return $this->calledPath;
+    }
+
+    /**
+     * returns actual path that was called
+     *
+     * @return  string
+     */
+    public function __toString()
+    {
+        return $this->actual();
     }
 
     /**
@@ -94,6 +108,7 @@ class UriPath
      */
     public function hasArgument($name)
     {
+        $this->parsePathArguments();
         return isset($this->arguments[$name]);
     }
 
@@ -101,17 +116,39 @@ class UriPath
      * returns argument with given name or default if not set
      *
      * @param   string  $name
-     * @param   bool    $default
      * @return  ValueReader
      * @since   3.3.0
      */
-    public function readArgument($name, $default = null)
+    public function readArgument($name)
     {
+        $this->parsePathArguments();
         if (isset($this->arguments[$name])) {
             return ValueReader::forValue($this->arguments[$name]);
         }
 
-        return ValueReader::forValue($default);
+        return ValueReader::forValue(null);
+    }
+
+    /**
+     * parses path arguments from called path
+     */
+    private function parsePathArguments()
+    {
+        if (null !== $this->arguments) {
+            return;
+        }
+
+        $arguments = [];
+        preg_match('/^' . self::pattern($this->configuredPath) . '/', $this->calledPath, $arguments);
+        array_shift($arguments);
+        $names  = [];
+        $this->arguments = [];
+        preg_match_all('/[{][^}]*[}]/', str_replace('/', '\/', $this->configuredPath), $names);
+        foreach ($names[0] as $key => $name) {
+            if (isset($arguments[$key])) {
+                $this->arguments[str_replace(['{', '}'], '', $name)] = $arguments[$key];
+            }
+        }
     }
 
     /**
@@ -122,8 +159,15 @@ class UriPath
      */
     public function remaining($default = null)
     {
-        if (null !== $this->remaining) {
-            return $this->remaining;
+        $matches = [];
+        preg_match('/(' . self::pattern($this->configuredPath) . ')([^?]*)?/', $this->calledPath, $matches);
+        $last = count($matches) - 1;
+        if (2 > $last) {
+            return $default;
+        }
+
+        if (isset($matches[$last]) && !empty($matches[$last])) {
+            return $matches[$last];
         }
 
         return $default;
@@ -139,50 +183,5 @@ class UriPath
     public function getRemaining($default = null)
     {
         return $this->remaining($default);
-    }
-
-    /**
-     * gets path arguments from uri
-     *
-     * @param   string  $configuredPath
-     * @return  string[]
-     */
-    private static function parsePathArguments($configuredPath, $calledPath)
-    {
-        $arguments = [];
-        preg_match('/^' . self::pattern($configuredPath) . '/', $calledPath, $arguments);
-        array_shift($arguments);
-        $names  = [];
-        $result = [];
-        preg_match_all('/[{][^}]*[}]/', str_replace('/', '\/', $configuredPath), $names);
-        foreach ($names[0] as $key => $name) {
-            if (isset($arguments[$key])) {
-                $result[str_replace(['{', '}'], '', $name)] = $arguments[$key];
-            }
-        }
-
-        return $result;
-    }
-
-    /**
-     * returns remaining path if there is any
-     *
-     * @param   string  $configuredPath
-     * @return  string
-     */
-    private static function extractRemainingPath($configuredPath, $calledPath)
-    {
-        $matches = [];
-        preg_match('/(' . self::pattern($configuredPath) . ')([^?]*)?/', $calledPath, $matches);
-        $last = count($matches) - 1;
-        if (2 > $last) {
-            return null;
-        }
-
-        if (isset($matches[$last]) && !empty($matches[$last])) {
-            return $matches[$last];
-        }
-
-        return null;
     }
 }

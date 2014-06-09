@@ -93,7 +93,7 @@ class MatchingRoute extends AbstractProcessableRoute
 
         $processor = $this->injector->getInstance($callback);
         if (!($processor instanceof Processor)) {
-            $response->internalServerError('Configured callback class ' . $callback . ' for route ' . $uriPath->getMatched() . ' is not an instance of stubbles\webapp\Processor');
+            $response->internalServerError('Configured callback class ' . $callback . ' for route ' . $uriPath . ' is not an instance of stubbles\webapp\Processor');
             return false;
         }
 

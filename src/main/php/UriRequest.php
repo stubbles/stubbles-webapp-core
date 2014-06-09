@@ -121,7 +121,7 @@ class UriRequest
      */
     public function path($configuredPath)
     {
-        return UriPath::from($configuredPath, $this->uri->path());
+        return new UriPath($configuredPath, $this->uri->path());
     }
 
     /**

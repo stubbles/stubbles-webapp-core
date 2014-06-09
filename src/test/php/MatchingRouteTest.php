@@ -219,7 +219,7 @@ class MatchingRouteTest extends \PHPUnit_Framework_TestCase
                                 ->method('process')
                                 ->with($this->equalTo($this->mockRequest),
                                        $this->equalTo($this->mockResponse),
-                                       $this->equalTo(new UriPath('/hello/{name}', ['name' => 'world'], null))
+                                       $this->equalTo(new UriPath('/hello/{name}', '/hello/world'))
                                   );
         if (null !== $returnValue) {
             $mocked->will($this->returnValue($returnValue));
@@ -257,7 +257,7 @@ class MatchingRouteTest extends \PHPUnit_Framework_TestCase
                                 ->method('process')
                                 ->with($this->equalTo($this->mockRequest),
                                        $this->equalTo($this->mockResponse),
-                                       $this->equalTo(new UriPath('/hello/{name}', ['name' => 'world'], null))
+                                       $this->equalTo(new UriPath('/hello/{name}', '/hello/world'))
                                   );
         if (null !== $returnValue) {
             $mocked->will($this->returnValue($returnValue));

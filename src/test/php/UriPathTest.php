@@ -28,87 +28,33 @@ class UriPathTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->uriPath = new UriPath('/hello/{name}', ['name' => 'world'], '/foo');
+        $this->uriPath = new UriPath('/hello/{name}', '/hello/world/foo');
     }
 
     /**
      * @test
      */
-    public function returnsGivenMatchedPath()
+    public function returnsGivenConfiguredPath()
     {
-        $this->assertEquals('/hello/{name}', $this->uriPath->getMatched());
+        $this->assertEquals('/hello/{name}', $this->uriPath->configured());
     }
 
     /**
      * @test
+     * @since  4.0.0
      */
-    public function hasGivenArgument()
+    public function returnsGivenActualPath()
     {
-        $this->assertTrue($this->uriPath->hasArgument('name'));
+        $this->assertEquals('/hello/world/foo', $this->uriPath->actual());
     }
 
     /**
      * @test
+     * @since  4.0.0
      */
-    public function doesNotHaveNonGivenArgument()
+    public function castingToStringReturnsActualPath()
     {
-        $this->assertFalse($this->uriPath->hasArgument('id'));
-    }
-
-    /**
-     * @test
-     * @since  3.3.0
-     * @group  issue_41
-     */
-    public function readsGivenArgument()
-    {
-        $this->assertEquals('world', $this->uriPath->readArgument('name')->asString());
-    }
-
-    /**
-     * @test
-     * @since  3.3.0
-     * @group  issue_41
-     */
-    public function readsNullForNonGivenArgument()
-    {
-        $this->assertNull($this->uriPath->readArgument('id')->unsecure());
-    }
-
-    /**
-     * @test
-     * @since  3.3.0
-     * @group  issue_41
-     */
-    public function readsDefaultForGivenArgument()
-    {
-        $this->assertEquals(303, $this->uriPath->readArgument('id', 303)->asInt());
-    }
-
-    /**
-     * @test
-     */
-    public function returnsGivenRemainingPath()
-    {
-        $this->assertEquals('/foo', $this->uriPath->remaining());
-    }
-
-    /**
-     * @test
-     */
-    public function returnsNullIfRemainingPathIsNull()
-    {
-        $this->uriPath = new UriPath('/hello/{name}', ['name' => 'world'], null);
-        $this->assertNull($this->uriPath->remaining());
-    }
-
-    /**
-     * @test
-     */
-    public function returnsDefaultIfRemainingPathIsNull()
-    {
-        $this->uriPath = new UriPath('/hello/{name}', ['name' => 'world'], null);
-        $this->assertEquals('index.html', $this->uriPath->remaining('index.html'));
+        $this->assertEquals('/hello/world/foo', (string) $this->uriPath);
     }
 
     /**
@@ -129,7 +75,7 @@ class UriPathTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsPathArguments($calledPath, $configuredPath, array $expectedArguments)
     {
-        $uriPath = UriPath::from($configuredPath, $calledPath);
+        $uriPath = new UriPath($configuredPath, $calledPath);
         foreach ($expectedArguments as $name => $value) {
             $this->assertTrue($uriPath->hasArgument($name));
             $this->assertEquals($value, $uriPath->readArgument($name)->unsecure());
@@ -137,11 +83,27 @@ class UriPathTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * data provider for remaining uri tests
+     * @test
+     */
+    public function doesNotHaveNonGivenArgument()
+    {
+        $this->assertFalse($this->uriPath->hasArgument('id'));
+    }
+
+    /**
+     * @test
+     */
+    public function returnsNullForNonGivenArgument()
+    {
+        $this->assertNull($this->uriPath->readArgument('id')->unsecure());
+    }
+
+    /**
+     * data provider for remaining path tests
      *
      * @return  array
      */
-    public function provideRemainingUris()
+    public function provideRemainingPath()
     {
         return [['/hello/mikey', '/hello/{name}', null],
                 ['/hello/303/mikey', '/hello/{id}/{name}', null],
@@ -155,13 +117,23 @@ class UriPathTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @dataProvider  provideRemainingUris
+     * @dataProvider  provideRemainingPath
      */
-    public function returnsRemainingUri($calledPath, $configuredPath, $expected)
+    public function returnsRemainingPath($calledPath, $configuredPath, $expected)
     {
+        $uriPath = new UriPath($configuredPath, $calledPath);
         $this->assertEquals(
                 $expected,
-                UriPath::from($configuredPath, $calledPath)->remaining()
+                $uriPath->remaining()
         );
+    }
+
+    /**
+     * @test
+     */
+    public function returnsDefaultIfRemainingPathIsNull()
+    {
+        $this->uriPath = new UriPath('/hello/{name}', '/hello/world');
+        $this->assertEquals('index.html', $this->uriPath->remaining('index.html'));
     }
 }

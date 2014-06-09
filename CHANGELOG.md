@@ -5,7 +5,9 @@
 
    * removed namespace prefix `net`, base namespace is now `stubbles\webapp` only
    * removed `net\stubbles\webapp\UriPath::getArgument()`, deprecated since 3.3.0, use `net\stubbles\webapp\UriPath::readArgument()` instead
+   * `net\stubbles\webapp\UriPath::readArgument()` does not accept default values, use `defaultingTo()` of returned `stubbles\input\ValueReader` instead
    * api rework:
+     * deprecated `stubbles\webapp\UriPath::getMatched()`, use `stubbles\webapp\UriPath::configured()` instead, will be removed with 5.0.0
      * deprecated `stubbles\webapp\UriPath::getRemaining()`, use `stubbles\webapp\UriPath::remaining()` instead, will be removed with 5.0.0
      * deprecated `stubbles\webapp\response\Cookie::getName()`, use `stubbles\webapp\response\Cookie::name()` instead, will be removed with 5.0.0
      * deprecated `stubbles\webapp\response\Cookie::getValue()`, use `stubbles\webapp\response\Cookie::value()` instead, will be removed with 5.0.0
@@ -20,6 +22,7 @@
    * added `net\stubbles\webapp\response\Response::headers()`
    * fixed bug with route selection when no method restriction was set on a route
    * added `net\stubbles\webapp\RoutingConfigurator::onAll()`
+   * added `stubbles\webapp\UriPath::actual()`
 
 
 3.4.0, (2014-05-16)
