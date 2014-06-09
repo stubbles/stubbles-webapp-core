@@ -9,6 +9,7 @@
  */
 namespace stubbles\webapp\response\format;
 use stubbles\lang;
+use stubbles\webapp\response\Headers;
 /**
  * Tests for stubbles\webapp\response\format\HtmlFormatter.
  *
@@ -67,7 +68,7 @@ class HtmlFormatterTest extends \PHPUnit_Framework_TestCase
     public function formatArrayWithoutTitle()
     {
         $this->assertEquals('<!DOCTYPE html><html><head><title></title></head><body><h1>Hello</h1><p>Hello world!</p></body></html>',
-                            $this->htmlFormatter->format(['content' => '<h1>Hello</h1><p>Hello world!</p>'])
+                            $this->htmlFormatter->format(['content' => '<h1>Hello</h1><p>Hello world!</p>'], new Headers())
         );
     }
 
@@ -78,7 +79,7 @@ class HtmlFormatterTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals('<!DOCTYPE html><html><head><title>Cool Web App</title></head><body><h1>Hello</h1><p>Hello world!</p></body></html>',
                             $this->htmlFormatter->setBaseTitle('Cool Web App')
-                                                ->format(['content' => '<h1>Hello</h1><p>Hello world!</p>'])
+                                                ->format(['content' => '<h1>Hello</h1><p>Hello world!</p>'], new Headers())
         );
     }
 
@@ -91,7 +92,8 @@ class HtmlFormatterTest extends \PHPUnit_Framework_TestCase
                             $this->htmlFormatter->format(['title'   => 'Hello world',
                                                           'meta'    => '<meta name="robots" content="index, follow"/>',
                                                           'content' => '<h1>Hello</h1><p>Hello world!</p>'
-                                                          ]
+                                                          ],
+                                                          new Headers()
                             )
         );
     }
@@ -106,7 +108,8 @@ class HtmlFormatterTest extends \PHPUnit_Framework_TestCase
                                                 ->format(['title'   => 'Hello world',
                                                           'meta'    => '<meta name="robots" content="index, follow"/>',
                                                           'content' => '<h1>Hello</h1><p>Hello world!</p>'
-                                                          ]
+                                                          ],
+                                                          new Headers()
                             )
         );
     }
@@ -117,7 +120,7 @@ class HtmlFormatterTest extends \PHPUnit_Framework_TestCase
     public function formatOtherWithoutBaseTitle()
     {
         $this->assertEquals('<!DOCTYPE html><html><head><title></title></head><body>foo bar baz</body></html>',
-                            $this->htmlFormatter->format('foo bar baz')
+                            $this->htmlFormatter->format('foo bar baz', new Headers())
         );
     }
 
@@ -128,7 +131,7 @@ class HtmlFormatterTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals('<!DOCTYPE html><html><head><title>Cool Web App</title></head><body>foo bar baz</body></html>',
                             $this->htmlFormatter->setBaseTitle('Cool Web App')
-                                                ->format('foo bar baz')
+                                                ->format('foo bar baz', new Headers())
         );
     }
 

@@ -6,6 +6,7 @@
    * removed namespace prefix `net`, base namespace is now `stubbles\webapp` only
    * removed `net\stubbles\webapp\UriPath::getArgument()`, deprecated since 3.3.0, use `net\stubbles\webapp\UriPath::readArgument()` instead
    * `net\stubbles\webapp\UriPath::readArgument()` does not accept default values, use `defaultingTo()` of returned `stubbles\input\ValueReader` instead
+   * changed `stubbles\webapp\response\format\Formatter::format()` to receive `stubbles\webapp\response\Headers` as second parameter
    * api rework:
      * deprecated `stubbles\webapp\UriPath::getMatched()`, use `stubbles\webapp\UriPath::configured()` instead, will be removed with 5.0.0
      * deprecated `stubbles\webapp\UriPath::getRemaining()`, use `stubbles\webapp\UriPath::remaining()` instead, will be removed with 5.0.0

@@ -148,9 +148,13 @@ class FormattingResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function writesUsingFormatterIfBodyNoStringOnDecoratedResponse()
     {
+        $headers = new Headers();
+        $this->decoratedResponse->expects($this->once())
+                                ->method('headers')
+                                ->will($this->returnValue($headers));
         $this->mockFormatter->expects($this->once())
                             ->method('format')
-                            ->with($this->equalTo(['foo' => 'bar']))
+                            ->with($this->equalTo(['foo' => 'bar']), $this->equalTo($headers))
                             ->will($this->returnValue('foo: bar'));
         $this->decoratedResponse->expects($this->once())
                                 ->method('write')

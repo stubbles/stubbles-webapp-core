@@ -8,6 +8,7 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\response\format;
+use stubbles\webapp\response\Headers;
 /**
  * Tests for stubbles\webapp\response\format\VoidFormatter.
  *
@@ -36,7 +37,7 @@ class VoidFormatterTest extends \PHPUnit_Framework_TestCase
      */
     public function formatReturnsEmptyString()
     {
-        $this->assertEquals('', $this->voidFormatter->format(['foo', 'bar' => 313]));
+        $this->assertEquals('', $this->voidFormatter->format(['foo', 'bar' => 313], new Headers()));
     }
 
     /**

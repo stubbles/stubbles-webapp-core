@@ -8,6 +8,7 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\response\format;
+use stubbles\webapp\response\Headers;
 /**
  * Formats resource as plain text.
  *
@@ -18,10 +19,11 @@ class PlainTextFormatter implements Formatter
     /**
      * formats resource for response
      *
-     * @param   mixed   $resource
+     * @param   mixed    $resource  resource data to create a representation of
+     * @param   Headers  $headers   list of headers for the response
      * @return  string
      */
-    public function format($resource)
+    public function format($resource, Headers $headers)
     {
         if (is_object($resource) && method_exists($resource, '__toString')) {
             return (string) $resource;
@@ -77,7 +79,7 @@ class PlainTextFormatter implements Formatter
     /**
      * write error message about 500 Internal Server error
      *
-     * @param   string  $message
+     * @param   string  $message  error messsage to display
      * @return  string
      */
     public function formatInternalServerError($message)

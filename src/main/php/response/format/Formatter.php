@@ -8,6 +8,7 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\response\format;
+use stubbles\webapp\response\Headers;
 /**
  * Interface for resource formatters.
  *
@@ -18,10 +19,11 @@ interface Formatter
     /**
      * formats resource for response
      *
-     * @param   mixed   $resource
+     * @param   mixed    $resource  resource data to create a representation of
+     * @param   Headers  $headers   list of headers for the response
      * @return  string
      */
-    public function format($resource);
+    public function format($resource, Headers $headers);
 
     /**
      * write error message about 403 Forbidden error
@@ -49,7 +51,7 @@ interface Formatter
     /**
      * write error message about 500 Internal Server error
      *
-     * @param   string  $message
+     * @param   string  $message  error messsage to display
      * @return  string
      */
     public function formatInternalServerError($message);

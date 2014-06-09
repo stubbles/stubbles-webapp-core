@@ -8,6 +8,7 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\response\format;
+use stubbles\webapp\response\Headers;
 use stubbles\xml\serializer\XmlSerializerFacade;
 /**
  * Formats resource in XML.
@@ -41,10 +42,11 @@ class XmlFormatter implements Formatter
     /**
      * formats resource for response
      *
-     * @param   mixed   $resource
+     * @param   mixed    $resource  resource data to create a representation of
+     * @param   Headers  $headers   list of headers for the response
      * @return  string
      */
-    public function format($resource)
+    public function format($resource, Headers $headers)
     {
         return $this->xmlSerializerFacade->serializeToXml($resource);
     }
@@ -56,7 +58,9 @@ class XmlFormatter implements Formatter
      */
     public function formatForbiddenError()
     {
-        return $this->xmlSerializerFacade->serializeToXml(['error' => 'You are not allowed to access this resource.']);
+        return $this->xmlSerializerFacade->serializeToXml(
+                ['error' => 'You are not allowed to access this resource.']
+        );
     }
 
     /**
@@ -66,7 +70,9 @@ class XmlFormatter implements Formatter
      */
     public function formatNotFoundError()
     {
-        return $this->xmlSerializerFacade->serializeToXml(['error' => 'Given resource could not be found.']);
+        return $this->xmlSerializerFacade->serializeToXml(
+                ['error' => 'Given resource could not be found.']
+        );
     }
 
     /**
@@ -78,17 +84,25 @@ class XmlFormatter implements Formatter
      */
     public function formatMethodNotAllowedError($requestMethod, array $allowedMethods)
     {
-        return $this->xmlSerializerFacade->serializeToXml(['error' => 'The given request method ' . strtoupper($requestMethod) . ' is not valid. Please use one of ' . join(', ', $allowedMethods) . '.']);
+        return $this->xmlSerializerFacade->serializeToXml(
+                ['error' => 'The given request method '
+                            . strtoupper($requestMethod)
+                            . ' is not valid. Please use one of '
+                            . join(', ', $allowedMethods) . '.'
+                ]
+        );
     }
 
     /**
      * write error message about 500 Internal Server error
      *
-     * @param   string  $message
+     * @param   string  $message  error messsage to display
      * @return  string
      */
     public function formatInternalServerError($message)
     {
-        return $this->xmlSerializerFacade->serializeToXml(['error' => 'Internal Server Error: ' . $message]);
+        return $this->xmlSerializerFacade->serializeToXml(
+                ['error' => 'Internal Server Error: ' . $message]
+        );
     }
 }

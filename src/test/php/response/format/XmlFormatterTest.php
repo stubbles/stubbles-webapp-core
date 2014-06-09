@@ -9,6 +9,7 @@
  */
 namespace stubbles\webapp\response\format;
 use stubbles\lang;
+use stubbles\webapp\response\Headers;
 /**
  * Tests for stubbles\webapp\response\format\XmlFormatter.
  *
@@ -59,7 +60,7 @@ class XmlFormatterTest extends \PHPUnit_Framework_TestCase
                                       ->with($this->equalTo('value'))
                                       ->will($this->returnValue('<xml/>'));
         $this->assertEquals('<xml/>',
-                            $this->xmlFormatter->format('value')
+                            $this->xmlFormatter->format('value', new Headers())
         );
     }
 

@@ -8,6 +8,7 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\response\format;
+use stubbles\webapp\response\Headers;
 /**
  * Helper class for the test.
  */
@@ -53,7 +54,7 @@ class PlainTextFormatterTest extends \PHPUnit_Framework_TestCase
     public function returnsPlainText()
     {
         $this->assertEquals('This is a response',
-                            $this->plainTextFormatter->format('This is a response')
+                            $this->plainTextFormatter->format('This is a response', new Headers())
         );
     }
 
@@ -63,7 +64,7 @@ class PlainTextFormatterTest extends \PHPUnit_Framework_TestCase
     public function returnsPlainTextForNumbers()
     {
         $this->assertEquals('303',
-                            $this->plainTextFormatter->format(303)
+                            $this->plainTextFormatter->format(303, new Headers())
         );
     }
 
@@ -73,10 +74,10 @@ class PlainTextFormatterTest extends \PHPUnit_Framework_TestCase
     public function returnsPlainTextForBoolean()
     {
         $this->assertEquals('true',
-                            $this->plainTextFormatter->format(true)
+                            $this->plainTextFormatter->format(true, new Headers())
         );
         $this->assertEquals('false',
-                            $this->plainTextFormatter->format(false)
+                            $this->plainTextFormatter->format(false, new Headers())
         );
     }
 
@@ -86,7 +87,7 @@ class PlainTextFormatterTest extends \PHPUnit_Framework_TestCase
     public function usesVarExportForArrays()
     {
         $this->assertEquals("array (\n  303 => 'cool',\n)",
-                            $this->plainTextFormatter->format([303 => 'cool'])
+                            $this->plainTextFormatter->format([303 => 'cool'], new Headers())
         );
     }
 
@@ -98,7 +99,7 @@ class PlainTextFormatterTest extends \PHPUnit_Framework_TestCase
         $stdClass = new \stdClass();
         $stdClass->foo = 'bar';
         $this->assertEquals("stdClass::__set_state(array(\n   'foo' => 'bar',\n))",
-                            $this->plainTextFormatter->format($stdClass)
+                            $this->plainTextFormatter->format($stdClass, new Headers())
         );
     }
 
@@ -108,7 +109,7 @@ class PlainTextFormatterTest extends \PHPUnit_Framework_TestCase
     public function castsObjectWithToStringMethod()
     {
         $this->assertEquals('converted to string',
-                            $this->plainTextFormatter->format(new StringConversionTestHelper())
+                            $this->plainTextFormatter->format(new StringConversionTestHelper(), new Headers())
         );
     }
 

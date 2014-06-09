@@ -8,6 +8,7 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\response\format;
+use stubbles\webapp\response\Headers;
 /**
  * Tests for stubbles\webapp\response\format\JsonFormatter.
  *
@@ -38,7 +39,7 @@ class JsonFormatterTest extends \PHPUnit_Framework_TestCase
     public function formatsJson()
     {
         $this->assertEquals(json_encode(['foo', 'bar' => 313]),
-                            $this->jsonFormatter->format(['foo', 'bar' => 313])
+                            $this->jsonFormatter->format(['foo', 'bar' => 313], new Headers())
         );
     }
 

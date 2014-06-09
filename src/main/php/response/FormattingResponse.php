@@ -131,7 +131,7 @@ class FormattingResponse implements Response
      */
     public function write($body)
     {
-        $result = ((is_string($body)) ? ($body): ($this->formatter->format($body)));
+        $result = ((is_string($body)) ? ($body): ($this->formatter->format($body, $this->headers())));
         $this->response->write($result);
         return $this;
     }
