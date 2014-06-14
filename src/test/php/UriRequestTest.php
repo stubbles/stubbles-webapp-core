@@ -41,12 +41,84 @@ class UriRequestTest extends \PHPUnit_Framework_TestCase
     /**
      * @since  2.0.0
      * @test
+     * @deprecated  since 4.0.0, will be removed with 5.0.0
      */
     public function canCreateInstanceFromString()
     {
         $this->assertInstanceOf('stubbles\webapp\UriRequest',
                                 UriRequest::fromString('http://example.net/', 'GET')
         );
+    }
+
+    /**
+     * @since  4.0.0
+     * @return  array
+     */
+    public function emptyRequestMethods()
+    {
+        return [[null], ['']];
+    }
+
+    /**
+     * @since  4.0.0
+     * @param  string  $empty
+     * @test
+     * @dataProvider  emptyRequestMethods
+     * @expectedException  stubbles\lang\exception\IllegalArgumentException
+     */
+    public function createInstanceWithEmptyRequestMethodThrowsIllegalArgumentException($empty)
+    {
+        new UriRequest($this->mockHttpUri, $empty);
+    }
+
+    /**
+     * @test
+     * @since  4.0.0
+     */
+    public function castFromOtherInstanceReturnsInstance()
+    {
+        $this->assertSame($this->uriRequest, UriRequest::castFrom($this->uriRequest, null));
+    }
+
+    /**
+     * @test
+     * @since  4.0.0
+     */
+    public function castFromHttpUriInstanceReturnsInstance()
+    {
+        $this->assertEquals($this->uriRequest, UriRequest::castFrom($this->mockHttpUri, 'GET'));
+    }
+
+    /**
+     * @test
+     * @dataProvider  emptyRequestMethods
+     * @expectedException  stubbles\lang\exception\IllegalArgumentException
+     * @since  4.0.0
+     */
+    public function castFromHttpUriInstanceWithoutRequestMethodThrowsIllegalArgumentException($empty)
+    {
+        UriRequest::castFrom($this->mockHttpUri, $empty);
+    }
+
+    /**
+     * @test
+     * @since  4.0.0
+     */
+    public function castFromHttpUriStringReturnsInstance()
+    {
+
+        $this->assertEquals(new UriRequest('http://example.net/', 'GET'), UriRequest::castFrom('http://example.net/', 'GET'));
+    }
+
+    /**
+     * @test
+     * @dataProvider  emptyRequestMethods
+     * @expectedException  stubbles\lang\exception\IllegalArgumentException
+     * @since  4.0.0
+     */
+    public function castFromHttpUriStringWithoutRequestMethodThrowsIllegalArgumentException($empty)
+    {
+        UriRequest::castFrom('http://example.net/', $empty);
     }
 
     /**

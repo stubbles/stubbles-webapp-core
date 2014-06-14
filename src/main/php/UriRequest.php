@@ -8,6 +8,7 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp;
+use stubbles\lang\exception\IllegalArgumentException;
 use stubbles\peer\http\HttpUri;
 /**
  * Utility methods to handle operations based on the uri called in the current request.
@@ -32,13 +33,35 @@ class UriRequest
     /**
      * constructor
      *
-     * @param  HttpUri  $requestUri
-     * @param  string   $requestMethod
+     * @param   string|HttpUri  $requestUri
+     * @param   string          $requestMethod
+     * @throws  IllegalArgumentException
      */
-    public function __construct(HttpUri $requestUri, $requestMethod)
+    public function __construct($requestUri, $requestMethod)
     {
-        $this->uri    = $requestUri;
+        if (empty($requestMethod)) {
+            throw new IllegalArgumentException('Request method can not be empty');
+        }
+
+        $this->uri    = HttpUri::castFrom($requestUri, 'requestUri');
         $this->method = $requestMethod;
+    }
+
+    /**
+     * casts given values to an instance of UriRequest
+     *
+     * @param   string|UriRequest  $requestUri
+     * @param   string             $requestMethod
+     * @return  UriRequest
+     * @since   4.0.0
+     */
+    public static function castFrom($requestUri, $requestMethod)
+    {
+        if ($requestUri instanceof self) {
+            return $requestUri;
+        }
+
+        return new self($requestUri, $requestMethod);
     }
 
     /**
@@ -48,6 +71,7 @@ class UriRequest
      * @param   string  $requestMethod
      * @return  UriRequest
      * @since   2.0.0
+     * @deprecated  since 4.0.0, use new UriRequest($requestUri, $requestMethod) instead, will be removed with 5.0.0
      */
     public static function fromString($requestUri, $requestMethod)
     {

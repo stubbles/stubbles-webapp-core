@@ -182,22 +182,24 @@ class Routing implements RoutingConfigurator
     /**
      * returns route which is applicable for given request
      *
-     * @param   UriRequest  $calledUri
+     * @param   string|UriRequest  $calledUri      actually called uri
+     * @param   string             $requestMethod  optional when $calledUri is an instance of UriRequest
      * @return  ProcessableRoute
      */
-    public function findRoute(UriRequest $calledUri)
+    public function findRoute($calledUri, $requestMethod = null)
     {
-        $routeConfig = $this->findRouteConfig($calledUri);
+        $uriRequest  = UriRequest::castFrom($calledUri, $requestMethod);
+        $routeConfig = $this->findRouteConfig($uriRequest);
         if (null !== $routeConfig) {
-            return $this->handleMatchingRoute($calledUri, $routeConfig);
+            return $this->handleMatchingRoute($uriRequest, $routeConfig);
         }
 
-        if ($this->canFindRouteWithAnyMethod($calledUri)) {
-            return $this->handleNonMethodMatchingRoute($calledUri);
+        if ($this->canFindRouteWithAnyMethod($uriRequest)) {
+            return $this->handleNonMethodMatchingRoute($uriRequest);
         }
 
-        return new MissingRoute($calledUri,
-                                $this->collectInterceptors($calledUri),
+        return new MissingRoute($uriRequest,
+                                $this->collectInterceptors($uriRequest),
                                 SupportedMimeTypes::createWithDisabledContentNegotation()
         );
     }

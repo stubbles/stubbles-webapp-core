@@ -41,7 +41,7 @@ class OptionsRouteTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->optionsRoute = new OptionsRoute(UriRequest::fromString('http://example.com/hello/world', 'GET'),
+        $this->optionsRoute = new OptionsRoute(new UriRequest('http://example.com/hello/world', 'GET'),
                                                $this->getMockBuilder('stubbles\webapp\interceptor\Interceptors')
                                                     ->disableOriginalConstructor()
                                                     ->getMock(),
