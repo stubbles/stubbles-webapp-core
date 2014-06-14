@@ -10,10 +10,12 @@
         "stubbles/input": "~3.0"
     },
     "suggest": {
-        "stubbles/xml": "~3.0"
+        "stubbles/xml": "~3.0",
+        "stubbles/webapp-session": "~4.0"
     },
     "require-dev": {
         "stubbles/xml": "~3.0",
+        "stubbles/webapp-session": "~4.0",
         "phpunit/phpunit": "~4.1"
     },
     "autoload": {

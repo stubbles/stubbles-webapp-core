@@ -54,128 +54,35 @@ class IoBindingModuleTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function bindsRequestAndResponseWhenCreatedWithoutSession()
+    public function bindsRequestAndResponse()
     {
-        $injector = $this->createInjector(IoBindingModule::createWithoutSession());
+        $injector = $this->createInjector(new IoBindingModule());
         $this->assertTrue($injector->hasExplicitBinding('stubbles\input\Request'));
         $this->assertTrue($injector->hasExplicitBinding('stubbles\input\web\WebRequest'));
         $this->assertTrue($injector->hasExplicitBinding('stubbles\webapp\response\Response'));
-    }
-
-    /**
-     * @test
-     */
-    public function doesNotBindSessionWhenCreatedWithoutSession()
-    {
-        $injector = $this->createInjector(IoBindingModule::createWithoutSession());
-        $this->assertFalse($injector->hasExplicitBinding('stubbles\webapp\session\Session'));
-    }
-
-    /**
-     * @test
-     * @expectedException  stubbles\lang\exception\RuntimeException
-     */
-    public function doesNotAddSessionBindingScopeWhenCreatedWithoutSession()
-    {
-        $binder   = new Binder();
-        $this->createInjector(IoBindingModule::createWithoutSession(), $binder);
-        $binder->bind('\stdClass')
-               ->to('\stdClass')
-               ->inSession();
-
-    }
-
-    /**
-     * @test
-     */
-    public function bindsRequestAndResponseWhenCreatedWithSession()
-    {
-        $injector = $this->createInjector(IoBindingModule::createWithSession());
-        $this->assertTrue($injector->hasExplicitBinding('stubbles\input\Request'));
-        $this->assertTrue($injector->hasExplicitBinding('stubbles\input\web\WebRequest'));
-        $this->assertTrue($injector->hasExplicitBinding('stubbles\webapp\response\Response'));
-    }
-
-    /**
-     * @test
-     */
-    public function bindSessionWhenCreatedWithSession()
-    {
-        $injector = $this->createInjector(IoBindingModule::createWithSession());
-        $this->assertTrue($injector->hasExplicitBinding('stubbles\webapp\session\Session'));
-    }
-
-    /**
-     * @test
-     */
-    public function addsSessionBindingScopeWhenCreatedWithSession()
-    {
-        $binder = new Binder();
-        $this->createInjector(IoBindingModule::createWithSession(), $binder);
-        try {
-            $binder->bind('\stdClass')
-                   ->to('\stdClass')
-                   ->inSession();
-        } catch (RuntimeException $re) {
-            $this->fail($re->getMessage());
-        }
-
-        $this->addToAssertionCount(1);
-    }
-
-    /**
-     * @since  1.7.0
-     * @test
-     */
-    public function bindsSessionToNativeByDefault()
-    {
-        $injector = $this->createInjector(IoBindingModule::createWithSession());
-        $this->assertInstanceOf('stubbles\webapp\session\WebSession',
-                                $injector->getInstance('stubbles\webapp\session\Session'));
-    }
-
-    /**
-     * @since  1.7.0
-     * @test
-     */
-    public function bindsSessionToNoneDurable()
-    {
-        $injector = $this->createInjector(IoBindingModule::createWithSession()
-                                                         ->useNoneDurableSession()
-                    );
-        $this->assertInstanceOf('stubbles\webapp\session\NullSession',
-                                $injector->getInstance('stubbles\webapp\session\Session'));
-    }
-
-    /**
-     * @since  1.7.0
-     * @test
-     */
-    public function bindsSessionToNoneStoring()
-    {
-        $injector = $this->createInjector(IoBindingModule::createWithSession()
-                                                         ->useNoneStoringSession()
-                    );
-        $this->assertInstanceOf('stubbles\webapp\session\NullSession',
-                                $injector->getInstance('stubbles\webapp\session\Session'));
     }
 
     /**
      * @since  2.0.0
      * @test
      */
-    public function bindsSessionToInstanceCreatedByClosure()
+    public function bindsSessionToInstanceCreatedByCallable()
     {
         $mockSession = $this->getMock('stubbles\webapp\session\Session');
-        $injector = $this->createInjector(IoBindingModule::createWithSession()
-                                                         ->setSessionCreator(function() use($mockSession)
-                                                                             {
-                                                                                 return $mockSession;
-                                                                             }
-                                                           )
-                    );
+        $injector = $this->createInjector(
+                new IoBindingModule(function() use($mockSession) { return $mockSession; })
+        );
         $this->assertSame($mockSession,
                           $injector->getInstance('stubbles\webapp\session\Session'));
+    }
+
+    /**
+     * @test
+     */
+    public function doesNotBindSessionWhenCreatedWithoutSessionCreator()
+    {
+        $injector = $this->createInjector(new IoBindingModule());
+        $this->assertFalse($injector->hasExplicitBinding('stubbles\webapp\session\Session'));
     }
 
     /**

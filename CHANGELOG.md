@@ -4,6 +4,12 @@
 ### BC breaks
 
    * removed namespace prefix `net`, base namespace is now `stubbles\webapp` only
+   * removed all classes in namespace `stubbles\webapp\session`, can now be found in separate package stubbles/webapp-session
+    * removed `stubbles\webapp\Webapp::createIoBindingModuleWithSession()`
+    * removed `stubbles\webapp\ioc\IoBindingModule::createWithSession()`
+    * deprecated `stubbles\webapp\Webapp::createIoBindingModuleWithoutSession()`, use `stubbles\webapp\Webapp::createIoBindingModule()` instead, will be removed with 5.0.0
+    * deprecated `stubbles\webapp\ioc\IoBindingModule::createWithoutSession()`, will be removed with 5.0.0
+    * deprecated `stubbles\webapp\ioc\IoBindingModule::setSessionCreator()`, can now be passed optionally to it's constructor, will be removed with 5.0.0
    * removed `net\stubbles\webapp\UriPath::getArgument()`, deprecated since 3.3.0, use `net\stubbles\webapp\UriPath::readArgument()` instead
    * `net\stubbles\webapp\UriPath::readArgument()` does not accept default values, use `defaultingTo()` of returned `stubbles\input\ValueReader` instead
    * changed `stubbles\webapp\response\format\Formatter::format()` to receive `stubbles\webapp\response\Headers` as second parameter

@@ -9,10 +9,9 @@
  */
 namespace stubbles\webapp\ioc;
 use stubbles\input\web\BaseWebRequest;
-use stubbles\input\web\WebRequest;
 use stubbles\ioc\Binder;
 use stubbles\ioc\module\BindingModule;
-use stubbles\webapp\response\Response;
+use stubbles\lang\exception\RuntimeException;
 use stubbles\webapp\response\ResponseNegotiator;
 /**
  * Module to configure the binder with instances for request, session and response.
@@ -47,45 +46,42 @@ class IoBindingModule implements BindingModule
                                'application/rss+xml' => 'stubbles\webapp\response\format\XmlFormatter'
                               ];
     /**
-     * name for the session
-     *
-     * @type  string
-     */
-    private $sessionName;
-    /**
      * function that creates the session instance
      *
-     * @type  \Closure
+     * @type  callable
      */
     private $sessionCreator;
 
     /**
      * constructor
      *
-     * @param  string  $sessionName
+     * The optional callable $sessionCreator can accept instances of
+     * stubbles\input\web\WebRequest and stubbles\webapp\response\Response, and
+     * must return an instance of stubbles\webapp\session\Session:
+     * <code>
+     * function(WebRequest $request, Response $response)
+     * {
+     *    return new MySession($request, $response);
+     * }
+     * </code>
+     *
+     * @param   callable  $sessionCreator  optional
+     * @throws  RuntimeException  in case a session creator is passed and stubbles/webapp-session is not available
      */
-    protected function __construct($sessionName = null)
+    public function __construct(callable $sessionCreator = null)
     {
-        $this->sessionName = $sessionName;
+        if (null != $sessionCreator && !function_exists('stubbles\webapp\session\bind')) {
+            throw new RuntimeException('Passed a session creator, but function stubbles\webapp\session\bind() can not be found. Did you install stubbles/webapp-session?');
+        }
+
+        $this->sessionCreator = $sessionCreator;
     }
 
     /**
      * factory method
      *
-     * @param   string  $sessionName  name of session, will also be name of session cookie and param
      * @return  IoBindingModule
-     * @since   1.3.0
-     */
-    public static function createWithSession($sessionName = 'PHPSESSID')
-    {
-        $self = new self($sessionName);
-        return $self->useNativeSession();
-    }
-
-    /**
-     * factory method
-     *
-     * @return  IoBindingModule
+     * @deprecated  since 4.0.0, use constructor directly, will be removed with 5.0.0
      */
     public static function createWithoutSession()
     {
@@ -119,62 +115,14 @@ class IoBindingModule implements BindingModule
     }
 
     /**
-     * use php's default session implementation
+     * set a callable which can create a session instance
      *
-     * @return  IoBindingModule
-     * @since   1.7.0
-     */
-    public function useNativeSession()
-    {
-        $this->sessionCreator = function(WebRequest $request, Response $response, $sessionName)
-                                {
-                                    $native = new \stubbles\webapp\session\NativeSessionStorage($sessionName);
-                                    return new \stubbles\webapp\session\WebSession($native,
-                                                                                       $native,
-                                                                                       md5($request->readHeader('HTTP_USER_AGENT')->unsecure())
-                                    );
-                                };
-        return $this;
-    }
-
-    /**
-     * use none durable session implementation
-     *
-     * @return  IoBindingModule
-     * @since   1.7.0
-     */
-    public function useNoneDurableSession()
-    {
-        $this->sessionCreator = function(WebRequest $request, Response $response, $sessionName)
-                                {
-                                    return new \stubbles\webapp\session\NullSession(new \stubbles\webapp\session\NoneDurableSessionId($sessionName));
-                                };
-        return $this;
-    }
-
-    /**
-     * use none storing session implementation
-     *
-     * @return  IoBindingModule
-     * @since   1.7.0
-     */
-    public function useNoneStoringSession()
-    {
-        $this->sessionCreator = function(WebRequest $request, Response $response, $sessionName)
-                                {
-                                    return new \stubbles\webapp\session\NullSession(new \stubbles\webapp\session\WebBoundSessionId($request, $response, $sessionName));
-                                };
-        return $this;
-    }
-
-    /**
-     * sets class name of session class to be used
-     *
-     * @param   \Closure  $sessionCreator  name of session class to bind
+     * @param   callable  $sessionCreator  callable which creates session instance
      * @return  IoBindingModule
      * @since   2.0.0
+     * @deprecated  since 4.0.0, pass the callable to the constructor instead, will be removed with 5.0.0
      */
-    public function setSessionCreator(\Closure $sessionCreator)
+    public function setSessionCreator(callable $sessionCreator)
     {
         $this->sessionCreator = $sessionCreator;
         return $this;
@@ -206,10 +154,10 @@ class IoBindingModule implements BindingModule
 
         if (null !== $this->sessionCreator) {
             $sessionCreator = $this->sessionCreator;
-            $session        = $sessionCreator($request, $response, $this->sessionName);
-            $binder->bind('stubbles\webapp\session\Session')
-                   ->toInstance($session);
-            $binder->setSessionScope(new \stubbles\webapp\session\SessionBindingScope($session));
+            \stubbles\webapp\session\bind(
+                    $binder,
+                    $sessionCreator($request, $response)
+            );
         }
     }
 

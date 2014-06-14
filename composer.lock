@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "4be379ba56cfc58225d1b40cf9ea3481",
+    "hash": "ddfff29cf088c33a8ff168ff76975158",
     "packages": [
         {
             "name": "stubbles/core",
@@ -749,17 +749,17 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/stubbles/stubbles-date.git",
-                "reference": "8923a77fc9e02fb886ca8229276c39d151cbb070"
+                "reference": "57302b8442fcaa9f504eab4dcb644d68277454df"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/stubbles/stubbles-date/zipball/8923a77fc9e02fb886ca8229276c39d151cbb070",
-                "reference": "8923a77fc9e02fb886ca8229276c39d151cbb070",
+                "url": "https://api.github.com/repos/stubbles/stubbles-date/zipball/57302b8442fcaa9f504eab4dcb644d68277454df",
+                "reference": "57302b8442fcaa9f504eab4dcb644d68277454df",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.4.0",
-                "stubbles/core": "dev-master"
+                "stubbles/core": "~4.0"
             },
             "require-dev": {
                 "phpunit/phpunit": "~4.1"
@@ -781,7 +781,52 @@
             ],
             "description": "Simplified handling of dates and datespans.",
             "homepage": "http://stubbles.net/",
-            "time": "2014-05-31 22:46:20"
+            "time": "2014-06-14 09:21:56"
+        },
+        {
+            "name": "stubbles/webapp-session",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/stubbles/stubbles-webapp-session.git",
+                "reference": "74bbd5bc973e13eb97bee5e905e8ecbc9dba9f66"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/stubbles/stubbles-webapp-session/zipball/74bbd5bc973e13eb97bee5e905e8ecbc9dba9f66",
+                "reference": "74bbd5bc973e13eb97bee5e905e8ecbc9dba9f66",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4.0",
+                "stubbles/core": "~4.0",
+                "stubbles/input": "~3.0",
+                "stubbles/webapp-core": "~4.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.1"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "4.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "stubbles\\webapp\\session\\": "src/main/php"
+                },
+                "files": [
+                    "src/main/php/functions.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "description": "Session classes for Stubbles based web applications.",
+            "homepage": "http://stubbles.net/",
+            "time": "2014-06-14 12:33:00"
         },
         {
             "name": "stubbles/xml",
