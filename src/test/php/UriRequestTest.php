@@ -41,6 +41,7 @@ class UriRequestTest extends \PHPUnit_Framework_TestCase
     /**
      * @since  2.0.0
      * @test
+     * @deprecated  since 4.0.0, will be removed with 5.0.0
      */
     public function canCreateInstanceFromString()
     {

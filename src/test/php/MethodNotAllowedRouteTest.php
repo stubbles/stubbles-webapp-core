@@ -41,7 +41,7 @@ class MethodNotAllowedRouteTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->methodNotAllowedRoute = new MethodNotAllowedRoute(UriRequest::fromString('http://example.com/hello/world', 'GET'),
+        $this->methodNotAllowedRoute = new MethodNotAllowedRoute(new UriRequest('http://example.com/hello/world', 'GET'),
                                                                  $this->getMockBuilder('stubbles\webapp\interceptor\Interceptors')
                                                                       ->disableOriginalConstructor()
                                                                       ->getMock(),

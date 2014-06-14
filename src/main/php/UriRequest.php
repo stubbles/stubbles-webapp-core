@@ -32,12 +32,12 @@ class UriRequest
     /**
      * constructor
      *
-     * @param  HttpUri  $requestUri
+     * @param  string|HttpUri  $requestUri
      * @param  string   $requestMethod
      */
-    public function __construct(HttpUri $requestUri, $requestMethod)
+    public function __construct($requestUri, $requestMethod)
     {
-        $this->uri    = $requestUri;
+        $this->uri    = HttpUri::castFrom($requestUri, 'requestUri');
         $this->method = $requestMethod;
     }
 
@@ -48,6 +48,7 @@ class UriRequest
      * @param   string  $requestMethod
      * @return  UriRequest
      * @since   2.0.0
+     * @deprecated  since 4.0.0, use new UriRequest($requestUri, $requestMethod) instead, will be removed with 5.0.0
      */
     public static function fromString($requestUri, $requestMethod)
     {

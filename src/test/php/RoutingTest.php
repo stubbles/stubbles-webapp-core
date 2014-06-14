@@ -39,7 +39,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
                                             ->disableOriginalConstructor()
                                             ->getMock()
                            );
-        $this->calledUri = UriRequest::fromString('http://example.net/hello', 'GET');
+        $this->calledUri = new UriRequest('http://example.net/hello', 'GET');
     }
 
     /**
@@ -93,7 +93,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
         $this->routing->onHead('/hello', function() {});
         $this->routing->onGet('/foo', function() {});
         $this->assertInstanceOf('stubbles\webapp\OptionsRoute',
-                                $this->routing->findRoute(UriRequest::fromString('http://example.net/hello', 'OPTIONS'))
+                                $this->routing->findRoute(new UriRequest('http://example.net/hello', 'OPTIONS'))
         );
     }
 
@@ -144,7 +144,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
         $this->routing->onAll('/hello', function() { });
         $this->assertInstanceOf(
                 'stubbles\webapp\OptionsRoute',
-                $this->routing->findRoute(UriRequest::fromString('http://example.net/hello', 'OPTIONS'))
+                $this->routing->findRoute(new UriRequest('http://example.net/hello', 'OPTIONS'))
         );
     }
 
@@ -160,7 +160,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
                      ->method('addHeader')
                      ->with($this->equalTo('Allow'), $this->equalTo('GET, HEAD, POST, PUT, DELETE, OPTIONS'))
                      ->will($this->returnSelf());
-        $this->routing->findRoute(UriRequest::fromString('http://example.net/hello', 'OPTIONS'))
+        $this->routing->findRoute(new UriRequest('http://example.net/hello', 'OPTIONS'))
                       ->process($this->getMock('stubbles\input\web\WebRequest'), $mockResponse);
     }
 
@@ -176,7 +176,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
         $mockInjector = $this->getMockBuilder('stubbles\ioc\Injector')
                              ->disableOriginalConstructor()
                              ->getMock();
-        return new MatchingRoute(UriRequest::fromString('http://example.net/hello', 'GET'),
+        return new MatchingRoute(new UriRequest('http://example.net/hello', 'GET'),
                                  new interceptor\Interceptors($mockInjector, $preInterceptors, $postInterceptors),
                                  new response\SupportedMimeTypes([]),
                                  $route,

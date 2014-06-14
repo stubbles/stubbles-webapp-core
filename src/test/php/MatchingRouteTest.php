@@ -58,7 +58,7 @@ class MatchingRouteTest extends \PHPUnit_Framework_TestCase
      */
     private function createMatchingRoute(Route $routeConfig, $uri = 'http://example.com/hello/world')
     {
-        return new MatchingRoute(UriRequest::fromString($uri, 'GET'),
+        return new MatchingRoute(new UriRequest($uri, 'GET'),
                                  $this->getMockBuilder('stubbles\webapp\interceptor\Interceptors')
                                       ->disableOriginalConstructor()
                                       ->getMock(),

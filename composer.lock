@@ -11,12 +11,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/stubbles/stubbles-core.git",
-                "reference": "0a9220d22cbaf942cc3e3f524241eccc196c41a8"
+                "reference": "206fb3e1c8246b68dd5f7731ae1ae51a0e57f8cf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/stubbles/stubbles-core/zipball/0a9220d22cbaf942cc3e3f524241eccc196c41a8",
-                "reference": "0a9220d22cbaf942cc3e3f524241eccc196c41a8",
+                "url": "https://api.github.com/repos/stubbles/stubbles-core/zipball/206fb3e1c8246b68dd5f7731ae1ae51a0e57f8cf",
+                "reference": "206fb3e1c8246b68dd5f7731ae1ae51a0e57f8cf",
                 "shasum": ""
             },
             "require": {
@@ -25,7 +25,7 @@
             "require-dev": {
                 "mikey179/vfsstream": "~1.2",
                 "phpunit/phpunit": "~4.1",
-                "stubbles/core-dev": "4.0.*@dev"
+                "stubbles/core-dev": "dev-master"
             },
             "type": "library",
             "extra": {
@@ -48,7 +48,7 @@
             ],
             "description": "Provides base classes for Stubbles packages.",
             "homepage": "http://stubbles.net/",
-            "time": "2014-06-09 12:30:55"
+            "time": "2014-06-14 09:12:29"
         },
         {
             "name": "stubbles/input",
@@ -347,16 +347,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "4.1.2",
+            "version": "4.1.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "be5f237df860da88a7cfe247594232cae61845df"
+                "reference": "939cb801b3b2aa253aedd0b279f40bb8f35cec91"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/be5f237df860da88a7cfe247594232cae61845df",
-                "reference": "be5f237df860da88a7cfe247594232cae61845df",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/939cb801b3b2aa253aedd0b279f40bb8f35cec91",
+                "reference": "939cb801b3b2aa253aedd0b279f40bb8f35cec91",
                 "shasum": ""
             },
             "require": {
@@ -417,20 +417,20 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2014-06-07 07:30:48"
+            "time": "2014-06-11 14:15:47"
         },
         {
             "name": "phpunit/phpunit-mock-objects",
-            "version": "2.1.3",
+            "version": "2.1.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit-mock-objects.git",
-                "reference": "92f4b49d2cd4f2537db7ef969231f3d43c8da957"
+                "reference": "1a894a16b6c15fcdc5ef2b110f0e6233952c9b0f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit-mock-objects/zipball/92f4b49d2cd4f2537db7ef969231f3d43c8da957",
-                "reference": "92f4b49d2cd4f2537db7ef969231f3d43c8da957",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit-mock-objects/zipball/1a894a16b6c15fcdc5ef2b110f0e6233952c9b0f",
+                "reference": "1a894a16b6c15fcdc5ef2b110f0e6233952c9b0f",
                 "shasum": ""
             },
             "require": {
@@ -474,7 +474,7 @@
                 "mock",
                 "xunit"
             ],
-            "time": "2014-06-07 12:56:52"
+            "time": "2014-06-07 16:22:57"
         },
         {
             "name": "sebastian/comparator",

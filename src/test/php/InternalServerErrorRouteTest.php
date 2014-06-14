@@ -42,7 +42,7 @@ class InternalServerErrorRouteTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->internalServerErrorRoute = new InternalServerErrorRoute('error',
-                                                                       UriRequest::fromString('http://example.com/hello/world', 'GET'),
+                                                                       new UriRequest('http://example.com/hello/world', 'GET'),
                                                                        new SupportedMimeTypes([])
                                           );
         $this->mockRequest  = $this->getMock('stubbles\input\web\WebRequest');

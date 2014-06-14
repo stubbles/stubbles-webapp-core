@@ -7,15 +7,16 @@
    * removed `net\stubbles\webapp\UriPath::getArgument()`, deprecated since 3.3.0, use `net\stubbles\webapp\UriPath::readArgument()` instead
    * `net\stubbles\webapp\UriPath::readArgument()` does not accept default values, use `defaultingTo()` of returned `stubbles\input\ValueReader` instead
    * changed `stubbles\webapp\response\format\Formatter::format()` to receive `stubbles\webapp\response\Headers` as second parameter
-   * api rework:
-     * deprecated `stubbles\webapp\UriPath::getMatched()`, use `stubbles\webapp\UriPath::configured()` instead, will be removed with 5.0.0
-     * deprecated `stubbles\webapp\UriPath::getRemaining()`, use `stubbles\webapp\UriPath::remaining()` instead, will be removed with 5.0.0
-     * deprecated `stubbles\webapp\response\Cookie::getName()`, use `stubbles\webapp\response\Cookie::name()` instead, will be removed with 5.0.0
-     * deprecated `stubbles\webapp\response\Cookie::getValue()`, use `stubbles\webapp\response\Cookie::value()` instead, will be removed with 5.0.0
-     * deprecated `stubbles\webapp\response\Cookie::getExpiration()`, use `stubbles\webapp\response\Cookie::expiration()` instead, will be removed with 5.0.0
-     * deprecated `stubbles\webapp\response\Cookie::getPath()`, use `stubbles\webapp\response\Cookie::path()` instead, will be removed with 5.0.0
-     * deprecated `stubbles\webapp\response\Cookie::getDomain()`, use `stubbles\webapp\response\Cookie::domain()` instead, will be removed with 5.0.0
-     * deprecated `stubbles\webapp\response\Cookie::getDomain()`, use `stubbles\webapp\response\Cookie::domain()` instead, will be removed with 5.0.0
+   * api rework: replaced some constructs with better ones, all deprecated will be removed with 5.0.0
+     * deprecated `stubbles\webapp\UriPath::getMatched()`, use `stubbles\webapp\UriPath::configured()` instead
+     * deprecated `stubbles\webapp\UriPath::getRemaining()`, use `stubbles\webapp\UriPath::remaining()` instead
+     * deprecated `stubbles\webapp\UriRequest::fromString()`, use `new stubbles\webapp\UriRequest()` instead
+     * deprecated `stubbles\webapp\response\Cookie::getName()`, use `stubbles\webapp\response\Cookie::name()` instead
+     * deprecated `stubbles\webapp\response\Cookie::getValue()`, use `stubbles\webapp\response\Cookie::value()` instead
+     * deprecated `stubbles\webapp\response\Cookie::getExpiration()`, use `stubbles\webapp\response\Cookie::expiration()` instead
+     * deprecated `stubbles\webapp\response\Cookie::getPath()`, use `stubbles\webapp\response\Cookie::path()` instead
+     * deprecated `stubbles\webapp\response\Cookie::getDomain()`, use `stubbles\webapp\response\Cookie::domain()` instead
+     * deprecated `stubbles\webapp\response\Cookie::getDomain()`, use `stubbles\webapp\response\Cookie::domain()` instead
    * constructor of `stubbles\webapp\response\WebResponse` now accepts correct http version strings only according to RFC 7230
 
 ### Other changes
