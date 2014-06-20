@@ -1,7 +1,8 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
+        "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "This file is @generated automatically"
     ],
     "hash": "ddfff29cf088c33a8ff168ff76975158",
     "packages": [
@@ -11,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/stubbles/stubbles-core.git",
-                "reference": "206fb3e1c8246b68dd5f7731ae1ae51a0e57f8cf"
+                "reference": "9fe1acce33e983fbadb3ba3c3bbd15d93203301a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/stubbles/stubbles-core/zipball/206fb3e1c8246b68dd5f7731ae1ae51a0e57f8cf",
-                "reference": "206fb3e1c8246b68dd5f7731ae1ae51a0e57f8cf",
+                "url": "https://api.github.com/repos/stubbles/stubbles-core/zipball/9fe1acce33e983fbadb3ba3c3bbd15d93203301a",
+                "reference": "9fe1acce33e983fbadb3ba3c3bbd15d93203301a",
                 "shasum": ""
             },
             "require": {
@@ -48,7 +49,7 @@
             ],
             "description": "Provides base classes for Stubbles packages.",
             "homepage": "http://stubbles.net/",
-            "time": "2014-06-14 09:12:29"
+            "time": "2014-06-20 11:23:33"
         },
         {
             "name": "stubbles/input",
@@ -920,11 +921,17 @@
             "time": "2014-05-16 14:25:18"
         }
     ],
-    "aliases": [],
+    "aliases": [
+
+    ],
     "minimum-stability": "dev",
-    "stability-flags": [],
+    "stability-flags": [
+
+    ],
     "platform": {
         "php": ">=5.4.0"
     },
-    "platform-dev": []
+    "platform-dev": [
+
+    ]
 }

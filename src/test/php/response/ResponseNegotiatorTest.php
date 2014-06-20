@@ -188,6 +188,32 @@ class ResponseNegotiatorTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
+     * @since  4.0.0
+     */
+    public function createsFormatterForFirstMimeTypeWhenAcceptHeaderEmpty()
+    {
+        $this->mockAcceptHeader(null);
+        $this->mockInjector->expects($this->once())
+                           ->method('hasBinding')
+                           ->with($this->equalTo('stubbles\webapp\response\format\Formatter'),
+                                  $this->equalTo('application/json')
+                             )
+                           ->will($this->returnValue(true));
+        $this->mockInjector->expects($this->once())
+                           ->method('getInstance')
+                           ->with($this->equalTo('stubbles\webapp\response\format\Formatter'),
+                                  $this->equalTo('application/json')
+                             )
+                           ->will($this->returnValue($this->getMock('stubbles\webapp\response\format\Formatter')));
+        $this->assertInstanceOf('stubbles\webapp\response\FormattingResponse',
+                                $this->responseNegotiator->negotiateMimeType($this->mockRequest,
+                                                                             new SupportedMimeTypes(['application/json', 'application/xml'])
+                                )
+        );
+    }
+
+    /**
+     * @test
      */
     public function createsFormatterForNegotiatedMimeTypeAndReturnsFormattingResponse()
     {

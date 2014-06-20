@@ -89,7 +89,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                          {
                              $response->setStatusCode(418)
                                       ->write('Hello ' . $uriPath->readArgument('name')->asString());
-                             $request->cancel();
+                             return false;
                          },
                          $method
         );
