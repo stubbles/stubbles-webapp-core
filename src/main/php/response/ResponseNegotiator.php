@@ -11,6 +11,7 @@ namespace stubbles\webapp\response;
 use stubbles\input\filter\AcceptFilter;
 use stubbles\input\web\WebRequest;
 use stubbles\ioc\Injector;
+use stubbles\peer\http;
 /**
  * Negotiates correct response for request.
  *
@@ -84,6 +85,7 @@ class ResponseNegotiator
         }
 
         $mimeType = $supportedMimeTypes->findMatch($request->readHeader('HTTP_ACCEPT')
+                                                           ->defaultingTo(http\emptyAcceptHeader())
                                                            ->withFilter(new AcceptFilter())
                     );
         if (null === $mimeType) {
