@@ -75,10 +75,7 @@ abstract class WebApp extends App
     public function run()
     {
         $this->configureRouting($this->routing);
-        $route    = $this->routing->findRoute(new UriRequest($this->request->uri(),
-                                                             $this->request->method()
-                                              )
-                    );
+        $route    = $this->routing->findRoute($this->request->uri(), $this->request->method());
         $response = $this->responseNegotiator->negotiateMimeType($this->request, $route->supportedMimeTypes());
         if (!$response->isFixed()) {
             $this->process($route, $response);
@@ -146,24 +143,35 @@ abstract class WebApp extends App
     protected abstract function configureRouting(RoutingConfigurator $routing);
 
     /**
-     * creates io binding module with session
-     *
-     * @param   string  $sessionName
-     * @return  IoBindingModule
-     */
-    protected static function createIoBindingModuleWithSession($sessionName = 'PHPSESSID')
-    {
-        return IoBindingModule::createWithSession($sessionName);
-    }
-
-    /**
      * creates io binding module without session
      *
      * @return  IoBindingModule
+     * @deprecated  since 4.0.0, use createIoBindingModule() instead, will be removed with 5.0.0
      */
     protected static function createIoBindingModuleWithoutSession()
     {
         return IoBindingModule::createWithoutSession();
+    }
+
+    /**
+     * creates io binding module
+     *
+     * The optional callable $sessionCreator can accept instances of
+     * stubbles\input\web\WebRequest and stubbles\webapp\response\Response, and
+     * must return an instance of stubbles\webapp\session\Session:
+     * <code>
+     * function(WebRequest $request, Response $response)
+     * {
+     *    return new MySession($request, $response);
+     * }
+     * </code>
+     *
+     * @param   callable  $sessionCreator  optional
+     * @return  IoBindingModule
+     */
+    protected static function createIoBindingModule(callable $sessionCreator = null)
+    {
+        return new IoBindingModule($sessionCreator);
     }
 
     /**

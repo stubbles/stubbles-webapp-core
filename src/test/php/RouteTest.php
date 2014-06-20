@@ -128,7 +128,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
      */
     public function doesNotMatchUriRequestIfRequestMethodsDiffer()
     {
-        $this->assertFalse($this->createRoute()->matches(UriRequest::fromString('http://example.com/hello/world', 'DELETE')));
+        $this->assertFalse($this->createRoute()->matches(new UriRequest('http://example.com/hello/world', 'DELETE')));
     }
 
     /**
@@ -136,7 +136,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
      */
     public function doesNotMatchUriRequestIfRequestPathsDiffers()
     {
-        $this->assertFalse($this->createRoute()->matches(UriRequest::fromString('http://example.com/other', 'GET')));
+        $this->assertFalse($this->createRoute()->matches(new UriRequest('http://example.com/other', 'GET')));
     }
 
     /**
@@ -144,7 +144,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
      */
     public function matchesIfPathAndMethodAreOk()
     {
-        $this->assertTrue($this->createRoute()->matches(UriRequest::fromString('http://example.com/hello/world', 'GET')));
+        $this->assertTrue($this->createRoute()->matches(new UriRequest('http://example.com/hello/world', 'GET')));
     }
 
     /**
@@ -152,7 +152,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
      */
     public function doesNotMatchPathIfDiffers()
     {
-        $this->assertFalse($this->createRoute()->matchesPath(UriRequest::fromString('http://example.com/other', 'GET')));
+        $this->assertFalse($this->createRoute()->matchesPath(new UriRequest('http://example.com/other', 'GET')));
     }
 
     /**
@@ -160,7 +160,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
      */
     public function matchesPathIfPathOk()
     {
-        $this->assertTrue($this->createRoute()->matchesPath(UriRequest::fromString('http://example.com/hello/world', 'GET')));
+        $this->assertTrue($this->createRoute()->matchesPath(new UriRequest('http://example.com/hello/world', 'GET')));
     }
 
     /**
@@ -168,7 +168,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
      */
     public function matchesForHeadIfPathOkAndAllowedMethodIsGet()
     {
-        $this->assertTrue($this->createRoute()->matches(UriRequest::fromString('http://example.com/hello/world', 'HEAD')));
+        $this->assertTrue($this->createRoute()->matches(new UriRequest('http://example.com/hello/world', 'HEAD')));
     }
 
     /**

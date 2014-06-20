@@ -41,7 +41,7 @@ class MissingRouteTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->missingRoute = new MissingRoute(UriRequest::fromString('http://example.com/hello/world', 'GET'),
+        $this->missingRoute = new MissingRoute(new UriRequest('http://example.com/hello/world', 'GET'),
                                                $this->getMockBuilder('stubbles\webapp\interceptor\Interceptors')
                                                     ->disableOriginalConstructor()
                                                     ->getMock(),

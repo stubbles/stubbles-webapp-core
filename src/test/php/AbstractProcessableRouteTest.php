@@ -111,7 +111,7 @@ class AbstractProcessableRouteTest extends \PHPUnit_Framework_TestCase
      */
     private function createRoute()
     {
-        return new TestAbstractProcessableRoute(UriRequest::fromString('http://example.com/hello/world', 'GET'),
+        return new TestAbstractProcessableRoute(new UriRequest('http://example.com/hello/world', 'GET'),
                                                 $this->mockInterceptors,
                                                 $this->supportedMimeTypes
 
