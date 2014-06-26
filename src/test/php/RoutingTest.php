@@ -167,16 +167,18 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
     /**
      * creates processable route with given list of pre and post interceptors
      *
-     * @param   array  $preInterceptors
-     * @param   array  $postInterceptors
+     * @param   Route   $route
+     * @param   array   $preInterceptors
+     * @param   array   $postInterceptors
+     * @param   string  $path
      * @return  ProcessableRoute
      */
-    private function createProcessableRoute(Route $route, array $preInterceptors = [], array $postInterceptors = [])
+    private function createProcessableRoute(Route $route, array $preInterceptors = [], array $postInterceptors = [], $path = 'hello')
     {
         $mockInjector = $this->getMockBuilder('stubbles\ioc\Injector')
                              ->disableOriginalConstructor()
                              ->getMock();
-        return new MatchingRoute(new UriRequest('http://example.net/hello', 'GET'),
+        return new MatchingRoute(new UriRequest('http://example.net/' . $path, 'GET'),
                                  new interceptor\Interceptors($mockInjector, $preInterceptors, $postInterceptors),
                                  new response\SupportedMimeTypes([]),
                                  $route,
@@ -451,6 +453,32 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
                                         ->findRoute($this->calledUri)
                                         ->supportedMimeTypes()
                                         ->isContentNegotationDisabled()
+        );
+    }
+
+    /**
+     * @return  array
+     */
+    public function calledHtmlUris()
+    {
+        return [
+            ['index.html'],
+            ['foo_BAR-123.html'],
+            ['123.html']
+        ];
+    }
+
+    /**
+     * @param  string  $htmlFile
+     * @test
+     * @dataProvider  calledHtmlUris
+     * @since  4.0.0
+     */
+    public function passThroughOnGetAppliesForHtmlFilesWithDefaultPath($htmlFile)
+    {
+        $this->assertEquals(
+                $this->createProcessableRoute($this->routing->passThroughOnGet(), [], [], $htmlFile),
+                $this->routing->findRoute('http://example.net/' . $htmlFile, 'GET')
         );
     }
 }

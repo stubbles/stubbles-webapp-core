@@ -16,7 +16,8 @@
     "require-dev": {
         "stubbles/xml": "~3.0",
         "stubbles/webapp-session": "~4.0",
-        "phpunit/phpunit": "~4.1"
+        "phpunit/phpunit": "~4.1",
+        "mikey179/vfsStream": "~1.2"
     },
     "autoload": {
         "psr-4": {
