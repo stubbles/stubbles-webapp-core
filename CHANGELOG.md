@@ -33,6 +33,8 @@
    * added `net\stubbles\webapp\RoutingConfigurator::onAll()`
    * added `stubbles\webapp\UriPath::actual()`
    * fixed bug: response should not add content length header automatically when already added before
+   * added `stubbles\webapp\processor\HtmlFilePassThrough`
+   * added `stubbles\webapp\RoutingConfigurator::passThroughOnGet()`
 
 
 3.4.0, (2014-05-16)

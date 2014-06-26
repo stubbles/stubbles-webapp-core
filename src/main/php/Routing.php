@@ -95,7 +95,7 @@ class Routing implements RoutingConfigurator
      *
      * @param   string                     $path      path this route is applicable for
      * @param   string|callable|Processor  $callback  code to be executed when the route is active
-     * @return  ConfigurableRoute
+     * @return  \stubbles\webapp\ConfigurableRoute
      */
     public function onGet($path, $callback)
     {
@@ -103,11 +103,24 @@ class Routing implements RoutingConfigurator
     }
 
     /**
+     * reply with HTML file stored in pages path
+     *
+     * @param   string                     $path      optional  path this route is applicable for
+     * @param   string|callable|Processor  $callback  optional  code to be executed when the route is active
+     * @return  \stubbles\webapp\ConfigurableRoute
+     * @since   4.0.0
+     */
+    public function passThroughOnGet($path = '/[a-zA-Z0-9-_]+.html$', $callback = 'stubbles\webapp\processor\HtmlFilePassThrough')
+    {
+        return $this->onGet($path, $callback);
+    }
+
+    /**
      * reply with given class or callable for HEAD request on given path
      *
      * @param   string                     $path      path this route is applicable for
      * @param   string|callable|Processor  $callback  code to be executed when the route is active
-     * @return  ConfigurableRoute
+     * @return  \stubbles\webapp\ConfigurableRoute
      */
     public function onHead($path, $callback)
     {
@@ -119,7 +132,7 @@ class Routing implements RoutingConfigurator
      *
      * @param   string                     $path      path this route is applicable for
      * @param   string|callable|Processor  $callback  code to be executed when the route is active
-     * @return  ConfigurableRoute
+     * @return  \stubbles\webapp\ConfigurableRoute
      */
     public function onPost($path, $callback)
     {
@@ -131,7 +144,7 @@ class Routing implements RoutingConfigurator
      *
      * @param   string                     $path      path this route is applicable for
      * @param   string|callable|Processor  $callback  code to be executed when the route is active
-     * @return  ConfigurableRoute
+     * @return  \stubbles\webapp\ConfigurableRoute
      */
     public function onPut($path, $callback)
     {
@@ -143,7 +156,7 @@ class Routing implements RoutingConfigurator
      *
      * @param   string                     $path      path this route is applicable for
      * @param   string|callable|Processor  $callback  code to be executed when the route is active
-     * @return  ConfigurableRoute
+     * @return  \stubbles\webapp\ConfigurableRoute
      */
     public function onDelete($path, $callback)
     {
@@ -159,7 +172,7 @@ class Routing implements RoutingConfigurator
      * @param   string                     $path           path this route is applicable for
      * @param   string|callable|Processor  $callback       code to be executed when the route is active
      * @param   string|string[]            $requestMethod  optional  request method(s) this route is applicable for
-     * @return  ConfigurableRoute
+     * @return  \stubbles\webapp\ConfigurableRoute
      * @since   4.0.0
      */
     public function onAll($path, $callback, $requestMethod = null)
