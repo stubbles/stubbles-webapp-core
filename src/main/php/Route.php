@@ -99,7 +99,7 @@ class Route implements ConfigurableRoute
     public function __construct($path, $callback, $requestMethod = null)
     {
         if (!is_callable($callback) && !($callback instanceof Processor) && !class_exists($callback)) {
-            throw new IllegalArgumentException('Given callback must be a callable, an instance of stubbles\webapp\Processor or a class name of an existing processor class');
+            throw new IllegalArgumentException('Given callback for path "' . $path . '" must be a callable, an instance of stubbles\webapp\Processor or a class name of an existing processor class');
         }
 
         $this->path                  = $path;
