@@ -162,12 +162,4 @@ interface Response
      * @return  Response
      */
     public function send();
-
-    /**
-     * sends head only
-     *
-     * @return  Response
-     * @since   2.0.0
-     */
-    public function sendHead();
 }

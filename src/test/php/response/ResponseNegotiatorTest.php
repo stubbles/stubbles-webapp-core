@@ -66,62 +66,6 @@ class ResponseNegotiatorTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @test
-     */
-    public function createWithUnsupportedProtocolRespondsWithHttpVersionNotSupported()
-    {
-        $this->mockRequest->expects($this->once())
-                          ->method('protocolVersion')
-                          ->will($this->returnValue(null));
-        $mockResponseClass = get_class($this->getMockBuilder('stubbles\webapp\response\WebResponse')
-                                            ->setMethods(['header', 'sendBody'])
-                                            ->getMock()
-                             );
-        $response = ResponseNegotiator::negotiateHttpVersion($this->mockRequest, $mockResponseClass);
-        $this->assertInstanceOf($mockResponseClass, $response);
-        $response->expects($this->at(0))
-                 ->method('header')
-                 ->with($this->equalTo('HTTP/1.1 505 HTTP Version Not Supported'));
-        $response->expects($this->once())
-                 ->method('sendBody')
-                 ->with($this->equalTo('Unsupported HTTP protocol version, expected HTTP/1.0 or HTTP/1.1'));
-        $response->send();
-    }
-
-    /**
-     * @return  array
-     */
-    public function supportedHttpVersions()
-    {
-        return [
-            [HttpVersion::fromString(HttpVersion::HTTP_1_0)],
-            [HttpVersion::fromString(HttpVersion::HTTP_1_1)],
-            [HttpVersion::fromString('HTTP/1.2')]
-        ];
-    }
-
-    /**
-     * @test
-     * @dataProvider  supportedHttpVersions
-     */
-    public function createWithSupportedProtocolVersions(HttpVersion $httpVersion)
-    {
-        $this->mockRequest->expects($this->once())
-                          ->method('protocolVersion')
-                          ->will($this->returnValue($httpVersion));
-        $mockResponseClass = get_class($this->getMockBuilder('stubbles\webapp\response\WebResponse')
-                                            ->setMethods(['header', 'sendBody'])
-                                            ->getMock()
-                             );
-        $response = ResponseNegotiator::negotiateHttpVersion($this->mockRequest, $mockResponseClass);
-        $this->assertInstanceOf($mockResponseClass, $response);
-        $response->expects($this->once())
-                 ->method('header')
-                 ->with($this->equalTo($httpVersion . ' 200 OK'));
-        $response->send();
-    }
-
-    /**
      * mocks acept header to respond with given value
      *
      * @param  string  $value

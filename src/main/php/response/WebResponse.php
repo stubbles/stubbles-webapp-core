@@ -8,6 +8,7 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\response;
+use stubbles\input\web\WebRequest;
 use stubbles\peer\http\Http;
 use stubbles\peer\http\HttpUri;
 use stubbles\peer\http\HttpVersion;
@@ -62,19 +63,30 @@ class WebResponse implements Response
      * @type  bool
      */
     private $fixed    = false;
+    /**
+     * original request method
+     *
+     * @type  string
+     */
+    private $request;
 
     /**
      * constructor
      *
-     * @param  string|HttpVersion  $version  optional  http version to use for response, defaults to HTTP/1.1
-     * @param  string              $sapi     optional  current php sapi, defaults to value of PHP_SAPI constant
+     * In case the request contains an invalid HTTP protocol version or the HTTP
+     * protocol major version is not 1 the response automatically sets itself
+     * to 500 Method Not Supported.
+     *
+     * @param  WebRequest  $request  http request for which this is the response
+     * @param  string      $sapi     optional  current php sapi, defaults to value of PHP_SAPI constant
      */
-    public function __construct($version = HttpVersion::HTTP_1_1, $sapi = PHP_SAPI)
+    public function __construct(WebRequest $request, $sapi = PHP_SAPI)
     {
-        $this->version = HttpVersion::castFrom($version);
+        $this->request = $request;
         $this->sapi    = $sapi;
         $this->headers = new Headers();
-        if ($this->version->major() != 1) {
+        $this->version = $request->protocolVersion();
+        if (null === $this->version || $this->version->major() != 1) {
             $this->version = HttpVersion::fromString(HttpVersion::HTTP_1_1);
             $this->httpVersionNotSupported();
         } else {
@@ -305,7 +317,7 @@ class WebResponse implements Response
     public function send()
     {
         $this->sendHead();
-        if (null != $this->body) {
+        if ($this->requestAllowsBody() && null != $this->body) {
             $this->sendBody($this->body);
         }
 
@@ -313,12 +325,22 @@ class WebResponse implements Response
     }
 
     /**
+     * checks of the request allows a body in the response
+     *
+     * @return  bool
+     * @since   4.0.0
+     */
+    protected function requestAllowsBody()
+    {
+        return Http::HEAD !== $this->request->method();
+    }
+
+    /**
      * sends head only
      *
      * @return  Response
-     * @since   2.0.0
      */
-    public function sendHead()
+    private function sendHead()
     {
         if ('cgi' === $this->sapi) {
             $this->header('Status: ' . $this->status);
