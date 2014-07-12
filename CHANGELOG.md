@@ -24,6 +24,7 @@
      * deprecated `stubbles\webapp\response\Cookie::getDomain()`, use `stubbles\webapp\response\Cookie::domain()` instead
      * deprecated `stubbles\webapp\response\Cookie::getDomain()`, use `stubbles\webapp\response\Cookie::domain()` instead
    * constructor of `stubbles\webapp\response\WebResponse` now accepts correct http version strings only according to RFC 7230
+   * `stubbles\webapp\Webapp::run()` does not send the response on it's own any more, calling code has to send the returned response itself
 
 ### Other changes
 
