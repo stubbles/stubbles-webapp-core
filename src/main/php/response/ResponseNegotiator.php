@@ -47,27 +47,6 @@ class ResponseNegotiator
     }
 
     /**
-     * negotiates http response for http version
-     *
-     * Forces 505 HTTP Version Not Supported response in case the request
-     * has a non-supported protocol version and cancels the request.
-     *
-     * @param   WebRequest  $request
-     * @param   string      $responseClass
-     * @return  Response
-     */
-    public static function negotiateHttpVersion(WebRequest $request, $responseClass = 'stubbles\webapp\response\WebResponse')
-    {
-        $httpVersion = $request->protocolVersion();
-        if (null === $httpVersion) {
-            $response = new $responseClass();
-            return $response->httpVersionNotSupported();
-        }
-
-        return new $responseClass($httpVersion);
-    }
-
-    /**
      * negotiates mime type based on accept header and configured mime types
      *
      * Forces a 406 Not Acceptable response in case none of the accepted user

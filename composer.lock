@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/stubbles/stubbles-core.git",
-                "reference": "74fe38346cfb804d53bf8ed1fcb77b97922d1ac4"
+                "reference": "8ee6763294b3b4c0ebbec6165ef5407e53acb5eb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/stubbles/stubbles-core/zipball/74fe38346cfb804d53bf8ed1fcb77b97922d1ac4",
-                "reference": "74fe38346cfb804d53bf8ed1fcb77b97922d1ac4",
+                "url": "https://api.github.com/repos/stubbles/stubbles-core/zipball/8ee6763294b3b4c0ebbec6165ef5407e53acb5eb",
+                "reference": "8ee6763294b3b4c0ebbec6165ef5407e53acb5eb",
                 "shasum": ""
             },
             "require": {
@@ -49,7 +49,7 @@
             ],
             "description": "Provides base classes for Stubbles packages.",
             "homepage": "http://stubbles.net/",
-            "time": "2014-06-25 13:16:37"
+            "time": "2014-06-29 15:37:18"
         },
         {
             "name": "stubbles/input",
@@ -57,12 +57,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/stubbles/stubbles-input.git",
-                "reference": "8886fbb82952d90a4dcf51f3cda3b9a4492e623b"
+                "reference": "a1e7c6bda7ea9e2a84b20b0154e81018368d81e1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/stubbles/stubbles-input/zipball/8886fbb82952d90a4dcf51f3cda3b9a4492e623b",
-                "reference": "8886fbb82952d90a4dcf51f3cda3b9a4492e623b",
+                "url": "https://api.github.com/repos/stubbles/stubbles-input/zipball/a1e7c6bda7ea9e2a84b20b0154e81018368d81e1",
+                "reference": "a1e7c6bda7ea9e2a84b20b0154e81018368d81e1",
                 "shasum": ""
             },
             "require": {
@@ -94,7 +94,7 @@
             ],
             "description": "Stubbles Input enables to handle input data via validation and filtering.",
             "homepage": "http://stubbles.net/",
-            "time": "2014-06-25 13:48:34"
+            "time": "2014-06-29 15:54:29"
         }
     ],
     "packages-dev": [
@@ -130,16 +130,16 @@
         },
         {
             "name": "phpunit/php-code-coverage",
-            "version": "2.0.8",
+            "version": "2.0.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-code-coverage.git",
-                "reference": "58401826c8cfc8fd689b60026e91c337df374bca"
+                "reference": "ed8ac99ce38c3fd134128c898f7ca74665abef7f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/58401826c8cfc8fd689b60026e91c337df374bca",
-                "reference": "58401826c8cfc8fd689b60026e91c337df374bca",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/ed8ac99ce38c3fd134128c898f7ca74665abef7f",
+                "reference": "ed8ac99ce38c3fd134128c898f7ca74665abef7f",
                 "shasum": ""
             },
             "require": {
@@ -191,7 +191,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2014-05-26 14:55:24"
+            "time": "2014-06-29 08:14:40"
         },
         {
             "name": "phpunit/php-file-iterator",
@@ -452,16 +452,16 @@
         },
         {
             "name": "phpunit/phpunit-mock-objects",
-            "version": "2.1.4",
+            "version": "2.1.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit-mock-objects.git",
-                "reference": "1a894a16b6c15fcdc5ef2b110f0e6233952c9b0f"
+                "reference": "7878b9c41edb3afab92b85edf5f0981014a2713a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit-mock-objects/zipball/1a894a16b6c15fcdc5ef2b110f0e6233952c9b0f",
-                "reference": "1a894a16b6c15fcdc5ef2b110f0e6233952c9b0f",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit-mock-objects/zipball/7878b9c41edb3afab92b85edf5f0981014a2713a",
+                "reference": "7878b9c41edb3afab92b85edf5f0981014a2713a",
                 "shasum": ""
             },
             "require": {
@@ -505,7 +505,7 @@
                 "mock",
                 "xunit"
             ],
-            "time": "2014-06-07 16:22:57"
+            "time": "2014-06-12 07:22:15"
         },
         {
             "name": "sebastian/comparator",
@@ -820,12 +820,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/stubbles/stubbles-webapp-session.git",
-                "reference": "74bbd5bc973e13eb97bee5e905e8ecbc9dba9f66"
+                "reference": "d959fe59d893ea1f2b8fb247906a50f37304a1d7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/stubbles/stubbles-webapp-session/zipball/74bbd5bc973e13eb97bee5e905e8ecbc9dba9f66",
-                "reference": "74bbd5bc973e13eb97bee5e905e8ecbc9dba9f66",
+                "url": "https://api.github.com/repos/stubbles/stubbles-webapp-session/zipball/d959fe59d893ea1f2b8fb247906a50f37304a1d7",
+                "reference": "d959fe59d893ea1f2b8fb247906a50f37304a1d7",
                 "shasum": ""
             },
             "require": {
@@ -835,6 +835,7 @@
                 "stubbles/webapp-core": "~4.0"
             },
             "require-dev": {
+                "mikey179/vfsstream": "~1.2",
                 "phpunit/phpunit": "~4.1"
             },
             "type": "library",
@@ -857,7 +858,7 @@
             ],
             "description": "Session classes for Stubbles based web applications.",
             "homepage": "http://stubbles.net/",
-            "time": "2014-06-14 12:33:00"
+            "time": "2014-06-26 09:50:48"
         },
         {
             "name": "stubbles/xml",
@@ -903,17 +904,17 @@
         },
         {
             "name": "symfony/yaml",
-            "version": "v2.5.0",
+            "version": "v2.5.1",
             "target-dir": "Symfony/Component/Yaml",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Yaml.git",
-                "reference": "b4b09c68ec2f2727574544ef0173684281a5033c"
+                "reference": "1057e87364c0b38b50f5695fc9df9dd189036bec"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Yaml/zipball/b4b09c68ec2f2727574544ef0173684281a5033c",
-                "reference": "b4b09c68ec2f2727574544ef0173684281a5033c",
+                "url": "https://api.github.com/repos/symfony/Yaml/zipball/1057e87364c0b38b50f5695fc9df9dd189036bec",
+                "reference": "1057e87364c0b38b50f5695fc9df9dd189036bec",
                 "shasum": ""
             },
             "require": {
@@ -948,20 +949,14 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "http://symfony.com",
-            "time": "2014-05-16 14:25:18"
+            "time": "2014-07-08 12:21:33"
         }
     ],
-    "aliases": [
-
-    ],
+    "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": [
-
-    ],
+    "stability-flags": [],
     "platform": {
         "php": ">=5.4.0"
     },
-    "platform-dev": [
-
-    ]
+    "platform-dev": []
 }

@@ -154,12 +154,18 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
      */
     public function doesNothingIfResponseNegotiationFails()
     {
-        $this->createMockRoute();
+        $mockRoute = $this->createMockRoute();
+        $mockRoute->expects($this->never())
+                  ->method('switchToHttps');
+        $mockRoute->expects($this->never())
+                  ->method('applyPreInterceptors');
+        $mockRoute->expects($this->never())
+                  ->method('process');
+        $mockRoute->expects($this->never())
+                  ->method('applyPostInterceptors');
         $this->mockResponse->expects($this->once())
                           ->method('isFixed')
                           ->will($this->returnValue(true));
-        $this->mockResponse->expects($this->once())
-                           ->method('send');
         $this->assertSame($this->mockResponse, $this->webApp->run());
     }
 
@@ -178,8 +184,6 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
         $this->mockResponse->expects($this->once())
                            ->method('redirect')
                            ->with($this->equalTo('https://example.net/admin'));
-        $this->mockResponse->expects($this->once())
-                           ->method('send');
         $this->assertSame($this->mockResponse, $this->webApp->run());
     }
 
@@ -202,8 +206,6 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
                   ->method('process');
         $mockRoute->expects($this->never())
                   ->method('applyPostInterceptors');
-        $this->mockResponse->expects($this->once())
-                           ->method('send');
         $this->assertSame($this->mockResponse, $this->webApp->run());
     }
 
@@ -233,8 +235,6 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
         $this->mockResponse->expects($this->once())
                            ->method('internalServerError')
                            ->with($this->equalTo('some error'));
-        $this->mockResponse->expects($this->once())
-                           ->method('send');
         $this->assertSame($this->mockResponse, $this->webApp->run());
     }
 
@@ -261,8 +261,6 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
                   ->will($this->returnValue(false));
         $mockRoute->expects($this->never())
                   ->method('applyPostInterceptors');
-        $this->mockResponse->expects($this->once())
-                           ->method('send');
         $this->assertSame($this->mockResponse, $this->webApp->run());
     }
 
@@ -296,8 +294,6 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
         $this->mockResponse->expects($this->once())
                            ->method('internalServerError')
                            ->with($this->equalTo('some error'));
-        $this->mockResponse->expects($this->once())
-                           ->method('send');
         $this->assertSame($this->mockResponse, $this->webApp->run());
     }
 
@@ -327,8 +323,6 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
                   ->with($this->equalTo($this->mockRequest),
                          $this->equalTo($this->mockResponse)
                     );
-        $this->mockResponse->expects($this->once())
-                           ->method('send');
         $this->assertSame($this->mockResponse, $this->webApp->run());
     }
 
@@ -366,60 +360,6 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
         $this->mockResponse->expects($this->once())
                            ->method('internalServerError')
                            ->with($this->equalTo('some error'));
-        $this->mockResponse->expects($this->once())
-                           ->method('send');
-        $this->assertSame($this->mockResponse, $this->webApp->run());
-    }
-
-    /**
-     * @test
-     */
-    public function executesEverythingButSendsHeadOnlyWhenRequestMethodIsHead()
-    {
-        $this->mockRequest  = $this->getMock('stubbles\input\web\WebRequest');
-        $this->mockRequest->expects($this->any())
-                          ->method('method')
-                          ->will($this->returnValue('HEAD'));
-        $this->mockRequest->expects($this->any())
-                          ->method('uri')
-                          ->will($this->returnValue(HttpUri::fromString('http://example.com/hello')));
-        $mockResponseNegotiator = $this->getMockBuilder('stubbles\webapp\response\ResponseNegotiator')
-                                       ->disableOriginalConstructor()
-                                       ->getMock();
-        $mockResponseNegotiator->expects($this->any())
-                               ->method('negotiateMimeType')
-                               ->will($this->returnValue($this->mockResponse));
-        $this->webApp  = $this->getMock('stubbles\webapp\TestWebApp',
-                                        ['configureRouting'],
-                                        [$this->mockRequest,
-                                         $mockResponseNegotiator,
-                                         $this->routing,
-                                         $this->mockExceptionLogger
-                                        ]
-                         );
-        $mockRoute = $this->createMockRoute();
-        $mockRoute->expects($this->once())
-                  ->method('requiresHttps')
-                  ->will($this->returnValue(false));
-        $mockRoute->expects($this->once())
-                  ->method('applyPreInterceptors')
-                  ->with($this->equalTo($this->mockRequest),
-                         $this->equalTo($this->mockResponse)
-                    )
-                  ->will($this->returnValue(true));
-        $mockRoute->expects($this->once())
-                  ->method('process')
-                  ->with($this->equalTo($this->mockRequest),
-                         $this->equalTo($this->mockResponse)
-                    )
-                  ->will($this->returnValue(true));
-        $mockRoute->expects($this->once())
-                  ->method('applyPostInterceptors')
-                  ->with($this->equalTo($this->mockRequest),
-                         $this->equalTo($this->mockResponse)
-                    );
-        $this->mockResponse->expects($this->once())
-                           ->method('sendHead');
         $this->assertSame($this->mockResponse, $this->webApp->run());
     }
 }

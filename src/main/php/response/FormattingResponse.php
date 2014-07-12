@@ -252,29 +252,8 @@ class FormattingResponse implements Response
      */
     public function send()
     {
-        $this->addContentType();
-        $this->response->send();
+        $this->response->addHeader('Content-type', $this->mimeType)
+                       ->send();
         return $this;
-    }
-
-    /**
-     * sends head only
-     *
-     * @return  Response
-     * @since   2.0.0
-     */
-    public function sendHead()
-    {
-        $this->addContentType();
-        $this->response->sendHead();
-        return $this;
-    }
-
-    /**
-     * adds content type header
-     */
-    private function addContentType()
-    {
-        $this->response->addHeader('Content-type', $this->mimeType);
     }
 }
