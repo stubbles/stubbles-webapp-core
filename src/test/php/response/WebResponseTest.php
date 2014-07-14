@@ -8,6 +8,7 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\response;
+use stubbles\peer\http\Http;
 use stubbles\peer\http\HttpVersion;
 /**
  * Tests for stubbles\webapp\response\WebResponse.
@@ -34,16 +35,24 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     /**
      * creates response where output facing methods are mocked
      *
-     * @param   string|HttpVersion  $version  optional  http version to use for response, defaults to HTTP/1.1
-     * @param   string              $sapi     optional  current php sapi, defaults to value of PHP_SAPI constant
+     * @param   string|HttpVersion  $httpVersion    optional  http version to use for response, defaults to HTTP/1.1
+     * @param   string              $requestMethod  optional  http request method to use, defaults to GET
+     * @param   string              $sapi           optional  current php sapi, defaults to value of PHP_SAPI constant
      * @return  WebResponse
      */
-    private function createResponse($httpVersion = HttpVersion::HTTP_1_1, $sapi = null)
+    private function createResponse($httpVersion = HttpVersion::HTTP_1_1, $requestMethod = Http::GET, $sapi = null)
     {
+        $mockRequest = $this->getMock('stubbles\input\web\WebRequest');
+        $mockRequest->expects($this->once())
+                    ->method('protocolVersion')
+                    ->will($this->returnValue(HttpVersion::castFrom($httpVersion)));
+        $mockRequest->expects($this->any())
+                    ->method('method')
+                    ->will($this->returnValue($requestMethod));
         return $this->getMock(
                 'stubbles\webapp\response\WebResponse',
                 ['header', 'sendBody'],
-                [$httpVersion, $sapi]
+                [$mockRequest, $sapi]
         );
     }
 
@@ -116,7 +125,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function statusCodeInCgiSapi()
     {
-        $this->response = $this->createResponse(HttpVersion::HTTP_1_1, 'cgi');
+        $this->response = $this->createResponse(HttpVersion::HTTP_1_1, Http::GET, 'cgi');
         $this->response->expects($this->once())
                        ->method('header')
                        ->with($this->equalTo('Status: 200 OK'));
@@ -238,14 +247,61 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function bodyIsSend()
+    public function doesNotSendContentLengthHeaderWhenNoBodyPresent()
+    {
+        $this->response->expects($this->once())
+                       ->method('header')
+                       ->with($this->equalTo(HttpVersion::HTTP_1_1 . ' 200 OK'));
+        $this->response->send();
+    }
+
+    /**
+     * @test
+     */
+    public function sendsContentLengthHeaderWhenBodyIsPresent()
     {
         $this->response->expects($this->at(1))
                        ->method('header')
                        ->with($this->equalTo('Content-Length: 3'));
+        $this->response->write('foo')
+                       ->send();
+    }
+
+    /**
+     * @test
+     */
+    public function bodyIsSend()
+    {
         $this->response->expects($this->once())
                        ->method('sendBody')
                        ->with($this->equalTo('foo'));
+        $this->response->write('foo')
+                       ->send();
+    }
+
+    /**
+     * @test
+     * @since  4.0.0
+     */
+    public function bodyIsNotSendWhenRequestMethodIsHead()
+    {
+        $this->response = $this->createResponse(HttpVersion::HTTP_1_1, Http::HEAD);
+        $this->response->expects($this->never())
+                       ->method('sendBody');
+        $this->response->write('foo')
+                       ->send();
+    }
+
+    /**
+     * @test
+     * @since  4.0.0
+     */
+    public function contentLengthHeaderIsSendWhenRequestMethodIsHeadAndBodyIsSet()
+    {
+        $this->response = $this->createResponse(HttpVersion::HTTP_1_1, Http::HEAD);
+        $this->response->expects($this->at(1))
+                       ->method('header')
+                       ->with($this->equalTo('Content-Length: 3'));
         $this->response->write('foo')
                        ->send();
     }
@@ -518,23 +574,6 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     public function httpVersionNotSupportedFixatesResponse()
     {
         $this->assertTrue($this->response->httpVersionNotSupported()->isFixed());
-    }
-
-    /**
-     * @since  2.0.0
-     * @test
-     */
-    public function sendHeadDoesNotSendBody()
-    {
-        $this->response->expects($this->at(0))
-                       ->method('header')
-                       ->with($this->equalTo('HTTP/1.1 200 OK'));
-        $this->response->expects($this->at(1))
-                       ->method('header')
-                       ->with($this->equalTo('Content-Length: 3'));
-        $this->response->expects($this->never())
-                       ->method('sendBody');
-        $this->response->write('foo')->sendHead();
     }
 
     /**

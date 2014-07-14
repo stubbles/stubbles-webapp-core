@@ -12,7 +12,6 @@ use stubbles\input\web\BaseWebRequest;
 use stubbles\ioc\Binder;
 use stubbles\ioc\module\BindingModule;
 use stubbles\lang\exception\RuntimeException;
-use stubbles\webapp\response\ResponseNegotiator;
 /**
  * Module to configure the binder with instances for request, session and response.
  *
@@ -135,8 +134,9 @@ class IoBindingModule implements BindingModule
      */
     public function configure(Binder $binder)
     {
-        $request  = BaseWebRequest::fromRawSource();
-        $response = ResponseNegotiator::negotiateHttpVersion($request, $this->responseClass);
+        $request       = BaseWebRequest::fromRawSource();
+        $responseClass = $this->responseClass;
+        $response      = new $responseClass($request);
         $binder->bind('stubbles\input\web\WebRequest')
                ->toInstance($request);
         $binder->bind('stubbles\input\Request')

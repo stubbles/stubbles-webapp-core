@@ -39,7 +39,7 @@ class FormattingResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->decoratedResponse  = $this->getMock('stubbles\webapp\response\WebResponse');
+        $this->decoratedResponse  = $this->getMock('stubbles\webapp\response\Response');
         $this->mockFormatter      = $this->getMock('stubbles\webapp\response\format\Formatter');
         $this->formattingResponse = new FormattingResponse($this->decoratedResponse,
                                                            $this->mockFormatter,
@@ -310,47 +310,13 @@ class FormattingResponseTest extends \PHPUnit_Framework_TestCase
     public function sendsDecoratedResponse()
     {
         $this->decoratedResponse->expects($this->once())
+                                 ->method('addHeader')
+                                 ->with($this->equalTo('Content-type'), $this->equalTo('text/plain'))
+                                 ->will($this->returnSelf());
+        $this->decoratedResponse->expects($this->once())
                                 ->method('send');
         $this->assertSame($this->formattingResponse,
                           $this->formattingResponse->send()
         );
-    }
-
-    /**
-     * @test
-     */
-    public function sendsHeadOfDecoratedResponse()
-    {
-        $this->decoratedResponse->expects($this->once())
-                                ->method('sendHead');
-        $this->decoratedResponse->expects($this->never())
-                                ->method('send');
-        $this->assertSame($this->formattingResponse,
-                          $this->formattingResponse->sendHead()
-        );
-    }
-
-    /**
-     * @test
-     * @since  2.2.0
-     */
-    public function addsContentTypeHeaderOnSend()
-    {
-         $this->decoratedResponse->expects($this->once())
-                                 ->method('addHeader')
-                                 ->with($this->equalTo('Content-type'), $this->equalTo('text/plain'));
-         $this->formattingResponse->send();
-    }
-
-    /**
-     * @test
-     * @since  2.2.0
-     */
-    public function addsContentTypeHeaderOnSendHead()
-    {
-         $this->decoratedResponse->expects($this->once())
-                                 ->method('addHeader')
-                                 ->with($this->equalTo('Content-type'), $this->equalTo('text/plain'));
-         $this->formattingResponse->sendHead();
     }
 }

@@ -9,7 +9,6 @@
  */
 namespace stubbles\webapp\ioc;
 use stubbles\ioc\Binder;
-use stubbles\lang\exception\RuntimeException;
 /**
  * Tests for nstubbles\webapp\ioc\IoBindingModule.
  *

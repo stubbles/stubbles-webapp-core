@@ -11,7 +11,6 @@ namespace stubbles\webapp;
 use stubbles\input\web\WebRequest;
 use stubbles\ioc\App;
 use stubbles\lang\errorhandler\ExceptionLogger;
-use stubbles\peer\http\Http;
 use stubbles\webapp\ioc\IoBindingModule;
 use stubbles\webapp\response\Response;
 use stubbles\webapp\response\ResponseNegotiator;
@@ -68,7 +67,7 @@ abstract class WebApp extends App
     }
 
     /**
-     * runs the application
+     * runs the application but does not send the response
      *
      * @return  Response
      */
@@ -81,7 +80,6 @@ abstract class WebApp extends App
             $this->process($route, $response);
         }
 
-        $this->send($response);
         return $response;
     }
 
@@ -119,20 +117,6 @@ abstract class WebApp extends App
     protected function switchToHttps(ProcessableRoute $route)
     {
         return $route->requiresHttps();
-    }
-
-    /**
-     * sends response
-     *
-     * @param  Response  $response
-     */
-    protected function send(Response $response)
-    {
-        if ($this->request->method() === Http::HEAD) {
-            $response->sendHead();
-        } else {
-            $response->send();
-        }
     }
 
     /**
