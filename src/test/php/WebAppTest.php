@@ -8,13 +8,31 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp;
+use stubbles\ioc\Binder;
 use stubbles\lang;
 use stubbles\peer\http\HttpUri;
 /**
  * Helper class for the test.
  */
-abstract class TestWebApp extends WebApp
+class TestWebApp extends WebApp
 {
+    /**
+     * returns list of bindings required for this web app
+     *
+     * @param   string  $projectPath
+     * @return  array
+     */
+    public static function __bindings($projectPath)
+    {
+        return [self::createIoBindingModule(),
+                function(Binder $binder) use ($projectPath)
+                {
+                    $binder->bindConstant('stubbles.project.path')
+                           ->to($projectPath);
+                }
+        ];
+    }
+
     /**
      * call method with given name and parameters and return its return value
      *
@@ -26,6 +44,16 @@ abstract class TestWebApp extends WebApp
     public static function callMethod($methodName, $param = null)
     {
         return self::$methodName($param);
+    }
+
+    /**
+     * configures routing for this web app
+     *
+     * @param  RoutingConfigurator  $routing
+     */
+    protected function configureRouting(RoutingConfigurator $routing)
+    {
+        // intentionally empty
     }
 }
 /**
@@ -100,6 +128,15 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
                                          $this->mockExceptionLogger
                                         ]
                          );
+        $_SERVER['REQUEST_METHOD'] = 'GET';
+    }
+
+    /**
+     * clean up test environment
+     */
+    public function tearDown()
+    {
+        unset($_SERVER['REQUEST_METHOD']);
     }
 
     /**
@@ -361,5 +398,31 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
                            ->method('internalServerError')
                            ->with($this->equalTo('some error'));
         $this->assertSame($this->mockResponse, $this->webApp->run());
+    }
+
+    /**
+     * @since  4.0.0
+     * @test
+     */
+    public function createCreatesInstance()
+    {
+        $this->assertInstanceOf(
+                'stubbles\webapp\TestWebApp',
+                TestWebApp::create('projectPath')
+        );
+    }
+
+    /**
+     * @since  4.0.0
+     * @test
+     */
+    public function createInstanceCreatesInstance()
+    {
+        $this->assertInstanceOf(
+                'stubbles\webapp\TestWebApp',
+                WebApp::createInstance('stubbles\webapp\TestWebApp',
+                                       'projectPath'
+                )
+        );
     }
 }

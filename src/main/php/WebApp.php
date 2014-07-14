@@ -127,6 +127,35 @@ abstract class WebApp extends App
     protected abstract function configureRouting(RoutingConfigurator $routing);
 
     /**
+     * creates a web app instance via injection
+     *
+     * If the class to create an instance of contains a static __bindings() method
+     * this method will be used to configure the ioc bindings before using the ioc
+     * container to create the instance.
+     *
+     * @api
+     * @param   string  $projectPath  path to project
+     * @return  WebApp
+     */
+    public static function create($projectPath)
+    {
+        return self::createInstance(get_called_class(), $projectPath);
+    }
+
+    /**
+     * creates a web app instance via injection
+     *
+     * @api
+     * @param   string  $className    full qualified class name of class to create an instance of
+     * @param   string  $projectPath  path to project
+     * @return  WebApp
+     */
+    public static function createInstance($className, $projectPath)
+    {
+        return parent::createInstance($className, $projectPath);
+    }
+
+    /**
      * creates io binding module without session
      *
      * @return  IoBindingModule
