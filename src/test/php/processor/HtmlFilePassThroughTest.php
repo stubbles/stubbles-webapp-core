@@ -14,7 +14,7 @@ use stubbles\webapp\UriPath;
 /**
  * Test for stubbles\webapp\processor\HtmlFilePassThrough.
  *
- * @group  simple
+ * @group  processor
  * @since  4.0.0
  */
 class HtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
