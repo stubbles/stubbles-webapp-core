@@ -43,6 +43,14 @@ class HeadersTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function doesNotContainHeaderWhenNotAddedWithArrayAccess()
+    {
+        $this->assertFalse(isset($this->headers['X-Foo']));
+    }
+
+    /**
+     * @test
+     */
     public function containsHeaderWhenAdded()
     {
         $this->assertTrue(
@@ -54,13 +62,29 @@ class HeadersTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function containsHeaderWhenAddedWithArrayAccess()
+    {
+        $this->headers->add('X-Foo', 'bar');
+        $this->assertTrue(isset($this->headers['X-Foo']));
+    }
+
+    /**
+     * @test
+     */
+    public function containsHeaderWhenAddedWithArrayAccess2()
+    {
+        $this->headers['X-Foo'] = 'bar';
+        $this->assertTrue(isset($this->headers['X-Foo']));
+    }
+
+    /**
+     * @test
+     */
     public function locationHeaderAcceptsUriAsString()
     {
         $this->headers->location('http://example.com/');
-        foreach ($this->headers as $name => $value) {
-            $this->assertEquals('Location', $name);
-            $this->assertEquals('http://example.com/', $value);
-        }
+        $this->assertTrue(isset($this->headers['Location']));
+        $this->assertEquals('http://example.com/', $this->headers['Location']);
     }
 
     /**
@@ -69,10 +93,8 @@ class HeadersTest extends \PHPUnit_Framework_TestCase
     public function locationHeaderAcceptsUriAsHttpUri()
     {
         $this->headers->location(HttpUri::fromString('http://example.com/'));
-        foreach ($this->headers as $name => $value) {
-            $this->assertEquals('Location', $name);
-            $this->assertEquals('http://example.com/', $value);
-        }
+        $this->assertTrue(isset($this->headers['Location']));
+        $this->assertEquals('http://example.com/', $this->headers['Location']);
     }
 
     /**
@@ -81,10 +103,8 @@ class HeadersTest extends \PHPUnit_Framework_TestCase
     public function allowAddsListOfAllowedMethods()
     {
         $this->headers->allow(['POST', 'PUT']);
-        foreach ($this->headers as $name => $value) {
-            $this->assertEquals('Allow', $name);
-            $this->assertEquals('POST, PUT', $value);
-        }
+        $this->assertTrue(isset($this->headers['Allow']));
+        $this->assertEquals('POST, PUT', $this->headers['Allow']);
     }
 
     /**
@@ -104,10 +124,8 @@ class HeadersTest extends \PHPUnit_Framework_TestCase
     public function acceptableAddsListOfSupportedMimeTypesWhenListNotEmpty()
     {
         $this->headers->acceptable(['text/csv', 'application/json']);
-        foreach ($this->headers as $name => $value) {
-            $this->assertEquals('X-Acceptable', $name);
-            $this->assertEquals('text/csv, application/json', $value);
-        }
+        $this->assertTrue(isset($this->headers['X-Acceptable']));
+        $this->assertEquals('text/csv, application/json', $this->headers['X-Acceptable']);
     }
 
     /**
@@ -116,10 +134,8 @@ class HeadersTest extends \PHPUnit_Framework_TestCase
     public function forceDownloadAddesContentDispositionHeaderWithGivenFilename()
     {
         $this->headers->forceDownload('example.csv');
-        foreach ($this->headers as $name => $value) {
-            $this->assertEquals('Content-Disposition', $name);
-            $this->assertEquals('attachment; filename=example.csv', $value);
-        }
+        $this->assertTrue(isset($this->headers['Content-Disposition']));
+        $this->assertEquals('attachment; filename=example.csv', $this->headers['Content-Disposition']);
     }
 
     /**
@@ -132,5 +148,15 @@ class HeadersTest extends \PHPUnit_Framework_TestCase
             $this->assertEquals('X-Foo', $name);
             $this->assertEquals('bar', $value);
         }
+    }
+
+    /**
+     * @test
+     * @expectedException  stubbles\lang\exception\MethodNotSupportedException
+     */
+    public function unsetViaArrayAccessThrowsMethodNotSupportedException()
+    {
+        $this->headers->add('X-Foo', 'bar');
+        unset($this->headers['X-Foo']);
     }
 }

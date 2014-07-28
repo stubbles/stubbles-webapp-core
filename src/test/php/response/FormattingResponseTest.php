@@ -74,6 +74,18 @@ class FormattingResponseTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
+     * @since  4.0.0
+     */
+    public function returnsStatusCodeFromDecoratedResponse()
+    {
+        $this->decoratedResponse->expects($this->once())
+                                ->method('statusCode')
+                                ->will($this->returnValue(418));
+        $this->assertEquals(418, $this->formattingResponse->statusCode());
+    }
+
+    /**
+     * @test
      */
     public function addsHeaderOnDecoratedResponse()
     {
@@ -99,6 +111,19 @@ class FormattingResponseTest extends \PHPUnit_Framework_TestCase
                 $headers,
                 $this->formattingResponse->headers()
         );
+    }
+
+    /**
+     * @test
+     * @since  4.0.0
+     */
+    public function containsHeaderWhenDecoratedResponseContainsHeader()
+    {
+        $this->decoratedResponse->expects($this->once())
+                                ->method('containsHeader')
+                                ->with($this->equalTo('X-Binford'), $this->equalTo('6100'))
+                                ->will($this->returnValue(true));
+        $this->assertTrue($this->formattingResponse->containsHeader('X-Binford', '6100'));
     }
 
     /**
@@ -130,6 +155,19 @@ class FormattingResponseTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
+     * @since  4.0.0
+     */
+    public function containsCookieWhenDecoratedResponseContainsCookie()
+    {
+        $this->decoratedResponse->expects($this->once())
+                                ->method('containsCookie')
+                                ->with($this->equalTo('foo'), $this->equalTo('bar'))
+                                ->will($this->returnValue(true));
+        $this->assertTrue($this->formattingResponse->containsCookie('foo', 'bar'));
+    }
+
+    /**
+     * @test
      */
     public function writesOnDecoratedResponse()
     {
@@ -141,6 +179,18 @@ class FormattingResponseTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($this->formattingResponse,
                           $this->formattingResponse->write('foo')
         );
+    }
+
+    /**
+     * @test
+     * @since  4.0.0
+     */
+    public function returnsBodyFromDecoratedResponse()
+    {
+        $this->decoratedResponse->expects($this->once())
+                                ->method('body')
+                                ->will($this->returnValue('Some cool response data'));
+        $this->assertEquals('Some cool response data', $this->formattingResponse->body());
     }
 
     /**

@@ -8,13 +8,14 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\response;
+use stubbles\lang\exception\MethodNotSupportedException;
 use stubbles\peer\http\HttpUri;
 /**
  * List of response headers.
  *
  * @since  4.0.0
  */
-class Headers implements \IteratorAggregate
+class Headers implements \IteratorAggregate, \ArrayAccess
 {
     /**
      * list of headers for this response
@@ -89,7 +90,7 @@ class Headers implements \IteratorAggregate
      *
      * Please note that header names are treated case sensitive.
      *
-     * @param   string  $name
+     * @param   string  $name  name of header to check for
      * @return  bool
      */
     public function contain($name)
@@ -105,5 +106,54 @@ class Headers implements \IteratorAggregate
     public function getIterator()
     {
         return new \ArrayIterator($this->headers);
+    }
+
+    /**
+     * checks if header with given name is present
+     *
+     * Please note that header names are treated case sensitive.
+     *
+     * @param   string  $offset  name of header to check for
+     * @return  bool
+     */
+    public function offsetExists($offset)
+    {
+        return $this->contain($offset);
+    }
+
+    /**
+     * returns header with given name
+     *
+     * @return  string
+     */
+    public function offsetGet($offset)
+    {
+        if ($this->contain($offset)) {
+            return $this->headers[$offset];
+        }
+
+        return null;
+    }
+
+    /**
+     * adds header with given name
+     *
+     * @param  string  $offset
+     * @param  string  $value
+     */
+    public function offsetSet($offset, $value)
+    {
+        $this->add($offset, $value);
+    }
+
+   /**
+    * removes header with given name
+    *
+    * @param   string  $offset
+    * @throws  MethodNotSupportedException
+    */
+    public function offsetUnset($offset)
+    {
+        throw new MethodNotSupportedException('Removing headers is not supported');
     }
 }

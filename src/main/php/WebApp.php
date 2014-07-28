@@ -69,7 +69,7 @@ abstract class WebApp extends App
     /**
      * runs the application but does not send the response
      *
-     * @return  Response
+     * @return  SendableResponse
      */
     public function run()
     {

@@ -14,7 +14,7 @@ namespace stubbles\webapp\response;
  * The response collects all data that should be send to the source
  * that initiated the request.
  */
-interface Response
+interface Response extends SendableResponse
 {
     /**
      * clears the response
@@ -155,11 +155,4 @@ interface Response
      * @since   2.0.0
      */
     public function httpVersionNotSupported();
-
-    /**
-     * send the response out
-     *
-     * @return  Response
-     */
-    public function send();
 }
