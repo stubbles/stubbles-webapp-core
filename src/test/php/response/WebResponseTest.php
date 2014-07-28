@@ -122,6 +122,24 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
+     * @since  4.0.0
+     */
+    public function statusCodeIs200ByDefault()
+    {
+        $this->assertEquals(200, $this->response->statusCode());
+    }
+
+    /**
+     * @test
+     * @since  4.0.0
+     */
+    public function statusCodeCanBeChanged()
+    {
+        $this->assertEquals(404, $this->response->setStatusCode(404)->statusCode());
+    }
+
+    /**
+     * @test
      */
     public function statusCodeInCgiSapi()
     {
@@ -149,24 +167,54 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function addingHeaderWithSameNameReplacesExistingHeader()
     {
-        $this->response->expects($this->at(1))
-                       ->method('header')
-                       ->with($this->equalTo('name: value2'));
         $this->response->addHeader('name', 'value1')
                        ->addHeader('name', 'value2')
                        ->send();
+        $this->assertEquals('value2', $this->response->headers()['name']);
     }
 
     /**
      * @test
      * @since  4.0.0
      */
-    public function headersReturnsHeaderList()
+    public function doesNotContainsNonAddedHeader()
+    {
+        $this->assertFalse($this->response->containsHeader('X-Foo'));
+    }
+
+    /**
+     * @test
+     * @since  4.0.0
+     */
+    public function doesNotContainsAddedHeaderWithDifferentValue()
+    {
+        $this->assertFalse(
+                $this->response->addHeader('X-Foo', 'bar')
+                               ->containsHeader('X-Foo', 'baz')
+        );
+    }
+
+    /**
+     * @test
+     * @since  4.0.0
+     */
+    public function containsAddedHeader()
     {
         $this->assertTrue(
                 $this->response->addHeader('X-Foo', 'bar')
-                               ->headers()
-                               ->contain('X-Foo')
+                               ->containsHeader('X-Foo')
+        );
+    }
+
+    /**
+     * @test
+     * @since  4.0.0
+     */
+    public function containsAddedHeaderWithValue()
+    {
+        $this->assertTrue(
+                $this->response->addHeader('X-Foo', 'bar')
+                               ->containsHeader('X-Foo', 'bar')
         );
     }
 
@@ -185,17 +233,22 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     /**
      * creates mock cookie
      *
+     * @param   string  $value  optional  cookie value
      * @return  \PHPUnit_Framework_MockObject_MockObject
      */
-    protected function createMockCookie()
+    protected function createMockCookie($value = null)
     {
-        $mockCookie = $this->getMock('stubbles\webapp\response\Cookie',
-                                     [],
-                                     ['foo', 'bar']
-                      );
+        $mockCookie = $this->getMockBuilder('stubbles\webapp\response\Cookie')
+                           ->disableOriginalConstructor()
+                           ->getMock();
         $mockCookie->expects($this->any())
-                   ->method('getName')
+                   ->method('name')
                    ->will($this->returnValue('foo'));
+        if (null !== $value) {
+            $mockCookie->expects($this->any())
+                       ->method('value')
+                       ->will($this->returnValue($value));
+        }
         return $mockCookie;
     }
 
@@ -220,6 +273,51 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
         $this->response->addCookie($mockCookie)
                        ->addCookie($mockCookie)
                        ->send();
+    }
+
+    /**
+     * @test
+     * @since  4.0.0
+     */
+    public function doesNotContainsNonAddedCookie()
+    {
+        $this->assertFalse($this->response->containsCookie('foo'));
+    }
+
+    /**
+     * @test
+     * @since  4.0.0
+     */
+    public function doesNotContainsAddedCookieWithDifferentValue()
+    {
+        $this->assertFalse(
+                $this->response->addCookie($this->createMockCookie('bar'))
+                               ->containsCookie('foo', 'baz')
+        );
+    }
+
+    /**
+     * @test
+     * @since  4.0.0
+     */
+    public function containsAddedCookie()
+    {
+        $this->assertTrue(
+                $this->response->addCookie($this->createMockCookie('bar'))
+                               ->containsCookie('foo')
+        );
+    }
+
+    /**
+     * @test
+     * @since  4.0.0
+     */
+    public function containsAddedCookieWithValue()
+    {
+        $this->assertTrue(
+                $this->response->addCookie($this->createMockCookie('bar'))
+                               ->containsCookie('foo', 'bar')
+        );
     }
 
     /**

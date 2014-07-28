@@ -76,6 +76,17 @@ class FormattingResponse implements Response
     }
 
     /**
+     * returns status code of response
+     *
+     * @return  int
+     * @since   4.0.0
+     */
+    public function statusCode()
+    {
+        return $this->response->statusCode();
+    }
+
+    /**
      * add a header to the response
      *
      * @param   string  $name   the name of the header
@@ -97,6 +108,19 @@ class FormattingResponse implements Response
     public function headers()
     {
         return $this->response->headers();
+    }
+
+    /**
+     * check if response contains a certain header
+     *
+     * @param   string  $name   name of header to check
+     * @param   string  $value  optional  if given the value is checked as well
+     * @return  bool
+     * @since   4.0.0
+     */
+    public function containsHeader($name, $value = null)
+    {
+        return $this->response->containsHeader($name, $value);
     }
 
     /**
@@ -124,6 +148,19 @@ class FormattingResponse implements Response
     }
 
     /**
+     * checks if response contains a certain cookie
+     *
+     * @param   string  $name   name of cookie to check
+     * @param   string  $value  optional  if given the value is checked as well
+     * @return  bool
+     * @since   4.0.0
+     */
+    public function containsCookie($name, $value = null)
+    {
+        return $this->response->containsCookie($name, $value);
+    }
+
+    /**
      * write body into the response
      *
      * @param   string  $body
@@ -134,6 +171,17 @@ class FormattingResponse implements Response
         $result = ((is_string($body)) ? ($body): ($this->formatter->format($body, $this->headers())));
         $this->response->write($result);
         return $this;
+    }
+
+    /**
+     * returns response body
+     *
+     * @return  string
+     * @since   4.0.0
+     */
+    public function body()
+    {
+        return $this->response->body();
     }
 
     /**

@@ -125,6 +125,17 @@ class WebResponse implements Response
     }
 
     /**
+     * returns status code of response
+     *
+     * @return  int
+     * @since   4.0.0
+     */
+    public function statusCode()
+    {
+        return (int) explode(' ', $this->status)[0];
+    }
+
+    /**
      * add a header to the response
      *
      * @param   string  $name   the name of the header
@@ -146,6 +157,27 @@ class WebResponse implements Response
     public function headers()
     {
         return $this->headers;
+    }
+
+    /**
+     * check if response contains a certain header
+     *
+     * @param   string  $name   name of header to check
+     * @param   string  $value  optional  if given the value is checked as well
+     * @return  bool
+     * @since   4.0.0
+     */
+    public function containsHeader($name, $value = null)
+    {
+        if ($this->headers->contain($name)) {
+            if (null !== $value) {
+                return $value === $this->headers[$name];
+            }
+
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -176,6 +208,27 @@ class WebResponse implements Response
     }
 
     /**
+     * checks if response contains a certain cookie
+     *
+     * @param   string  $name   name of cookie to check
+     * @param   string  $value  optional  if given the value is checked as well
+     * @return  bool
+     * @since   4.0.0
+     */
+    public function containsCookie($name, $value = null)
+    {
+        if (isset($this->cookies[$name])) {
+            if (null !== $value) {
+                return $this->cookies[$name]->value() === $value;
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * write data into the response
      *
      * @param   string  $body
@@ -185,6 +238,16 @@ class WebResponse implements Response
     {
         $this->body = $body;
         return $this;
+    }
+
+    /**
+     * returns response body
+     *
+     * @return  string
+     */
+    public function body()
+    {
+        return $this->body;
     }
 
     /**
