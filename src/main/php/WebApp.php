@@ -24,35 +24,35 @@ abstract class WebApp extends App
     /**
      * contains request data
      *
-     * @type  WebRequest
+     * @type  \stubbles\input\web\WebRequest
      */
     protected $request;
     /**
      * response negotiator
      *
-     * @type  ResponseNegotiator
+     * @type  \stubbles\webapp\response\ResponseNegotiator
      */
     private $responseNegotiator;
     /**
      * build and contains routing information
      *
-     * @type  Routing
+     * @type  \stubbles\webapp\Routing
      */
     private $routing;
     /**
      * logger for logging uncatched exceptions
      *
-     * @type  ExceptionLogger
+     * @type  \stubbles\lang\errorhandler\ExceptionLogger
      */
     private $exceptionLogger;
 
     /**
      * constructor
      *
-     * @param  WebRequest          $request             request data container
-     * @param  ResponseNegotiator  $responseNegotiator  negoatiates based on request
-     * @param  Routing             $routing             routes to logic based on request
-     * @param  ExceptionLogger     $exceptionLogger     logs uncatched exceptions
+     * @param  \stubbles\input\web\WebRequest                $request             request data container
+     * @param  \stubbles\webapp\response\ResponseNegotiator  $responseNegotiator  negoatiates based on request
+     * @param  \stubbles\webapp\Routing                      $routing             routes to logic based on request
+     * @param  \stubbles\lang\errorhandler\ExceptionLogger   $exceptionLogger     logs uncatched exceptions
      * @Inject
      */
     public function __construct(WebRequest $request,
@@ -69,7 +69,7 @@ abstract class WebApp extends App
     /**
      * runs the application but does not send the response
      *
-     * @return  SendableResponse
+     * @return  \stubbles\webapp\response\SendableResponse
      */
     public function run()
     {
@@ -86,8 +86,8 @@ abstract class WebApp extends App
     /**
      * handles the request by processing the route
      *
-     * @param  ProcessableRoute  $route
-     * @param  Response          $response
+     * @param  \stubbles\webapp\ProcessableRoute   $route
+     * @param  \stubbles\webapp\response\Response  $response
      */
     private function process(ProcessableRoute $route, Response $response)
     {
@@ -111,7 +111,7 @@ abstract class WebApp extends App
     /**
      * checks whether a switch to https must be made
      *
-     * @param   ProcessableRoute  $route
+     * @param   \stubbles\webapp\ProcessableRoute  $route
      * @return  bool
      */
     protected function switchToHttps(ProcessableRoute $route)
@@ -122,7 +122,7 @@ abstract class WebApp extends App
     /**
      * configures routing for this web app
      *
-     * @param  RoutingConfigurator  $routing
+     * @param  \stubbles\webapp\RoutingConfigurator  $routing
      */
     protected abstract function configureRouting(RoutingConfigurator $routing);
 
@@ -135,7 +135,7 @@ abstract class WebApp extends App
      *
      * @api
      * @param   string  $projectPath  path to project
-     * @return  WebApp
+     * @return  \stubbles\webapp\WebApp
      */
     public static function create($projectPath)
     {
@@ -148,7 +148,7 @@ abstract class WebApp extends App
      * @api
      * @param   string  $className    full qualified class name of class to create an instance of
      * @param   string  $projectPath  path to project
-     * @return  WebApp
+     * @return  \stubbles\webapp\WebApp
      */
     public static function createInstance($className, $projectPath)
     {
@@ -158,7 +158,7 @@ abstract class WebApp extends App
     /**
      * creates io binding module without session
      *
-     * @return  IoBindingModule
+     * @return  \stubbles\webapp\ioc\IoBindingModule
      * @deprecated  since 4.0.0, use createIoBindingModule() instead, will be removed with 5.0.0
      */
     protected static function createIoBindingModuleWithoutSession()
@@ -180,7 +180,7 @@ abstract class WebApp extends App
      * </code>
      *
      * @param   callable  $sessionCreator  optional
-     * @return  IoBindingModule
+     * @return  \stubbles\webapp\ioc\IoBindingModule
      */
     protected static function createIoBindingModule(callable $sessionCreator = null)
     {
