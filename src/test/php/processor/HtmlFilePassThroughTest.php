@@ -54,6 +54,17 @@ class HtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function functionReturnsClassName()
+    {
+        $this->assertEquals(
+                get_class($this->htmlFilePassThrough),
+                \stubbles\webapp\htmlPassThrough()
+        );
+    }
+
+    /**
+     * @test
+     */
     public function annotationsPresentOnConstructor()
     {
         $constructor = lang\reflectConstructor($this->htmlFilePassThrough);
