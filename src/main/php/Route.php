@@ -39,13 +39,13 @@ class Route implements ConfigurableRoute
     /**
      * list of pre interceptors which should be applied to this route
      *
-     * @type  string[]|Closure[]
+     * @type  string[]|\Closure[]
      */
     private $preInterceptors          = [];
     /**
      * list of post interceptors which should be applied to this route
      *
-     * @type  string[]|Closure[]
+     * @type  string[]|\Closure[]
      */
     private $postInterceptors         = [];
     /**
@@ -91,10 +91,10 @@ class Route implements ConfigurableRoute
      * If no request method(s) specified it matches request methods GET, HEAD,
      * POST, PUT and DELETE.
      *
-     * @param   string                     $path           path this route is applicable for
-     * @param   string|callable|Processor  $callback       code to be executed when the route is active
-     * @param   string|string[]            $requestMethod  optional  request method(s) this route is applicable for
-     * @throws  IllegalArgumentException
+     * @param   string                                      $path           path this route is applicable for
+     * @param   string|callable|\stubbles\webapp\Processor  $callback       code to be executed when the route is active
+     * @param   string|string[]                             $requestMethod  optional  request method(s) this route is applicable for
+     * @throws  \stubbles\lang\exception\IllegalArgumentException
      */
     public function __construct($path, $callback, $requestMethod = null)
     {
@@ -112,7 +112,7 @@ class Route implements ConfigurableRoute
      *
      * @param   string|string[]  $requestMethod
      * @return  string
-     * @throws  IllegalArgumentException
+     * @throws  \stubbles\lang\exception\IllegalArgumentException
      */
     private function arrayFrom($requestMethod)
     {
@@ -144,7 +144,7 @@ class Route implements ConfigurableRoute
     /**
      * checks if this route is applicable for given request
      *
-     * @param   UriRequest  $calledUri  current request uri
+     * @param   \stubbles\webapp\UriRequest  $calledUri  current request uri
      * @return  bool
      */
     public function matches(UriRequest $calledUri)
@@ -167,7 +167,7 @@ class Route implements ConfigurableRoute
     /**
      * checks if this route is applicable for given request path
      *
-     * @param   UriRequest  $calledUri  current request uri
+     * @param   \stubbles\webapp\UriRequest  $calledUri  current request uri
      * @return  bool
      */
     public function matchesPath(UriRequest $calledUri)
@@ -188,7 +188,7 @@ class Route implements ConfigurableRoute
     /**
      * returns callback for this route
      *
-     * @return  string|callable|Processor
+     * @return  string|callable|\stubbles\webapp\Processor
      */
     public function callback()
     {
@@ -198,9 +198,9 @@ class Route implements ConfigurableRoute
     /**
      * add a pre interceptor for this route
      *
-     * @param   string|callback|interceptor\PreInterceptor  $preInterceptor
+     * @param   string|callback|\stubbles\webapp\interceptor\PreInterceptor  $preInterceptor
      * @return  Route
-     * @throws  IllegalArgumentException
+     * @throws  \stubbles\lang\exception\IllegalArgumentException
      */
     public function preIntercept($preInterceptor)
     {
@@ -215,7 +215,7 @@ class Route implements ConfigurableRoute
     /**
      * returns list of pre interceptors which should be applied to this route
      *
-     * @return  string[]|Closure[]
+     * @return  string[]|\Closure[]
      */
     public function preInterceptors()
     {
@@ -225,9 +225,9 @@ class Route implements ConfigurableRoute
     /**
      * add a post interceptor for this route
      *
-     * @param   string|callback|interceptor\PostInterceptor  $postInterceptor
-     * @return  Route
-     * @throws  IllegalArgumentException
+     * @param   string|callback|\stubbles\webapp\interceptor\PostInterceptor  $postInterceptor
+     * @return  \stubbles\webapp\Route
+     * @throws  \stubbles\lang\exception\IllegalArgumentException
      */
     public function postIntercept($postInterceptor)
     {
@@ -242,7 +242,7 @@ class Route implements ConfigurableRoute
     /**
      * returns list of post interceptors which should be applied to this route
      *
-     * @return  string[]|Closure[]
+     * @return  string[]|\Closure[]
      */
     public function postInterceptors()
     {
@@ -252,7 +252,7 @@ class Route implements ConfigurableRoute
     /**
      * make route only available via https
      *
-     * @return  Route
+     * @return  \stubbles\webapp\Route
      */
     public function httpsOnly()
     {
@@ -282,7 +282,7 @@ class Route implements ConfigurableRoute
     /**
      * makes route only available if a user is logged in
      *
-     * @return  Route
+     * @return  \stubbles\webapp\Route
      * @since   3.0.0
      */
     public function withLoginOnly()
@@ -295,7 +295,7 @@ class Route implements ConfigurableRoute
      * adds a role which is required to access the route
      *
      * @param   string  $requiredRole
-     * @return  Route
+     * @return  \stubbles\webapp\Route
      */
     public function withRoleOnly($requiredRole)
     {
@@ -370,7 +370,7 @@ class Route implements ConfigurableRoute
      *
      * @param   string  $mimeType
      * @param   string  $formatterClass  optional  special formatter class to be used for given mime type on this route
-     * @return  Route
+     * @return  \stubbles\webapp\Route
      */
     public function supportsMimeType($mimeType, $formatterClass = null)
     {
@@ -386,7 +386,7 @@ class Route implements ConfigurableRoute
      * returns list of mime types supported by this route
      *
      * @param   string[]  $globalMimeTypes  list of globally supported mime types
-     * @return  SupportedMimeTypes
+     * @return  \stubbles\webapp\response\SupportedMimeTypes
      */
     public function supportedMimeTypes(array $globalMimeTypes = [])
     {
@@ -404,7 +404,7 @@ class Route implements ConfigurableRoute
     /**
      * disables content negotation
      *
-     * @return  Route
+     * @return  \stubbles\webapp\Route
      * @since   2.1.1
      */
     public function disableContentNegotiation()

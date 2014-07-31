@@ -19,7 +19,7 @@ interface Response extends SendableResponse
     /**
      * clears the response
      *
-     * @return  Response
+     * @return  \stubbles\webapp\response\Response
      */
     public function clear();
 
@@ -30,7 +30,7 @@ interface Response extends SendableResponse
      * 200 OK should be send.
      *
      * @param   int  $statusCode
-     * @return  Response
+     * @return  \stubbles\webapp\response\Response
      */
     public function setStatusCode($statusCode);
 
@@ -39,14 +39,14 @@ interface Response extends SendableResponse
      *
      * @param   string  $name   the name of the header
      * @param   string  $value  the value of the header
-     * @return  Response
+     * @return  \stubbles\webapp\response\Response
      */
     public function addHeader($name, $value);
 
     /**
      * returns list of headers
      *
-     * @return  Headers
+     * @return  \stubbles\webapp\response\Headers
      * @since   4.0.0
      */
     public function headers();
@@ -54,8 +54,8 @@ interface Response extends SendableResponse
     /**
      * add a cookie to the response
      *
-     * @param   Cookie  $cookie  the cookie to set
-     * @return  Response
+     * @param   \stubbles\webapp\response\Cookie  $cookie  the cookie to set
+     * @return  \stubbles\webapp\response\Response
      */
     public function addCookie(Cookie $cookie);
 
@@ -63,7 +63,7 @@ interface Response extends SendableResponse
      * removes cookie with given name
      *
      * @param   string  $name
-     * @return  Response
+     * @return  \stubbles\webapp\response\Response
      * @since   2.0.0
      */
     public function removeCookie($name);
@@ -72,7 +72,7 @@ interface Response extends SendableResponse
      * write body into the response
      *
      * @param   string  $body
-     * @return  Response
+     * @return  \stubbles\webapp\response\Response
      */
     public function write($body);
 
@@ -97,9 +97,9 @@ interface Response extends SendableResponse
      *
      * Status code is optional, default is 302.
      *
-     * @param   string|HttpUri  $uri         http uri to redirect to
-     * @param   int             $statusCode  HTTP status code to redirect with (301, 302, ...)
-     * @return  Response
+     * @param   string|\stubbles\peer\http\HttpUri  $uri         http uri to redirect to
+     * @param   int                                 $statusCode  HTTP status code to redirect with (301, 302, ...)
+     * @return  \stubbles\webapp\response\Response
      * @since   1.3.0
      */
     public function redirect($uri, $statusCode = 302);
@@ -107,7 +107,7 @@ interface Response extends SendableResponse
     /**
      * creates a 403 Forbidden message
      *
-     * @return  Response
+     * @return  \stubbles\webapp\response\Response
      * @since   2.0.0
      */
     public function forbidden();
@@ -115,7 +115,7 @@ interface Response extends SendableResponse
     /**
      * creates a 404 Not Found message into
      *
-     * @return  Response
+     * @return  \stubbles\webapp\response\Response
      * @since   2.0.0
      */
     public function notFound();
@@ -125,7 +125,7 @@ interface Response extends SendableResponse
      *
      * @param   string    $requestMethod
      * @param   string[]  $allowedMethods
-     * @return  Response
+     * @return  \stubbles\webapp\response\Response
      * @since   2.0.0
      */
     public function methodNotAllowed($requestMethod, array $allowedMethods);
@@ -134,7 +134,7 @@ interface Response extends SendableResponse
      * creates a 406 Not Acceptable message
      *
      * @param   string[]  $supportedMimeTypes  list of supported mime types
-     * @return  Response
+     * @return  \stubbles\webapp\response\Response
      * @since   2.0.0
      */
     public function notAcceptable(array $supportedMimeTypes = []);
@@ -143,7 +143,7 @@ interface Response extends SendableResponse
      * creates a 500 Internal Server Error message
      *
      * @param   string  $errorMessage
-     * @return  Response
+     * @return  \stubbles\webapp\response\Response
      * @since   2.0.0
      */
     public function internalServerError($errorMessage);
@@ -151,7 +151,7 @@ interface Response extends SendableResponse
     /**
      * creates a 505 HTTP Version Not Supported message
      *
-     * @return  Response
+     * @return  \stubbles\webapp\response\Response
      * @since   2.0.0
      */
     public function httpVersionNotSupported();

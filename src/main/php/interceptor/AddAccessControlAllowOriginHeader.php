@@ -43,7 +43,7 @@ class AddAccessControlAllowOriginHeader implements PostInterceptor
      * sets list of allowed origin hosts
      *
      * @param   string[]  $allowedOriginHosts
-     * @return  AddAccessControlAllowOriginHeader
+     * @return  \stubbles\webapp\interceptor\AddAccessControlAllowOriginHeader
      * @Inject(optional=true)
      * @Property('stubbles.webapp.origin.hosts')
      */
@@ -61,8 +61,8 @@ class AddAccessControlAllowOriginHeader implements PostInterceptor
     /**
      * does the postprocessing stuff
      *
-     * @param  WebRequest  $request   access to request data
-     * @param  Response    $response  access to response data
+     * @param  \stubbles\input\web\WebRequest      $request   current request
+     * @param  \stubbles\webapp\response\Response  $response  response to send
      */
     public function postProcess(WebRequest $request, Response $response)
     {

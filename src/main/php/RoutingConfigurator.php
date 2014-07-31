@@ -19,8 +19,8 @@ interface RoutingConfigurator
     /**
      * reply with given class or callable for GET request on given path
      *
-     * @param   string                     $path      path this route is applicable for
-     * @param   string|callable|Processor  $callback  code to be executed when the route is active
+     * @param   string                                      $path      path this route is applicable for
+     * @param   string|callable|\stubbles\webapp\Processor  $callback  code to be executed when the route is active
      * @return  \stubbles\webapp\ConfigurableRoute
      */
     public function onGet($path, $callback);
@@ -28,8 +28,8 @@ interface RoutingConfigurator
     /**
      * reply with HTML file stored in pages path
      *
-     * @param   string                     $path      optional  path this route is applicable for
-     * @param   string|callable|Processor  $callback  optional  code to be executed when the route is active
+     * @param   string                                      $path      optional  path this route is applicable for
+     * @param   string|callable|\stubbles\webapp\Processor  $callback  optional  code to be executed when the route is active
      * @return  \stubbles\webapp\ConfigurableRoute
      * @since   4.0.0
      */
@@ -38,8 +38,8 @@ interface RoutingConfigurator
     /**
      * reply with given class or callable for HEAD request on given path
      *
-     * @param   string                     $path      path this route is applicable for
-     * @param   string|callable|Processor  $callback  code to be executed when the route is active
+     * @param   string                                      $path      path this route is applicable for
+     * @param   string|callable|\stubbles\webapp\Processor  $callback  code to be executed when the route is active
      * @return  \stubbles\webapp\ConfigurableRoute
      */
     public function onHead($path, $callback);
@@ -47,8 +47,8 @@ interface RoutingConfigurator
     /**
      * reply with given class or callable for POST request on given path
      *
-     * @param   string                     $path      path this route is applicable for
-     * @param   string|callable|Processor  $callback  code to be executed when the route is active
+     * @param   string                                      $path      path this route is applicable for
+     * @param   string|callable|\stubbles\webapp\Processor  $callback  code to be executed when the route is active
      * @return  \stubbles\webapp\ConfigurableRoute
      */
     public function onPost($path, $callback);
@@ -56,8 +56,8 @@ interface RoutingConfigurator
     /**
      * reply with given class or callable for PUT request on given path
      *
-     * @param   string                     $path      path this route is applicable for
-     * @param   string|callable|Processor  $callback  code to be executed when the route is active
+     * @param   string                                      $path      path this route is applicable for
+     * @param   string|callable|\stubbles\webapp\Processor  $callback  code to be executed when the route is active
      * @return  \stubbles\webapp\ConfigurableRoute
      */
     public function onPut($path, $callback);
@@ -65,8 +65,8 @@ interface RoutingConfigurator
     /**
      * reply with given class or callable for DELETE request on given path
      *
-     * @param   string                     $path      path this route is applicable for
-     * @param   string|callable|Processor  $callback  code to be executed when the route is active
+     * @param   string                                      $path      path this route is applicable for
+     * @param   string|callable|\stubbles\webapp\Processor  $callback  code to be executed when the route is active
      * @return  \stubbles\webapp\ConfigurableRoute
      */
     public function onDelete($path, $callback);
@@ -77,9 +77,9 @@ interface RoutingConfigurator
      * If no request method(s) specified it replies to request methods GET, HEAD,
      * POST, PUT and DELETE.
      *
-     * @param   string                     $path           path this route is applicable for
-     * @param   string|callable|Processor  $callback       code to be executed when the route is active
-     * @param   string|string[]            $requestMethod  optional  request method(s) this route is applicable for
+     * @param   string                                      $path           path this route is applicable for
+     * @param   string|callable|\stubbles\webapp\Processor  $callback       code to be executed when the route is active
+     * @param   string|string[]                             $requestMethod  optional  request method(s) this route is applicable for
      * @return  \stubbles\webapp\ConfigurableRoute
      * @since   4.0.0
      */
@@ -88,7 +88,7 @@ interface RoutingConfigurator
     /**
      * add a route definition
      *
-     * @param   Route  $route
+     * @param   \stubbles\webapp\Route  $route
      * @return  \stubbles\webapp\ConfigurableRoute
      */
     public function addRoute(Route $route);
@@ -96,111 +96,111 @@ interface RoutingConfigurator
     /**
      * pre intercept with given class or callable on all GET requests
      *
-     * @param   string|callable|PreInterceptor  $preInterceptor  pre interceptor to add
-     * @param   string                          $path            optional  path for which pre interceptor should be executed
-     * @return  RoutingConfigurator
+     * @param   string|callable|\stubbles\webapp\interceptor\PreInterceptor  $preInterceptor  pre interceptor to add
+     * @param   string                                                       $path            optional  path for which pre interceptor should be executed
+     * @return  \stubbles\webapp\RoutingConfigurator
      */
     public function preInterceptOnGet($preInterceptor, $path = null);
 
     /**
      * pre intercept with given class or callable on all HEAD requests
      *
-     * @param   string|callable|PreInterceptor  $preInterceptor  pre interceptor to add
-     * @param   string                          $path            optional  path for which pre interceptor should be executed
-     * @return  RoutingConfigurator
+     * @param   string|callable|\stubbles\webapp\interceptor\PreInterceptor  $preInterceptor  pre interceptor to add
+     * @param   string                                                       $path            optional  path for which pre interceptor should be executed
+     * @return  \stubbles\webapp\RoutingConfigurator
      */
     public function preInterceptOnHead($preInterceptor, $path = null);
 
     /**
      * pre intercept with given class or callable on all POST requests
      *
-     * @param   string|callable|PreInterceptor  $preInterceptor  pre interceptor to add
-     * @param   string                          $path            optional  path for which pre interceptor should be executed
-     * @return  RoutingConfigurator
+     * @param   string|callable|\stubbles\webapp\interceptor\PreInterceptor  $preInterceptor  pre interceptor to add
+     * @param   string                                                       $path            optional  path for which pre interceptor should be executed
+     * @return  \stubbles\webapp\RoutingConfigurator
      */
     public function preInterceptOnPost($preInterceptor, $path = null);
 
     /**
      * pre intercept with given class or callable on all PUT requests
      *
-     * @param   string|callable|PreInterceptor  $preInterceptor  pre interceptor to add
-     * @param   string                          $path            optional  path for which pre interceptor should be executed
-     * @return  RoutingConfigurator
+     * @param   string|callable|\stubbles\webapp\interceptor\PreInterceptor  $preInterceptor  pre interceptor to add
+     * @param   string                                                       $path            optional  path for which pre interceptor should be executed
+     * @return  \stubbles\webapp\RoutingConfigurator
      */
     public function preInterceptOnPut($preInterceptor, $path = null);
 
     /**
      * pre intercept with given class or callable on all DELETE requests
      *
-     * @param   string|callable|PreInterceptor  $preInterceptor  pre interceptor to add
-     * @param   string                          $path            optional  path for which pre interceptor should be executed
-     * @return  RoutingConfigurator
+     * @param   string|callable|\stubbles\webapp\interceptor\PreInterceptor  $preInterceptor  pre interceptor to add
+     * @param   string                                                       $path            optional  path for which pre interceptor should be executed
+     * @return  \stubbles\webapp\RoutingConfigurator
      */
     public function preInterceptOnDelete($preInterceptor, $path = null);
 
     /**
      * pre intercept with given class or callable on all requests
      *
-     * @param   string|callable|PreInterceptor  $preInterceptor  pre interceptor to add
-     * @param   string                          $path            optional  path for which pre interceptor should be executed
-     * @param   string                          $requestMethod   optional  request method for which interceptor should be executed
-     * @return  RoutingConfigurator
-     * @throws  IllegalArgumentException
+     * @param   string|callable|\stubbles\webapp\interceptor\PreInterceptor  $preInterceptor  pre interceptor to add
+     * @param   string                                                       $path            optional  path for which pre interceptor should be executed
+     * @param   string                                                       $requestMethod   optional  request method for which interceptor should be executed
+     * @return  \stubbles\webapp\RoutingConfigurator
+     * @throws  \stubbles\lang\exception\IllegalArgumentException
      */
     public function preIntercept($preInterceptor, $path = null, $requestMethod = null);
 
     /**
      * post intercept with given class or callable on all GET requests
      *
-     * @param   string|callable|PostInterceptor  $postInterceptor  post interceptor to add
-     * @param   string                           $path             optional  path for which post interceptor should be executed
-     * @return  RoutingConfigurator
+     * @param   string|callable|\stubbles\webapp\interceptor\PostInterceptor  $postInterceptor  post interceptor to add
+     * @param   string                                                        $path             optional  path for which post interceptor should be executed
+     * @return  \stubbles\webapp\RoutingConfigurator
      */
     public function postInterceptOnGet($postInterceptor, $path = null);
 
     /**
      * post intercept with given class or callable on all HEAD requests
      *
-     * @param   string|callable|PostInterceptor  $postInterceptor  post interceptor to add
-     * @param   string                           $path             optional  path for which post interceptor should be executed
-     * @return  RoutingConfigurator
+     * @param   string|callable|\stubbles\webapp\interceptor\PostInterceptor  $postInterceptor  post interceptor to add
+     * @param   string                                                        $path             optional  path for which post interceptor should be executed
+     * @return  \stubbles\webapp\RoutingConfigurator
      */
     public function postInterceptOnHead($postInterceptor, $path = null);
 
     /**
      * post intercept with given class or callable on all POST requests
      *
-     * @param   string|callable|PostInterceptor  $postInterceptor  post interceptor to add
-     * @param   string                           $path             optional  path for which post interceptor should be executed
-     * @return  RoutingConfigurator
+     * @param   string|callable|\stubbles\webapp\interceptor\PostInterceptor  $postInterceptor  post interceptor to add
+     * @param   string                                                        $path             optional  path for which post interceptor should be executed
+     * @return  \stubbles\webapp\RoutingConfigurator
      */
     public function postInterceptOnPost($postInterceptor, $path = null);
 
     /**
      * post intercept with given class or callable on all PUT requests
      *
-     * @param   string|callable|PostInterceptor  $postInterceptor  post interceptor to add
-     * @param   string                           $path             optional  path for which post interceptor should be executed
-     * @return  RoutingConfigurator
+     * @param   string|callable|\stubbles\webapp\interceptor\PostInterceptor  $postInterceptor  post interceptor to add
+     * @param   string                                                        $path             optional  path for which post interceptor should be executed
+     * @return  \stubbles\webapp\RoutingConfigurator
      */
     public function postInterceptOnPut($postInterceptor, $path = null);
 
     /**
      * post intercept with given class or callable on all DELETE requests
      *
-     * @param   string|callable|PostInterceptor  $postInterceptor  post interceptor to add
-     * @param   string                           $path             optional  path for which post interceptor should be executed
-     * @return  RoutingConfigurator
+     * @param   string|callable|\stubbles\webapp\interceptor\PostInterceptor  $postInterceptor  post interceptor to add
+     * @param   string                                                        $path             optional  path for which post interceptor should be executed
+     * @return  \stubbles\webapp\RoutingConfigurator
      */
     public function postInterceptOnDelete($postInterceptor, $path = null);
 
     /**
      * post intercept with given class or callable on all requests
      *
-     * @param   string|callable|PostInterceptor  $postInterceptor  post interceptor to add
-     * @param   string                           $path             optional  path for which post interceptor should be executed
-     * @param   string                           $requestMethod    optional  request method for which interceptor should be executed
-     * @return  RoutingConfigurator
+     * @param   string|callable|\stubbles\webapp\interceptor\PostInterceptor  $postInterceptor  post interceptor to add
+     * @param   string                                                        $path             optional  path for which post interceptor should be executed
+     * @param   string                                                        $requestMethod    optional  request method for which interceptor should be executed
+     * @return  \stubbles\webapp\RoutingConfigurator
      * @throws  IllegalArgumentException
      */
     public function postIntercept($postInterceptor, $path = null, $requestMethod = null);
@@ -209,14 +209,14 @@ interface RoutingConfigurator
      * add a supported mime type
      *
      * @param   string  $mimeType
-     * @return  RoutingConfigurator
+     * @return  \stubbles\webapp\RoutingConfigurator
      */
     public function supportsMimeType($mimeType);
 
     /**
      * disables content negotation
      *
-     * @return  RoutingConfigurator
+     * @return  \stubbles\webapp\RoutingConfigurator
      * @since   2.1.1
      */
     public function disableContentNegotiation();

@@ -50,7 +50,7 @@ class SupportedMimeTypes
     /**
      * creates instance which denotes that content negotation is disabled
      *
-     * @return  SupportedMimeTypes
+     * @return  \stubbles\webapp\response\SupportedMimeTypes
      */
     public static function createWithDisabledContentNegotation()
     {
@@ -72,7 +72,7 @@ class SupportedMimeTypes
     /**
      * finds best matching mime type based on accept header
      *
-     * @param   AcceptHeader  $acceptedMimeTypes
+     * @param   \stubbles\peer\http\AcceptHeader  $acceptedMimeTypes
      * @return  string
      */
     public function findMatch(AcceptHeader $acceptedMimeTypes)

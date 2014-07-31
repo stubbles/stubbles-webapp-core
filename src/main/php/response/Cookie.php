@@ -5,7 +5,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @package  tubbles\webapp
+ * @package  stubbles\webapp
  */
 namespace stubbles\webapp\response;
 /**
@@ -80,7 +80,7 @@ class Cookie
      *
      * @param   string  $name   name of the cookie
      * @param   string  $value  value of the cookie
-     * @return  Cookie
+     * @return  \stubbles\webapp\response\Cookie
      */
     public static function create($name, $value)
     {
@@ -93,7 +93,7 @@ class Cookie
      * Please note that $expires must be a timestamp in the future.
      *
      * @param   int  $expires  timestamp in seconds since 1970
-     * @return  Cookie
+     * @return  \stubbles\webapp\response\Cookie
      */
     public function expiringAt($expires)
     {
@@ -107,7 +107,7 @@ class Cookie
      * The method will add the current timestamp to the given amount of seconds.
      *
      * @param   int   $seconds
-     * @return  Cookie
+     * @return  \stubbles\webapp\response\Cookie
      * @since   1.5.0
      */
     public function expiringIn($seconds)
@@ -120,7 +120,7 @@ class Cookie
      * set the path for which the cookie should be available
      *
      * @param   string  $path
-     * @return  Cookie
+     * @return  \stubbles\webapp\response\Cookie
      */
     public function forPath($path)
     {
@@ -132,7 +132,7 @@ class Cookie
      * set the domain where this cookie will be available
      *
      * @param   string  $domain
-     * @return  Cookie
+     * @return  \stubbles\webapp\response\Cookie
      */
     public function forDomain($domain)
     {
@@ -154,7 +154,7 @@ class Cookie
     /**
      * disable setting the cookie as http only
      *
-     * @return  Cookie
+     * @return  \stubbles\webapp\response\Cookie
      */
     public function disableHttpOnly()
     {

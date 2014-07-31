@@ -47,7 +47,7 @@ class AuthHandlerException extends Exception
      *
      * @param   string      $message
      * @param   \Exception  $cause
-     * @return  AuthHandlerException
+     * @return  \stubbles\webapp\auth\AuthHandlerException
      * @api
      */
     public static function internal($message, \Exception $cause = null)
@@ -63,7 +63,7 @@ class AuthHandlerException extends Exception
      *
      * @param   string      $message
      * @param   \Exception  $cause
-     * @return  AuthHandlerException
+     * @return  \stubbles\webapp\auth\AuthHandlerException
      * @api
      */
     public static function external($message, \Exception $cause = null)

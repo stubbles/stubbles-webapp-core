@@ -22,28 +22,28 @@ abstract class AbstractProcessableRoute implements ProcessableRoute
     /**
      * actual called uri
      *
-     * @type  UriRequest
+     * @type  \stubbles\webapp\UriRequest
      */
     protected $calledUri;
     /**
      * interceptors to be processed
      *
-     * @type  Interceptors
+     * @type  \stubbles\webapp\interceptor\Interceptors
      */
     private $interceptors;
     /**
      * list of available mime types for all routes
      *
-     * @type  SupportedMimeTypes
+     * @type  \stubbles\webapp\response\SupportedMimeTypes
      */
     private $supportedMimeTypes;
 
     /**
      * constructor
      *
-     * @param  UriRequest          $calledUri           actual called uri
-     * @param  Interceptors        $interceptors
-     * @param  SupportedMimeTypes  $supportedMimeTypes
+     * @param  \stubbles\webapp\UriRequest                   $calledUri           actual called uri
+     * @param  \stubbles\webapp\interceptor\Interceptors     $interceptors
+     * @param  \stubbles\webapp\response\SupportedMimeTypes  $supportedMimeTypes
      */
     public function __construct(UriRequest $calledUri,
                                 Interceptors $interceptors,
@@ -57,7 +57,7 @@ abstract class AbstractProcessableRoute implements ProcessableRoute
     /**
      * returns https uri of current route
      *
-     * @return  HttpUri
+     * @return  \stubbles\peer\http\HttpUri
      */
     public function httpsUri()
     {
@@ -67,7 +67,7 @@ abstract class AbstractProcessableRoute implements ProcessableRoute
     /**
      * returns list of supported mime types
      *
-     * @return  SupportedMimeTypes
+     * @return  \stubbles\webapp\response\SupportedMimeTypes
      */
     public function supportedMimeTypes()
     {
@@ -79,8 +79,8 @@ abstract class AbstractProcessableRoute implements ProcessableRoute
      *
      * Returns false if one of the pre interceptors cancels the request.
      *
-     * @param   WebRequest  $request    current request
-     * @param   Response    $response   response to send
+     * @param   \stubbles\input\web\WebRequest      $request   current request
+     * @param   \stubbles\webapp\response\Response  $response  response to send
      * @return  bool
      */
     public function applyPreInterceptors(WebRequest $request, Response $response)
@@ -91,8 +91,8 @@ abstract class AbstractProcessableRoute implements ProcessableRoute
     /**
      * apply post interceptors
      *
-     * @param   WebRequest  $request    current request
-     * @param   Response    $response   response to send
+     * @param   \stubbles\input\web\WebRequest      $request   current request
+     * @param   \stubbles\webapp\response\Response  $response  response to send
      * @return  bool
      */
     public function applyPostInterceptors(WebRequest $request, Response $response)

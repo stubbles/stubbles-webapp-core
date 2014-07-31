@@ -21,8 +21,8 @@ interface PreInterceptor
     /**
      * does the preprocessing stuff
      *
-     * @param  WebRequest  $request   access to request data
-     * @param  Response    $response  access to response data
+     * @param  \stubbles\input\web\WebRequest      $request   current request
+     * @param  \stubbles\webapp\response\Response  $response  response to send
      */
     public function preProcess(WebRequest $request, Response $response);
 }

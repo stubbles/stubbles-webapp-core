@@ -20,7 +20,7 @@ class UriRequest
     /**
      * current uri
      *
-     * @type  HttpUri
+     * @type  \stubbles\peer\http\HttpUri
      */
     private $uri;
     /**
@@ -33,9 +33,9 @@ class UriRequest
     /**
      * constructor
      *
-     * @param   string|HttpUri  $requestUri
+     * @param   string|\stubbles\peer\http\HttpUri  $requestUri
      * @param   string          $requestMethod
-     * @throws  IllegalArgumentException
+     * @throws  \stubbles\lang\exception\IllegalArgumentException
      */
     public function __construct($requestUri, $requestMethod)
     {
@@ -50,9 +50,9 @@ class UriRequest
     /**
      * casts given values to an instance of UriRequest
      *
-     * @param   string|UriRequest  $requestUri
-     * @param   string             $requestMethod
-     * @return  UriRequest
+     * @param   string|\stubbles\webapp\UriRequest  $requestUri
+     * @param   string                              $requestMethod
+     * @return  \stubbles\webapp\UriRequest
      * @since   4.0.0
      */
     public static function castFrom($requestUri, $requestMethod)
@@ -69,7 +69,7 @@ class UriRequest
      *
      * @param   string  $requestUri
      * @param   string  $requestMethod
-     * @return  UriRequest
+     * @return  \stubbles\webapp\UriRequest
      * @since   2.0.0
      * @deprecated  since 4.0.0, use new UriRequest($requestUri, $requestMethod) instead, will be removed with 5.0.0
      */
@@ -140,7 +140,7 @@ class UriRequest
      * return path part of called uri
      *
      * @param   string  $configuredPath
-     * @return  UriPath
+     * @return  \stubbles\webapp\UriPath
      * @since   4.0.0
      */
     public function path($configuredPath)
@@ -162,7 +162,7 @@ class UriRequest
     /**
      * transposes uri to http
      *
-     * @return  HttpUri
+     * @return  \stubbles\peer\http\HttpUri
      * @since   2.0.0
      */
     public function toHttp()
@@ -173,7 +173,7 @@ class UriRequest
     /**
      * transposes uri to https
      *
-     * @return  HttpUri
+     * @return  \stubbles\peer\http\HttpUri
      * @since   2.0.0
      */
     public function toHttps()

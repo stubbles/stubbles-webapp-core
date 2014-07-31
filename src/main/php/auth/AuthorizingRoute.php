@@ -22,19 +22,19 @@ class AuthorizingRoute implements ProcessableRoute
     /**
      * auth handler
      *
-     * @type  AuthHandler
+     * @type  \stubbles\webapp\auth\AuthHandler
      */
     private $authHandler;
     /**
      * route configuration
      *
-     * @type  Route
+     * @type  \stubbles\webapp\Route
      */
     private $routeConfig;
     /**
      * actual route which requires auth
      *
-     * @type  ProcessableRoute
+     * @type  \stubbles\webapp\ProcessableRoute
      */
     private $actualRoute;
     /**
@@ -47,9 +47,9 @@ class AuthorizingRoute implements ProcessableRoute
     /**
      * constructor
      *
-     * @param  AuthHandler       $authHandler
-     * @param  Route             $routeconfig
-     * @param  ProcessableRoute  $actualRoute
+     * @param  \stubbles\webapp\auth\AuthHandler  $authHandler
+     * @param  \stubbles\webapp\Route             $routeconfig
+     * @param  \stubbles\webapp\ProcessableRoute  $actualRoute
      */
     public function __construct(AuthHandler $authHandler, Route $routeconfig, ProcessableRoute $actualRoute)
     {
@@ -93,8 +93,8 @@ class AuthorizingRoute implements ProcessableRoute
      *
      * Returns false if one of the pre interceptors cancels the request.
      *
-     * @param   WebRequest  $request    current request
-     * @param   Response    $response   response to send
+     * @param   \stubbles\input\web\WebRequest      $request   current request
+     * @param   \stubbles\webapp\response\Response  $response  response to send
      * @return  bool
      */
     public function applyPreInterceptors(WebRequest $request, Response $response)
@@ -141,8 +141,8 @@ class AuthorizingRoute implements ProcessableRoute
     /**
      * creates processor instance
      *
-     * @param   WebRequest  $request    current request
-     * @param   Response    $response   response to send
+     * @param   \stubbles\input\web\WebRequest      $request   current request
+     * @param   \stubbles\webapp\response\Response  $response  response to send
      * @return  bool
      */
     public function process(WebRequest $request, Response $response)
@@ -157,8 +157,8 @@ class AuthorizingRoute implements ProcessableRoute
     /**
      * apply post interceptors
      *
-     * @param   WebRequest  $request    current request
-     * @param   Response    $response   response to send
+     * @param   \stubbles\input\web\WebRequest      $request   current request
+     * @param   \stubbles\webapp\response\Response  $response  response to send
      * @return  bool
      */
     public function applyPostInterceptors(WebRequest $request, Response $response)

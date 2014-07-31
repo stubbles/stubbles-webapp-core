@@ -49,8 +49,8 @@ class UriPath
     /**
      * constructor
      *
-     * @param  string    $configuredPath  path configured in routing
-     * @param  string    $calledPath      complete called path from request
+     * @param  string  $configuredPath  path configured in routing
+     * @param  string  $calledPath      complete called path from request
      */
     public function __construct($configuredPath, $calledPath)
     {
@@ -116,7 +116,7 @@ class UriPath
      * returns argument with given name or default if not set
      *
      * @param   string  $name
-     * @return  ValueReader
+     * @return  \stubbles\input\ValueReader
      * @since   3.3.0
      */
     public function readArgument($name)

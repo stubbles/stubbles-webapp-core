@@ -30,8 +30,8 @@ class MissingRoute extends AbstractProcessableRoute
     /**
      * creates processor instance
      *
-     * @param   WebRequest  $request    current request
-     * @param   Response    $response   response to send
+     * @param   \stubbles\input\web\WebRequest      $request   current request
+     * @param   \stubbles\webapp\response\Response  $response  response to send
      * @return  bool
      */
     public function process(WebRequest $request, Response $response)

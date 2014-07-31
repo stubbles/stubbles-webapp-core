@@ -30,10 +30,10 @@ class OptionsRoute extends AbstractProcessableRoute
     /**
      * constructor
      *
-     * @param  UriRequest          $calledUri           actual called uri
-     * @param  Interceptors        $interceptors
-     * @param  SupportedMimeTypes  $supportedMimeTypes
-     * @param  string[]            $allowedMethods
+     * @param  \stubbles\webapp\UriRequest                   $calledUri           actual called uri
+     * @param  \stubbles\webapp\interceptor\Interceptors     $interceptors
+     * @param  \stubbles\webapp\response\SupportedMimeTypes  $supportedMimeTypes
+     * @param  string[]                                      $allowedMethods
      */
     public function __construct(UriRequest $calledUri,
                                 Interceptors $interceptors,
@@ -63,8 +63,8 @@ class OptionsRoute extends AbstractProcessableRoute
     /**
      * creates processor instance
      *
-     * @param   WebRequest  $request    current request
-     * @param   Response    $response   response to send
+     * @param   \stubbles\input\web\WebRequest      $request   current request
+     * @param   \stubbles\webapp\response\Response  $response  response to send
      * @return  bool
      */
     public function process(WebRequest $request, Response $response)

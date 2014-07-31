@@ -27,14 +27,14 @@ interface ProcessableRoute
     /**
      * returns https uri of current route
      *
-     * @return  HttpUri
+     * @return  \stubbles\peer\http\HttpUri
      */
     public function httpsUri();
 
     /**
      * returns list of supported mime types
      *
-     * @return  SupportedMimeTypes
+     * @return  \stubbles\webapp\response\SupportedMimeTypes
      */
     public function supportedMimeTypes();
 
@@ -43,8 +43,8 @@ interface ProcessableRoute
      *
      * Returns false if one of the pre interceptors cancels the request.
      *
-     * @param   WebRequest  $request    current request
-     * @param   Response    $response   response to send
+     * @param   \stubbles\input\web\WebRequest      $request   current request
+     * @param   \stubbles\webapp\response\Response  $response  response to send
      * @return  bool
      */
     public function applyPreInterceptors(WebRequest $request, Response $response);
@@ -52,8 +52,8 @@ interface ProcessableRoute
     /**
      * creates processor instance
      *
-     * @param   WebRequest  $request    current request
-     * @param   Response    $response   response to send
+     * @param   \stubbles\input\web\WebRequest      $request   current request
+     * @param   \stubbles\webapp\response\Response  $response  response to send
      * @return  bool
      */
     public function process(WebRequest $request, Response $response);
@@ -61,8 +61,8 @@ interface ProcessableRoute
     /**
      * apply post interceptors
      *
-     * @param   WebRequest  $request    current request
-     * @param   Response    $response   response to send
+     * @param   \stubbles\input\web\WebRequest      $request   current request
+     * @param   \stubbles\webapp\response\Response  $response  response to send
      * @return  bool
      */
     public function applyPostInterceptors(WebRequest $request, Response $response);
