@@ -31,16 +31,16 @@ class Interceptors
     /**
      * injector instance
      *
-     * @type  Injector
+     * @type  \stubbles\ioc\Injector
      */
     private $injector;
 
     /**
      * constructor
      *
-     * @param  Injector  $injector
-     * @param  array     $preInterceptors
-     * @param  array     $postInterceptors
+     * @param  \stubbles\ioc\Injector  $injector
+     * @param  array                   $preInterceptors
+     * @param  array                   $postInterceptors
      */
     public function __construct(Injector $injector, array $preInterceptors, array $postInterceptors)
     {
@@ -54,8 +54,8 @@ class Interceptors
      *
      * Returns false if one of the pre interceptors cancels the request.
      *
-     * @param   WebRequest  $request    current request
-     * @param   Response    $response   response to send
+     * @param   \stubbles\input\web\WebRequest      $request   current request
+     * @param   \stubbles\webapp\response\Response  $response  response to send
      * @return  bool
      */
     public function preProcess(WebRequest $request, Response $response)
@@ -72,9 +72,9 @@ class Interceptors
     /**
      * executes pre interceptor
      *
-     * @param   mixed       $preInterceptor
-     * @param   WebRequest  $request
-     * @param   Response    $response
+     * @param   mixed                               $preInterceptor
+     * @param   \stubbles\input\web\WebRequest      $request   current request
+     * @param   \stubbles\webapp\response\Response  $response  response to send
      * @return  bool
      */
     private function executePreInterceptor($preInterceptor, WebRequest $request, Response $response)
@@ -99,8 +99,8 @@ class Interceptors
     /**
      * apply post interceptors
      *
-     * @param   WebRequest  $request    current request
-     * @param   Response    $response   response to send
+     * @param   \stubbles\input\web\WebRequest      $request   current request
+     * @param   \stubbles\webapp\response\Response  $response  response to send
      * @return  bool
      */
     public function postProcess(WebRequest $request, Response $response)
@@ -117,9 +117,9 @@ class Interceptors
     /**
      * executes post interceptor
      *
-     * @param   mixed       $postInterceptor
-     * @param   WebRequest  $request
-     * @param   Response    $response
+     * @param   mixed                               $postInterceptor
+     * @param   \stubbles\input\web\WebRequest      $request          current request
+     * @param   \stubbles\webapp\response\Response  $response         response to send
      * @return  bool
      */
     private function executePostInterceptor($postInterceptor, WebRequest $request, Response $response)

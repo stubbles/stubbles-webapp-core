@@ -29,7 +29,7 @@ class Headers implements \IteratorAggregate, \ArrayAccess
      *
      * @param   string  $name
      * @param   string  $value
-     * @return  Headers
+     * @return  \stubbles\webapp\response\Headers
      */
     public function add($name, $value)
     {
@@ -40,8 +40,8 @@ class Headers implements \IteratorAggregate, \ArrayAccess
     /**
      * adds location header with given uri
      *
-     * @param   string|HttpUri  $uri
-     * @return  Headers
+     * @param   string|\stubbles\peer\http\HttpUri  $uri
+     * @return  \stubbles\webapp\response\Headers
      */
     public function location($uri)
     {
@@ -52,7 +52,7 @@ class Headers implements \IteratorAggregate, \ArrayAccess
      * adds allow header with list of allowed methods
      *
      * @param   string[]  $allowedMethods
-     * @return  Headers
+     * @return  \stubbles\webapp\response\Headers
      */
     public function allow(array $allowedMethods)
     {
@@ -63,7 +63,7 @@ class Headers implements \IteratorAggregate, \ArrayAccess
      * adds non-standard acceptable header with list of supported mime types
      *
      * @param   string[]  $supportedMimeTypes
-     * @return  Headers
+     * @return  \stubbles\webapp\response\Headers
      */
     public function acceptable(array $supportedMimeTypes)
     {
@@ -78,7 +78,7 @@ class Headers implements \IteratorAggregate, \ArrayAccess
      * enforce a download and suggest given file name
      *
      * @param   string  $filename
-     * @return  Headers
+     * @return  \stubbles\webapp\response\Headers
      */
     public function forceDownload($filename)
     {
@@ -101,7 +101,7 @@ class Headers implements \IteratorAggregate, \ArrayAccess
     /**
      * returns an external iterator
      *
-     * @return  Traversable
+     * @return  \Traversable
      */
     public function getIterator()
     {
@@ -150,7 +150,7 @@ class Headers implements \IteratorAggregate, \ArrayAccess
     * removes header with given name
     *
     * @param   string  $offset
-    * @throws  MethodNotSupportedException
+    * @throws  \stubbles\lang\exception\MethodNotSupportedException
     */
     public function offsetUnset($offset)
     {

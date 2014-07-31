@@ -20,7 +20,7 @@ interface ConfigurableRoute
      * add a pre interceptor for this route
      *
      * @param   string|\Closure  $preInterceptor
-     * @return  ConfigurableRoute
+     * @return  \stubbles\webapp\ConfigurableRoute
      */
     public function preIntercept($preInterceptor);
 
@@ -28,21 +28,21 @@ interface ConfigurableRoute
      * add a post interceptor for this route
      *
      * @param   string|\Closure  $postInterceptor
-     * @return  ConfigurableRoute
+     * @return  \stubbles\webapp\ConfigurableRoute
      */
     public function postIntercept($postInterceptor);
 
     /**
      * make route only available via ssl
      *
-     * @return  ConfigurableRoute
+     * @return  \stubbles\webapp\ConfigurableRoute
      */
     public function httpsOnly();
 
     /**
      * makes route only available if a user is logged in
      *
-     * @return  ConfigurableRoute
+     * @return  \stubbles\webapp\ConfigurableRoute
      * @since   3.0.0
      */
     public function withLoginOnly();
@@ -51,7 +51,7 @@ interface ConfigurableRoute
      * adds a role which is only available via ssl
      *
      * @param   string  $role
-     * @return  ConfigurableRoute
+     * @return  \stubbles\webapp\ConfigurableRoute
      */
     public function withRoleOnly($role);
 
@@ -59,14 +59,14 @@ interface ConfigurableRoute
      * add a mime type which this route supports
      *
      * @param   string  $mimeType
-     * @return  ConfigurableRoute
+     * @return  \stubbles\webapp\ConfigurableRoute
      */
     public function supportsMimeType($mimeType);
 
     /**
      * disables content negotation
      *
-     * @return  Route
+     * @return  \stubbles\webapp\ConfigurableRoute
      * @since   2.1.1
      */
     public function disableContentNegotiation();

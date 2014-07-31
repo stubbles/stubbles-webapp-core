@@ -24,14 +24,14 @@ class XmlFormatter implements Formatter
     /**
      * serializer to be used
      *
-     * @type  XmlSerializerFacade
+     * @type  \stubbles\xml\serializer\XmlSerializerFacade
      */
     private $xmlSerializerFacade;
 
     /**
      * constructor
      *
-     * @param  XmlSerializerFacade  $xmlSerializerFacade
+     * @param  \stubbles\xml\serializer\XmlSerializerFacade  $xmlSerializerFacade
      * @Inject
      */
     public function __construct(XmlSerializerFacade $xmlSerializerFacade)
@@ -42,8 +42,8 @@ class XmlFormatter implements Formatter
     /**
      * formats resource for response
      *
-     * @param   mixed    $resource  resource data to create a representation of
-     * @param   Headers  $headers   list of headers for the response
+     * @param   mixed                              $resource  resource data to create a representation of
+     * @param   \stubbles\webapp\response\Headers  $headers   list of headers for the response
      * @return  string
      */
     public function format($resource, Headers $headers)

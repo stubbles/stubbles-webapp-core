@@ -33,7 +33,7 @@ class HtmlFormatter implements Formatter
      * sets template to be used
      *
      * @param   string  $template
-     * @return  HtmlFormatter
+     * @return  \stubbles\webapp\response\format\HtmlFormatter
      * @Inject(optional=true)
      * @Named('stubbles.webapp.response.format.html.template')
      */
@@ -47,7 +47,7 @@ class HtmlFormatter implements Formatter
      * sets base title for web application
      *
      * @param   string  $title
-     * @return  HtmlFormatter
+     * @return  \stubbles\webapp\response\format\HtmlFormatter
      * @Inject(optional=true)
      * @Named('stubbles.webapp.response.format.html.title')
      */
@@ -98,8 +98,8 @@ class HtmlFormatter implements Formatter
     /**
      * formats resource for response
      *
-     * @param   mixed    $resource  resource data to create a representation of
-     * @param   Headers  $headers   list of headers for the response
+     * @param   mixed                              $resource  resource data to create a representation of
+     * @param   \stubbles\webapp\response\Headers  $headers   list of headers for the response
      * @return  string
      */
     public function format($resource, Headers $headers)

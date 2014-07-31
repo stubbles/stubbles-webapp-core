@@ -23,24 +23,24 @@ class MatchingRoute extends AbstractProcessableRoute
     /**
      * route configuration
      *
-     * @type  Route
+     * @type  \stubbles\webapp\Route
      */
     private $route;
     /**
      * injector instance
      *
-     * @type  Injector
+     * @type  \stubbles\ioc\Injector
      */
     private $injector;
 
     /**
      * constructor
      *
-     * @param  UriRequest          $calledUri           actual called uri
-     * @param  Interceptors        $interceptors
-     * @param  SupportedMimeTypes  $supportedMimeTypes
-     * @param  Route               $route               route configuration
-     * @param  Injector            $injector
+     * @param  \stubbles\webapp\UriRequest                   $calledUri           actual called uri
+     * @param  \stubbles\webapp\interceptor\Interceptors     $interceptors
+     * @param  \stubbles\webapp\response\SupportedMimeTypes  $supportedMimeTypes
+     * @param  \stubbles\webapp\Route                        $route               route configuration
+     * @param  \stubbles\ioc\Injector                        $injector
      */
     public function __construct(UriRequest $calledUri,
                                 Interceptors $interceptors,
@@ -75,8 +75,8 @@ class MatchingRoute extends AbstractProcessableRoute
      * no post processor will be called, whereas any other or no return value
      * will result in post processors being called by the webapp.
      *
-     * @param   WebRequest  $request    current request
-     * @param   Response    $response   response to send
+     * @param   \stubbles\input\web\WebRequest      $request   current request
+     * @param   \stubbles\webapp\response\Response  $response  response to send
      * @return  bool
      */
     public function process(WebRequest $request, Response $response)

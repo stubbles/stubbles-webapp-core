@@ -65,7 +65,7 @@ class IoBindingModule implements BindingModule
      * </code>
      *
      * @param   callable  $sessionCreator  optional
-     * @throws  RuntimeException  in case a session creator is passed and stubbles/webapp-session is not available
+     * @throws  \stubbles\lang\exception\RuntimeException  in case a session creator is passed and stubbles/webapp-session is not available
      */
     public function __construct(callable $sessionCreator = null)
     {
@@ -79,7 +79,7 @@ class IoBindingModule implements BindingModule
     /**
      * factory method
      *
-     * @return  IoBindingModule
+     * @return  \stubbles\webapp\ioc\IoBindingModule
      * @deprecated  since 4.0.0, use constructor directly, will be removed with 5.0.0
      */
     public static function createWithoutSession()
@@ -91,7 +91,7 @@ class IoBindingModule implements BindingModule
      * sets class name of response class to be used
      *
      * @param   string  $responseClass  name of response class to bind
-     * @return  IoBindingModule
+     * @return  \stubbles\webapp\ioc\IoBindingModule
      * @since   1.1.0
      */
     public function setResponseClass($responseClass)
@@ -105,7 +105,7 @@ class IoBindingModule implements BindingModule
      *
      * @param   string  $mimeType   mime type that should be handled by given formatter class
      * @param   string  $formatter  class to handle given mime type
-     * @return  IoBindingModule
+     * @return  \stubbles\webapp\ioc\IoBindingModule
      */
     public function addFormatter($mimeType, $formatter)
     {
@@ -117,7 +117,7 @@ class IoBindingModule implements BindingModule
      * set a callable which can create a session instance
      *
      * @param   callable  $sessionCreator  callable which creates session instance
-     * @return  IoBindingModule
+     * @return  \stubbles\webapp\ioc\IoBindingModule
      * @since   2.0.0
      * @deprecated  since 4.0.0, pass the callable to the constructor instead, will be removed with 5.0.0
      */
@@ -130,7 +130,7 @@ class IoBindingModule implements BindingModule
     /**
      * configure the binder
      *
-     * @param  Binder  $binder
+     * @param  \stubbles\ioc\Binder  $binder
      */
     public function configure(Binder $binder)
     {
@@ -143,7 +143,7 @@ class IoBindingModule implements BindingModule
                ->toInstance($request);
         $binder->bind('stubbles\webapp\response\Response')
                ->toInstance($response);
-        $formatters = $this->getAvailableFormatters();
+        $formatters = $this->availableFormatters();
         $binder->bindConstant('stubbles.webapp.response.format.mimetypes')
                ->to(array_keys($formatters));
         foreach ($formatters as $mimeType => $formatter) {
@@ -166,7 +166,7 @@ class IoBindingModule implements BindingModule
      *
      * @return  array
      */
-    private function getAvailableFormatters()
+    private function availableFormatters()
     {
         $formatter = $this->formatter;
         foreach ($this->xmlFormatter as $mimeType => $xmlFormatter) {

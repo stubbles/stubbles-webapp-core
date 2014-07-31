@@ -22,21 +22,21 @@ class ResponseNegotiator
     /**
      * base response implementation
      *
-     * @type  Response
+     * @type  \stubbles\webapp\response\Response
      */
     private $response;
     /**
      * injector instance
      *
-     * @type  Injector
+     * @type  \stubbles\ioc\Injector
      */
     private $injector;
 
     /**
      * constructor
      *
-     * @param  Response  $response  base response implementation
-     * @param  Injector  $injector  injector to create required formatter with
+     * @param  \stubbles\webapp\response\Response  $response  base response implementation
+     * @param  \stubbles\ioc\Injector              $injector  injector to create required formatter with
      * @Inject
      */
     public function __construct(Response $response,
@@ -53,8 +53,8 @@ class ResponseNegotiator
      * agent mime types is supported. Forces a 500 Internal Server Error
      * response in case a mime type but no suitable formatter was found.
      *
-     * @param   WebRequest          $request
-     * @param   SupportedMimeTypes  $supportedMimeTypes
+     * @param   \stubbles\input\web\WebRequest                $request
+     * @param   \stubbles\webapp\response\SupportedMimeTypes  $supportedMimeTypes
      * @return  Response
      */
     public function negotiateMimeType(WebRequest $request, SupportedMimeTypes $supportedMimeTypes)
@@ -83,7 +83,7 @@ class ResponseNegotiator
      * creates formatter instance
      *
      * @param   string  $mimeType
-     * @return  format\Formatter
+     * @return  \stubbles\webapp\response\format\Formatter
      */
     private function createFormatter($mimeType, SupportedMimeTypes $supportedMimeTypes)
     {

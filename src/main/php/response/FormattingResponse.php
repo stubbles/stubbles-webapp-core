@@ -19,13 +19,13 @@ class FormattingResponse implements Response
     /**
      * decorated response
      *
-     * @type  Response
+     * @type  \stubbles\webapp\response\Response
      */
     private $response;
     /**
      * formatter to be used
      *
-     * @type  Formatter
+     * @type  \stubbles\webapp\response\format\Formatter
      */
     private $formatter;
     /**
@@ -38,9 +38,9 @@ class FormattingResponse implements Response
     /**
      * constructor
      *
-     * @param  Response   $response
-     * @param  Formatter  $formatter
-     * @param  string     $mimeType
+     * @param  \stubbles\webapp\response\Response          $response
+     * @param  \stubbles\webapp\response\format\Formatter  $formatter
+     * @param  string                                      $mimeType
      */
     public function __construct(Response $response, Formatter $formatter, $mimeType)
     {
@@ -52,7 +52,7 @@ class FormattingResponse implements Response
     /**
      * clears the response
      *
-     * @return  Response
+     * @return  \stubbles\webapp\response\Response
      */
     public function clear()
     {
@@ -67,7 +67,7 @@ class FormattingResponse implements Response
      * 200 OK should be send.
      *
      * @param   int  $statusCode
-     * @return  Response
+     * @return  \stubbles\webapp\response\Response
      */
     public function setStatusCode($statusCode)
     {
@@ -91,7 +91,7 @@ class FormattingResponse implements Response
      *
      * @param   string  $name   the name of the header
      * @param   string  $value  the value of the header
-     * @return  Response
+     * @return  \stubbles\webapp\response\Response
      */
     public function addHeader($name, $value)
     {
@@ -102,7 +102,7 @@ class FormattingResponse implements Response
     /**
      * returns list of headers
      *
-     * @return  Headers
+     * @return  \stubbles\webapp\response\Headers
      * @since   4.0.0
      */
     public function headers()
@@ -126,8 +126,8 @@ class FormattingResponse implements Response
     /**
      * add a cookie to the response
      *
-     * @param   Cookie  $cookie  the cookie to set
-     * @return  Response
+     * @param   \stubbles\webapp\response\Cookie  $cookie  the cookie to set
+     * @return  \stubbles\webapp\response\Response
      */
     public function addCookie(Cookie $cookie)
     {
@@ -139,7 +139,7 @@ class FormattingResponse implements Response
      * removes cookie with given name
      *
      * @param   string  $name
-     * @return  Response
+     * @return  \stubbles\webapp\response\Response
      */
     public function removeCookie($name)
     {
@@ -164,7 +164,7 @@ class FormattingResponse implements Response
      * write body into the response
      *
      * @param   string  $body
-     * @return  Response
+     * @return  \stubbles\webapp\response\Response
      */
     public function write($body)
     {
@@ -207,9 +207,9 @@ class FormattingResponse implements Response
      *
      * Status code is optional, default is 302.
      *
-     * @param   string|HttpUri  $uri         http uri to redirect to
-     * @param   int             $statusCode  HTTP status code to redirect with (301, 302, ...)
-     * @return  Response
+     * @param   string|\stubbles\peer\http\HttpUri  $uri         http uri to redirect to
+     * @param   int                                 $statusCode  HTTP status code to redirect with (301, 302, ...)
+     * @return  \stubbles\webapp\response\Response
      */
     public function redirect($uri, $statusCode = 302)
     {
@@ -220,7 +220,7 @@ class FormattingResponse implements Response
     /**
      * creates a 403 Forbidden message
      *
-     * @return  Response
+     * @return  \stubbles\webapp\response\Response
      */
     public function forbidden()
     {
@@ -232,7 +232,7 @@ class FormattingResponse implements Response
     /**
      * creates a 404 Not Found message
      *
-     * @return  Response
+     * @return  \stubbles\webapp\response\Response
      */
     public function notFound()
     {
@@ -246,7 +246,7 @@ class FormattingResponse implements Response
      *
      * @param   string    $requestMethod
      * @param   string[]  $allowedMethods
-     * @return  Response
+     * @return  \stubbles\webapp\response\Response
      */
     public function methodNotAllowed($requestMethod, array $allowedMethods)
     {
@@ -259,7 +259,7 @@ class FormattingResponse implements Response
      * creates a 406 Not Acceptable message
      *
      * @param   string[]  $supportedMimeTypes  list of supported mime types
-     * @return  Response
+     * @return  \stubbles\webapp\response\Response
      * @since   2.0.0
      */
     public function notAcceptable(array $supportedMimeTypes = [])
@@ -272,7 +272,7 @@ class FormattingResponse implements Response
      * creates a 500 Internal Server Error message
      *
      * @param   string  $errorMessage
-     * @return  Response
+     * @return  \stubbles\webapp\response\Response
      */
     public function internalServerError($errorMessage)
     {
@@ -283,7 +283,7 @@ class FormattingResponse implements Response
     /**
      * creates a 505 HTTP Version Not Supported message
      *
-     * @return  Response
+     * @return  \stubbles\webapp\response\Response
      * @since   2.0.0
      */
     public function httpVersionNotSupported()
@@ -295,7 +295,7 @@ class FormattingResponse implements Response
     /**
      * send the response out
      *
-     * @return  Response
+     * @return  \stubbles\webapp\response\Response
      */
     public function send()
     {

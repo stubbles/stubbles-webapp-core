@@ -41,9 +41,9 @@ class HtmlFilePassThrough implements Processor
     /**
      * processes the request
      *
-     * @param  WebRequest  $request   current request
-     * @param  Response    $response  response to send
-     * @param  UriPath     $uriPath   information about called uri path
+     * @param  \stubbles\input\web\WebRequest      $request   current request
+     * @param  \stubbles\webapp\response\Response  $response  response to send
+     * @param  \stubbles\webapp\UriPath            $uriPath   information about called uri path
      */
     public function process(WebRequest $request, Response $response, UriPath $uriPath)
     {

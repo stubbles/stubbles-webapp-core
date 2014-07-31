@@ -19,8 +19,8 @@ class PlainTextFormatter implements Formatter
     /**
      * formats resource for response
      *
-     * @param   mixed    $resource  resource data to create a representation of
-     * @param   Headers  $headers   list of headers for the response
+     * @param   mixed                              $resource  resource data to create a representation of
+     * @param   \stubbles\webapp\response\Headers  $headers   list of headers for the response
      * @return  string
      */
     public function format($resource, Headers $headers)

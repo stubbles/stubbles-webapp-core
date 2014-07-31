@@ -27,22 +27,22 @@ class InternalServerErrorRoute implements ProcessableRoute
     /**
      * called uri
      *
-     * @type  UriRequest
+     * @type  \stubbles\webapp\UriRequest
      */
     private $calledUri;
     /**
      * list of available mime types for all routes
      *
-     * @type  SupportedMimeTypes
+     * @type  \stubbles\webapp\response\SupportedMimeTypes
      */
     private $supportedMimeTypes;
 
     /**
      * constructor
      *
-     * @param  string              $errorMessage
-     * @param  UriRequest          $calledUri
-     * @param  SupportedMimeTypes  $supportedMimeTypes
+     * @param  string                                        $errorMessage
+     * @param  \stubbles\webapp\UriRequest                   $calledUri
+     * @param  \stubbles\webapp\response\SupportedMimeTypes  $supportedMimeTypes
      */
     public function __construct($errorMessage,
                                 UriRequest $calledUri,
@@ -66,7 +66,7 @@ class InternalServerErrorRoute implements ProcessableRoute
     /**
      * returns https uri of current route
      *
-     * @return  HttpUri
+     * @return  \stubbles\peer\http\HttpUri
      */
     public function httpsUri()
     {
@@ -76,7 +76,7 @@ class InternalServerErrorRoute implements ProcessableRoute
     /**
      * returns list of supported mime types
      *
-     * @return  SupportedMimeTypes
+     * @return  \stubbles\webapp\response\SupportedMimeTypes
      */
     public function supportedMimeTypes()
     {
@@ -88,8 +88,8 @@ class InternalServerErrorRoute implements ProcessableRoute
      *
      * Returns false if one of the pre interceptors cancels the request.
      *
-     * @param   WebRequest  $request    current request
-     * @param   Response    $response   response to send
+     * @param   \stubbles\input\web\WebRequest      $request   current request
+     * @param   \stubbles\webapp\response\Response  $response  response to send
      * @return  bool
      */
     public function applyPreInterceptors(WebRequest $request, Response $response)
@@ -101,8 +101,8 @@ class InternalServerErrorRoute implements ProcessableRoute
     /**
      * creates processor instance
      *
-     * @param   WebRequest  $request    current request
-     * @param   Response    $response   response to send
+     * @param   \stubbles\input\web\WebRequest      $request   current request
+     * @param   \stubbles\webapp\response\Response  $response  response to send
      * @return  bool
      */
     public function process(WebRequest $request, Response $response)
@@ -113,8 +113,8 @@ class InternalServerErrorRoute implements ProcessableRoute
     /**
      * apply post interceptors
      *
-     * @param   WebRequest  $request    current request
-     * @param   Response    $response   response to send
+     * @param   \stubbles\input\web\WebRequest      $request   current request
+     * @param   \stubbles\webapp\response\Response  $response  response to send
      * @return  bool
      */
     public function applyPostInterceptors(WebRequest $request, Response $response)
