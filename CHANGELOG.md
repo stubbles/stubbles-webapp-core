@@ -13,6 +13,7 @@
      * added `stubbles\webapp\auth\User`
      * added `stubbles\webapp\auth\token\TokenAuthenticator`
      * added `stubbles\webapp\auth\token\TokenStore`
+     * added `stubbles\webapp\ioc\Auth` to enable new auth bindings
 
 
 
