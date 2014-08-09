@@ -120,8 +120,10 @@ class AuthorizingRoute implements ProcessableRoute
         $this->authorized = false;
         $user = $this->authenticate($request, $response);
         if (null !== $user && $this->routeConfig->requiresRole()) {
-            $this->authorized = $this->roles($response, $user)->contain($this->routeConfig->requiredRole());
-            if (!$this->authorized) {
+            $roles = $this->roles($response, $user);
+            if (null !== $roles && $roles->contain($this->routeConfig->requiredRole())) {
+                $this->authorized = true;
+            } elseif (null !== $roles) {
                 $response->forbidden();
             }
         } elseif (null !== $user) {
@@ -168,7 +170,7 @@ class AuthorizingRoute implements ProcessableRoute
                                   ->roles($user);
         } catch (AuthProviderException $ahe) {
             $this->handleAuthProviderException($ahe, $response);
-            return Roles::none();
+            return null;
         }
     }
 
