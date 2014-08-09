@@ -30,6 +30,12 @@ class Auth implements BindingModule
      */
     private $loginProvider;
     /**
+     * class which stores tokens
+     *
+     * @type  string
+     */
+    private $tokenStore;
+    /**
      * class name of authorization provider to use
      *
      * @type  string
@@ -68,17 +74,19 @@ class Auth implements BindingModule
 
     /**
      *
+     * @param   string  $tokenStore             class which stores tokens
      * @param   string  $loginProvider          login provider to use because token authenticator has no own means of a login
      * @param   string  $authorizationProvider  optional
      * @return  \stubbles\webapp\ioc\Auth
      */
-    public static function usingTokens($loginProvider, $authorizationProvider = null)
+    public static function usingTokens($tokenStore, $loginProvider, $authorizationProvider = null)
     {
         $self = new self(
                 'stubbles\webapp\auth\token\TokenAuthenticator',
                 $authorizationProvider
         );
         $self->loginProvider = $loginProvider;
+        $self->tokenStore    = $tokenStore;
         return $self;
     }
 
@@ -103,10 +111,12 @@ class Auth implements BindingModule
         $binder->bind('stubbles\webapp\auth\AuthenticationProvider')
                ->named('original')
                ->to($this->authenticationProvider);
-        if (null !== $this->loginProvider) {
+        if (null !== $this->tokenStore) {
             $binder->bind('stubbles\webapp\auth\AuthenticationProvider')
                    ->named('stubbles.webapp.auth.token.loginProvider')
                    ->to($this->loginProvider);
+            $binder->bind('stubbles\webapp\auth\token\TokenStore')
+                   ->to($this->tokenStore);
         }
 
         if (null !== $this->authorizationProvider) {
