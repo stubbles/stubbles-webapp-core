@@ -14,7 +14,7 @@ use stubbles\input\web\WebRequest;
 /**
  * Supports token handling for intranet users.
  *
- * @since  2.1.0
+ * @since  5.0.0
  */
 class TokenAuthenticator implements AuthenticationProvider
 {
