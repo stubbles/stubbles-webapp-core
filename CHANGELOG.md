@@ -1,5 +1,24 @@
-4.0.0, (2014-07-31)
--------------------
+5.0.0 (2014-08-??)
+------------------
+
+### BC breaks
+
+   * completely reworked how authentication and authorization works
+     * removed `stubbles\webapp\auth\AuthHandler`
+     * renamed `stubbles\webapp\auth\AuthHandlerException` to `stubbles\webapp\auth\AuthProviderException`
+     * added `stubbles\webapp\auth\AuthenticationProvider`
+     * added `stubbles\webapp\auth\AuthorizationProvider`
+     * added `stubbles\webapp\auth\Roles`
+     * added `stubbles\webapp\auth\Token`
+     * added `stubbles\webapp\auth\User`
+     * added `stubbles\webapp\auth\token\TokenAuthenticator`
+     * added `stubbles\webapp\auth\token\TokenStore`
+     * added `stubbles\webapp\ioc\Auth` to enable new auth bindings
+
+
+
+4.0.0 (2014-07-31)
+------------------
 
 ### BC breaks
 
@@ -38,30 +57,30 @@
    * added `stubbles\webapp\RoutingConfigurator::passThroughOnGet()`
 
 
-3.4.0, (2014-05-16)
--------------------
+3.4.0 (2014-05-16)
+------------------
 
    * now requires PHP 5.4
    * added possibility to restrict global pre and post interceptors to certain pathes
    * added `net\stubbles\webapp\interceptor\AddAccessControlAllowOriginHeader`
 
 
-3.3.0, (2014-02-18)
--------------------
+3.3.0 (2014-02-18)
+------------------
 
    * implemented #41 `UriPath::getArgument()` should return `ValueReader`
       * deprecated `net\stubbles\webapp\UriPath::getArgument()`, will be removed with 4.0.0
       * added `net\stubbles\webapp\UriPath::readArgument()` which returns a `net\stubbles\input\ValueReader`
 
 
-3.2.0, (2014-02-06)
--------------------
+3.2.0 (2014-02-06)
+------------------
 
    * added possibility to have route specific formatters for mime types
 
 
-3.1.0, (2014-01-21)
--------------------
+3.1.0 (2014-01-21)
+------------------
 
    * implemented #35: enable annotations on processor classes to reduce route configuration:
       * `@RequiresHttps`
@@ -81,8 +100,8 @@
    * upgraded stubbles/core to ~3.4
 
 
-3.0.0, (2013-11-01)
--------------------
+3.0.0 (2013-11-01)
+------------------
 
 ### BC breaks
 
@@ -93,21 +112,21 @@
    * implemented #32: possibility to propagate an error in the auth system to the response
 
 
-2.2.0, (2013-10-13)
--------------------
+2.2.0 (2013-10-13)
+------------------
 
    * global interceptors (pre and post) are now called even if no suitable route could be found
    * uncatched exceptions from interceptors and processors are now turned into internal server errors
 
 
-2.1.2, (2013-10-06)
--------------------
+2.1.2 (2013-10-06)
+------------------
 
    * `net\stubbles\webapp\WebApp::run()` now returns response instance
 
 
-2.1.1, (2013-09-17)
--------------------
+2.1.1 (2013-09-17)
+------------------
 
    * added possibility to disable content negotation for mime types
       * added `net\stubbles\webapp\ConfigurableRoute::disableContentNegotiation()`
@@ -117,13 +136,13 @@
    * fixed `net\stubbles\webapp\RoutingConfigurator::supportsMimeType()`
 
 
-2.1.0, (2013-05-02)
--------------------
+2.1.0 (2013-05-02)
+------------------
 
    * upgraded stubbles/core to ~3.0
 
 
-2.0.0, (2013-02-06)
--------------------
+2.0.0 (2013-02-06)
+------------------
 
    * Initial release.

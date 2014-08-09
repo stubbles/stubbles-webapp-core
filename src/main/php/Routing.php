@@ -10,7 +10,6 @@
 namespace stubbles\webapp;
 use stubbles\ioc\Injector;
 use stubbles\lang\exception\IllegalArgumentException;
-use stubbles\webapp\auth\AuthHandler;
 use stubbles\webapp\auth\AuthorizingRoute;
 use stubbles\webapp\interceptor\Interceptors;
 use stubbles\webapp\interceptor\PreInterceptor;
@@ -59,12 +58,6 @@ class Routing implements RoutingConfigurator
      * @type  \stubbles\ioc\Injector
      */
     private $injector;
-    /**
-     * auth handler to handle authorization requests
-     *
-     * @type  \stubbles\webapp\auth\AuthHandler
-     */
-    private $authHandler;
 
     /**
      * constructor
@@ -75,19 +68,6 @@ class Routing implements RoutingConfigurator
     public function __construct(Injector $injector)
     {
         $this->injector  = $injector;
-    }
-
-    /**
-     * sets auth handler
-     *
-     * @param   \stubbles\webapp\auth\AuthHandler  $authHandler
-     * @return  \stubbles\webapp\Routing
-     * @Inject(optional=true)
-     */
-    public function setAuthHandler(AuthHandler $authHandler)
-    {
-        $this->authHandler = $authHandler;
-        return $this;
     }
 
     /**
@@ -227,16 +207,10 @@ class Routing implements RoutingConfigurator
     private function handleMatchingRoute(UriRequest $calledUri, Route $routeConfig)
     {
         if ($routeConfig->requiresAuth()) {
-            if (null === $this->authHandler) {
-                return new InternalServerErrorRoute('Requested route requires authorization, but no auth handler defined for application',
-                                                    $calledUri,
-                                                    $this->getSupportedMimeTypes($routeConfig)
-                );
-            }
-
-            return new AuthorizingRoute($this->authHandler,
-                                        $routeConfig,
-                                        $this->createMatchingRoute($calledUri, $routeConfig)
+            return new AuthorizingRoute(
+                $routeConfig,
+                $this->createMatchingRoute($calledUri, $routeConfig),
+                $this->injector
             );
         }
 

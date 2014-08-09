@@ -10,11 +10,11 @@
 namespace stubbles\webapp\auth;
 use stubbles\lang\exception\Exception;
 /**
- * Can be thrown when auth handler experiences a problem which it can not solve.
+ * Can be thrown when an auth provider experiences a problem which it can not solve.
  *
  * @since  2.3.0
  */
-class AuthHandlerException extends Exception
+class AuthProviderException extends Exception
 {
     /**
      * internal error
@@ -40,14 +40,14 @@ class AuthHandlerException extends Exception
     }
 
     /**
-     * creates an auth handler exception which denotes an internal error
+     * creates an auth provider exception which denotes an internal error
      *
-     * Should be used when the auth handler fails internally, i.e. can not reach
+     * Should be used when the auth provider fails internally, i.e. can not reach
      * the database or something similar.
      *
      * @param   string      $message
      * @param   \Exception  $cause
-     * @return  \stubbles\webapp\auth\AuthHandlerException
+     * @return  \stubbles\webapp\auth\AuthProviderException
      * @api
      */
     public static function internal($message, \Exception $cause = null)
@@ -56,14 +56,14 @@ class AuthHandlerException extends Exception
     }
 
     /**
-     * creates an auth handler exception which denotes an external error
+     * creates an auth provider exception which denotes an external error
      *
-     * Should be used when the auth handler requires an external service to
-     * validate whether the access is authorized and the external service fails.
+     * Should be used when the auth provider requires an external service to
+     * validate the access and the external service fails.
      *
      * @param   string      $message
      * @param   \Exception  $cause
-     * @return  \stubbles\webapp\auth\AuthHandlerException
+     * @return  \stubbles\webapp\auth\AuthProviderException
      * @api
      */
     public static function external($message, \Exception $cause = null)
