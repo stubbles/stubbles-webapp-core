@@ -9,6 +9,7 @@
  */
 namespace stubbles\webapp\auth;
 use stubbles\input\web\WebRequest;
+use stubbles\ioc\Injector;
 use stubbles\webapp\ProcessableRoute;
 use stubbles\webapp\Route;
 use stubbles\webapp\response\Response;
@@ -19,12 +20,6 @@ use stubbles\webapp\response\Response;
  */
 class AuthorizingRoute implements ProcessableRoute
 {
-    /**
-     * auth handler
-     *
-     * @type  \stubbles\webapp\auth\AuthHandler
-     */
-    private $authHandler;
     /**
      * route configuration
      *
@@ -38,6 +33,12 @@ class AuthorizingRoute implements ProcessableRoute
      */
     private $actualRoute;
     /**
+     * provider which delivers authentication
+     *
+     * @type  \stubbles\ioc\Injector
+     */
+    private $injector;
+    /**
      * switch whether access to route is authorized
      *
      * @type  bool
@@ -47,15 +48,18 @@ class AuthorizingRoute implements ProcessableRoute
     /**
      * constructor
      *
-     * @param  \stubbles\webapp\auth\AuthHandler  $authHandler
      * @param  \stubbles\webapp\Route             $routeconfig
      * @param  \stubbles\webapp\ProcessableRoute  $actualRoute
+     * @param  \stubbles\ioc\Injector             $injector
      */
-    public function __construct(AuthHandler $authHandler, Route $routeconfig, ProcessableRoute $actualRoute)
+    public function __construct(
+            Route $routeconfig,
+            ProcessableRoute $actualRoute,
+            Injector $injector)
     {
-        $this->authHandler = $authHandler;
         $this->routeConfig = $routeconfig;
         $this->actualRoute = $actualRoute;
+        $this->injector    = $injector;
     }
 
     /**
@@ -91,52 +95,97 @@ class AuthorizingRoute implements ProcessableRoute
     /**
      * apply pre interceptors
      *
-     * Returns false if one of the pre interceptors cancels the request.
-     *
      * @param   \stubbles\input\web\WebRequest      $request   current request
      * @param   \stubbles\webapp\response\Response  $response  response to send
      * @return  bool
      */
     public function applyPreInterceptors(WebRequest $request, Response $response)
     {
-        try {
-            if (!$this->authHandler->isAuthenticated($request)) {
-                $response->redirect($this->authHandler->loginUri($request));
-                return false;
-            }
-
-            if (!$this->isAuthorized($request)) {
-                $response->forbidden();
-                return false;
-            }
-
-            $this->authorized = true;
+        if ($this->isAuthorized($request, $response)) {
             return $this->actualRoute->applyPreInterceptors($request, $response);
-        } catch (AuthHandlerException $ahe) {
-            if ($ahe->isInternal()) {
-                $response->internalServerError($ahe->getMessage());
-            } else {
-                $response->setStatusCode($ahe->getCode())
-                         ->write($ahe->getMessage());
-            }
         }
 
         return false;
     }
 
     /**
-     * checks whether authorization is sufficient
+     * checks if request is authorized
      *
-     * @param   \stubbles\input\web\WebRequest  $request
+     * @param   \stubbles\input\web\WebRequest      $request   current request
+     * @param   \stubbles\webapp\response\Response  $response  response to send
      * @return  bool
      */
-    private function isAuthorized(WebRequest $request)
+    private function isAuthorized(WebRequest $request, Response $response)
     {
-        if ($this->routeConfig->requiresRole()) {
-            return $this->authHandler->isAuthorized($request, $this->routeConfig->requiredRole());
+        $this->authorized = false;
+        $user = $this->authenticate($request, $response);
+        if (null !== $user && $this->routeConfig->requiresRole()) {
+            $this->authorized = $this->roles($request, $response, $user)->contain($this->routeConfig->requiredRole());
+            if (!$this->authorized) {
+                $response->forbidden();
+            }
+        } elseif (null !== $user) {
+             $this->authorized = true;
         }
 
-        return true;
+        return $this->authorized;
+    }
+
+    /**
+     * checks whether request is authenticated
+     *
+     * @param   \stubbles\input\web\WebRequest      $request   current request
+     * @param   \stubbles\webapp\response\Response  $response  response to send
+     * @return  \stubbles\webapp\auth\User
+     */
+    private function authenticate(WebRequest $request, Response $response)
+    {
+        $authenticationProvider = $this->injector->getInstance('stubbles\webapp\auth\AuthenticationProvider');
+        try {
+            $user = $authenticationProvider->authenticate($request);
+            if (null == $user) {
+                $response->redirect($authenticationProvider->loginUri($request));
+            }
+
+            return $user;
+        } catch (AuthProviderException $ahe) {
+            $this->handleAuthProviderException($ahe, $response);
+            return null;
+        }
+    }
+
+    /**
+     * checks whether expected role is given
+     *
+     * @param   \stubbles\input\web\WebRequest      $request   current request
+     * @param   \stubbles\webapp\response\Response  $response  response to send
+     * @param   \stubbles\webapp\auth\User          $user
+     * @return  \stubbles\webapp\auth\Roles
+     */
+    private function roles(WebRequest $request, Response $response, User $user)
+    {
+        try {
+            return $this->injector->getInstance('stubbles\webapp\auth\AuthorizationProvider')
+                                  ->roles($request, $user);
+        } catch (AuthProviderException $ahe) {
+            $this->handleAuthProviderException($ahe, $response);
+            return Roles::none();
+        }
+    }
+
+    /**
+     *
+     * @param  \stubbles\webapp\auth\AuthProviderException  $ahe
+     * @param  \stubbles\webapp\response\Response          $response
+     */
+    private function handleAuthProviderException(AuthProviderException $ahe, Response $response)
+    {
+        if ($ahe->isInternal()) {
+            $response->internalServerError($ahe->getMessage());
+        } else {
+            $response->setStatusCode($ahe->getCode())
+                     ->write($ahe->getMessage());
+        }
     }
 
     /**

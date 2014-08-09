@@ -10,28 +10,19 @@
 namespace stubbles\webapp\auth;
 use stubbles\input\web\WebRequest;
 /**
- * Interface for authentication/authorization handlers.
+ * An authentication provider delivers user information for the given request.
  *
- * @api
+ * @since  5.0.0
  */
-interface AuthHandler
+interface AuthenticationProvider
 {
     /**
-     * checks whether request is authenticated
+     * authenticates that the given request is valid
      *
      * @param   \stubbles\input\web\WebRequest  $request
-     * @return  bool
+     * @return  \stubbles\webapp\auth\User
      */
-    public function isAuthenticated(WebRequest $request);
-
-    /**
-     * checks whether expected role is given
-     *
-     * @param   \stubbles\input\web\WebRequest  $request
-     * @param   string                          $expectedRole
-     * @return  bool
-     */
-    public function isAuthorized(WebRequest $request, $expectedRole);
+    public function authenticate(WebRequest $request);
 
     /**
      * returns login uri

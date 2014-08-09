@@ -55,16 +55,6 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function annotationPresentOnSetAuthHandlerMethod()
-    {
-        $method = lang\reflect($this->routing, 'setAuthHandler');
-        $this->assertTrue($method->hasAnnotation('Inject'));
-        $this->assertTrue($method->getAnnotation('Inject')->isOptional());
-    }
-
-    /**
-     * @test
-     */
     public function returnsMissingRouteOnRouteSelectionWhenNoRouteAdded()
     {
         $this->assertInstanceOf('stubbles\webapp\MissingRoute',
@@ -112,26 +102,25 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @since  3.0.0
+     * @since  5.0.0
      */
-    public function returnsInternalServerErrorRouteWhenMatchingRouteRequiresAuthButNoAuthHandlerSet()
+    public function returnsAuthorizingRouteWhenMatchingRouteRequiresLogin()
     {
-        $this->routing->onGet('/hello', function() {})->withRoleOnly('admin');
-        $this->assertInstanceOf('stubbles\webapp\InternalServerErrorRoute',
+        $this->routing->onGet('/hello', function() {})->withLoginOnly();
+        $this->assertInstanceOf('stubbles\webapp\auth\AuthorizingRoute',
                                 $this->routing->findRoute($this->calledUri)
         );
     }
 
     /**
      * @test
-     * @since  3.0.0
+     * @since  5.0.0
      */
-    public function returnsAuthorizingRouteWhenMatchingRouteRequiresAuthButNoAuthHandlerSet()
+    public function returnsAuthorizingRouteWhenMatchingRouteRequiresRole()
     {
         $this->routing->onGet('/hello', function() {})->withRoleOnly('admin');
         $this->assertInstanceOf('stubbles\webapp\auth\AuthorizingRoute',
-                                $this->routing->setAuthHandler($this->getMock('stubbles\webapp\auth\AuthHandler'))
-                                              ->findRoute($this->calledUri)
+                                $this->routing->findRoute($this->calledUri)
         );
     }
 
