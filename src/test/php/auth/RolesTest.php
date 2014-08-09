@@ -14,7 +14,7 @@ namespace stubbles\webapp\auth;
  * @since  5.0.0
  * @group  auth
  */
-class RoleTest extends \PHPUnit_Framework_TestCase
+class RolesTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @test
