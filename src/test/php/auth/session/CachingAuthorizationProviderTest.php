@@ -79,7 +79,6 @@ class CachingAuthorizationProviderTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(
                 $roles,
                 $this->cachingAuthorizationProvider->roles(
-                        $this->getMock('stubbles\input\web\WebRequest'),
                         $this->getMock('stubbles\webapp\auth\User')
                 )
         );
@@ -103,7 +102,6 @@ class CachingAuthorizationProviderTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(
                 $roles,
                 $this->cachingAuthorizationProvider->roles(
-                        $this->getMock('stubbles\input\web\WebRequest'),
                         $this->getMock('stubbles\webapp\auth\User')
                 )
         );

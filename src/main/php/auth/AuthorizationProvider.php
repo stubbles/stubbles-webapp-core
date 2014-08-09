@@ -8,7 +8,6 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\auth;
-use stubbles\input\web\WebRequest;
 /**
  * An authorization provder delivers a list of roles a user has.
  *
@@ -23,9 +22,8 @@ interface AuthorizationProvider
     /**
      * returns the roles available for this request and user
      *
-     * @param   \stubbles\input\web\WebRequest  $request
-     * @param   \stubbles\webapp\auth\User      $user
+     * @param   \stubbles\webapp\auth\User  $user
      * @return  \stubbles\webapp\auth\Roles
      */
-    public function roles(WebRequest $request, User $user);
+    public function roles(User $user);
 }
