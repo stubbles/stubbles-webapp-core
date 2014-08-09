@@ -120,7 +120,7 @@ class AuthorizingRoute implements ProcessableRoute
         $this->authorized = false;
         $user = $this->authenticate($request, $response);
         if (null !== $user && $this->routeConfig->requiresRole()) {
-            $this->authorized = $this->roles($request, $response, $user)->contain($this->routeConfig->requiredRole());
+            $this->authorized = $this->roles($response, $user)->contain($this->routeConfig->requiredRole());
             if (!$this->authorized) {
                 $response->forbidden();
             }
@@ -157,16 +157,15 @@ class AuthorizingRoute implements ProcessableRoute
     /**
      * checks whether expected role is given
      *
-     * @param   \stubbles\input\web\WebRequest      $request   current request
      * @param   \stubbles\webapp\response\Response  $response  response to send
      * @param   \stubbles\webapp\auth\User          $user
      * @return  \stubbles\webapp\auth\Roles
      */
-    private function roles(WebRequest $request, Response $response, User $user)
+    private function roles(Response $response, User $user)
     {
         try {
             return $this->injector->getInstance('stubbles\webapp\auth\AuthorizationProvider')
-                                  ->roles($request, $user);
+                                  ->roles($user);
         } catch (AuthProviderException $ahe) {
             $this->handleAuthProviderException($ahe, $response);
             return Roles::none();

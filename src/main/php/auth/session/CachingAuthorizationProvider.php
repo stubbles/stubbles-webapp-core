@@ -8,7 +8,6 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\auth\session;
-use stubbles\input\web\WebRequest;
 use stubbles\webapp\auth\AuthorizationProvider;
 use stubbles\webapp\auth\Roles;
 use stubbles\webapp\auth\User;
@@ -50,17 +49,16 @@ class CachingAuthorizationProvider implements AuthorizationProvider
     /**
      * returns the roles available for this request and user
      *
-     * @param   \stubbles\input\web\WebRequest  $request
-     * @param   \stubbles\webapp\auth\User      $user
+     * @param   \stubbles\webapp\auth\User  $user
      * @return  \stubbles\webapp\auth\Roles
      */
-    public function roles(WebRequest $request, User $user)
+    public function roles(User $user)
     {
         if ($this->session->hasValue(Roles::SESSION_KEY)) {
             return $this->session->value(Roles::SESSION_KEY);
         }
 
-        $roles = $this->authorizationProvider->roles($request, $user);
+        $roles = $this->authorizationProvider->roles($user);
         $this->session->putValue(Roles::SESSION_KEY, $roles);
         return $roles;
     }
