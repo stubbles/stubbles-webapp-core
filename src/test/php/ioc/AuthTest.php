@@ -89,7 +89,7 @@ class AuthTest extends \PHPUnit_Framework_TestCase
     public function usingTokensBindsLoginProvider()
     {
         $binder = new Binder();
-        Auth::usingTokens('example\LoginAuthenticationProvider')
+        Auth::usingTokens('example\TokenStore', 'example\LoginAuthenticationProvider')
             ->configure($binder);
         $injector = $binder->getInjector();
         $this->assertTrue(
@@ -97,6 +97,9 @@ class AuthTest extends \PHPUnit_Framework_TestCase
                         'stubbles\webapp\auth\AuthenticationProvider',
                         'stubbles.webapp.auth.token.loginProvider'
                 )
+        );
+        $this->assertTrue(
+                $injector->hasBinding('stubbles\webapp\auth\token\TokenStore')
         );
     }
 }
