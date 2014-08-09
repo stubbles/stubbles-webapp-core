@@ -8,6 +8,7 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\auth;
+use stubbles\input\web\WebRequest;
 /**
  * Interface for authentication/authorization handlers.
  *
@@ -16,24 +17,27 @@ namespace stubbles\webapp\auth;
 interface AuthHandler
 {
     /**
-     * checks whether authentication is given
+     * checks whether request is authenticated
      *
+     * @param   \stubbles\input\web\WebRequest  $request
      * @return  bool
      */
-    public function isAuthenticated();
+    public function isAuthenticated(WebRequest $request);
 
     /**
      * checks whether expected role is given
      *
-     * @param   string  $expectedRole
+     * @param   \stubbles\input\web\WebRequest  $request
+     * @param   string                          $expectedRole
      * @return  bool
      */
-    public function isAuthorized($expectedRole);
+    public function isAuthorized(WebRequest $request, $expectedRole);
 
     /**
      * returns login uri
      *
-     * @return  string
+     * @param   \stubbles\input\web\WebRequest  $request
+     * @return  string|\stubbles\peer\http\HttpUri
      */
-    public function getLoginUri();
+    public function loginUri(WebRequest $request);
 }

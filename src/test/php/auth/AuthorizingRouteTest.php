@@ -168,7 +168,7 @@ class AuthorizingRouteTest extends \PHPUnit_Framework_TestCase
                               ->method('isAuthenticated')
                               ->will($this->returnValue(false));
         $this->mockAuthHandler->expects($this->once())
-                              ->method('getLoginUri')
+                              ->method('loginUri')
                               ->will($this->returnValue('https://login.example.com/'));
         $this->mockActualRoute->expects($this->never())
                               ->method('applyPreInterceptors');
@@ -184,7 +184,7 @@ class AuthorizingRouteTest extends \PHPUnit_Framework_TestCase
                               ->method('isAuthenticated')
                               ->will($this->returnValue(false));
         $this->mockAuthHandler->expects($this->once())
-                              ->method('getLoginUri')
+                              ->method('loginUri')
                               ->will($this->returnValue('https://login.example.com/'));
         $this->mockResponse->expects($this->once())
                            ->method('redirect')
@@ -206,7 +206,7 @@ class AuthorizingRouteTest extends \PHPUnit_Framework_TestCase
                               ->will($this->returnValue(true));
         $this->mockAuthHandler->expects($this->once())
                               ->method('isAuthorized')
-                              ->with($this->equalTo('admin'))
+                              ->with($this->equalTo($this->mockRequest), $this->equalTo('admin'))
                               ->will($this->throwException(AuthHandlerException::internal('error')));
         $this->mockActualRoute->expects($this->never())
                               ->method('applyPreInterceptors');
@@ -225,7 +225,7 @@ class AuthorizingRouteTest extends \PHPUnit_Framework_TestCase
                               ->will($this->returnValue(true));
         $this->mockAuthHandler->expects($this->once())
                               ->method('isAuthorized')
-                              ->with($this->equalTo('admin'))
+                              ->with($this->equalTo($this->mockRequest), $this->equalTo('admin'))
                               ->will($this->throwException(AuthHandlerException::internal('error')));
         $this->mockResponse->expects($this->once())
                            ->method('internalServerError')
@@ -247,7 +247,7 @@ class AuthorizingRouteTest extends \PHPUnit_Framework_TestCase
                               ->will($this->returnValue(true));
         $this->mockAuthHandler->expects($this->once())
                               ->method('isAuthorized')
-                              ->with($this->equalTo('admin'))
+                              ->with($this->equalTo($this->mockRequest), $this->equalTo('admin'))
                               ->will($this->throwException(AuthHandlerException::external('error')));
         $this->mockResponse->expects($this->once())
                            ->method('setStatusCode')
@@ -272,7 +272,7 @@ class AuthorizingRouteTest extends \PHPUnit_Framework_TestCase
                               ->will($this->returnValue(true));
         $this->mockAuthHandler->expects($this->once())
                               ->method('isAuthorized')
-                              ->with($this->equalTo('admin'))
+                              ->with($this->equalTo($this->mockRequest), $this->equalTo('admin'))
                               ->will($this->returnValue(false));
         $this->mockActualRoute->expects($this->never())
                               ->method('applyPreInterceptors');
@@ -290,7 +290,7 @@ class AuthorizingRouteTest extends \PHPUnit_Framework_TestCase
                               ->will($this->returnValue(true));
         $this->mockAuthHandler->expects($this->once())
                               ->method('isAuthorized')
-                              ->with($this->equalTo('admin'))
+                              ->with($this->equalTo($this->mockRequest), $this->equalTo('admin'))
                               ->will($this->returnValue(false));
         $this->mockResponse->expects($this->once())
                            ->method('forbidden');
@@ -310,7 +310,7 @@ class AuthorizingRouteTest extends \PHPUnit_Framework_TestCase
                               ->will($this->returnValue(true));
         $this->mockAuthHandler->expects($this->once())
                               ->method('isAuthorized')
-                              ->with($this->equalTo('admin'))
+                              ->with($this->equalTo($this->mockRequest), $this->equalTo('admin'))
                               ->will($this->returnValue(true));
         $this->mockActualRoute->expects($this->once())
                               ->method('applyPreInterceptors')
@@ -358,7 +358,7 @@ class AuthorizingRouteTest extends \PHPUnit_Framework_TestCase
                               ->will($this->returnValue(true));
         $this->mockAuthHandler->expects($this->once())
                               ->method('isAuthorized')
-                              ->with($this->equalTo('admin'))
+                              ->with($this->equalTo($this->mockRequest), $this->equalTo('admin'))
                               ->will($this->returnValue(true));
         $this->mockActualRoute->expects($this->once())
                               ->method('applyPreInterceptors')
@@ -393,7 +393,7 @@ class AuthorizingRouteTest extends \PHPUnit_Framework_TestCase
                               ->will($this->returnValue(true));
         $this->mockAuthHandler->expects($this->once())
                               ->method('isAuthorized')
-                              ->with($this->equalTo('admin'))
+                              ->with($this->equalTo($this->mockRequest), $this->equalTo('admin'))
                               ->will($this->returnValue(true));
         $this->mockActualRoute->expects($this->once())
                               ->method('applyPreInterceptors')

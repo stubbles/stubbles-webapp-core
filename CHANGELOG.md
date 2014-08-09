@@ -1,3 +1,12 @@
+4.1.0, (2014-08-09)
+-------------------
+
+### BC breaks
+
+   * renamed `stubbles\webapp\auth\AuthHandler::getLoginUri()` to `stubbles\webapp\auth\AuthHandler::loginUri()`
+   * all methods in `stubbles\webapp\auth\AuthHandler` now expect an instance of `stubbles\input\web\WebRequest` as first parameter
+
+
 4.0.0, (2014-07-31)
 -------------------
 
