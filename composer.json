@@ -6,7 +6,7 @@
     "description": "Base classes for Stubbles based web applications.",
     "require": {
         "php": ">=5.4.0",
-        "stubbles/core": "~4.0",
+        "stubbles/core": "~4.1",
         "stubbles/input": "~3.0"
     },
     "suggest": {
@@ -27,7 +27,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "4.0.x-dev"
+            "dev-master": "5.0.x-dev"
         }
     },
     "minimum-stability": "dev",
