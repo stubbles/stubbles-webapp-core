@@ -61,7 +61,7 @@ class UserProvider implements InjectionProvider
             return $this->session->value(User::SESSION_KEY);
         }
 
-        throw new RuntimeException('No user available - are you sure a login happened?');
+        throw new RuntimeException('No user available - are you sure a login happened and that session caching is enabled?');
     }
 }
 

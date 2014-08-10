@@ -69,13 +69,12 @@ class TokenAuthenticator implements AuthenticationProvider
         if (null === $token || $token->isEmpty()) {
             $user = $this->loginProvider->authenticate($request);
             if (null !== $user) {
-                $token = Token::create($user, $this->tokenSalt);
+                $token = $user->createToken($this->tokenSalt);
                 $this->tokenStore->store(
                         $request,
                         $token,
                         $user
                 );
-                $user->setToken($token);
                 return $user;
             }
 
