@@ -97,6 +97,23 @@ class TokenAuthenticatorTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @test
+     */
+    public function delegatesAuthenticationToLoginProviderIfAuthorizationHeaderIsSetButEmpty()
+    {
+        $this->mockRequest->expects($this->once())
+                          ->method('hasRedirectHeader')
+                          ->will($this->returnValue(true));
+        $this->mockRequest->expects($this->once())
+                          ->method('readRedirectHeader')
+                          ->will($this->returnValue(ValueReader::forValue('')));
+        $this->mockLoginProvider->expects($this->once())
+                                ->method('authenticate')
+                                ->will($this->returnValue(null));
+        $this->assertNull($this->tokenAuthenticator->authenticate($this->mockRequest));
+    }
+
+    /**
      * @return  \PHPUnit_Framework_MockObject_MockObject
      */
     private function mockTokenAwareUser()
@@ -154,22 +171,6 @@ class TokenAuthenticatorTest extends \PHPUnit_Framework_TestCase
         $this->assertNotNull(
                 $this->tokenAuthenticator->authenticate($this->mockRequest)->token()
         );
-    }
-
-    /**
-     * @test
-     */
-    public function returnsNullWhenAuthorizationHeaderIsSetButEmpty()
-    {
-        $this->mockRequest->expects($this->once())
-                          ->method('hasRedirectHeader')
-                          ->will($this->returnValue(true));
-        $this->mockRequest->expects($this->once())
-                          ->method('readRedirectHeader')
-                          ->will($this->returnValue(ValueReader::forValue('')));
-        $this->mockTokenStore->expects($this->never())
-                             ->method('findUserByToken');
-        $this->assertNull($this->tokenAuthenticator->authenticate($this->mockRequest));
     }
 
     /**
