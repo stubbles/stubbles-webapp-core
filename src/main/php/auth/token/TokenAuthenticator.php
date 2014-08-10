@@ -66,7 +66,7 @@ class TokenAuthenticator implements AuthenticationProvider
     public function authenticate(WebRequest $request)
     {
         $token = $this->readToken($request);
-        if (null === $token) {
+        if (null === $token || $token->isEmpty()) {
             $user = $this->loginProvider->authenticate($request);
             if (null !== $user) {
                 $token = Token::create($user, $this->tokenSalt);
@@ -79,8 +79,6 @@ class TokenAuthenticator implements AuthenticationProvider
                 return $user;
             }
 
-            return null;
-        } elseif ($token->isEmpty()) {
             return null;
         }
 
