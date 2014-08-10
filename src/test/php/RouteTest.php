@@ -9,6 +9,7 @@
  */
 namespace stubbles\webapp;
 use stubbles\input\web\WebRequest;
+use stubbles\webapp\auth\Roles;
 use stubbles\webapp\response\Response;
 /**
  * Class with annotations for tests.
@@ -36,6 +37,26 @@ class AnnotatedProcessor implements Processor
  * @RequiresRole('superadmin')
  */
 class OtherAnnotatedProcessor implements Processor
+{
+    /**
+     * processes the request
+     *
+     * @param  WebRequest  $request   current request
+     * @param  Response    $response  response to send
+     * @param  UriPath     $uriPath   information about called uri path
+     */
+    public function process(WebRequest $request, Response $response, UriPath $uriPath)
+    {
+        // intentionally empty
+    }
+}
+/**
+ * Class with annotations for tests.
+ *
+ * @RolesAware
+ * @since  5.0.0
+ */
+class RoleAwareAnnotatedProcessor implements Processor
 {
     /**
      * processes the request
@@ -80,7 +101,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
      * creates instance to test
      *
      * @param   string  $method
-     * @return  Route
+     * @return  \stubbles\webapp\Route
      */
     private function createRoute($method = 'GET')
     {
@@ -391,6 +412,34 @@ class RouteTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
+     * @since  5.0.0
+     * @group  role_aware
+     */
+    public function requiresAuthWhenCallbackInstanceAnnotatedWithRoleAware()
+    {
+        $route = new Route('/hello/{name}',
+                           new RoleAwareAnnotatedProcessor(),
+                           'GET'
+                 );
+        $this->assertTrue($route->requiresAuth());
+    }
+
+    /**
+     * @test
+     * @since  5.0.0
+     * @group  role_aware
+     */
+    public function requiresAuthWhenCallbackClassAnnotatedWithRoleAware()
+    {
+        $route = new Route('/hello/{name}',
+                           'stubbles\webapp\RoleAwareAnnotatedProcessor',
+                           'GET'
+                 );
+        $this->assertTrue($route->requiresAuth());
+    }
+
+    /**
+     * @test
      * @since  3.0.0
      */
     public function requiresAuthWhenLoginAndRoleIsRequired()
@@ -401,89 +450,165 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function doesNotRequireRoleByDefault()
+    public function doesNotRequireRolesByDefault()
     {
-        $this->assertFalse($this->createRoute()->requiresRole());
+        $this->assertFalse($this->createRoute()->requiresRoles());
     }
 
     /**
      * @test
      */
-    public function returnsNullForRequiredRoleByDefault()
+    public function requiresRolesWhenRoleIsSet()
     {
-        $this->assertNull($this->createRoute()->requiredRole());
-    }
-
-    /**
-     * @test
-     */
-    public function requiresRoleWhenRoleIsSet()
-    {
-        $this->assertTrue($this->createRoute()->withRoleOnly('admin')->requiresRole());
-    }
-
-    /**
-     * @test
-     */
-    public function returnsRequiredRoleWhenSet()
-    {
-        $this->assertEquals('admin',
-                            $this->createRoute()
-                                 ->withRoleOnly('admin')
-                                 ->requiredRole()
-        );
+        $this->assertTrue($this->createRoute()->withRoleOnly('admin')->requiresRoles());
     }
 
     /**
      * @test
      * @since  3.1.0
      */
-    public function requiresRoleWhenCallbackInstanceAnnotatedWithRequiresRole()
+    public function requiresRolesWhenCallbackInstanceAnnotatedWithRequiresRole()
     {
         $route = new Route('/hello/{name}',
                            new OtherAnnotatedProcessor(),
                            'GET'
                  );
-        $this->assertTrue($route->requiresRole());
+        $this->assertTrue($route->requiresRoles());
     }
 
     /**
      * @test
      * @since  3.1.0
      */
-    public function requiresRoleWhenCallbackClassAnnotatedWithRequiresRole()
+    public function requiresRolesWhenCallbackClassAnnotatedWithRequiresRole()
     {
         $route = new Route('/hello/{name}',
                            'stubbles\webapp\OtherAnnotatedProcessor',
                            'GET'
                  );
-        $this->assertTrue($route->requiresRole());
+        $this->assertTrue($route->requiresRoles());
     }
 
     /**
      * @test
-     * @since  3.1.0
+     * @since  5.0.0
+     * @group  role_aware
      */
-    public function returnsRoleWhenCallbackInstanceAnnotatedWithRequiresRole()
+    public function requiresRolesWhenCallbackInstanceAnnotatedWithRoleAware()
+    {
+        $route = new Route('/hello/{name}',
+                           new RoleAwareAnnotatedProcessor(),
+                           'GET'
+                 );
+        $this->assertTrue($route->requiresRoles());
+    }
+
+    /**
+     * @test
+     * @since  5.0.0
+     * @group  role_aware
+     */
+    public function requiresRolesWhenCallbackClassAnnotatedWithRoleAware()
+    {
+        $route = new Route('/hello/{name}',
+                           'stubbles\webapp\RoleAwareAnnotatedProcessor',
+                           'GET'
+                 );
+        $this->assertTrue($route->requiresRoles());
+    }
+
+    /**
+     * @test
+     * @since  5.0.0
+     * @group  role_aware
+     */
+    public function isNotSatisfiedByRolesWhenRolesAreNull()
+    {
+        $this->assertFalse($this->createRoute()->satisfiedByRoles());
+    }
+
+    /**
+     * @test
+     * @since  5.0.0
+     * @group  role_aware
+     */
+    public function isSatisfiedByRolesWhenRolesAwareWithCallbackClass()
+    {
+        $route = new Route('/hello/{name}',
+                           'stubbles\webapp\RoleAwareAnnotatedProcessor',
+                           'GET'
+                 );
+        $this->assertFalse($route->satisfiedByRoles());
+    }
+
+    /**
+     * @test
+     * @since  5.0.0
+     * @group  role_aware
+     */
+    public function isSatisfiedByRolesWhenRolesAwareWithCallbackInstance()
+    {
+        $route = new Route('/hello/{name}',
+                           new RoleAwareAnnotatedProcessor(),
+                           'GET'
+                 );
+        $this->assertTrue($route->satisfiedByRoles(new Roles([])));
+    }
+
+    /**
+     * @test
+     * @since  5.0.0
+     * @group  role_aware
+     */
+    public function isSatisfiedByRolesWhenRolesContainRequiredRoleFromAnnotatedCallbackInstance()
     {
         $route = new Route('/hello/{name}',
                            new OtherAnnotatedProcessor(),
                            'GET'
                  );
-        $this->assertEquals('superadmin', $route->requiredRole());
+        $this->assertTrue($route->satisfiedByRoles(new Roles(['admin', 'superadmin'])));
     }
 
     /**
      * @test
-     * @since  3.1.0
+     * @since  5.0.0
+     * @group  role_aware
      */
-    public function returnsRoleWhenCallbackClassAnnotatedWithRequiresRole()
+    public function isNotSatisfiedByRolesWhenRolesDoNotContainRequiredRoleFromAnnotatedCallbackInstance()
+    {
+        $route = new Route('/hello/{name}',
+                           new OtherAnnotatedProcessor(),
+                           'GET'
+                 );
+        $this->assertFalse($route->satisfiedByRoles(new Roles(['user'])));
+    }
+
+    /**
+     * @test
+     * @since  5.0.0
+     * @group  role_aware
+     */
+    public function isSatisfiedByRolesWhenRolesContainRequiredRoleFromAnnotatedCallbackClass()
     {
         $route = new Route('/hello/{name}',
                            'stubbles\webapp\OtherAnnotatedProcessor',
                            'GET'
                  );
-        $this->assertEquals('superadmin', $route->requiredRole());
+        $this->assertTrue($route->satisfiedByRoles(new Roles(['admin', 'superadmin'])));
+    }
+
+    /**
+     * @test
+     * @since  5.0.0
+     * @group  role_aware
+     */
+    public function isNotSatisfiedByRolesWhenRolesDoNotContainRequiredRoleFromAnnotatedCallbackClass()
+    {
+        $route = new Route('/hello/{name}',
+                           'stubbles\webapp\OtherAnnotatedProcessor',
+                           'GET'
+                 );
+        $this->assertFalse($route->satisfiedByRoles(new Roles(['user'])));
     }
 
     /**

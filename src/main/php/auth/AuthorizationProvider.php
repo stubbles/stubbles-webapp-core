@@ -11,10 +11,6 @@ namespace stubbles\webapp\auth;
 /**
  * An authorization provder delivers a list of roles a user has.
  *
- * The provider can either use the request or a user information or both to
- * determine the roles. If it can not find any roles it should return an empty
- * role list via Roles::none().
- *
  * @since  5.0.0
  */
 interface AuthorizationProvider
@@ -22,8 +18,15 @@ interface AuthorizationProvider
     /**
      * returns the roles available for this request and user
      *
+     * The provider should determine the roles based on the user information. If
+     * it can not find any roles it should return an empty role list via
+     * Roles::none(). In case it can not find any roles because it stumbles
+     * about an error it can not resolve it should throw an
+     * stubbles\webapp\auth\AuthProviderException.
+     *
      * @param   \stubbles\webapp\auth\User  $user
      * @return  \stubbles\webapp\auth\Roles
+     * @throws  \stubbles\webapp\auth\AuthProviderException
      */
     public function roles(User $user);
 }

@@ -12,6 +12,7 @@ namespace stubbles\webapp\auth;
  * Represents information about an authenticated user.
  *
  * @since  5.0.0
+ * @ProvidedBy(stubbles\webapp\auth\ioc\UserProvider.class)
  */
 interface User
 {
