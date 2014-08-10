@@ -81,7 +81,7 @@ class TokenAuthenticator implements AuthenticationProvider
             return null;
         }
 
-        return $this->tokenStore->findUserByToken($token);
+        return $this->tokenStore->findUserByToken($request, $token);
     }
 
     /**
