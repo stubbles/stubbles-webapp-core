@@ -48,4 +48,19 @@ interface User
      * @return  string
      */
     public function mailAddress();
+
+    /**
+     * sets token for the user
+     *
+     * @param   \stubbles\webapp\auth\Token  $token
+     * @return  \stubbles\webapp\auth\User
+     */
+    public function setToken(Token $token);
+
+    /**
+     * returns token for the user
+     *
+     * @return  \stubbles\webapp\auth\Token
+     */
+    public function token();
 }

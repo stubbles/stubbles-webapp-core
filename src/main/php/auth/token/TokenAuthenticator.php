@@ -69,10 +69,13 @@ class TokenAuthenticator implements AuthenticationProvider
         if (null === $token) {
             $user = $this->loginProvider->authenticate($request);
             if (null !== $user) {
+                $token = Token::create($user, $this->tokenSalt);
                 $this->tokenStore->store(
-                        Token::create($user, $this->tokenSalt),
+                        $request,
+                        $token,
                         $user
                 );
+                $user->setToken($token);
                 return $user;
             }
 
@@ -81,7 +84,12 @@ class TokenAuthenticator implements AuthenticationProvider
             return null;
         }
 
-        return $this->tokenStore->findUserByToken($request, $token);
+        $user = $this->tokenStore->findUserByToken($request, $token);
+        if (null !== $user) {
+            $user->setToken($token);
+        }
+
+        return $user;
     }
 
     /**
@@ -92,15 +100,11 @@ class TokenAuthenticator implements AuthenticationProvider
      */
     private function readToken(WebRequest $request)
     {
-        if (!$request->hasHeader('HTTP_AUTHORIZATION') && !$request->hasHeader('REDIRECT_HTTP_AUTHORIZATION')) {
+        if (!$request->hasRedirectHeader('HTTP_AUTHORIZATION')) {
             return null;
         }
 
-        if ($request->hasHeader('REDIRECT_HTTP_AUTHORIZATION')) {
-            return $request->readHeader('REDIRECT_HTTP_AUTHORIZATION')->withFilter(TokenFilter::instance());
-        }
-
-        return $request->readHeader('HTTP_AUTHORIZATION')->withFilter(TokenFilter::instance());
+        return $request->readRedirectHeader('HTTP_AUTHORIZATION')->withFilter(TokenFilter::instance());
     }
 
     /**
