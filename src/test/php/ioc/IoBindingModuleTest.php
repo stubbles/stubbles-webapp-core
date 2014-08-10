@@ -10,7 +10,7 @@
 namespace stubbles\webapp\ioc;
 use stubbles\ioc\Binder;
 /**
- * Tests for nstubbles\webapp\ioc\IoBindingModule.
+ * Tests for stubbles\webapp\ioc\IoBindingModule.
  *
  * @since  1.7.0
  * @group  ioc
@@ -90,9 +90,9 @@ class IoBindingModuleTest extends \PHPUnit_Framework_TestCase
     public function bindResponseToDifferentResponseClass()
     {
         $otherResponseClass = get_class($this->getMock('stubbles\webapp\response\Response'));
-        $injector = $this->createInjector(IoBindingModule::createWithoutSession()
-                                                         ->setResponseClass($otherResponseClass)
-                    );
+        $injector = $this->createInjector(
+                (new IoBindingModule())->setResponseClass($otherResponseClass)
+        );
         $this->assertTrue($injector->hasBinding('stubbles\webapp\response\Response'));
         $this->assertInstanceOf($otherResponseClass,
                                 $injector->getInstance('stubbles\webapp\response\Response')
@@ -105,7 +105,7 @@ class IoBindingModuleTest extends \PHPUnit_Framework_TestCase
      */
     public function bindsListOfMimeTypes()
     {
-        $injector = $this->createInjector(IoBindingModule::createWithoutSession());
+        $injector = $this->createInjector(new IoBindingModule());
         $this->assertTrue($injector->hasConstant('stubbles.webapp.response.format.mimetypes'));
         $this->assertEquals(['application/json',
                              'text/json',
@@ -125,9 +125,9 @@ class IoBindingModuleTest extends \PHPUnit_Framework_TestCase
      */
     public function bindsListOfMimeTypesWithAdditionalMimeTypes()
     {
-        $injector = $this->createInjector(IoBindingModule::createWithoutSession()
-                                                         ->addFormatter('foo/bar', 'foo\BarFormatter')
-                    );
+        $injector = $this->createInjector(
+                (new IoBindingModule())->addFormatter('foo/bar', 'foo\BarFormatter')
+        );
         $this->assertTrue($injector->hasConstant('stubbles.webapp.response.format.mimetypes'));
         $this->assertEquals(['application/json',
                              'text/json',
@@ -148,7 +148,7 @@ class IoBindingModuleTest extends \PHPUnit_Framework_TestCase
      */
     public function bindsFormattersForAllMimeTypes()
     {
-        $injector = $this->createInjector(IoBindingModule::createWithoutSession());
+        $injector = $this->createInjector(new IoBindingModule());
         foreach ($injector->getConstant('stubbles.webapp.response.format.mimetypes') as $mimeType) {
             $this->assertTrue($injector->hasExplicitBinding('stubbles\webapp\response\format\Formatter', $mimeType));
         }
@@ -160,9 +160,9 @@ class IoBindingModuleTest extends \PHPUnit_Framework_TestCase
      */
     public function bindsFormattersForAllMimeTypesWithAdditionalMimeTypes()
     {
-        $injector = $this->createInjector(IoBindingModule::createWithoutSession()
-                                                         ->addFormatter('foo/bar', 'foo\BarFormatter')
-                    );
+        $injector = $this->createInjector(
+                (new IoBindingModule())->addFormatter('foo/bar', 'foo\BarFormatter')
+        );
         foreach ($injector->getConstant('stubbles.webapp.response.format.mimetypes') as $mimeType) {
             $this->assertTrue($injector->hasExplicitBinding('stubbles\webapp\response\format\Formatter', $mimeType));
         }

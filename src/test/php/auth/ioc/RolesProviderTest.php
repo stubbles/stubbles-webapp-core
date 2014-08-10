@@ -44,6 +44,14 @@ class RolesProviderTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function annotationsPresentOnClass()
+    {
+        $this->assertTrue(lang\reflect($this->rolesProvider)->hasAnnotation('Singleton'));
+    }
+
+    /**
+     * @test
+     */
     public function annotationsPresentOnConstructor()
     {
         $this->assertTrue(lang\reflectConstructor($this->rolesProvider)->hasAnnotation('Inject'));

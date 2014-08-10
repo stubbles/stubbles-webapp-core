@@ -8,6 +8,7 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\auth\token;
+use stubbles\input\web\WebRequest;
 use stubbles\webapp\auth\Token;
 use stubbles\webapp\auth\User;
 /**
@@ -39,8 +40,9 @@ interface TokenStore
     /**
      * checks if given token is known and valid
      *
-     * @param   \stubbles\webapp\auth\Token  $token
+     * @param   \stubbles\input\web\WebRequest  $request  request the token was provided with
+     * @param   \stubbles\webapp\auth\Token     $token    actual token
      * @return  \stubbles\webapp\auth\User
      */
-    public function findUserByToken(Token $token);
+    public function findUserByToken(WebRequest $request, Token $token);
 }

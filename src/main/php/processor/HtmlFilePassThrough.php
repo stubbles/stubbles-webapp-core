@@ -47,7 +47,7 @@ class HtmlFilePassThrough implements Processor
      */
     public function process(WebRequest $request, Response $response, UriPath $uriPath)
     {
-        $routeName = $uriPath->getRemaining('index.html');
+        $routeName = $uriPath->remaining('index.html');
         if (!file_exists($this->routePath . DIRECTORY_SEPARATOR . $routeName)) {
             $response->notFound();
             return;

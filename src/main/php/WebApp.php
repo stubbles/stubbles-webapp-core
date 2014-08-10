@@ -156,17 +156,6 @@ abstract class WebApp extends App
     }
 
     /**
-     * creates io binding module without session
-     *
-     * @return  \stubbles\webapp\ioc\IoBindingModule
-     * @deprecated  since 4.0.0, use createIoBindingModule() instead, will be removed with 5.0.0
-     */
-    protected static function createIoBindingModuleWithoutSession()
-    {
-        return IoBindingModule::createWithoutSession();
-    }
-
-    /**
      * creates io binding module
      *
      * The optional callable $sessionCreator can accept instances of

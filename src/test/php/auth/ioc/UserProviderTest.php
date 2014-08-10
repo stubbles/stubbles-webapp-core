@@ -44,6 +44,14 @@ class UserProviderTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function annotationsPresentOnClass()
+    {
+        $this->assertTrue(lang\reflect($this->userProvider)->hasAnnotation('Singleton'));
+    }
+
+    /**
+     * @test
+     */
     public function annotationsPresentOnConstructor()
     {
         $this->assertTrue(lang\reflectConstructor($this->userProvider)->hasAnnotation('Inject'));

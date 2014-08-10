@@ -65,20 +65,6 @@ class UriRequest
     }
 
     /**
-     * creates an instance from request uri string
-     *
-     * @param   string  $requestUri
-     * @param   string  $requestMethod
-     * @return  \stubbles\webapp\UriRequest
-     * @since   2.0.0
-     * @deprecated  since 4.0.0, use new UriRequest($requestUri, $requestMethod) instead, will be removed with 5.0.0
-     */
-    public static function fromString($requestUri, $requestMethod)
-    {
-        return new self(HttpUri::fromString($requestUri), $requestMethod);
-    }
-
-    /**
      * returns called method
      *
      * @return  string

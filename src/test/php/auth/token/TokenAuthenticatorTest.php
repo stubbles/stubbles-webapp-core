@@ -180,7 +180,10 @@ class TokenAuthenticatorTest extends \PHPUnit_Framework_TestCase
         $user = $this->getMock('stubbles\webapp\auth\User');
         $this->mockTokenStore->expects($this->once())
                              ->method('findUserByToken')
-                             ->with($this->equalTo(new Token($tokenValue)))
+                             ->with(
+                                     $this->equalTo($this->mockRequest),
+                                     $this->equalTo(new Token($tokenValue))
+                               )
                              ->will($this->returnValue($user));
         $this->assertSame($user, $this->tokenAuthenticator->authenticate($this->mockRequest));
     }
@@ -201,7 +204,10 @@ class TokenAuthenticatorTest extends \PHPUnit_Framework_TestCase
         $user = $this->getMock('stubbles\webapp\auth\User');
         $this->mockTokenStore->expects($this->once())
                              ->method('findUserByToken')
-                             ->with($this->equalTo(new Token($tokenValue)))
+                             ->with(
+                                     $this->equalTo($this->mockRequest),
+                                     $this->equalTo(new Token($tokenValue))
+                               )
                              ->will($this->returnValue($user));
         $this->assertSame($user, $this->tokenAuthenticator->authenticate($this->mockRequest));
     }
