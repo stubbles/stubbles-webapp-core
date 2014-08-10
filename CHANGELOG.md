@@ -14,6 +14,7 @@
      * added `stubbles\webapp\auth\token\TokenAuthenticator`
      * added `stubbles\webapp\auth\token\TokenStore`
      * added `stubbles\webapp\ioc\Auth` to enable new auth bindings
+     * added support for annotation `@RolesAware` which can be set on processors in case they don't need a specific role but access to the roles of a user in general
 
 
 

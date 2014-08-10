@@ -119,11 +119,10 @@ class AuthorizingRoute implements ProcessableRoute
     {
         $this->authorized = false;
         $user = $this->authenticate($request, $response);
-        if (null !== $user && $this->routeConfig->requiresRole()) {
-            $roles = $this->roles($response, $user);
-            if (null !== $roles && $roles->contain($this->routeConfig->requiredRole())) {
+        if (null !== $user && $this->routeConfig->requiresRoles()) {
+            if ($this->routeConfig->satisfiedByRoles($this->roles($response, $user))) {
                 $this->authorized = true;
-            } elseif (null !== $roles) {
+            } else {
                 $response->forbidden();
             }
         } elseif (null !== $user) {

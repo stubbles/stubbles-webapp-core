@@ -10,6 +10,7 @@
 namespace stubbles\webapp;
 use stubbles\lang;
 use stubbles\lang\exception\IllegalArgumentException;
+use stubbles\webapp\auth\Roles;
 use stubbles\webapp\response\SupportedMimeTypes;
 /**
  * Represents information about a route that can be called.
@@ -66,6 +67,12 @@ class Route implements ConfigurableRoute
      * @type  string
      */
     private $requiredRole;
+    /**
+     * whether the route needs access to roles of the user
+     *
+     * @type  bool
+     */
+    private $rolesAware;
     /**
      * list of mime types supported by this route
      *
@@ -292,25 +299,13 @@ class Route implements ConfigurableRoute
     }
 
     /**
-     * adds a role which is required to access the route
-     *
-     * @param   string  $requiredRole
-     * @return  \stubbles\webapp\Route
-     */
-    public function withRoleOnly($requiredRole)
-    {
-        $this->requiredRole = $requiredRole;
-        return $this;
-    }
-
-    /**
      * checks whether auth is required
      *
      * @return  bool
      */
     public function requiresAuth()
     {
-        return $this->requiresLogin() || $this->requiresRole();
+        return $this->requiresLogin() || $this->requiresRoles();
     }
 
     /**
@@ -333,13 +328,67 @@ class Route implements ConfigurableRoute
     }
 
     /**
+     * adds a role which is required to access the route
+     *
+     * @param   string  $requiredRole
+     * @return  \stubbles\webapp\Route
+     */
+    public function withRoleOnly($requiredRole)
+    {
+        $this->requiredRole = $requiredRole;
+        return $this;
+    }
+
+    /**
      * checks if access to this route required authorization
      *
      * @return  bool
      */
-    public function requiresRole()
+    public function requiresRoles()
     {
-        return null !== $this->requiredRole();
+        return (null !== $this->requiredRole()) || $this->rolesAware();
+    }
+
+    /**
+     * checks whether route is satisfied by the given roles
+     *
+     * @param   \stubbles\webapp\auth\Roles  $roles
+     * @return  bool
+     */
+    public function satisfiedByRoles(Roles $roles = null)
+    {
+        if (null === $roles) {
+            return false;
+        }
+
+        if ($this->rolesAware()) {
+            return true;
+        }
+
+        return $roles->contain($this->requiredRole());
+    }
+
+    /**
+     * checks whether the route wants to be aware of roles
+     *
+     * Roles aware means that a resource might work different depending on the
+     * roles a user has, but that access to the resource in general is not
+     * forbidden even if the user doesn't have any of the roles.
+     *
+     * @return  bool
+     */
+    private function rolesAware()
+    {
+        if (null === $this->rolesAware) {
+            if (is_callable($this->callback)) {
+                $this->rolesAware = false;
+            } else {
+                $class = lang\reflect($this->callback);
+                $this->rolesAware = $class->hasAnnotation('RolesAware');
+            }
+        }
+
+        return $this->rolesAware;
     }
 
     /**
@@ -347,7 +396,7 @@ class Route implements ConfigurableRoute
      *
      * @return  string
      */
-    public function requiredRole()
+    private function requiredRole()
     {
         if (null !== $this->requiredRole) {
             return $this->requiredRole;
