@@ -11,19 +11,13 @@ namespace stubbles\webapp\auth\ioc;
 use stubbles\ioc\InjectionProvider;
 use stubbles\lang\exception\RuntimeException;
 use stubbles\webapp\auth\Roles;
-use stubbles\webapp\session\Session;
 /**
  * Can provide the currently logged in user.
  *
  * Be careful with roles injection: it is not possible during app setup, but
- * only after a session was bound and a successful login. Therefore you should
- * ensure that routes where roles injection is used are configured using
+ * only after a successful login and authorization. Therefore you should ensure
+ * that routes where roles injection is used are configured using
  * withLoginOnly() or withRoleOnly($requiredRight).
- *
- * In case you are not sure you can still access the user via the session:
- * if ($session->hasValue(Roles::SESSION_KEY)) {
- *     $roles = $session->getValue(Roles::SESSION_KEY);
- * }
  *
  * @since  5.0.0
  * @Singleton
@@ -31,37 +25,38 @@ use stubbles\webapp\session\Session;
 class RolesProvider implements InjectionProvider
 {
     /**
-     * session container
+     * holds roles instance
      *
-     * @type  \stubbles\webapp\session\Session
+     * @type  \stubbles\webapp\auth\Roles
      */
-    private $session;
+    private static $roles;
 
     /**
-     * constructor
+     * stores the roles for further reference
      *
-     * @param  \stubbles\webapp\session\Session  $session
-     * @Inject
+     * @param   \stubbles\webapp\auth\Roles  $roles
+     * @return  \stubbles\webapp\auth\Roles
      */
-    public function __construct(Session $session)
+    public static function store(Roles $roles = null)
     {
-        $this->session = $session;
+        self::$roles = $roles;
+        return self::$roles;
     }
 
     /**
-     * returns the value to provide
+     * returns roles of the current user
      *
      * @param   string  $name
      * @return  \stubbles\webapp\auth\Roles
-     * @throws  \stubbles\lang\exception\RuntimeException
+     * @throws  \stubbles\lang\exception\RuntimeException  in case no roles are present
      */
     public function get($name = null)
     {
-        if ($this->session->hasValue(Roles::SESSION_KEY)) {
-            return $this->session->value(Roles::SESSION_KEY);
+        if (null !== self::$roles) {
+            return self::$roles;
         }
 
-        throw new RuntimeException('No roles available - are you sure a login happened?');
+        throw new RuntimeException('No roles available - are you sure login and authorization happened?');
     }
 }
 

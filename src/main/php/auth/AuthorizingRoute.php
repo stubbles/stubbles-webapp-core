@@ -12,6 +12,8 @@ use stubbles\input\web\WebRequest;
 use stubbles\ioc\Injector;
 use stubbles\webapp\ProcessableRoute;
 use stubbles\webapp\Route;
+use stubbles\webapp\auth\ioc\RolesProvider;
+use stubbles\webapp\auth\ioc\UserProvider;
 use stubbles\webapp\response\Response;
 /**
  * Description of AuthorizingRoute
@@ -120,7 +122,9 @@ class AuthorizingRoute implements ProcessableRoute
         $this->authorized = false;
         $user = $this->authenticate($request, $response);
         if (null !== $user && $this->routeConfig->requiresRoles()) {
-            if ($this->routeConfig->satisfiedByRoles($this->roles($response, $user))) {
+            if ($this->routeConfig->satisfiedByRoles(
+                    RolesProvider::store($this->roles($response, $user)))
+                ) {
                 $this->authorized = true;
             } else {
                 $response->forbidden();
@@ -148,7 +152,7 @@ class AuthorizingRoute implements ProcessableRoute
                 $response->redirect($authenticationProvider->loginUri($request));
             }
 
-            return $user;
+            return UserProvider::store($user);
         } catch (AuthProviderException $ahe) {
             $this->handleAuthProviderException($ahe, $response);
             return null;
