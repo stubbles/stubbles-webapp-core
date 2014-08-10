@@ -20,7 +20,7 @@ class CookieTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsGivenName()
     {
-        $this->assertEquals('foo', Cookie::create('foo', 'bar')->getName());
+        $this->assertEquals('foo', Cookie::create('foo', 'bar')->name());
     }
 
     /**
@@ -28,7 +28,7 @@ class CookieTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsGivenValue()
     {
-        $this->assertEquals('bar', Cookie::create('foo', 'bar')->getValue());
+        $this->assertEquals('bar', Cookie::create('foo', 'bar')->value());
     }
 
     /**
@@ -36,7 +36,7 @@ class CookieTest extends \PHPUnit_Framework_TestCase
      */
     public function hasNoExpirationDateByDefault()
     {
-        $this->assertEquals(0, Cookie::create('foo', 'bar')->getExpiration());
+        $this->assertEquals(0, Cookie::create('foo', 'bar')->expiration());
     }
 
     /**
@@ -44,7 +44,7 @@ class CookieTest extends \PHPUnit_Framework_TestCase
      */
     public function hasNoPathByDefault()
     {
-        $this->assertNull(Cookie::create('foo', 'bar')->getPath());
+        $this->assertNull(Cookie::create('foo', 'bar')->path());
     }
 
     /**
@@ -52,7 +52,7 @@ class CookieTest extends \PHPUnit_Framework_TestCase
      */
     public function hasNoDomainByDefault()
     {
-        $this->assertNull(Cookie::create('foo', 'bar')->getDomain());
+        $this->assertNull(Cookie::create('foo', 'bar')->domain());
     }
 
     /**
@@ -80,7 +80,7 @@ class CookieTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expires,
                             Cookie::create('foo', 'bar')
                                   ->expiringAt($expires)
-                                  ->getExpiration()
+                                  ->expiration()
         );
     }
 
@@ -93,7 +93,7 @@ class CookieTest extends \PHPUnit_Framework_TestCase
         $this->assertGreaterThanOrEqual(time() + 100,
                                         Cookie::create('foo', 'bar')
                                               ->expiringIn(100)
-                                              ->getExpiration()
+                                              ->expiration()
         );
     }
 
@@ -105,7 +105,7 @@ class CookieTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('bar',
                             Cookie::create('foo', 'bar')
                                   ->forPath('bar')
-                                  ->getPath()
+                                  ->path()
         );
     }
 
@@ -117,7 +117,7 @@ class CookieTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('.example.org',
                             Cookie::create('foo', 'bar')
                                   ->forDomain('.example.org')
-                                  ->getDomain()
+                                  ->domain()
         );
     }
 

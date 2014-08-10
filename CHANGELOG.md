@@ -15,7 +15,7 @@
      * added `stubbles\webapp\auth\token\TokenStore`
      * added `stubbles\webapp\ioc\Auth` to enable new auth bindings
      * added support for annotation `@RolesAware` which can be set on processors in case they don't need a specific role but access to the roles of a user in general
-
+   * removed all methods deprecated with 4.0.0 (see below)
 
 
 4.0.0 (2014-07-31)
@@ -55,6 +55,7 @@
    * added `stubbles\webapp\UriPath::actual()`
    * fixed bug: response should not add content length header automatically when already added before
    * added `stubbles\webapp\processor\HtmlFilePassThrough`
+   * added `stubbles\webapp\processor\SessionBasedHtmlFilePassThrough`
    * added `stubbles\webapp\RoutingConfigurator::passThroughOnGet()`
 
 

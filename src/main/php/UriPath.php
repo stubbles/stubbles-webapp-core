@@ -69,17 +69,6 @@ class UriPath
     }
 
     /**
-     * returns matched path from route configuration
-     *
-     * @return  string
-     * @deprecated  since 4.0.0, use configured() instead, will be removed with 5.0.0
-     */
-    public function getMatched()
-    {
-        return $this->configuredPath;
-    }
-
-    /**
      * returns actual path that was called
      *
      * @return  string
@@ -171,17 +160,5 @@ class UriPath
         }
 
         return $default;
-    }
-
-    /**
-     * returns remaining path that was not matched by original path
-     *
-     * @param   string  $default
-     * @return  string
-     * @deprecated since 4.0.0, use remaining() instead, will be removed with 5.0.0
-     */
-    public function getRemaining($default = null)
-    {
-        return $this->remaining($default);
     }
 }

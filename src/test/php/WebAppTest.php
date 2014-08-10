@@ -158,17 +158,6 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @test
-     * @deprecated  since 4.0.0, will be removed with 5.0.0
-     */
-    public function canCreateIoBindingModuleWithoutSession()
-    {
-        $this->assertInstanceOf('stubbles\webapp\ioc\IoBindingModule',
-                                TestWebApp::callMethod('createIoBindingModuleWithoutSession')
-        );
-    }
-
-    /**
      *
      * @param type $mockRoute
      */

@@ -77,17 +77,6 @@ class IoBindingModule implements BindingModule
     }
 
     /**
-     * factory method
-     *
-     * @return  \stubbles\webapp\ioc\IoBindingModule
-     * @deprecated  since 4.0.0, use constructor directly, will be removed with 5.0.0
-     */
-    public static function createWithoutSession()
-    {
-        return new self();
-    }
-
-    /**
      * sets class name of response class to be used
      *
      * @param   string  $responseClass  name of response class to bind
@@ -110,20 +99,6 @@ class IoBindingModule implements BindingModule
     public function addFormatter($mimeType, $formatter)
     {
         $this->formatter[$mimeType] = $formatter;
-        return $this;
-    }
-
-    /**
-     * set a callable which can create a session instance
-     *
-     * @param   callable  $sessionCreator  callable which creates session instance
-     * @return  \stubbles\webapp\ioc\IoBindingModule
-     * @since   2.0.0
-     * @deprecated  since 4.0.0, pass the callable to the constructor instead, will be removed with 5.0.0
-     */
-    public function setSessionCreator(callable $sessionCreator)
-    {
-        $this->sessionCreator = $sessionCreator;
         return $this;
     }
 
