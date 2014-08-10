@@ -25,20 +25,21 @@ class UserProviderTest extends \PHPUnit_Framework_TestCase
      * @type  \stubbles\webapp\auth\ioc\UserProvider
      */
     private $userProvider;
-    /**
-     * mocked session
-     *
-     * @type  \PHPUnit_Framework_MockObject_MockObject
-     */
-    private $mockSession;
 
     /**
      * set up test environment
      */
     public function setUp()
     {
-        $this->mockSession  = $this->getMock('stubbles\webapp\session\Session');
-        $this->userProvider = new UserProvider($this->mockSession);
+        $this->userProvider = new UserProvider();
+    }
+
+    /**
+     * clean up test environment
+     */
+    public function tearDown()
+    {
+        UserProvider::store(null);
     }
 
     /**
@@ -46,21 +47,15 @@ class UserProviderTest extends \PHPUnit_Framework_TestCase
      */
     public function annotationsPresentOnClass()
     {
-        $this->assertTrue(lang\reflect($this->userProvider)->hasAnnotation('Singleton'));
+        $this->assertTrue(
+                lang\reflect($this->userProvider)->hasAnnotation('Singleton')
+        );
     }
 
     /**
      * @test
      */
-    public function annotationsPresentOnConstructor()
-    {
-        $this->assertTrue(lang\reflectConstructor($this->userProvider)->hasAnnotation('Inject'));
-    }
-
-    /**
-     * @test
-     */
-    public function isProviderForEmployee()
+    public function isProviderForUser()
     {
         $this->assertEquals(
                 get_class($this->userProvider),
@@ -75,29 +70,18 @@ class UserProviderTest extends \PHPUnit_Framework_TestCase
      * @test
      * @expectedException  stubbles\lang\exception\RuntimeException
      */
-    public function throwsRuntimeExceptionWhenNoUserInSession()
+    public function throwsRuntimeExceptionWhenNoUserStored()
     {
-        $this->mockSession->expects($this->once())
-                          ->method('hasValue')
-                          ->with($this->equalTo(User::SESSION_KEY))
-                          ->will($this->returnValue(false));
         $this->userProvider->get();
     }
 
     /**
      * @test
      */
-    public function returnsUserFromSession()
+    public function returnsUserPreviouslyStored()
     {
         $user = $this->getMock('stubbles\webapp\auth\User');
-        $this->mockSession->expects($this->once())
-                          ->method('hasValue')
-                          ->with($this->equalTo(User::SESSION_KEY))
-                          ->will($this->returnValue(true));
-        $this->mockSession->expects($this->once())
-                          ->method('value')
-                          ->with($this->equalTo(User::SESSION_KEY))
-                          ->will($this->returnValue($user));
+        $this->assertSame($user, UserProvider::store($user));
         $this->assertSame($user, $this->userProvider->get());
     }
 }

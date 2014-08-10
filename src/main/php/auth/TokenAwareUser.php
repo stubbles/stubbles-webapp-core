@@ -35,6 +35,21 @@ abstract class TokenAwareUser implements User
     }
 
     /**
+     * creates new token for the user with given token salt
+     *
+     * The token is already stored in the user afterwards, any further request
+     * to token() will yield the same token.
+     *
+     * @param   string  $tokenSalt
+     * @return  \stubbles\webapp\auth\Token
+     */
+    public function createToken($tokenSalt)
+    {
+        $this->setToken(Token::create($this, $tokenSalt));
+        return $this->token();
+    }
+
+    /**
      * returns token for the user
      *
      * @return  \stubbles\webapp\auth\Token

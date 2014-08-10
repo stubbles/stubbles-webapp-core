@@ -25,20 +25,21 @@ class RolesProviderTest extends \PHPUnit_Framework_TestCase
      * @type  \stubbles\webapp\auth\ioc\RolesProvider
      */
     private $rolesProvider;
-    /**
-     * mocked session
-     *
-     * @type  \PHPUnit_Framework_MockObject_MockObject
-     */
-    private $mockSession;
 
     /**
      * set up test environment
      */
     public function setUp()
     {
-        $this->mockSession   = $this->getMock('stubbles\webapp\session\Session');
-        $this->rolesProvider = new RolesProvider($this->mockSession);
+        $this->rolesProvider = new RolesProvider();
+    }
+
+    /**
+     * clean up test environment
+     */
+    public function tearDown()
+    {
+        RolesProvider::store(null);
     }
 
     /**
@@ -46,21 +47,15 @@ class RolesProviderTest extends \PHPUnit_Framework_TestCase
      */
     public function annotationsPresentOnClass()
     {
-        $this->assertTrue(lang\reflect($this->rolesProvider)->hasAnnotation('Singleton'));
+        $this->assertTrue(
+                lang\reflect($this->rolesProvider)->hasAnnotation('Singleton')
+        );
     }
 
     /**
      * @test
      */
-    public function annotationsPresentOnConstructor()
-    {
-        $this->assertTrue(lang\reflectConstructor($this->rolesProvider)->hasAnnotation('Inject'));
-    }
-
-    /**
-     * @test
-     */
-    public function isProviderForEmployee()
+    public function isProviderForRoles()
     {
         $this->assertEquals(
                 get_class($this->rolesProvider),
@@ -77,27 +72,16 @@ class RolesProviderTest extends \PHPUnit_Framework_TestCase
      */
     public function throwsRuntimeExceptionWhenNoUserInSession()
     {
-        $this->mockSession->expects($this->once())
-                          ->method('hasValue')
-                          ->with($this->equalTo(Roles::SESSION_KEY))
-                          ->will($this->returnValue(false));
         $this->rolesProvider->get();
     }
 
     /**
      * @test
      */
-    public function returnsRolesFromSession()
+    public function returnsRolesPreviouslyStored()
     {
         $roles = new Roles(['admin']);
-        $this->mockSession->expects($this->once())
-                          ->method('hasValue')
-                          ->with($this->equalTo(Roles::SESSION_KEY))
-                          ->will($this->returnValue(true));
-        $this->mockSession->expects($this->once())
-                          ->method('value')
-                          ->with($this->equalTo(Roles::SESSION_KEY))
-                          ->will($this->returnValue($roles));
+        $this->assertSame($roles, RolesProvider::store($roles));
         $this->assertSame($roles, $this->rolesProvider->get());
     }
 }

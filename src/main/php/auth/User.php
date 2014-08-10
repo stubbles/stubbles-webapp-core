@@ -58,6 +58,17 @@ interface User
     public function setToken(Token $token);
 
     /**
+     * creates new token for the user with given token salt
+     *
+     * The token is already stored in the user afterwards, any further request
+     * to token() will yield the same token.
+     *
+     * @param  string  $tokenSalt
+     * @return  \stubbles\webapp\auth\Token
+     */
+    public function createToken($tokenSalt);
+
+    /**
      * returns token for the user
      *
      * @return  \stubbles\webapp\auth\Token

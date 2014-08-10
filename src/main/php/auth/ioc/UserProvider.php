@@ -11,19 +11,13 @@ namespace stubbles\webapp\auth\ioc;
 use stubbles\ioc\InjectionProvider;
 use stubbles\lang\exception\RuntimeException;
 use stubbles\webapp\auth\User;
-use stubbles\webapp\session\Session;
 /**
  * Can provide the currently logged in user.
  *
  * Be careful with user injection: it is not possible during app setup, but only
- * after a session was bound and a successful login. Therefore you should ensure
- * that routes where user injection is used are configured using withLoginOnly()
- * or withRoleOnly($requiredRight).
- *
- * In case you are not sure you can still access the user via the session:
- * if ($session->hasValue(User::SESSION_KEY)) {
- *     $user = $session->getValue(User::SESSION_KEY);
- * }
+ * after a successful login. Therefore you should ensure that routes where user
+ * injection is used are configured using withLoginOnly() or
+ * withRoleOnly($requiredRight).
  *
  * @since  5.0.0
  * @Singleton
@@ -31,34 +25,35 @@ use stubbles\webapp\session\Session;
 class UserProvider implements InjectionProvider
 {
     /**
-     * session container
+     * holds user instance
      *
-     * @type  \stubbles\webapp\session\Session
+     * @type  \stubbles\webapp\auth\User
      */
-    private $session;
+    private static $user;
 
     /**
-     * constructor
+     * stores the user for further reference
      *
-     * @param  \stubbles\webapp\session\Session  $session
-     * @Inject
+     * @param   \stubbles\webapp\auth\User  $user
+     * @return  \stubbles\webapp\auth\User
      */
-    public function __construct(Session $session)
+    public static function store(User $user = null)
     {
-        $this->session = $session;
+        self::$user = $user;
+        return self::$user;
     }
 
     /**
-     * returns the value to provide
+     * returns the current user
      *
      * @param   string  $name
      * @return  \stubbles\webapp\auth\User
-     * @throws  \stubbles\lang\exception\RuntimeException
+     * @throws  \stubbles\lang\exception\RuntimeException  in case no user is present
      */
     public function get($name = null)
     {
-        if ($this->session->hasValue(User::SESSION_KEY)) {
-            return $this->session->value(User::SESSION_KEY);
+        if (null !== self::$user) {
+            return self::$user;
         }
 
         throw new RuntimeException('No user available - are you sure a login happened?');

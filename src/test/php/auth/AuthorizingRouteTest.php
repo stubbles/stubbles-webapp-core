@@ -10,6 +10,8 @@
 namespace stubbles\webapp\auth;
 use stubbles\peer\http\HttpUri;
 use stubbles\webapp\Route;
+use stubbles\webapp\auth\ioc\RolesProvider;
+use stubbles\webapp\auth\ioc\UserProvider;
 use stubbles\webapp\response\SupportedMimeTypes;
 /**
  * Tests for stubbles\webapp\auth\AuthorizingRoute.
@@ -73,6 +75,15 @@ class AuthorizingRouteTest extends \PHPUnit_Framework_TestCase
         );
         $this->mockRequest      = $this->getMock('stubbles\input\web\WebRequest');
         $this->mockResponse     = $this->getMock('stubbles\webapp\response\Response');
+    }
+
+    /**
+     * clean up test environment
+     */
+    public function tearDown()
+    {
+        RolesProvider::store(null);
+        UserProvider::store(null);
     }
 
     /**
@@ -200,14 +211,32 @@ class AuthorizingRouteTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @test
+     */
+    public function storesUserInUserProviderWhenAuthenticated()
+    {
+        $user = $this->getMock('stubbles\webapp\auth\User');
+        $this->routeConfig->withLoginOnly();
+        $mockAuthenticationProvider = $this->mockAuthenticationProvider();
+        $mockAuthenticationProvider->expects($this->once())
+                                   ->method('authenticate')
+                                   ->will($this->returnValue($user));
+        $this->authorizingRoute->applyPreInterceptors($this->mockRequest, $this->mockResponse);
+        $userProvider = new UserProvider();
+        $this->assertSame($user, $userProvider->get());
+    }
+
+    /**
+     * @param   \stubbles\webapp\auth\User  $user
      * @return  \PHPUnit_Framework_MockObject_MockObject
      */
-    private function mockAuthorizationProvider()
+    private function mockAuthorizationProvider($user = null)
     {
         $mockAuthenticationProvider = $this->getMock('stubbles\webapp\auth\AuthenticationProvider');
         $mockAuthenticationProvider->expects($this->once())
                                    ->method('authenticate')
-                                   ->will($this->returnValue($this->getMock('stubbles\webapp\auth\User')));
+                                   ->will($this->returnValue(
+                                           ($user === null) ? $this->getMock('stubbles\webapp\auth\User') : $user));
         $mockAuthorizationProvider = $this->getMock('stubbles\webapp\auth\AuthorizationProvider');
         $this->mockInjector->expects($this->exactly(2))
                            ->method('getInstance')
@@ -289,6 +318,38 @@ class AuthorizingRouteTest extends \PHPUnit_Framework_TestCase
                               ->with($this->equalTo($this->mockRequest), $this->equalTo($this->mockResponse))
                               ->will($this->returnValue(true));
         $this->assertTrue($this->authorizingRoute->applyPreInterceptors($this->mockRequest, $this->mockResponse));
+    }
+
+    /**
+     * @test
+     */
+    public function storesUserInUserProviderWhenAuthenticatedAndAuthorized()
+    {
+        $user = $this->getMock('stubbles\webapp\auth\User');
+        $this->routeConfig->withRoleOnly('admin');
+        $mockAuthorizationProvider = $this->mockAuthorizationProvider($user);
+        $mockAuthorizationProvider->expects($this->once())
+                                  ->method('roles')
+                                  ->will($this->returnValue(new Roles(['admin'])));
+        $this->authorizingRoute->applyPreInterceptors($this->mockRequest, $this->mockResponse);
+        $userProvider = new UserProvider();
+        $this->assertSame($user, $userProvider->get());
+    }
+
+    /**
+     * @test
+     */
+    public function storesRolesInRolesProviderWhenAuthenticatedAndAuthorized()
+    {
+        $this->routeConfig->withRoleOnly('admin');
+        $mockAuthorizationProvider = $this->mockAuthorizationProvider();
+        $roles = new Roles(['admin']);
+        $mockAuthorizationProvider->expects($this->once())
+                                  ->method('roles')
+                                  ->will($this->returnValue($roles));
+        $this->authorizingRoute->applyPreInterceptors($this->mockRequest, $this->mockResponse);
+        $rolesProvider = new RolesProvider();
+        $this->assertSame($roles, $rolesProvider->get());
     }
 
     /**
