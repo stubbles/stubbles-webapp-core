@@ -111,6 +111,7 @@ class TokenAuthenticatorTest extends \PHPUnit_Framework_TestCase
         $this->mockTokenStore->expects($this->once())
                              ->method('store')
                              ->with(
+                                     $this->equalTo($this->mockRequest),
                                      $this->isInstanceOf('stubbles\webapp\auth\Token'),
                                      $this->equalTo($user)
                                );

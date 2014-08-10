@@ -70,6 +70,7 @@ class TokenAuthenticator implements AuthenticationProvider
             $user = $this->loginProvider->authenticate($request);
             if (null !== $user) {
                 $this->tokenStore->store(
+                        $request,
                         Token::create($user, $this->tokenSalt),
                         $user
                 );
