@@ -16,10 +16,6 @@ namespace stubbles\webapp\auth;
 class Token
 {
     /**
-     * key under which token is stored in session
-     */
-    const SESSION_KEY = 'stubbles.webapp.auth.token';
-    /**
      * actual token value
      *
      * @type  string

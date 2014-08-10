@@ -12,6 +12,7 @@ namespace stubbles\webapp\auth;
  * Represents a list of roles.
  *
  * @since  5.0.0
+ * @ProvidedBy(stubbles\webapp\auth\ioc\RolesProvider.class)
  */
 class Roles implements \Countable, \IteratorAggregate
 {
