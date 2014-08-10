@@ -17,6 +17,10 @@
      * added support for annotation `@RolesAware` which can be set on processors in case they don't need a specific role but access to the roles of a user in general
    * removed all methods deprecated with 4.0.0 (see below)
 
+### Other changes
+
+   * upgraded to stubbles/core 4.1 and stubbles/input 3.1
+
 
 4.0.0 (2014-07-31)
 ------------------

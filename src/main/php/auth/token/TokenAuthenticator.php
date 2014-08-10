@@ -92,15 +92,11 @@ class TokenAuthenticator implements AuthenticationProvider
      */
     private function readToken(WebRequest $request)
     {
-        if (!$request->hasHeader('HTTP_AUTHORIZATION') && !$request->hasHeader('REDIRECT_HTTP_AUTHORIZATION')) {
+        if (!$request->hasRedirectHeader('HTTP_AUTHORIZATION')) {
             return null;
         }
 
-        if ($request->hasHeader('REDIRECT_HTTP_AUTHORIZATION')) {
-            return $request->readHeader('REDIRECT_HTTP_AUTHORIZATION')->withFilter(TokenFilter::instance());
-        }
-
-        return $request->readHeader('HTTP_AUTHORIZATION')->withFilter(TokenFilter::instance());
+        return $request->readRedirectHeader('HTTP_AUTHORIZATION')->withFilter(TokenFilter::instance());
     }
 
     /**

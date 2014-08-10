@@ -87,8 +87,8 @@ class TokenAuthenticatorTest extends \PHPUnit_Framework_TestCase
      */
     public function delegatesAuthenticationToLoginProviderIfNoTokenInRequest()
     {
-        $this->mockRequest->expects($this->any())
-                          ->method('hasHeader')
+        $this->mockRequest->expects($this->once())
+                          ->method('hasRedirectHeader')
                           ->will($this->returnValue(false));
         $this->mockLoginProvider->expects($this->once())
                                 ->method('authenticate')
@@ -123,31 +123,13 @@ class TokenAuthenticatorTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function returnsNullWhenRedirectAuthorizationHeaderIsSetButEmpty()
-    {
-        $this->mockRequest->expects($this->exactly(3))
-                          ->method('hasHeader')
-                          ->will($this->onConsecutiveCalls(false, true, true));
-        $this->mockRequest->expects($this->once())
-                          ->method('readHeader')
-                          ->with($this->equalTo('REDIRECT_HTTP_AUTHORIZATION'))
-                          ->will($this->returnValue(ValueReader::forValue('')));
-        $this->mockTokenStore->expects($this->never())
-                             ->method('findUserByToken');
-        $this->assertNull($this->tokenAuthenticator->authenticate($this->mockRequest));
-    }
-
-    /**
-     * @test
-     */
     public function returnsNullWhenAuthorizationHeaderIsSetButEmpty()
     {
-        $this->mockRequest->expects($this->exactly(2))
-                          ->method('hasHeader')
-                          ->will($this->onConsecutiveCalls(true, false));
         $this->mockRequest->expects($this->once())
-                          ->method('readHeader')
-                          ->with($this->equalTo('HTTP_AUTHORIZATION'))
+                          ->method('hasRedirectHeader')
+                          ->will($this->returnValue(true));
+        $this->mockRequest->expects($this->once())
+                          ->method('readRedirectHeader')
                           ->will($this->returnValue(ValueReader::forValue('')));
         $this->mockTokenStore->expects($this->never())
                              ->method('findUserByToken');
@@ -168,38 +150,13 @@ class TokenAuthenticatorTest extends \PHPUnit_Framework_TestCase
      * @test
      * @dataProvider  validTokens
      */
-    public function returnsUserWhenRedirectAuthorizationHeaderContainsValidToken($headerValue, $tokenValue)
-    {
-        $this->mockRequest->expects($this->exactly(3))
-                          ->method('hasHeader')
-                          ->will($this->onConsecutiveCalls(false, true, true));
-        $this->mockRequest->expects($this->once())
-                          ->method('readHeader')
-                          ->with($this->equalTo('REDIRECT_HTTP_AUTHORIZATION'))
-                          ->will($this->returnValue(ValueReader::forValue($headerValue)));
-        $user = $this->getMock('stubbles\webapp\auth\User');
-        $this->mockTokenStore->expects($this->once())
-                             ->method('findUserByToken')
-                             ->with(
-                                     $this->equalTo($this->mockRequest),
-                                     $this->equalTo(new Token($tokenValue))
-                               )
-                             ->will($this->returnValue($user));
-        $this->assertSame($user, $this->tokenAuthenticator->authenticate($this->mockRequest));
-    }
-
-    /**
-     * @test
-     * @dataProvider  validTokens
-     */
     public function returnsUserWhenAuthorizationHeaderContainsValidToken($headerValue, $tokenValue)
     {
-        $this->mockRequest->expects($this->exactly(2))
-                          ->method('hasHeader')
-                          ->will($this->onConsecutiveCalls(true, false));
         $this->mockRequest->expects($this->once())
-                          ->method('readHeader')
-                          ->with($this->equalTo('HTTP_AUTHORIZATION'))
+                          ->method('hasRedirectHeader')
+                          ->will($this->returnValue(true));
+        $this->mockRequest->expects($this->once())
+                          ->method('readRedirectHeader')
                           ->will($this->returnValue(ValueReader::forValue($headerValue)));
         $user = $this->getMock('stubbles\webapp\auth\User');
         $this->mockTokenStore->expects($this->once())
