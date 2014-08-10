@@ -108,29 +108,41 @@ class Auth implements BindingModule
      */
     public function configure(Binder $binder)
     {
-        $binder->bind('stubbles\webapp\auth\AuthenticationProvider')
-               ->named('original')
-               ->to($this->authenticationProvider);
-        if (null !== $this->tokenStore) {
-            $binder->bind('stubbles\webapp\auth\AuthenticationProvider')
-                   ->named('stubbles.webapp.auth.token.loginProvider')
-                   ->to($this->loginProvider);
-            $binder->bind('stubbles\webapp\auth\token\TokenStore')
-                   ->to($this->tokenStore);
-        }
-
-        if (null !== $this->authorizationProvider) {
-            $binder->bind('stubbles\webapp\auth\AuthorizationProvider')
-                   ->named('original')
-                   ->to($this->authorizationProvider);
-        }
-
         if ($this->enableSessionCaching) {
             $binder->bind('stubbles\webapp\auth\AuthenticationProvider')
                    ->to('stubbles\webapp\auth\session\CachingAuthenticationProvider');
+            $binder->bind('stubbles\webapp\auth\AuthenticationProvider')
+               ->named('original')
+               ->to($this->authenticationProvider);
             if (null !== $this->authorizationProvider) {
                 $binder->bind('stubbles\webapp\auth\AuthorizationProvider')
                    ->to('stubbles\webapp\auth\session\CachingAuthorizationProvider');
+                $binder->bind('stubbles\webapp\auth\AuthorizationProvider')
+                       ->named('original')
+                       ->to($this->authorizationProvider);
+            }
+
+            if (null !== $this->tokenStore) {
+                $binder->bind('stubbles\webapp\auth\AuthenticationProvider')
+                       ->named('stubbles.webapp.auth.token.loginProvider')
+                       ->to($this->loginProvider);
+                $binder->bind('stubbles\webapp\auth\token\TokenStore')
+                       ->to($this->tokenStore);
+            }
+        } else {
+            $binder->bind('stubbles\webapp\auth\AuthenticationProvider')
+               ->to($this->authenticationProvider);
+            if (null !== $this->tokenStore) {
+                $binder->bind('stubbles\webapp\auth\AuthenticationProvider')
+                       ->named('stubbles.webapp.auth.token.loginProvider')
+                       ->to($this->loginProvider);
+                $binder->bind('stubbles\webapp\auth\token\TokenStore')
+                       ->to($this->tokenStore);
+            }
+
+            if (null !== $this->authorizationProvider) {
+                $binder->bind('stubbles\webapp\auth\AuthorizationProvider')
+                       ->to($this->authorizationProvider);
             }
         }
     }
