@@ -97,11 +97,22 @@ class TokenAuthenticatorTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @return  \PHPUnit_Framework_MockObject_MockObject
+     */
+    private function mockTokenAwareUser()
+    {
+        return $this->getMock(
+                'stubbles\webapp\auth\TokenAwareUser',
+                ['name', 'firstName', 'lastName', 'mailAddress']
+        );
+    }
+
+    /**
      * @test
      */
     public function createsAndStoresTokenFromUserReturnedByLoginProvider()
     {
-        $user = $this->getMock('stubbles\webapp\auth\User');
+        $user = $this->mockTokenAwareUser();
         $this->mockRequest->expects($this->any())
                           ->method('hasHeader')
                           ->will($this->returnValue(false));
@@ -118,6 +129,30 @@ class TokenAuthenticatorTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(
                 $user,
                 $this->tokenAuthenticator->authenticate($this->mockRequest)
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function userReturnedByLoginProviderHasToken()
+    {
+        $user = $this->mockTokenAwareUser();
+        $this->mockRequest->expects($this->any())
+                          ->method('hasHeader')
+                          ->will($this->returnValue(false));
+        $this->mockLoginProvider->expects($this->once())
+                                ->method('authenticate')
+                                ->will($this->returnValue($user));
+        $this->mockTokenStore->expects($this->once())
+                             ->method('store')
+                             ->with(
+                                     $this->equalTo($this->mockRequest),
+                                     $this->isInstanceOf('stubbles\webapp\auth\Token'),
+                                     $this->equalTo($user)
+                               );
+        $this->assertNotNull(
+                $this->tokenAuthenticator->authenticate($this->mockRequest)->token()
         );
     }
 
@@ -159,7 +194,7 @@ class TokenAuthenticatorTest extends \PHPUnit_Framework_TestCase
         $this->mockRequest->expects($this->once())
                           ->method('readRedirectHeader')
                           ->will($this->returnValue(ValueReader::forValue($headerValue)));
-        $user = $this->getMock('stubbles\webapp\auth\User');
+        $user = $this->mockTokenAwareUser();
         $this->mockTokenStore->expects($this->once())
                              ->method('findUserByToken')
                              ->with(
@@ -168,5 +203,32 @@ class TokenAuthenticatorTest extends \PHPUnit_Framework_TestCase
                                )
                              ->will($this->returnValue($user));
         $this->assertSame($user, $this->tokenAuthenticator->authenticate($this->mockRequest));
+    }
+
+    /**
+     * @test
+     * @dataProvider  validTokens
+     */
+    public function returnedUserFromValidTokenHasToken($headerValue, $tokenValue)
+    {
+        $this->mockRequest->expects($this->once())
+                          ->method('hasRedirectHeader')
+                          ->will($this->returnValue(true));
+        $this->mockRequest->expects($this->once())
+                          ->method('readRedirectHeader')
+                          ->will($this->returnValue(ValueReader::forValue($headerValue)));
+        $user  = $this->mockTokenAwareUser();
+        $token = new Token($tokenValue);
+        $this->mockTokenStore->expects($this->once())
+                             ->method('findUserByToken')
+                             ->with(
+                                     $this->equalTo($this->mockRequest),
+                                     $this->equalTo($token)
+                               )
+                             ->will($this->returnValue($user));
+        $this->assertEquals(
+                $token,
+                $this->tokenAuthenticator->authenticate($this->mockRequest)->token()
+        );
     }
 }
