@@ -26,6 +26,7 @@ use stubbles\webapp\session\Session;
  * }
  *
  * @since  5.0.0
+ * @Singleton
  */
 class RolesProvider implements InjectionProvider
 {
