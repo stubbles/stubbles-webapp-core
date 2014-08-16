@@ -19,7 +19,9 @@
 
 ### Other changes
 
-   * upgraded to stubbles/core 4.1 and stubbles/input 3.1
+   * upgraded stubbles/core to 4.1
+   * upgraded stubbles/input to 3.1
+   * ensured compatibility with stubbles/webapp-session 5.0
 
 
 4.0.0 (2014-07-31)

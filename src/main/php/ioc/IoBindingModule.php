@@ -11,7 +11,7 @@ namespace stubbles\webapp\ioc;
 use stubbles\input\web\BaseWebRequest;
 use stubbles\ioc\Binder;
 use stubbles\ioc\module\BindingModule;
-use stubbles\lang\exception\RuntimeException;
+use stubbles\webapp\websession\SessionBindingScope;
 /**
  * Module to configure the binder with instances for request, session and response.
  *
@@ -65,14 +65,9 @@ class IoBindingModule implements BindingModule
      * </code>
      *
      * @param   callable  $sessionCreator  optional
-     * @throws  \stubbles\lang\exception\RuntimeException  in case a session creator is passed and stubbles/webapp-session is not available
      */
     public function __construct(callable $sessionCreator = null)
     {
-        if (null != $sessionCreator && !function_exists('stubbles\webapp\session\bind')) {
-            throw new RuntimeException('Passed a session creator, but function stubbles\webapp\session\bind() can not be found. Did you install stubbles/webapp-session?');
-        }
-
         $this->sessionCreator = $sessionCreator;
     }
 
@@ -129,10 +124,9 @@ class IoBindingModule implements BindingModule
 
         if (null !== $this->sessionCreator) {
             $sessionCreator = $this->sessionCreator;
-            \stubbles\webapp\session\bind(
-                    $binder,
-                    $sessionCreator($request, $response)
-            );
+            $session = $sessionCreator($request, $response);
+            $binder->bind('stubbles\webapp\session\Session')->toInstance($session);
+            $binder->setSessionScope(new SessionBindingScope($session));
         }
     }
 
