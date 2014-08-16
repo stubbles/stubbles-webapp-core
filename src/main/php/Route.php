@@ -11,6 +11,7 @@ namespace stubbles\webapp;
 use stubbles\lang;
 use stubbles\webapp\auth\Roles;
 use stubbles\webapp\response\SupportedMimeTypes;
+use stubbles\webapp\routing\RoutingAnnotations;
 /**
  * Represents information about a route that can be called.
  *
@@ -30,6 +31,12 @@ class Route implements ConfigurableRoute
      * @type  string|callback
      */
     private $callback;
+    /**
+     * list of annotations on callback
+     *
+     * @type  \stubbles\webapp\routing\RoutingAnnotations
+     */
+    private $routingAnnotations;
     /**
      * request method this route is applicable for
      *
@@ -277,11 +284,7 @@ class Route implements ConfigurableRoute
             return true;
         }
 
-        if (is_callable($this->callback)) {
-            return false;
-        }
-
-        $this->requiresHttps = lang\reflect($this->callback)->hasAnnotation('RequiresHttps');
+        $this->requiresHttps = $this->routingAnnotations()->requiresHttps();
         return $this->requiresHttps;
     }
 
@@ -318,11 +321,7 @@ class Route implements ConfigurableRoute
             return true;
         }
 
-        if (is_callable($this->callback)) {
-            return false;
-        }
-
-        $this->requiresLogin = lang\reflect($this->callback)->hasAnnotation('RequiresLogin');
+        $this->requiresLogin = $this->routingAnnotations()->requiresLogin();
         return $this->requiresLogin;
     }
 
@@ -379,12 +378,7 @@ class Route implements ConfigurableRoute
     private function rolesAware()
     {
         if (null === $this->rolesAware) {
-            if (is_callable($this->callback)) {
-                $this->rolesAware = false;
-            } else {
-                $class = lang\reflect($this->callback);
-                $this->rolesAware = $class->hasAnnotation('RolesAware');
-            }
+            $this->rolesAware = $this->routingAnnotations()->rolesAware();
         }
 
         return $this->rolesAware;
@@ -397,17 +391,8 @@ class Route implements ConfigurableRoute
      */
     private function requiredRole()
     {
-        if (null !== $this->requiredRole) {
-            return $this->requiredRole;
-        }
-
-        if (is_callable($this->callback)) {
-            return null;
-        }
-
-        $class = lang\reflect($this->callback);
-        if ($class->hasAnnotation('RequiresRole')) {
-            $this->requiredRole = $class->getAnnotation('RequiresRole')->getRole();
+        if (null === $this->requiredRole) {
+            $this->requiredRole = $this->routingAnnotations()->requiredRole();
         }
 
         return $this->requiredRole;
@@ -459,5 +444,19 @@ class Route implements ConfigurableRoute
     {
         $this->disableContentNegotation = true;
         return $this;
+    }
+
+    /**
+     * returns list of callback annotations
+     *
+     * @return  \stubbles\webapp\routing\RoutingAnnotations
+     */
+    private function routingAnnotations()
+    {
+        if (null === $this->routingAnnotations) {
+            $this->routingAnnotations = new RoutingAnnotations($this->callback);
+        }
+
+        return $this->routingAnnotations;
     }
 }
