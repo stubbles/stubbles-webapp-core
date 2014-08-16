@@ -31,11 +31,43 @@ namespace stubbles\webapp {
     }
 
 }
-namespace stubbles\webapp\session {
+namespace stubbles\webapp\websession {
     use stubbles\input\web\WebRequest;
     use stubbles\webapp\response\Response;
     use stubbles\webapp\session\NullSession;
     use stubbles\webapp\websession\WebBoundSessionId;
+
+    /**
+     * returns a callable which creates a session based on php's session implementation
+     *
+     * @param   string  $sessionName  name of session to create
+     * @return  callable
+     * @since   4.0.0
+     */
+    function native($sessionName)
+    {
+        return function(WebRequest $request) use($sessionName)
+               {
+                    return \stubbles\webapp\session\native($sessionName, md5($request->readHeader('HTTP_USER_AGENT')->unsecure()));
+               };
+    }
+
+    /**
+     * returns a callable which creates a session that is not durable between requests
+     *
+     * The resulting session will create a new session id with each request. It
+     * does not store any values between requests.
+     *
+     * @return  callable
+     * @since   4.0.0
+     */
+    function noneDurable()
+    {
+        return function()
+               {
+                   return \stubbles\webapp\session\noneDurable();
+               };
+    }
 
     /**
      * returns a callable which creates a session that is durable between requests but does not store any values
@@ -52,6 +84,20 @@ namespace stubbles\webapp\session {
         return function(WebRequest $request, Response $response) use($sessionCookieName)
                {
                    return new NullSession(new WebBoundSessionId($request, $response, $sessionCookieName));
+               };
+    }
+
+    /**
+     * returns a callable which creates a session which does nothing, not even storing any values
+     *
+     * @return  callable
+     * @since   5.0.0
+     */
+    function nullSession()
+    {
+        return function()
+               {
+                   return \stubbles\webapp\session\nullSession();
                };
     }
 }
