@@ -10,7 +10,6 @@
 namespace stubbles\webapp\response;
 use stubbles\input\web\WebRequest;
 use stubbles\peer\http\Http;
-use stubbles\peer\http\HttpUri;
 use stubbles\peer\http\HttpVersion;
 /**
  * Base class for a response to a request.

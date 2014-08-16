@@ -52,7 +52,7 @@ class UriRequestTest extends \PHPUnit_Framework_TestCase
      * @param  string  $empty
      * @test
      * @dataProvider  emptyRequestMethods
-     * @expectedException  stubbles\lang\exception\IllegalArgumentException
+     * @expectedException  InvalidArgumentException
      */
     public function createInstanceWithEmptyRequestMethodThrowsIllegalArgumentException($empty)
     {
@@ -80,7 +80,7 @@ class UriRequestTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @dataProvider  emptyRequestMethods
-     * @expectedException  stubbles\lang\exception\IllegalArgumentException
+     * @expectedException  InvalidArgumentException
      * @since  4.0.0
      */
     public function castFromHttpUriInstanceWithoutRequestMethodThrowsIllegalArgumentException($empty)
@@ -101,7 +101,7 @@ class UriRequestTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @dataProvider  emptyRequestMethods
-     * @expectedException  stubbles\lang\exception\IllegalArgumentException
+     * @expectedException  InvalidArgumentException
      * @since  4.0.0
      */
     public function castFromHttpUriStringWithoutRequestMethodThrowsIllegalArgumentException($empty)

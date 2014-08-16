@@ -9,7 +9,6 @@
  */
 namespace stubbles\webapp\auth\ioc;
 use stubbles\ioc\InjectionProvider;
-use stubbles\lang\exception\RuntimeException;
 use stubbles\webapp\auth\Roles;
 /**
  * Can provide the currently logged in user.
@@ -48,7 +47,7 @@ class RolesProvider implements InjectionProvider
      *
      * @param   string  $name
      * @return  \stubbles\webapp\auth\Roles
-     * @throws  \stubbles\lang\exception\RuntimeException  in case no roles are present
+     * @throws  \RuntimeException  in case no roles are present
      */
     public function get($name = null)
     {
@@ -56,7 +55,7 @@ class RolesProvider implements InjectionProvider
             return self::$roles;
         }
 
-        throw new RuntimeException('No roles available - are you sure login and authorization happened?');
+        throw new \RuntimeException('No roles available - are you sure login and authorization happened?');
     }
 }
 

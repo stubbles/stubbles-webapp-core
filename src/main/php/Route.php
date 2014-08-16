@@ -9,7 +9,6 @@
  */
 namespace stubbles\webapp;
 use stubbles\lang;
-use stubbles\lang\exception\IllegalArgumentException;
 use stubbles\webapp\auth\Roles;
 use stubbles\webapp\response\SupportedMimeTypes;
 /**
@@ -101,12 +100,12 @@ class Route implements ConfigurableRoute
      * @param   string                                      $path           path this route is applicable for
      * @param   string|callable|\stubbles\webapp\Processor  $callback       code to be executed when the route is active
      * @param   string|string[]                             $requestMethod  optional  request method(s) this route is applicable for
-     * @throws  \stubbles\lang\exception\IllegalArgumentException
+     * @throws  \InvalidArgumentException
      */
     public function __construct($path, $callback, $requestMethod = null)
     {
         if (!is_callable($callback) && !($callback instanceof Processor) && !class_exists($callback)) {
-            throw new IllegalArgumentException('Given callback for path "' . $path . '" must be a callable, an instance of stubbles\webapp\Processor or a class name of an existing processor class');
+            throw new \InvalidArgumentException('Given callback for path "' . $path . '" must be a callable, an instance of stubbles\webapp\Processor or a class name of an existing processor class');
         }
 
         $this->path                  = $path;
@@ -119,7 +118,7 @@ class Route implements ConfigurableRoute
      *
      * @param   string|string[]  $requestMethod
      * @return  string
-     * @throws  \stubbles\lang\exception\IllegalArgumentException
+     * @throws  \InvalidArgumentException
      */
     private function arrayFrom($requestMethod)
     {
@@ -135,7 +134,7 @@ class Route implements ConfigurableRoute
             return $requestMethod;
         }
 
-        throw new IllegalArgumentException('Given request method must be null, a string or an array, but received ' . lang\getType($requestMethod));
+        throw new \InvalidArgumentException('Given request method must be null, a string or an array, but received ' . lang\getType($requestMethod));
     }
 
     /**
@@ -207,12 +206,12 @@ class Route implements ConfigurableRoute
      *
      * @param   string|callback|\stubbles\webapp\interceptor\PreInterceptor  $preInterceptor
      * @return  Route
-     * @throws  \stubbles\lang\exception\IllegalArgumentException
+     * @throws  \InvalidArgumentException
      */
     public function preIntercept($preInterceptor)
     {
         if (!is_callable($preInterceptor) && !($preInterceptor instanceof interceptor\PreInterceptor) && !class_exists($preInterceptor)) {
-            throw new IllegalArgumentException('Given pre interceptor must be a callable, an instance of stubbles\webapp\interceptor\PreInterceptor or a class name of an existing pre interceptor class');
+            throw new \InvalidArgumentException('Given pre interceptor must be a callable, an instance of stubbles\webapp\interceptor\PreInterceptor or a class name of an existing pre interceptor class');
         }
 
         $this->preInterceptors[] = $preInterceptor;
@@ -234,12 +233,12 @@ class Route implements ConfigurableRoute
      *
      * @param   string|callback|\stubbles\webapp\interceptor\PostInterceptor  $postInterceptor
      * @return  \stubbles\webapp\Route
-     * @throws  \stubbles\lang\exception\IllegalArgumentException
+     * @throws  \InvalidArgumentException
      */
     public function postIntercept($postInterceptor)
     {
         if (!is_callable($postInterceptor) && !($postInterceptor instanceof interceptor\PostInterceptor) && !class_exists($postInterceptor)) {
-            throw new IllegalArgumentException('Given pre interceptor must be a callable, an instance of stubbles\webapp\interceptor\PostInterceptor or a class name of an existing post interceptor class');
+            throw new \InvalidArgumentException('Given pre interceptor must be a callable, an instance of stubbles\webapp\interceptor\PostInterceptor or a class name of an existing post interceptor class');
         }
 
         $this->postInterceptors[] = $postInterceptor;

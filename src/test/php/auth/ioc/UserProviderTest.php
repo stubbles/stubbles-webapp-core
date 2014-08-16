@@ -9,7 +9,6 @@
  */
 namespace stubbles\webapp\auth\ioc;
 use stubbles\lang;
-use stubbles\webapp\auth\User;
 /**
  * Test for stubbles\webapp\auth\ioc\UserProvider.
  *
@@ -68,7 +67,7 @@ class UserProviderTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @expectedException  stubbles\lang\exception\RuntimeException
+     * @expectedException  RuntimeException
      */
     public function throwsRuntimeExceptionWhenNoUserStored()
     {
