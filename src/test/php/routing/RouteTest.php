@@ -616,6 +616,20 @@ class RouteTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
+     * @since  5.0.0
+     * @group  forbid_login
+     */
+    public function forbiddenWhenNotAlreadyLoggedInSetsInfoOnAuthConstraint()
+    {
+        $route = new Route('/hello/{name}',
+                           'stubbles\webapp\routing\OtherAnnotatedProcessor',
+                           'GET'
+                 );
+        $this->assertFalse($route->forbiddenWhenNotAlreadyLoggedIn()->authConstraint()->loginAllowed());
+    }
+
+    /**
+     * @test
      */
     public function supportNoMimeTypeByDefault()
     {

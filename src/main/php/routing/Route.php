@@ -292,6 +292,23 @@ class Route implements ConfigurableRoute
     }
 
     /**
+     * forbid the actual login
+     *
+     * Forbidding a login means that the user receives a 403 Forbidden response
+     * in case he accesses a restricted resource but is not logged in yet.
+     * Otherwise, he would just be redirected to the login uri of the
+     * authentication provider.
+     *
+     * @return  \stubbles\webapp\routing\Route
+     * @since   5.0.0
+     */
+    public function forbiddenWhenNotAlreadyLoggedIn()
+    {
+        $this->authConstraint()->forbiddenWhenNotAlreadyLoggedIn();
+        return $this;
+    }
+
+    /**
      * adds a role which is required to access the route
      *
      * @param   string  $requiredRole

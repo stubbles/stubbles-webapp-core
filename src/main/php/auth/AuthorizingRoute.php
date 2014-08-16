@@ -147,8 +147,11 @@ class AuthorizingRoute implements ProcessableRoute
         $authenticationProvider = $this->injector->getInstance('stubbles\webapp\auth\AuthenticationProvider');
         try {
             $user = $authenticationProvider->authenticate($request);
-            if (null == $user) {
+            if (null == $user && $this->authConstraint->loginAllowed()) {
                 $response->redirect($authenticationProvider->loginUri($request));
+            } elseif (null == $user) {
+                $response->forbidden();
+                return null;
             }
 
             return UserProvider::store($user);

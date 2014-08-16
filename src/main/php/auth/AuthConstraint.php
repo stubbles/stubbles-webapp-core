@@ -27,7 +27,13 @@ class AuthConstraint
      *
      * @type  bool
      */
-    private $requiresLogin            = false;
+    private $requiresLogin         = false;
+    /**
+     * switch whether a login is allowed
+     *
+     * @type  bool
+     */
+    private $loginAllowed          = true;
     /**
      * required role to access the route
      *
@@ -54,6 +60,32 @@ class AuthConstraint
     {
         $this->requiresLogin = true;
         return $this;
+    }
+
+    /**
+     * forbid the actual login
+     *
+     * Forbidding a login means that the user receives a 403 Forbidden response
+     * in case he accesses a restricted resource but is not logged in yet.
+     * Otherwise, he would just be redirected to the login uri of the
+     * authentication provider.
+     *
+     * @return  \stubbles\webapp\auth\AuthConstraint
+     */
+    public function forbiddenWhenNotAlreadyLoggedIn()
+    {
+        $this->loginAllowed = false;
+        return $this;
+    }
+
+    /**
+     * checks whether a login is allowed
+     *
+     * @return  bool
+     */
+    public function loginAllowed()
+    {
+        return $this->loginAllowed;
     }
 
     /**

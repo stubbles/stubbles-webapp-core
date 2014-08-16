@@ -195,6 +195,25 @@ class AuthorizingRouteTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
+     * @since  5.0.0
+     * @group  forbid_login
+     */
+    public function applyPreInterceptorsTriggers403ForbiddenWhenNotAuthenticatedAndRedirectToLoginForbidden()
+    {
+        $this->authConstraint->forbiddenWhenNotAlreadyLoggedIn();
+        $mockAuthenticationProvider = $this->mockAuthenticationProvider();
+        $mockAuthenticationProvider->expects($this->once())
+                                   ->method('authenticate')
+                                   ->will($this->returnValue(null));
+        $this->mockResponse->expects($this->once())
+                           ->method('forbidden');
+        $this->mockActualRoute->expects($this->never())
+                              ->method('applyPreInterceptors');
+        $this->assertFalse($this->authorizingRoute->applyPreInterceptors($this->mockRequest, $this->mockResponse));
+    }
+
+    /**
+     * @test
      */
     public function applyPreInterceptorsCallsActualRouteWhenAuthenticatedAndNoSpecificAuthorizationRequired()
     {
