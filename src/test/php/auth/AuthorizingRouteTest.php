@@ -12,7 +12,7 @@ use stubbles\peer\http\HttpUri;
 use stubbles\webapp\auth\ioc\RolesProvider;
 use stubbles\webapp\auth\ioc\UserProvider;
 use stubbles\webapp\response\SupportedMimeTypes;
-use stubbles\webapp\routing\Route;
+use stubbles\webapp\routing\RoutingAnnotations;
 /**
  * Tests for stubbles\webapp\auth\AuthorizingRoute.
  *
@@ -24,15 +24,15 @@ class AuthorizingRouteTest extends \PHPUnit_Framework_TestCase
     /**
      * instance to test
      *
-     * @type  AuthorizingRoute
+     * @type  \stubbles\webapp\auth\AuthorizingRoute
      */
     private $authorizingRoute;
     /**
      * route configuration
      *
-     * @type  Route
+     * @type  \stubbles\webapp\auth\AuthConstraint
      */
-    private $routeConfig;
+    private $authConstraint;
     /**
      * actual route to execute
      *
@@ -63,13 +63,13 @@ class AuthorizingRouteTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->routeConfig      = new Route('/hello', function() {});
+        $this->authConstraint   = new AuthConstraint(new RoutingAnnotations(function() {}));
         $this->mockActualRoute  = $this->getMock('stubbles\webapp\routing\ProcessableRoute');
         $this->mockInjector     = $this->getMockBuilder('stubbles\ioc\Injector')
                                        ->disableOriginalConstructor()
                                        ->getMock();
         $this->authorizingRoute = new AuthorizingRoute(
-                $this->routeConfig,
+                $this->authConstraint,
                 $this->mockActualRoute,
                 $this->mockInjector
         );
@@ -198,7 +198,7 @@ class AuthorizingRouteTest extends \PHPUnit_Framework_TestCase
      */
     public function applyPreInterceptorsCallsActualRouteWhenAuthenticatedAndNoSpecificAuthorizationRequired()
     {
-        $this->routeConfig->withLoginOnly();
+        $this->authConstraint->requireLogin();
         $mockAuthenticationProvider = $this->mockAuthenticationProvider();
         $mockAuthenticationProvider->expects($this->once())
                                    ->method('authenticate')
@@ -216,7 +216,7 @@ class AuthorizingRouteTest extends \PHPUnit_Framework_TestCase
     public function storesUserInUserProviderWhenAuthenticated()
     {
         $user = $this->getMock('stubbles\webapp\auth\User');
-        $this->routeConfig->withLoginOnly();
+        $this->authConstraint->requireLogin();
         $mockAuthenticationProvider = $this->mockAuthenticationProvider();
         $mockAuthenticationProvider->expects($this->once())
                                    ->method('authenticate')
@@ -250,7 +250,7 @@ class AuthorizingRouteTest extends \PHPUnit_Framework_TestCase
      */
     public function applyPreInterceptorsTriggersInternalServerErrorWhenAuthorizationThrowsAuthHandlerException()
     {
-        $this->routeConfig->withRoleOnly('admin');
+        $this->authConstraint->requireRole('admin');
         $mockAuthorizationProvider = $this->mockAuthorizationProvider();
         $mockAuthorizationProvider->expects($this->once())
                                   ->method('roles')
@@ -269,7 +269,7 @@ class AuthorizingRouteTest extends \PHPUnit_Framework_TestCase
      */
     public function applyPreInterceptorsTriggersStatusCode503WhenAuthorizationThrowsExternalAuthHandlerException()
     {
-        $this->routeConfig->withRoleOnly('admin');
+        $this->authConstraint->requireRole('admin');
         $mockAuthorizationProvider = $this->mockAuthorizationProvider();
         $mockAuthorizationProvider->expects($this->once())
                                   ->method('roles')
@@ -291,7 +291,7 @@ class AuthorizingRouteTest extends \PHPUnit_Framework_TestCase
      */
     public function applyPreInterceptorsTriggers403ForbiddenWhenNotAuthorized()
     {
-        $this->routeConfig->withRoleOnly('admin');
+        $this->authConstraint->requireRole('admin');
         $mockAuthorizationProvider = $this->mockAuthorizationProvider();
         $mockAuthorizationProvider->expects($this->once())
                                   ->method('roles')
@@ -308,7 +308,7 @@ class AuthorizingRouteTest extends \PHPUnit_Framework_TestCase
      */
     public function applyPreInterceptorsCallsActualRouteWhenAuthenticatedAndAuthorized()
     {
-        $this->routeConfig->withRoleOnly('admin');
+        $this->authConstraint->requireRole('admin');
         $mockAuthorizationProvider = $this->mockAuthorizationProvider();
         $mockAuthorizationProvider->expects($this->once())
                                   ->method('roles')
@@ -326,7 +326,7 @@ class AuthorizingRouteTest extends \PHPUnit_Framework_TestCase
     public function storesUserInUserProviderWhenAuthenticatedAndAuthorized()
     {
         $user = $this->getMock('stubbles\webapp\auth\User');
-        $this->routeConfig->withRoleOnly('admin');
+        $this->authConstraint->requireRole('admin');
         $mockAuthorizationProvider = $this->mockAuthorizationProvider($user);
         $mockAuthorizationProvider->expects($this->once())
                                   ->method('roles')
@@ -341,7 +341,7 @@ class AuthorizingRouteTest extends \PHPUnit_Framework_TestCase
      */
     public function storesRolesInRolesProviderWhenAuthenticatedAndAuthorized()
     {
-        $this->routeConfig->withRoleOnly('admin');
+        $this->authConstraint->requireRole('admin');
         $mockAuthorizationProvider = $this->mockAuthorizationProvider();
         $roles = new Roles(['admin']);
         $mockAuthorizationProvider->expects($this->once())
@@ -367,7 +367,7 @@ class AuthorizingRouteTest extends \PHPUnit_Framework_TestCase
      */
     public function processCallsProcessOfActualRouteWhenAuthorized()
     {
-        $this->routeConfig->withRoleOnly('admin');
+        $this->authConstraint->requireRole('admin');
         $mockAuthorizationProvider = $this->mockAuthorizationProvider();
         $mockAuthorizationProvider->expects($this->once())
                                   ->method('roles')
@@ -399,7 +399,7 @@ class AuthorizingRouteTest extends \PHPUnit_Framework_TestCase
      */
     public function applyPostInterceptorsCallsActualRouteWhenAuthorized()
     {
-        $this->routeConfig->withRoleOnly('admin');
+        $this->authConstraint->requireRole('admin');
         $mockAuthorizationProvider = $this->mockAuthorizationProvider();
         $mockAuthorizationProvider->expects($this->once())
                                   ->method('roles')

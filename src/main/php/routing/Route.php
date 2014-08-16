@@ -11,7 +11,7 @@ namespace stubbles\webapp\routing;
 use stubbles\lang;
 use stubbles\webapp\Processor;
 use stubbles\webapp\UriRequest;
-use stubbles\webapp\auth\Roles;
+use stubbles\webapp\auth\AuthConstraint;
 use stubbles\webapp\interceptor\PreInterceptor;
 use stubbles\webapp\interceptor\PostInterceptor;
 use stubbles\webapp\response\SupportedMimeTypes;
@@ -31,7 +31,7 @@ class Route implements ConfigurableRoute
     /**
      * code to be executed when the route is active
      *
-     * @type  string|callback
+     * @type  string|callable|\stubbles\webapp\Processor
      */
     private $callback;
     /**
@@ -65,23 +65,11 @@ class Route implements ConfigurableRoute
      */
     private $requiresHttps            = false;
     /**
-     * switch whether login is required for this route
+     * auth constraint for this route
      *
-     * @type  bool
+     * @type  \stubbles\webapp\auth\AuthConstraint
      */
-    private $requiresLogin            = false;
-    /**
-     * required role to access the route
-     *
-     * @type  string
-     */
-    private $requiredRole;
-    /**
-     * whether the route needs access to roles of the user
-     *
-     * @type  bool
-     */
-    private $rolesAware;
+    private $authConstraint;
     /**
      * list of mime types supported by this route
      *
@@ -299,33 +287,8 @@ class Route implements ConfigurableRoute
      */
     public function withLoginOnly()
     {
-        $this->requiresLogin = true;
+        $this->authConstraint()->requireLogin();
         return $this;
-    }
-
-    /**
-     * checks whether auth is required
-     *
-     * @return  bool
-     */
-    public function requiresAuth()
-    {
-        return $this->requiresLogin() || $this->requiresRoles();
-    }
-
-    /**
-     * checks whether login is required
-     *
-     * @return  bool
-     */
-    private function requiresLogin()
-    {
-        if ($this->requiresLogin) {
-            return true;
-        }
-
-        $this->requiresLogin = $this->routingAnnotations()->requiresLogin();
-        return $this->requiresLogin;
     }
 
     /**
@@ -336,69 +299,32 @@ class Route implements ConfigurableRoute
      */
     public function withRoleOnly($requiredRole)
     {
-        $this->requiredRole = $requiredRole;
+        $this->authConstraint()->requireRole($requiredRole);
         return $this;
     }
 
     /**
-     * checks if access to this route required authorization
+     * checks whether auth is required
      *
      * @return  bool
      */
-    public function requiresRoles()
+    public function requiresAuth()
     {
-        return (null !== $this->requiredRole()) || $this->rolesAware();
+        return $this->authConstraint()->requiresAuth();
     }
 
     /**
-     * checks whether route is satisfied by the given roles
+     * returns auth constraint for this route
      *
-     * @param   \stubbles\webapp\auth\Roles  $roles
-     * @return  bool
+     * @return  \stubbles\webapp\auth\AuthConstraint
      */
-    public function satisfiedByRoles(Roles $roles = null)
+    public function authConstraint()
     {
-        if (null === $roles) {
-            return false;
+        if (null === $this->authConstraint) {
+            $this->authConstraint = new AuthConstraint($this->routingAnnotations());
         }
 
-        if ($this->rolesAware()) {
-            return true;
-        }
-
-        return $roles->contain($this->requiredRole());
-    }
-
-    /**
-     * checks whether the route wants to be aware of roles
-     *
-     * Roles aware means that a resource might work different depending on the
-     * roles a user has, but that access to the resource in general is not
-     * forbidden even if the user doesn't have any of the roles.
-     *
-     * @return  bool
-     */
-    private function rolesAware()
-    {
-        if (null === $this->rolesAware) {
-            $this->rolesAware = $this->routingAnnotations()->rolesAware();
-        }
-
-        return $this->rolesAware;
-    }
-
-    /**
-     * returns required role for this route
-     *
-     * @return  string
-     */
-    private function requiredRole()
-    {
-        if (null === $this->requiredRole) {
-            $this->requiredRole = $this->routingAnnotations()->requiredRole();
-        }
-
-        return $this->requiredRole;
+        return $this->authConstraint;
     }
 
     /**

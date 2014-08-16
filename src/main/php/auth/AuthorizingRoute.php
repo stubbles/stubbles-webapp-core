@@ -14,7 +14,6 @@ use stubbles\webapp\auth\ioc\RolesProvider;
 use stubbles\webapp\auth\ioc\UserProvider;
 use stubbles\webapp\response\Response;
 use stubbles\webapp\routing\ProcessableRoute;
-use stubbles\webapp\routing\Route;
 /**
  * Description of AuthorizingRoute
  *
@@ -25,9 +24,9 @@ class AuthorizingRoute implements ProcessableRoute
     /**
      * route configuration
      *
-     * @type  \stubbles\webapp\routing\Route
+     * @type  \stubbles\webapp\auth\AuthConstraint
      */
-    private $routeConfig;
+    private $authConstraint;
     /**
      * actual route which requires auth
      *
@@ -50,18 +49,18 @@ class AuthorizingRoute implements ProcessableRoute
     /**
      * constructor
      *
-     * @param  \stubbles\webapp\routing\Route             $routeconfig
+     * @param  \stubbles\webapp\auth\AuthConstraint       $authConstraint
      * @param  \stubbles\webapp\routing\ProcessableRoute  $actualRoute
      * @param  \stubbles\ioc\Injector                     $injector
      */
     public function __construct(
-            Route $routeconfig,
+            AuthConstraint $authConstraint,
             ProcessableRoute $actualRoute,
             Injector $injector)
     {
-        $this->routeConfig = $routeconfig;
-        $this->actualRoute = $actualRoute;
-        $this->injector    = $injector;
+        $this->authConstraint = $authConstraint;
+        $this->actualRoute    = $actualRoute;
+        $this->injector       = $injector;
     }
 
     /**
@@ -121,8 +120,8 @@ class AuthorizingRoute implements ProcessableRoute
     {
         $this->authorized = false;
         $user = $this->authenticate($request, $response);
-        if (null !== $user && $this->routeConfig->requiresRoles()) {
-            if ($this->routeConfig->satisfiedByRoles(
+        if (null !== $user && $this->authConstraint->requiresRoles()) {
+            if ($this->authConstraint->satisfiedByRoles(
                     RolesProvider::store($this->roles($response, $user)))
                 ) {
                 $this->authorized = true;

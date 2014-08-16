@@ -209,7 +209,7 @@ class Routing implements RoutingConfigurator
     {
         if ($routeConfig->requiresAuth()) {
             return new AuthorizingRoute(
-                $routeConfig,
+                $routeConfig->authConstraint(),
                 $this->createMatchingRoute($calledUri, $routeConfig),
                 $this->injector
             );

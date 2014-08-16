@@ -57,6 +57,10 @@ class RoutingAnnotations
     /**
      * returns true if callback is annotated with @RolesAware
      *
+     * Roles aware means that a route might work different depending on the
+     * roles a user has, but that access to the route in general is not
+     * forbidden even if the user doesn't have any of the roles.
+     *
      * @return  bool
      */
     public function rolesAware()

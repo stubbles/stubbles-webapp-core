@@ -455,7 +455,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
      */
     public function doesNotRequireRolesByDefault()
     {
-        $this->assertFalse($this->createRoute()->requiresRoles());
+        $this->assertFalse($this->createRoute()->authConstraint()->requiresRoles());
     }
 
     /**
@@ -463,7 +463,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
      */
     public function requiresRolesWhenRoleIsSet()
     {
-        $this->assertTrue($this->createRoute()->withRoleOnly('admin')->requiresRoles());
+        $this->assertTrue($this->createRoute()->withRoleOnly('admin')->authConstraint()->requiresRoles());
     }
 
     /**
@@ -476,7 +476,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                            new OtherAnnotatedProcessor(),
                            'GET'
                  );
-        $this->assertTrue($route->requiresRoles());
+        $this->assertTrue($route->authConstraint()->requiresRoles());
     }
 
     /**
@@ -489,7 +489,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                            'stubbles\webapp\routing\OtherAnnotatedProcessor',
                            'GET'
                  );
-        $this->assertTrue($route->requiresRoles());
+        $this->assertTrue($route->authConstraint()->requiresRoles());
     }
 
     /**
@@ -503,7 +503,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                            new RoleAwareAnnotatedProcessor(),
                            'GET'
                  );
-        $this->assertTrue($route->requiresRoles());
+        $this->assertTrue($route->authConstraint()->requiresRoles());
     }
 
     /**
@@ -517,7 +517,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                            'stubbles\webapp\routing\RoleAwareAnnotatedProcessor',
                            'GET'
                  );
-        $this->assertTrue($route->requiresRoles());
+        $this->assertTrue($route->authConstraint()->requiresRoles());
     }
 
     /**
@@ -527,7 +527,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
      */
     public function isNotSatisfiedByRolesWhenRolesAreNull()
     {
-        $this->assertFalse($this->createRoute()->satisfiedByRoles());
+        $this->assertFalse($this->createRoute()->authConstraint()->satisfiedByRoles());
     }
 
     /**
@@ -541,7 +541,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                            'stubbles\webapp\routing\RoleAwareAnnotatedProcessor',
                            'GET'
                  );
-        $this->assertFalse($route->satisfiedByRoles());
+        $this->assertFalse($route->authConstraint()->satisfiedByRoles());
     }
 
     /**
@@ -555,7 +555,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                            new RoleAwareAnnotatedProcessor(),
                            'GET'
                  );
-        $this->assertTrue($route->satisfiedByRoles(new Roles([])));
+        $this->assertTrue($route->authConstraint()->satisfiedByRoles(new Roles([])));
     }
 
     /**
@@ -569,7 +569,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                            new OtherAnnotatedProcessor(),
                            'GET'
                  );
-        $this->assertTrue($route->satisfiedByRoles(new Roles(['admin', 'superadmin'])));
+        $this->assertTrue($route->authConstraint()->satisfiedByRoles(new Roles(['admin', 'superadmin'])));
     }
 
     /**
@@ -583,7 +583,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                            new OtherAnnotatedProcessor(),
                            'GET'
                  );
-        $this->assertFalse($route->satisfiedByRoles(new Roles(['user'])));
+        $this->assertFalse($route->authConstraint()->satisfiedByRoles(new Roles(['user'])));
     }
 
     /**
@@ -597,7 +597,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                            'stubbles\webapp\routing\OtherAnnotatedProcessor',
                            'GET'
                  );
-        $this->assertTrue($route->satisfiedByRoles(new Roles(['admin', 'superadmin'])));
+        $this->assertTrue($route->authConstraint()->satisfiedByRoles(new Roles(['admin', 'superadmin'])));
     }
 
     /**
@@ -611,7 +611,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                            'stubbles\webapp\routing\OtherAnnotatedProcessor',
                            'GET'
                  );
-        $this->assertFalse($route->satisfiedByRoles(new Roles(['user'])));
+        $this->assertFalse($route->authConstraint()->satisfiedByRoles(new Roles(['user'])));
     }
 
     /**
