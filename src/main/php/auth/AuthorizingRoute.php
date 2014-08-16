@@ -10,11 +10,11 @@
 namespace stubbles\webapp\auth;
 use stubbles\input\web\WebRequest;
 use stubbles\ioc\Injector;
-use stubbles\webapp\ProcessableRoute;
-use stubbles\webapp\Route;
 use stubbles\webapp\auth\ioc\RolesProvider;
 use stubbles\webapp\auth\ioc\UserProvider;
 use stubbles\webapp\response\Response;
+use stubbles\webapp\routing\ProcessableRoute;
+use stubbles\webapp\routing\Route;
 /**
  * Description of AuthorizingRoute
  *
@@ -25,13 +25,13 @@ class AuthorizingRoute implements ProcessableRoute
     /**
      * route configuration
      *
-     * @type  \stubbles\webapp\Route
+     * @type  \stubbles\webapp\routing\Route
      */
     private $routeConfig;
     /**
      * actual route which requires auth
      *
-     * @type  \stubbles\webapp\ProcessableRoute
+     * @type  \stubbles\webapp\routing\ProcessableRoute
      */
     private $actualRoute;
     /**
@@ -50,9 +50,9 @@ class AuthorizingRoute implements ProcessableRoute
     /**
      * constructor
      *
-     * @param  \stubbles\webapp\Route             $routeconfig
-     * @param  \stubbles\webapp\ProcessableRoute  $actualRoute
-     * @param  \stubbles\ioc\Injector             $injector
+     * @param  \stubbles\webapp\routing\Route             $routeconfig
+     * @param  \stubbles\webapp\routing\ProcessableRoute  $actualRoute
+     * @param  \stubbles\ioc\Injector                     $injector
      */
     public function __construct(
             Route $routeconfig,

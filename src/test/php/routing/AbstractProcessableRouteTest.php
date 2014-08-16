@@ -7,9 +7,10 @@
  *
  * @package  stubbles\webapp
  */
-namespace stubbles\webapp;
+namespace stubbles\webapp\routing;
 use stubbles\input\web\WebRequest;
 use stubbles\webapp\auth\AuthHandler;
+use stubbles\webapp\UriRequest;
 use stubbles\webapp\response\Response;
 use stubbles\webapp\response\SupportedMimeTypes;
 /**
@@ -57,7 +58,7 @@ class TestAbstractProcessableRoute extends AbstractProcessableRoute
     public function process(WebRequest $request, Response $response) {}
 }
 /**
- * Tests for stubbles\webapp\AbstractProcessableRoute.
+ * Tests for stubbles\webapp\routing\AbstractProcessableRoute.
  *
  * @since  2.0.0
  * @group  core

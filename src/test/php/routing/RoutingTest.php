@@ -7,10 +7,13 @@
  *
  * @package  stubbles\webapp
  */
-namespace stubbles\webapp;
+namespace stubbles\webapp\routing;
 use stubbles\lang;
+use stubbles\webapp\UriRequest;
+use stubbles\webapp\interceptor\Interceptors;
+use stubbles\webapp\response\SupportedMimeTypes;
 /**
- * Tests for stubbles\webapp\Routing.
+ * Tests for stubbles\webapp\routing\Routing.
  *
  * @since  2.0.0
  * @group  core
@@ -57,7 +60,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsMissingRouteOnRouteSelectionWhenNoRouteAdded()
     {
-        $this->assertInstanceOf('stubbles\webapp\MissingRoute',
+        $this->assertInstanceOf('stubbles\webapp\routing\MissingRoute',
                                 $this->routing->findRoute($this->calledUri)
         );
     }
@@ -69,7 +72,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
     {
         $this->routing->onHead('/bar', function() {});
         $this->routing->onGet('/foo', function() {});
-        $this->assertInstanceOf('stubbles\webapp\MissingRoute',
+        $this->assertInstanceOf('stubbles\webapp\routing\MissingRoute',
                                 $this->routing->findRoute($this->calledUri)
         );
     }
@@ -82,7 +85,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
     {
         $this->routing->onHead('/hello', function() {});
         $this->routing->onGet('/foo', function() {});
-        $this->assertInstanceOf('stubbles\webapp\OptionsRoute',
+        $this->assertInstanceOf('stubbles\webapp\routing\OptionsRoute',
                                 $this->routing->findRoute('http://example.net/hello', 'OPTIONS')
         );
     }
@@ -95,7 +98,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
     {
         $this->routing->onHead('/hello', function() {});
         $this->routing->onGet('/foo', function() {});
-        $this->assertInstanceOf('stubbles\webapp\MethodNotAllowedRoute',
+        $this->assertInstanceOf('stubbles\webapp\routing\MethodNotAllowedRoute',
                                 $this->routing->findRoute($this->calledUri)
         );
     }
@@ -132,7 +135,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
     {
         $this->routing->onAll('/hello', function() { });
         $this->assertInstanceOf(
-                'stubbles\webapp\OptionsRoute',
+                'stubbles\webapp\routing\OptionsRoute',
                 $this->routing->findRoute('http://example.net/hello', 'OPTIONS')
         );
     }
@@ -168,8 +171,8 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
                              ->disableOriginalConstructor()
                              ->getMock();
         return new MatchingRoute(new UriRequest('http://example.net/' . $path, 'GET'),
-                                 new interceptor\Interceptors($mockInjector, $preInterceptors, $postInterceptors),
-                                 new response\SupportedMimeTypes([]),
+                                 new Interceptors($mockInjector, $preInterceptors, $postInterceptors),
+                                 new SupportedMimeTypes([]),
                                  $route,
                                  $mockInjector
         );

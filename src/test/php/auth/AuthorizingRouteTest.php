@@ -9,10 +9,10 @@
  */
 namespace stubbles\webapp\auth;
 use stubbles\peer\http\HttpUri;
-use stubbles\webapp\Route;
 use stubbles\webapp\auth\ioc\RolesProvider;
 use stubbles\webapp\auth\ioc\UserProvider;
 use stubbles\webapp\response\SupportedMimeTypes;
+use stubbles\webapp\routing\Route;
 /**
  * Tests for stubbles\webapp\auth\AuthorizingRoute.
  *
@@ -64,7 +64,7 @@ class AuthorizingRouteTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->routeConfig      = new Route('/hello', function() {});
-        $this->mockActualRoute  = $this->getMock('stubbles\webapp\ProcessableRoute');
+        $this->mockActualRoute  = $this->getMock('stubbles\webapp\routing\ProcessableRoute');
         $this->mockInjector     = $this->getMockBuilder('stubbles\ioc\Injector')
                                        ->disableOriginalConstructor()
                                        ->getMock();

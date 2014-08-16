@@ -7,10 +7,11 @@
  *
  * @package  stubbles\webapp
  */
-namespace stubbles\webapp;
+namespace stubbles\webapp\routing;
+use stubbles\webapp\UriRequest;
 use stubbles\webapp\response\SupportedMimeTypes;
 /**
- * Tests for stubbles\webapp\MissingRoute.
+ * Tests for stubbles\webapp\routing\MissingRoute.
  *
  * @since  2.2.0
  * @group  core

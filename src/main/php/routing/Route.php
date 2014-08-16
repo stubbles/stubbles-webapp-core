@@ -7,11 +7,14 @@
  *
  * @package  stubbles\webapp
  */
-namespace stubbles\webapp;
+namespace stubbles\webapp\routing;
 use stubbles\lang;
+use stubbles\webapp\Processor;
+use stubbles\webapp\UriRequest;
 use stubbles\webapp\auth\Roles;
+use stubbles\webapp\interceptor\PreInterceptor;
+use stubbles\webapp\interceptor\PostInterceptor;
 use stubbles\webapp\response\SupportedMimeTypes;
-use stubbles\webapp\routing\RoutingAnnotations;
 /**
  * Represents information about a route that can be called.
  *
@@ -46,13 +49,13 @@ class Route implements ConfigurableRoute
     /**
      * list of pre interceptors which should be applied to this route
      *
-     * @type  string[]|\Closure[]
+     * @type  string[]|callable[]
      */
     private $preInterceptors          = [];
     /**
      * list of post interceptors which should be applied to this route
      *
-     * @type  string[]|\Closure[]
+     * @type  string[]|callable[]
      */
     private $postInterceptors         = [];
     /**
@@ -211,13 +214,13 @@ class Route implements ConfigurableRoute
     /**
      * add a pre interceptor for this route
      *
-     * @param   string|callback|\stubbles\webapp\interceptor\PreInterceptor  $preInterceptor
-     * @return  Route
+     * @param   string|callable|\stubbles\webapp\interceptor\PreInterceptor  $preInterceptor
+     * @return  \stubbles\webapp\routing\Route
      * @throws  \InvalidArgumentException
      */
     public function preIntercept($preInterceptor)
     {
-        if (!is_callable($preInterceptor) && !($preInterceptor instanceof interceptor\PreInterceptor) && !class_exists($preInterceptor)) {
+        if (!is_callable($preInterceptor) && !($preInterceptor instanceof PreInterceptor) && !class_exists($preInterceptor)) {
             throw new \InvalidArgumentException('Given pre interceptor must be a callable, an instance of stubbles\webapp\interceptor\PreInterceptor or a class name of an existing pre interceptor class');
         }
 
@@ -228,7 +231,7 @@ class Route implements ConfigurableRoute
     /**
      * returns list of pre interceptors which should be applied to this route
      *
-     * @return  string[]|\Closure[]
+     * @return  string[]|callable[]
      */
     public function preInterceptors()
     {
@@ -238,13 +241,13 @@ class Route implements ConfigurableRoute
     /**
      * add a post interceptor for this route
      *
-     * @param   string|callback|\stubbles\webapp\interceptor\PostInterceptor  $postInterceptor
-     * @return  \stubbles\webapp\Route
+     * @param   string|callable|\stubbles\webapp\interceptor\PostInterceptor  $postInterceptor
+     * @return  \stubbles\webapp\routing\Route
      * @throws  \InvalidArgumentException
      */
     public function postIntercept($postInterceptor)
     {
-        if (!is_callable($postInterceptor) && !($postInterceptor instanceof interceptor\PostInterceptor) && !class_exists($postInterceptor)) {
+        if (!is_callable($postInterceptor) && !($postInterceptor instanceof PostInterceptor) && !class_exists($postInterceptor)) {
             throw new \InvalidArgumentException('Given pre interceptor must be a callable, an instance of stubbles\webapp\interceptor\PostInterceptor or a class name of an existing post interceptor class');
         }
 
@@ -255,7 +258,7 @@ class Route implements ConfigurableRoute
     /**
      * returns list of post interceptors which should be applied to this route
      *
-     * @return  string[]|\Closure[]
+     * @return  string[]|callable[]
      */
     public function postInterceptors()
     {
@@ -265,7 +268,7 @@ class Route implements ConfigurableRoute
     /**
      * make route only available via https
      *
-     * @return  \stubbles\webapp\Route
+     * @return  \stubbles\webapp\routing\Route
      */
     public function httpsOnly()
     {
@@ -291,7 +294,7 @@ class Route implements ConfigurableRoute
     /**
      * makes route only available if a user is logged in
      *
-     * @return  \stubbles\webapp\Route
+     * @return  \stubbles\webapp\routing\Route
      * @since   3.0.0
      */
     public function withLoginOnly()
@@ -329,7 +332,7 @@ class Route implements ConfigurableRoute
      * adds a role which is required to access the route
      *
      * @param   string  $requiredRole
-     * @return  \stubbles\webapp\Route
+     * @return  \stubbles\webapp\routing\Route
      */
     public function withRoleOnly($requiredRole)
     {
@@ -403,7 +406,7 @@ class Route implements ConfigurableRoute
      *
      * @param   string  $mimeType
      * @param   string  $formatterClass  optional  special formatter class to be used for given mime type on this route
-     * @return  \stubbles\webapp\Route
+     * @return  \stubbles\webapp\routing\Route
      */
     public function supportsMimeType($mimeType, $formatterClass = null)
     {
@@ -437,7 +440,7 @@ class Route implements ConfigurableRoute
     /**
      * disables content negotation
      *
-     * @return  \stubbles\webapp\Route
+     * @return  \stubbles\webapp\routing\Route
      * @since   2.1.1
      */
     public function disableContentNegotiation()

@@ -8,6 +8,7 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp;
+use stubbles\webapp\routing\Route;
 /**
  * Contains routing information and decides which route is applicable for given request.
  *
@@ -21,7 +22,7 @@ interface RoutingConfigurator
      *
      * @param   string                                      $path      path this route is applicable for
      * @param   string|callable|\stubbles\webapp\Processor  $callback  code to be executed when the route is active
-     * @return  \stubbles\webapp\ConfigurableRoute
+     * @return  \stubbles\webapp\routing\ConfigurableRoute
      */
     public function onGet($path, $callback);
 
@@ -30,7 +31,7 @@ interface RoutingConfigurator
      *
      * @param   string                                      $path      optional  path this route is applicable for
      * @param   string|callable|\stubbles\webapp\Processor  $callback  optional  code to be executed when the route is active
-     * @return  \stubbles\webapp\ConfigurableRoute
+     * @return  \stubbles\webapp\routing\ConfigurableRoute
      * @since   4.0.0
      */
     public function passThroughOnGet($path = '/*\.html$', $callback = 'stubbles\webapp\processor\HtmlFilePassThrough');
@@ -40,7 +41,7 @@ interface RoutingConfigurator
      *
      * @param   string                                      $path      path this route is applicable for
      * @param   string|callable|\stubbles\webapp\Processor  $callback  code to be executed when the route is active
-     * @return  \stubbles\webapp\ConfigurableRoute
+     * @return  \stubbles\webapp\routing\ConfigurableRoute
      */
     public function onHead($path, $callback);
 
@@ -49,7 +50,7 @@ interface RoutingConfigurator
      *
      * @param   string                                      $path      path this route is applicable for
      * @param   string|callable|\stubbles\webapp\Processor  $callback  code to be executed when the route is active
-     * @return  \stubbles\webapp\ConfigurableRoute
+     * @return  \stubbles\webapp\routing\ConfigurableRoute
      */
     public function onPost($path, $callback);
 
@@ -58,7 +59,7 @@ interface RoutingConfigurator
      *
      * @param   string                                      $path      path this route is applicable for
      * @param   string|callable|\stubbles\webapp\Processor  $callback  code to be executed when the route is active
-     * @return  \stubbles\webapp\ConfigurableRoute
+     * @return  \stubbles\webapp\routing\ConfigurableRoute
      */
     public function onPut($path, $callback);
 
@@ -67,7 +68,7 @@ interface RoutingConfigurator
      *
      * @param   string                                      $path      path this route is applicable for
      * @param   string|callable|\stubbles\webapp\Processor  $callback  code to be executed when the route is active
-     * @return  \stubbles\webapp\ConfigurableRoute
+     * @return  \stubbles\webapp\routing\ConfigurableRoute
      */
     public function onDelete($path, $callback);
 
@@ -80,7 +81,7 @@ interface RoutingConfigurator
      * @param   string                                      $path           path this route is applicable for
      * @param   string|callable|\stubbles\webapp\Processor  $callback       code to be executed when the route is active
      * @param   string|string[]                             $requestMethod  optional  request method(s) this route is applicable for
-     * @return  \stubbles\webapp\ConfigurableRoute
+     * @return  \stubbles\webapp\routing\ConfigurableRoute
      * @since   4.0.0
      */
     public function onAll($path, $callback, $requestMethod = null);
@@ -89,7 +90,7 @@ interface RoutingConfigurator
      * add a route definition
      *
      * @param   \stubbles\webapp\Route  $route
-     * @return  \stubbles\webapp\ConfigurableRoute
+     * @return  \stubbles\webapp\routing\ConfigurableRoute
      */
     public function addRoute(Route $route);
 
@@ -98,7 +99,7 @@ interface RoutingConfigurator
      *
      * @param   string|callable|\stubbles\webapp\interceptor\PreInterceptor  $preInterceptor  pre interceptor to add
      * @param   string                                                       $path            optional  path for which pre interceptor should be executed
-     * @return  \stubbles\webapp\RoutingConfigurator
+     * @return  \stubbles\webapp\routing\RoutingConfigurator
      */
     public function preInterceptOnGet($preInterceptor, $path = null);
 
@@ -107,7 +108,7 @@ interface RoutingConfigurator
      *
      * @param   string|callable|\stubbles\webapp\interceptor\PreInterceptor  $preInterceptor  pre interceptor to add
      * @param   string                                                       $path            optional  path for which pre interceptor should be executed
-     * @return  \stubbles\webapp\RoutingConfigurator
+     * @return  \stubbles\webapp\routing\RoutingConfigurator
      */
     public function preInterceptOnHead($preInterceptor, $path = null);
 
@@ -116,7 +117,7 @@ interface RoutingConfigurator
      *
      * @param   string|callable|\stubbles\webapp\interceptor\PreInterceptor  $preInterceptor  pre interceptor to add
      * @param   string                                                       $path            optional  path for which pre interceptor should be executed
-     * @return  \stubbles\webapp\RoutingConfigurator
+     * @return  \stubbles\webapp\routing\RoutingConfigurator
      */
     public function preInterceptOnPost($preInterceptor, $path = null);
 
@@ -125,7 +126,7 @@ interface RoutingConfigurator
      *
      * @param   string|callable|\stubbles\webapp\interceptor\PreInterceptor  $preInterceptor  pre interceptor to add
      * @param   string                                                       $path            optional  path for which pre interceptor should be executed
-     * @return  \stubbles\webapp\RoutingConfigurator
+     * @return  \stubbles\webapp\routing\RoutingConfigurator
      */
     public function preInterceptOnPut($preInterceptor, $path = null);
 
@@ -134,7 +135,7 @@ interface RoutingConfigurator
      *
      * @param   string|callable|\stubbles\webapp\interceptor\PreInterceptor  $preInterceptor  pre interceptor to add
      * @param   string                                                       $path            optional  path for which pre interceptor should be executed
-     * @return  \stubbles\webapp\RoutingConfigurator
+     * @return  \stubbles\webapp\routing\RoutingConfigurator
      */
     public function preInterceptOnDelete($preInterceptor, $path = null);
 
@@ -144,7 +145,7 @@ interface RoutingConfigurator
      * @param   string|callable|\stubbles\webapp\interceptor\PreInterceptor  $preInterceptor  pre interceptor to add
      * @param   string                                                       $path            optional  path for which pre interceptor should be executed
      * @param   string                                                       $requestMethod   optional  request method for which interceptor should be executed
-     * @return  \stubbles\webapp\RoutingConfigurator
+     * @return  \stubbles\webapp\routing\RoutingConfigurator
      * @throws  \stubbles\lang\exception\IllegalArgumentException
      */
     public function preIntercept($preInterceptor, $path = null, $requestMethod = null);
@@ -154,7 +155,7 @@ interface RoutingConfigurator
      *
      * @param   string|callable|\stubbles\webapp\interceptor\PostInterceptor  $postInterceptor  post interceptor to add
      * @param   string                                                        $path             optional  path for which post interceptor should be executed
-     * @return  \stubbles\webapp\RoutingConfigurator
+     * @return  \stubbles\webapp\routing\RoutingConfigurator
      */
     public function postInterceptOnGet($postInterceptor, $path = null);
 
@@ -163,7 +164,7 @@ interface RoutingConfigurator
      *
      * @param   string|callable|\stubbles\webapp\interceptor\PostInterceptor  $postInterceptor  post interceptor to add
      * @param   string                                                        $path             optional  path for which post interceptor should be executed
-     * @return  \stubbles\webapp\RoutingConfigurator
+     * @return  \stubbles\webapp\routing\RoutingConfigurator
      */
     public function postInterceptOnHead($postInterceptor, $path = null);
 
@@ -172,7 +173,7 @@ interface RoutingConfigurator
      *
      * @param   string|callable|\stubbles\webapp\interceptor\PostInterceptor  $postInterceptor  post interceptor to add
      * @param   string                                                        $path             optional  path for which post interceptor should be executed
-     * @return  \stubbles\webapp\RoutingConfigurator
+     * @return  \stubbles\webapp\routing\RoutingConfigurator
      */
     public function postInterceptOnPost($postInterceptor, $path = null);
 
@@ -181,7 +182,7 @@ interface RoutingConfigurator
      *
      * @param   string|callable|\stubbles\webapp\interceptor\PostInterceptor  $postInterceptor  post interceptor to add
      * @param   string                                                        $path             optional  path for which post interceptor should be executed
-     * @return  \stubbles\webapp\RoutingConfigurator
+     * @return  \stubbles\webapp\routing\RoutingConfigurator
      */
     public function postInterceptOnPut($postInterceptor, $path = null);
 
@@ -190,7 +191,7 @@ interface RoutingConfigurator
      *
      * @param   string|callable|\stubbles\webapp\interceptor\PostInterceptor  $postInterceptor  post interceptor to add
      * @param   string                                                        $path             optional  path for which post interceptor should be executed
-     * @return  \stubbles\webapp\RoutingConfigurator
+     * @return  \stubbles\webapp\routing\RoutingConfigurator
      */
     public function postInterceptOnDelete($postInterceptor, $path = null);
 
@@ -200,7 +201,7 @@ interface RoutingConfigurator
      * @param   string|callable|\stubbles\webapp\interceptor\PostInterceptor  $postInterceptor  post interceptor to add
      * @param   string                                                        $path             optional  path for which post interceptor should be executed
      * @param   string                                                        $requestMethod    optional  request method for which interceptor should be executed
-     * @return  \stubbles\webapp\RoutingConfigurator
+     * @return  \stubbles\webapp\routing\RoutingConfigurator
      * @throws  IllegalArgumentException
      */
     public function postIntercept($postInterceptor, $path = null, $requestMethod = null);
@@ -209,14 +210,14 @@ interface RoutingConfigurator
      * add a supported mime type
      *
      * @param   string  $mimeType
-     * @return  \stubbles\webapp\RoutingConfigurator
+     * @return  \stubbles\webapp\routing\RoutingConfigurator
      */
     public function supportsMimeType($mimeType);
 
     /**
      * disables content negotation
      *
-     * @return  \stubbles\webapp\RoutingConfigurator
+     * @return  \stubbles\webapp\routing\RoutingConfigurator
      * @since   2.1.1
      */
     public function disableContentNegotiation();
