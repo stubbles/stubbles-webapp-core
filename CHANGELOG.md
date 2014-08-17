@@ -5,7 +5,7 @@
 
    * completely reworked how authentication and authorization works
      * removed `stubbles\webapp\auth\AuthHandler`
-     * renamed `stubbles\webapp\auth\AuthHandlerException` to `stubbles\webapp\auth\AuthProviderException`
+     * removed `stubbles\webapp\auth\AuthHandlerException`, added `stubbles\webapp\auth\InternalAuthProviderException` and `stubbles\webapp\auth\ExternalAuthProviderException`
      * added `stubbles\webapp\auth\AuthenticationProvider`
      * added `stubbles\webapp\auth\AuthorizationProvider`
      * added `stubbles\webapp\auth\Roles`
