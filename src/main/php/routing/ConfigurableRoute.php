@@ -48,6 +48,19 @@ interface ConfigurableRoute
     public function withLoginOnly();
 
     /**
+     * forbid the actual login
+     *
+     * Forbidding a login means that the user receives a 403 Forbidden response
+     * in case he accesses a restricted resource but is not logged in yet.
+     * Otherwise, he would just be redirected to the login uri of the
+     * authentication provider.
+     *
+     * @return  \stubbles\webapp\routing\ConfigurableRoute
+     * @since   5.0.0
+     */
+    public function forbiddenWhenNotAlreadyLoggedIn();
+
+    /**
      * adds a role which is only available via ssl
      *
      * @param   string  $role
