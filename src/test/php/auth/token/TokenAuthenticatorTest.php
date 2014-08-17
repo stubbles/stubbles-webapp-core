@@ -126,6 +126,26 @@ class TokenAuthenticatorTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
+     * @expectedException  stubbles\webapp\auth\InternalAuthProviderException
+     * @expectedExceptionMessage  Error while trying to store new token for user: failure
+     */
+    public function throwsInternalAuthProviderExceptionWhenTokenStoreThrowsExceptionWhileStoringToken()
+    {
+        $user = $this->mockTokenAwareUser();
+        $this->mockRequest->expects($this->any())
+                          ->method('hasHeader')
+                          ->will($this->returnValue(false));
+        $this->mockLoginProvider->expects($this->once())
+                                ->method('authenticate')
+                                ->will($this->returnValue($user));
+        $this->mockTokenStore->expects($this->once())
+                             ->method('store')
+                             ->will($this->throwException(new \Exception('failure')));
+        $this->tokenAuthenticator->authenticate($this->mockRequest);
+    }
+
+    /**
+     * @test
      */
     public function createsAndStoresTokenFromUserReturnedByLoginProvider()
     {
@@ -171,6 +191,25 @@ class TokenAuthenticatorTest extends \PHPUnit_Framework_TestCase
         $this->assertNotNull(
                 $this->tokenAuthenticator->authenticate($this->mockRequest)->token()
         );
+    }
+
+    /**
+     * @test
+     * @expectedException  stubbles\webapp\auth\InternalAuthProviderException
+     * @expectedExceptionMessage  Error while trying to find user by token: failure
+     */
+    public function throwsInternalAuthProviderExceptionWhenTokenStoreThrowsExceptionWhileFindingUser()
+    {
+        $this->mockRequest->expects($this->once())
+                          ->method('hasRedirectHeader')
+                          ->will($this->returnValue(true));
+        $this->mockRequest->expects($this->once())
+                          ->method('readRedirectHeader')
+                          ->will($this->returnValue(ValueReader::forValue('someToken')));
+        $this->mockTokenStore->expects($this->once())
+                             ->method('findUserByToken')
+                             ->will($this->throwException(new \Exception('failure')));
+        $this->tokenAuthenticator->authenticate($this->mockRequest);
     }
 
     /**

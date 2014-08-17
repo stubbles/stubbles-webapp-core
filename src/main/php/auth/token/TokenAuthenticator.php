@@ -9,6 +9,7 @@
  */
 namespace stubbles\webapp\auth\token;
 use stubbles\webapp\auth\AuthenticationProvider;
+use stubbles\webapp\auth\InternalAuthProviderException;
 use stubbles\input\web\WebRequest;
 /**
  * Supports token handling for intranet users.
@@ -61,6 +62,7 @@ class TokenAuthenticator implements AuthenticationProvider
      *
      * @param   \stubbles\input\web\WebRequest  $request
      * @return  \stubbles\webapp\auth\User
+     * @throws  \stubbles\webapp\auth\InternalAuthProviderException
      */
     public function authenticate(WebRequest $request)
     {
@@ -69,13 +71,17 @@ class TokenAuthenticator implements AuthenticationProvider
             return $this->login($request);
         }
 
-        $user = $this->tokenStore->findUserByToken($request, $token);
-        if (null === $user) {
-            return $this->login($request);
-        }
+        try {
+            $user = $this->tokenStore->findUserByToken($request, $token);
+            if (null === $user) {
+                return $this->login($request);
+            }
 
-        $user->setToken($token);
-        return $user;
+            $user->setToken($token);
+            return $user;
+        } catch (\Exception $e) {
+            throw new InternalAuthProviderException('Error while trying to find user by token: ' . $e->getMessage(), $e);
+        }
     }
 
     /**
@@ -83,14 +89,19 @@ class TokenAuthenticator implements AuthenticationProvider
      *
      * @param   \stubbles\input\web\WebRequest $request
      * @return  \stubbles\webapp\auth\User
+     * @throws  \stubbles\webapp\auth\InternalAuthProviderException
      */
     private function login(WebRequest $request)
     {
         $user = $this->loginProvider->authenticate($request);
         if (null !== $user) {
-            $token = $user->createToken($this->tokenSalt);
-            $this->tokenStore->store($request, $token, $user);
-            return $user;
+            try {
+                $token = $user->createToken($this->tokenSalt);
+                $this->tokenStore->store($request, $token, $user);
+                return $user;
+            } catch (\Exception $e) {
+                throw new InternalAuthProviderException('Error while trying to store new token for user: ' . $e->getMessage(), $e);
+            }
         }
 
         return null;
