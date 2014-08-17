@@ -10,11 +10,10 @@
 namespace stubbles\webapp\auth;
 use stubbles\input\web\WebRequest;
 use stubbles\ioc\Injector;
-use stubbles\webapp\ProcessableRoute;
-use stubbles\webapp\Route;
 use stubbles\webapp\auth\ioc\RolesProvider;
 use stubbles\webapp\auth\ioc\UserProvider;
 use stubbles\webapp\response\Response;
+use stubbles\webapp\routing\ProcessableRoute;
 /**
  * Description of AuthorizingRoute
  *
@@ -25,13 +24,13 @@ class AuthorizingRoute implements ProcessableRoute
     /**
      * route configuration
      *
-     * @type  \stubbles\webapp\Route
+     * @type  \stubbles\webapp\auth\AuthConstraint
      */
-    private $routeConfig;
+    private $authConstraint;
     /**
      * actual route which requires auth
      *
-     * @type  \stubbles\webapp\ProcessableRoute
+     * @type  \stubbles\webapp\routing\ProcessableRoute
      */
     private $actualRoute;
     /**
@@ -50,18 +49,18 @@ class AuthorizingRoute implements ProcessableRoute
     /**
      * constructor
      *
-     * @param  \stubbles\webapp\Route             $routeconfig
-     * @param  \stubbles\webapp\ProcessableRoute  $actualRoute
-     * @param  \stubbles\ioc\Injector             $injector
+     * @param  \stubbles\webapp\auth\AuthConstraint       $authConstraint
+     * @param  \stubbles\webapp\routing\ProcessableRoute  $actualRoute
+     * @param  \stubbles\ioc\Injector                     $injector
      */
     public function __construct(
-            Route $routeconfig,
+            AuthConstraint $authConstraint,
             ProcessableRoute $actualRoute,
             Injector $injector)
     {
-        $this->routeConfig = $routeconfig;
-        $this->actualRoute = $actualRoute;
-        $this->injector    = $injector;
+        $this->authConstraint = $authConstraint;
+        $this->actualRoute    = $actualRoute;
+        $this->injector       = $injector;
     }
 
     /**
@@ -121,8 +120,8 @@ class AuthorizingRoute implements ProcessableRoute
     {
         $this->authorized = false;
         $user = $this->authenticate($request, $response);
-        if (null !== $user && $this->routeConfig->requiresRoles()) {
-            if ($this->routeConfig->satisfiedByRoles(
+        if (null !== $user && $this->authConstraint->requiresRoles()) {
+            if ($this->authConstraint->satisfiedByRoles(
                     RolesProvider::store($this->roles($response, $user)))
                 ) {
                 $this->authorized = true;
@@ -148,8 +147,11 @@ class AuthorizingRoute implements ProcessableRoute
         $authenticationProvider = $this->injector->getInstance('stubbles\webapp\auth\AuthenticationProvider');
         try {
             $user = $authenticationProvider->authenticate($request);
-            if (null == $user) {
+            if (null == $user && $this->authConstraint->loginAllowed()) {
                 $response->redirect($authenticationProvider->loginUri($request));
+            } elseif (null == $user) {
+                $response->forbidden();
+                return null;
             }
 
             return UserProvider::store($user);

@@ -7,8 +7,11 @@
  *
  * @package  stubbles\webapp
  */
-namespace stubbles\webapp;
+namespace stubbles\webapp\routing;
 use stubbles\input\web\WebRequest;
+use stubbles\webapp\Processor;
+use stubbles\webapp\UriPath;
+use stubbles\webapp\UriRequest;
 use stubbles\webapp\auth\Roles;
 use stubbles\webapp\response\Response;
 /**
@@ -71,7 +74,7 @@ class RoleAwareAnnotatedProcessor implements Processor
     }
 }
 /**
- * Tests for stubbles\webapp\Route.
+ * Tests for stubbles\webapp\routing\Route.
  *
  * @since  2.0.0
  * @group  core
@@ -80,7 +83,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @test
-     * @expectedException  stubbles\lang\exception\IllegalArgumentException
+     * @expectedException  InvalidArgumentException
      */
     public function constructRouteWithInvalidCallbackThrowsIllegalArgumentException()
     {
@@ -89,7 +92,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @expectedException  stubbles\lang\exception\IllegalArgumentException
+     * @expectedException  InvalidArgumentException
      * @since  4.0.0
      */
     public function constructRouteWithInvalidRequestMethodThrowsIllegalArgumentException()
@@ -221,7 +224,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @expectedException  stubbles\lang\exception\IllegalArgumentException
+     * @expectedException  InvalidArgumentException
      */
     public function addInvalidPreInterceptorThrowsIllegalArgumentException()
     {
@@ -261,7 +264,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @expectedException  stubbles\lang\exception\IllegalArgumentException
+     * @expectedException  InvalidArgumentException
      */
     public function addInvalidPostInterceptorThrowsIllegalArgumentException()
     {
@@ -325,7 +328,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     public function requiresHttpsWhenCallbackClassAnnotatedWithRequiresHttps()
     {
         $route = new Route('/hello/{name}',
-                           'stubbles\webapp\AnnotatedProcessor',
+                           'stubbles\webapp\routing\AnnotatedProcessor',
                            'GET'
                  );
         $this->assertTrue($route->requiresHttps());
@@ -369,7 +372,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     public function requiresAuthWhenCallbackClassAnnotatedWithRequiresLogin()
     {
         $route = new Route('/hello/{name}',
-                           'stubbles\webapp\AnnotatedProcessor',
+                           'stubbles\webapp\routing\AnnotatedProcessor',
                            'GET'
                  );
         $this->assertTrue($route->requiresAuth());
@@ -404,7 +407,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     public function requiresAuthWhenCallbackClassAnnotatedWithRequiresRole()
     {
         $route = new Route('/hello/{name}',
-                           'stubbles\webapp\OtherAnnotatedProcessor',
+                           'stubbles\webapp\routing\OtherAnnotatedProcessor',
                            'GET'
                  );
         $this->assertTrue($route->requiresAuth());
@@ -432,7 +435,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     public function requiresAuthWhenCallbackClassAnnotatedWithRoleAware()
     {
         $route = new Route('/hello/{name}',
-                           'stubbles\webapp\RoleAwareAnnotatedProcessor',
+                           'stubbles\webapp\routing\RoleAwareAnnotatedProcessor',
                            'GET'
                  );
         $this->assertTrue($route->requiresAuth());
@@ -452,7 +455,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
      */
     public function doesNotRequireRolesByDefault()
     {
-        $this->assertFalse($this->createRoute()->requiresRoles());
+        $this->assertFalse($this->createRoute()->authConstraint()->requiresRoles());
     }
 
     /**
@@ -460,7 +463,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
      */
     public function requiresRolesWhenRoleIsSet()
     {
-        $this->assertTrue($this->createRoute()->withRoleOnly('admin')->requiresRoles());
+        $this->assertTrue($this->createRoute()->withRoleOnly('admin')->authConstraint()->requiresRoles());
     }
 
     /**
@@ -473,7 +476,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                            new OtherAnnotatedProcessor(),
                            'GET'
                  );
-        $this->assertTrue($route->requiresRoles());
+        $this->assertTrue($route->authConstraint()->requiresRoles());
     }
 
     /**
@@ -483,10 +486,10 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     public function requiresRolesWhenCallbackClassAnnotatedWithRequiresRole()
     {
         $route = new Route('/hello/{name}',
-                           'stubbles\webapp\OtherAnnotatedProcessor',
+                           'stubbles\webapp\routing\OtherAnnotatedProcessor',
                            'GET'
                  );
-        $this->assertTrue($route->requiresRoles());
+        $this->assertTrue($route->authConstraint()->requiresRoles());
     }
 
     /**
@@ -500,7 +503,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                            new RoleAwareAnnotatedProcessor(),
                            'GET'
                  );
-        $this->assertTrue($route->requiresRoles());
+        $this->assertTrue($route->authConstraint()->requiresRoles());
     }
 
     /**
@@ -511,10 +514,10 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     public function requiresRolesWhenCallbackClassAnnotatedWithRoleAware()
     {
         $route = new Route('/hello/{name}',
-                           'stubbles\webapp\RoleAwareAnnotatedProcessor',
+                           'stubbles\webapp\routing\RoleAwareAnnotatedProcessor',
                            'GET'
                  );
-        $this->assertTrue($route->requiresRoles());
+        $this->assertTrue($route->authConstraint()->requiresRoles());
     }
 
     /**
@@ -524,7 +527,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
      */
     public function isNotSatisfiedByRolesWhenRolesAreNull()
     {
-        $this->assertFalse($this->createRoute()->satisfiedByRoles());
+        $this->assertFalse($this->createRoute()->authConstraint()->satisfiedByRoles());
     }
 
     /**
@@ -535,10 +538,10 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     public function isSatisfiedByRolesWhenRolesAwareWithCallbackClass()
     {
         $route = new Route('/hello/{name}',
-                           'stubbles\webapp\RoleAwareAnnotatedProcessor',
+                           'stubbles\webapp\routing\RoleAwareAnnotatedProcessor',
                            'GET'
                  );
-        $this->assertFalse($route->satisfiedByRoles());
+        $this->assertFalse($route->authConstraint()->satisfiedByRoles());
     }
 
     /**
@@ -552,7 +555,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                            new RoleAwareAnnotatedProcessor(),
                            'GET'
                  );
-        $this->assertTrue($route->satisfiedByRoles(new Roles([])));
+        $this->assertTrue($route->authConstraint()->satisfiedByRoles(new Roles([])));
     }
 
     /**
@@ -566,7 +569,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                            new OtherAnnotatedProcessor(),
                            'GET'
                  );
-        $this->assertTrue($route->satisfiedByRoles(new Roles(['admin', 'superadmin'])));
+        $this->assertTrue($route->authConstraint()->satisfiedByRoles(new Roles(['admin', 'superadmin'])));
     }
 
     /**
@@ -580,7 +583,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                            new OtherAnnotatedProcessor(),
                            'GET'
                  );
-        $this->assertFalse($route->satisfiedByRoles(new Roles(['user'])));
+        $this->assertFalse($route->authConstraint()->satisfiedByRoles(new Roles(['user'])));
     }
 
     /**
@@ -591,10 +594,10 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     public function isSatisfiedByRolesWhenRolesContainRequiredRoleFromAnnotatedCallbackClass()
     {
         $route = new Route('/hello/{name}',
-                           'stubbles\webapp\OtherAnnotatedProcessor',
+                           'stubbles\webapp\routing\OtherAnnotatedProcessor',
                            'GET'
                  );
-        $this->assertTrue($route->satisfiedByRoles(new Roles(['admin', 'superadmin'])));
+        $this->assertTrue($route->authConstraint()->satisfiedByRoles(new Roles(['admin', 'superadmin'])));
     }
 
     /**
@@ -605,10 +608,24 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     public function isNotSatisfiedByRolesWhenRolesDoNotContainRequiredRoleFromAnnotatedCallbackClass()
     {
         $route = new Route('/hello/{name}',
-                           'stubbles\webapp\OtherAnnotatedProcessor',
+                           'stubbles\webapp\routing\OtherAnnotatedProcessor',
                            'GET'
                  );
-        $this->assertFalse($route->satisfiedByRoles(new Roles(['user'])));
+        $this->assertFalse($route->authConstraint()->satisfiedByRoles(new Roles(['user'])));
+    }
+
+    /**
+     * @test
+     * @since  5.0.0
+     * @group  forbid_login
+     */
+    public function forbiddenWhenNotAlreadyLoggedInSetsInfoOnAuthConstraint()
+    {
+        $route = new Route('/hello/{name}',
+                           'stubbles\webapp\routing\OtherAnnotatedProcessor',
+                           'GET'
+                 );
+        $this->assertFalse($route->forbiddenWhenNotAlreadyLoggedIn()->authConstraint()->loginAllowed());
     }
 
     /**

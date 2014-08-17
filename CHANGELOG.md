@@ -16,10 +16,13 @@
      * added `stubbles\webapp\ioc\Auth` to enable new auth bindings
      * added support for annotation `@RolesAware` which can be set on processors in case they don't need a specific role but access to the roles of a user in general
    * removed all methods deprecated with 4.0.0 (see below)
+   * changed all thrown stubbles/core exceptions to those recommended with stubbles/core 5.0.0
 
 ### Other changes
 
-   * upgraded to stubbles/core 4.1 and stubbles/input 3.1
+   * upgraded stubbles/core to 5.0
+   * upgraded stubbles/input to 4.0
+   * ensured compatibility with stubbles/webapp-session 5.0
 
 
 4.0.0 (2014-07-31)

@@ -14,6 +14,8 @@ use stubbles\lang\errorhandler\ExceptionLogger;
 use stubbles\webapp\ioc\IoBindingModule;
 use stubbles\webapp\response\Response;
 use stubbles\webapp\response\ResponseNegotiator;
+use stubbles\webapp\routing\ProcessableRoute;
+use stubbles\webapp\routing\Routing;
 /**
  * Abstract base class for web applications.
  *
@@ -36,7 +38,7 @@ abstract class WebApp extends App
     /**
      * build and contains routing information
      *
-     * @type  \stubbles\webapp\Routing
+     * @type  \stubbles\webapp\routing\Routing
      */
     private $routing;
     /**
@@ -51,7 +53,7 @@ abstract class WebApp extends App
      *
      * @param  \stubbles\input\web\WebRequest                $request             request data container
      * @param  \stubbles\webapp\response\ResponseNegotiator  $responseNegotiator  negoatiates based on request
-     * @param  \stubbles\webapp\Routing                      $routing             routes to logic based on request
+     * @param  \stubbles\webapp\routing\Routing              $routing             routes to logic based on request
      * @param  \stubbles\lang\errorhandler\ExceptionLogger   $exceptionLogger     logs uncatched exceptions
      * @Inject
      */
@@ -86,8 +88,8 @@ abstract class WebApp extends App
     /**
      * handles the request by processing the route
      *
-     * @param  \stubbles\webapp\ProcessableRoute   $route
-     * @param  \stubbles\webapp\response\Response  $response
+     * @param  \stubbles\webapp\routing\ProcessableRoute  $route
+     * @param  \stubbles\webapp\response\Response         $response
      */
     private function process(ProcessableRoute $route, Response $response)
     {
@@ -111,7 +113,7 @@ abstract class WebApp extends App
     /**
      * checks whether a switch to https must be made
      *
-     * @param   \stubbles\webapp\ProcessableRoute  $route
+     * @param   \stubbles\webapp\routing\ProcessableRoute  $route
      * @return  bool
      */
     protected function switchToHttps(ProcessableRoute $route)
@@ -122,7 +124,7 @@ abstract class WebApp extends App
     /**
      * configures routing for this web app
      *
-     * @param  \stubbles\webapp\RoutingConfigurator  $routing
+     * @param  \stubbles\webapp\routing\RoutingConfigurator  $routing
      */
     protected abstract function configureRouting(RoutingConfigurator $routing);
 

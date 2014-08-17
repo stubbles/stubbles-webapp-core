@@ -114,7 +114,7 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
         $mockResponseNegotiator->expects($this->any())
                                ->method('negotiateMimeType')
                                ->will($this->returnValue($this->mockResponse));
-        $this->routing = $this->getMockBuilder('stubbles\webapp\Routing')
+        $this->routing = $this->getMockBuilder('stubbles\webapp\routing\Routing')
                               ->disableOriginalConstructor()
                               ->getMock();
         $this->mockExceptionLogger = $this->getMockBuilder('stubbles\lang\errorhandler\ExceptionLogger')
@@ -144,7 +144,9 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
      */
     public function annotationPresentOnConstructor()
     {
-        $this->assertTrue(lang\reflectConstructor($this->webApp)->hasAnnotation('Inject'));
+        $this->assertTrue(
+                lang\reflectConstructor($this->webApp)->hasAnnotation('Inject')
+        );
     }
 
     /**
@@ -152,8 +154,9 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
      */
     public function canCreateIoBindingModule()
     {
-        $this->assertInstanceOf('stubbles\webapp\ioc\IoBindingModule',
-                                TestWebApp::callMethod('createIoBindingModule')
+        $this->assertInstanceOf(
+                'stubbles\webapp\ioc\IoBindingModule',
+                TestWebApp::callMethod('createIoBindingModule')
         );
     }
 
@@ -163,7 +166,7 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
      */
     private function createMockRoute()
     {
-        $mockRoute = $this->getMockBuilder('stubbles\webapp\ProcessableRoute')
+        $mockRoute = $this->getMockBuilder('stubbles\webapp\routing\ProcessableRoute')
                           ->disableOriginalConstructor()
                           ->getMock();
         $mockRoute->expects($this->once())

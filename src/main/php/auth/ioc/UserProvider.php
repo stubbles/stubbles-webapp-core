@@ -9,7 +9,6 @@
  */
 namespace stubbles\webapp\auth\ioc;
 use stubbles\ioc\InjectionProvider;
-use stubbles\lang\exception\RuntimeException;
 use stubbles\webapp\auth\User;
 /**
  * Can provide the currently logged in user.
@@ -48,7 +47,7 @@ class UserProvider implements InjectionProvider
      *
      * @param   string  $name
      * @return  \stubbles\webapp\auth\User
-     * @throws  \stubbles\lang\exception\RuntimeException  in case no user is present
+     * @throws  \RuntimeException  in case no user is present
      */
     public function get($name = null)
     {
@@ -56,7 +55,7 @@ class UserProvider implements InjectionProvider
             return self::$user;
         }
 
-        throw new RuntimeException('No user available - are you sure a login happened?');
+        throw new \RuntimeException('No user available - are you sure a login happened?');
     }
 }
 

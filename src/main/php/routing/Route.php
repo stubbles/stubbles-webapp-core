@@ -7,10 +7,13 @@
  *
  * @package  stubbles\webapp
  */
-namespace stubbles\webapp;
+namespace stubbles\webapp\routing;
 use stubbles\lang;
-use stubbles\lang\exception\IllegalArgumentException;
-use stubbles\webapp\auth\Roles;
+use stubbles\webapp\Processor;
+use stubbles\webapp\UriRequest;
+use stubbles\webapp\auth\AuthConstraint;
+use stubbles\webapp\interceptor\PreInterceptor;
+use stubbles\webapp\interceptor\PostInterceptor;
 use stubbles\webapp\response\SupportedMimeTypes;
 /**
  * Represents information about a route that can be called.
@@ -28,9 +31,15 @@ class Route implements ConfigurableRoute
     /**
      * code to be executed when the route is active
      *
-     * @type  string|callback
+     * @type  string|callable|\stubbles\webapp\Processor
      */
     private $callback;
+    /**
+     * list of annotations on callback
+     *
+     * @type  \stubbles\webapp\routing\RoutingAnnotations
+     */
+    private $routingAnnotations;
     /**
      * request method this route is applicable for
      *
@@ -40,13 +49,13 @@ class Route implements ConfigurableRoute
     /**
      * list of pre interceptors which should be applied to this route
      *
-     * @type  string[]|\Closure[]
+     * @type  string[]|callable[]
      */
     private $preInterceptors          = [];
     /**
      * list of post interceptors which should be applied to this route
      *
-     * @type  string[]|\Closure[]
+     * @type  string[]|callable[]
      */
     private $postInterceptors         = [];
     /**
@@ -56,23 +65,11 @@ class Route implements ConfigurableRoute
      */
     private $requiresHttps            = false;
     /**
-     * switch whether login is required for this route
+     * auth constraint for this route
      *
-     * @type  bool
+     * @type  \stubbles\webapp\auth\AuthConstraint
      */
-    private $requiresLogin            = false;
-    /**
-     * required role to access the route
-     *
-     * @type  string
-     */
-    private $requiredRole;
-    /**
-     * whether the route needs access to roles of the user
-     *
-     * @type  bool
-     */
-    private $rolesAware;
+    private $authConstraint;
     /**
      * list of mime types supported by this route
      *
@@ -101,12 +98,12 @@ class Route implements ConfigurableRoute
      * @param   string                                      $path           path this route is applicable for
      * @param   string|callable|\stubbles\webapp\Processor  $callback       code to be executed when the route is active
      * @param   string|string[]                             $requestMethod  optional  request method(s) this route is applicable for
-     * @throws  \stubbles\lang\exception\IllegalArgumentException
+     * @throws  \InvalidArgumentException
      */
     public function __construct($path, $callback, $requestMethod = null)
     {
         if (!is_callable($callback) && !($callback instanceof Processor) && !class_exists($callback)) {
-            throw new IllegalArgumentException('Given callback for path "' . $path . '" must be a callable, an instance of stubbles\webapp\Processor or a class name of an existing processor class');
+            throw new \InvalidArgumentException('Given callback for path "' . $path . '" must be a callable, an instance of stubbles\webapp\Processor or a class name of an existing processor class');
         }
 
         $this->path                  = $path;
@@ -119,7 +116,7 @@ class Route implements ConfigurableRoute
      *
      * @param   string|string[]  $requestMethod
      * @return  string
-     * @throws  \stubbles\lang\exception\IllegalArgumentException
+     * @throws  \InvalidArgumentException
      */
     private function arrayFrom($requestMethod)
     {
@@ -135,7 +132,7 @@ class Route implements ConfigurableRoute
             return $requestMethod;
         }
 
-        throw new IllegalArgumentException('Given request method must be null, a string or an array, but received ' . lang\getType($requestMethod));
+        throw new \InvalidArgumentException('Given request method must be null, a string or an array, but received ' . lang\getType($requestMethod));
     }
 
     /**
@@ -205,14 +202,14 @@ class Route implements ConfigurableRoute
     /**
      * add a pre interceptor for this route
      *
-     * @param   string|callback|\stubbles\webapp\interceptor\PreInterceptor  $preInterceptor
-     * @return  Route
-     * @throws  \stubbles\lang\exception\IllegalArgumentException
+     * @param   string|callable|\stubbles\webapp\interceptor\PreInterceptor  $preInterceptor
+     * @return  \stubbles\webapp\routing\Route
+     * @throws  \InvalidArgumentException
      */
     public function preIntercept($preInterceptor)
     {
-        if (!is_callable($preInterceptor) && !($preInterceptor instanceof interceptor\PreInterceptor) && !class_exists($preInterceptor)) {
-            throw new IllegalArgumentException('Given pre interceptor must be a callable, an instance of stubbles\webapp\interceptor\PreInterceptor or a class name of an existing pre interceptor class');
+        if (!is_callable($preInterceptor) && !($preInterceptor instanceof PreInterceptor) && !class_exists($preInterceptor)) {
+            throw new \InvalidArgumentException('Given pre interceptor must be a callable, an instance of stubbles\webapp\interceptor\PreInterceptor or a class name of an existing pre interceptor class');
         }
 
         $this->preInterceptors[] = $preInterceptor;
@@ -222,7 +219,7 @@ class Route implements ConfigurableRoute
     /**
      * returns list of pre interceptors which should be applied to this route
      *
-     * @return  string[]|\Closure[]
+     * @return  string[]|callable[]
      */
     public function preInterceptors()
     {
@@ -232,14 +229,14 @@ class Route implements ConfigurableRoute
     /**
      * add a post interceptor for this route
      *
-     * @param   string|callback|\stubbles\webapp\interceptor\PostInterceptor  $postInterceptor
-     * @return  \stubbles\webapp\Route
-     * @throws  \stubbles\lang\exception\IllegalArgumentException
+     * @param   string|callable|\stubbles\webapp\interceptor\PostInterceptor  $postInterceptor
+     * @return  \stubbles\webapp\routing\Route
+     * @throws  \InvalidArgumentException
      */
     public function postIntercept($postInterceptor)
     {
-        if (!is_callable($postInterceptor) && !($postInterceptor instanceof interceptor\PostInterceptor) && !class_exists($postInterceptor)) {
-            throw new IllegalArgumentException('Given pre interceptor must be a callable, an instance of stubbles\webapp\interceptor\PostInterceptor or a class name of an existing post interceptor class');
+        if (!is_callable($postInterceptor) && !($postInterceptor instanceof PostInterceptor) && !class_exists($postInterceptor)) {
+            throw new \InvalidArgumentException('Given pre interceptor must be a callable, an instance of stubbles\webapp\interceptor\PostInterceptor or a class name of an existing post interceptor class');
         }
 
         $this->postInterceptors[] = $postInterceptor;
@@ -249,7 +246,7 @@ class Route implements ConfigurableRoute
     /**
      * returns list of post interceptors which should be applied to this route
      *
-     * @return  string[]|\Closure[]
+     * @return  string[]|callable[]
      */
     public function postInterceptors()
     {
@@ -259,7 +256,7 @@ class Route implements ConfigurableRoute
     /**
      * make route only available via https
      *
-     * @return  \stubbles\webapp\Route
+     * @return  \stubbles\webapp\routing\Route
      */
     public function httpsOnly()
     {
@@ -278,23 +275,48 @@ class Route implements ConfigurableRoute
             return true;
         }
 
-        if (is_callable($this->callback)) {
-            return false;
-        }
-
-        $this->requiresHttps = lang\reflect($this->callback)->hasAnnotation('RequiresHttps');
+        $this->requiresHttps = $this->routingAnnotations()->requiresHttps();
         return $this->requiresHttps;
     }
 
     /**
      * makes route only available if a user is logged in
      *
-     * @return  \stubbles\webapp\Route
+     * @return  \stubbles\webapp\routing\Route
      * @since   3.0.0
      */
     public function withLoginOnly()
     {
-        $this->requiresLogin = true;
+        $this->authConstraint()->requireLogin();
+        return $this;
+    }
+
+    /**
+     * forbid the actual login
+     *
+     * Forbidding a login means that the user receives a 403 Forbidden response
+     * in case he accesses a restricted resource but is not logged in yet.
+     * Otherwise, he would just be redirected to the login uri of the
+     * authentication provider.
+     *
+     * @return  \stubbles\webapp\routing\Route
+     * @since   5.0.0
+     */
+    public function forbiddenWhenNotAlreadyLoggedIn()
+    {
+        $this->authConstraint()->forbiddenWhenNotAlreadyLoggedIn();
+        return $this;
+    }
+
+    /**
+     * adds a role which is required to access the route
+     *
+     * @param   string  $requiredRole
+     * @return  \stubbles\webapp\routing\Route
+     */
+    public function withRoleOnly($requiredRole)
+    {
+        $this->authConstraint()->requireRole($requiredRole);
         return $this;
     }
 
@@ -305,113 +327,21 @@ class Route implements ConfigurableRoute
      */
     public function requiresAuth()
     {
-        return $this->requiresLogin() || $this->requiresRoles();
+        return $this->authConstraint()->requiresAuth();
     }
 
     /**
-     * checks whether login is required
+     * returns auth constraint for this route
      *
-     * @return  bool
+     * @return  \stubbles\webapp\auth\AuthConstraint
      */
-    private function requiresLogin()
+    public function authConstraint()
     {
-        if ($this->requiresLogin) {
-            return true;
+        if (null === $this->authConstraint) {
+            $this->authConstraint = new AuthConstraint($this->routingAnnotations());
         }
 
-        if (is_callable($this->callback)) {
-            return false;
-        }
-
-        $this->requiresLogin = lang\reflect($this->callback)->hasAnnotation('RequiresLogin');
-        return $this->requiresLogin;
-    }
-
-    /**
-     * adds a role which is required to access the route
-     *
-     * @param   string  $requiredRole
-     * @return  \stubbles\webapp\Route
-     */
-    public function withRoleOnly($requiredRole)
-    {
-        $this->requiredRole = $requiredRole;
-        return $this;
-    }
-
-    /**
-     * checks if access to this route required authorization
-     *
-     * @return  bool
-     */
-    public function requiresRoles()
-    {
-        return (null !== $this->requiredRole()) || $this->rolesAware();
-    }
-
-    /**
-     * checks whether route is satisfied by the given roles
-     *
-     * @param   \stubbles\webapp\auth\Roles  $roles
-     * @return  bool
-     */
-    public function satisfiedByRoles(Roles $roles = null)
-    {
-        if (null === $roles) {
-            return false;
-        }
-
-        if ($this->rolesAware()) {
-            return true;
-        }
-
-        return $roles->contain($this->requiredRole());
-    }
-
-    /**
-     * checks whether the route wants to be aware of roles
-     *
-     * Roles aware means that a resource might work different depending on the
-     * roles a user has, but that access to the resource in general is not
-     * forbidden even if the user doesn't have any of the roles.
-     *
-     * @return  bool
-     */
-    private function rolesAware()
-    {
-        if (null === $this->rolesAware) {
-            if (is_callable($this->callback)) {
-                $this->rolesAware = false;
-            } else {
-                $class = lang\reflect($this->callback);
-                $this->rolesAware = $class->hasAnnotation('RolesAware');
-            }
-        }
-
-        return $this->rolesAware;
-    }
-
-    /**
-     * returns required role for this route
-     *
-     * @return  string
-     */
-    private function requiredRole()
-    {
-        if (null !== $this->requiredRole) {
-            return $this->requiredRole;
-        }
-
-        if (is_callable($this->callback)) {
-            return null;
-        }
-
-        $class = lang\reflect($this->callback);
-        if ($class->hasAnnotation('RequiresRole')) {
-            $this->requiredRole = $class->getAnnotation('RequiresRole')->getRole();
-        }
-
-        return $this->requiredRole;
+        return $this->authConstraint;
     }
 
     /**
@@ -419,7 +349,7 @@ class Route implements ConfigurableRoute
      *
      * @param   string  $mimeType
      * @param   string  $formatterClass  optional  special formatter class to be used for given mime type on this route
-     * @return  \stubbles\webapp\Route
+     * @return  \stubbles\webapp\routing\Route
      */
     public function supportsMimeType($mimeType, $formatterClass = null)
     {
@@ -453,12 +383,26 @@ class Route implements ConfigurableRoute
     /**
      * disables content negotation
      *
-     * @return  \stubbles\webapp\Route
+     * @return  \stubbles\webapp\routing\Route
      * @since   2.1.1
      */
     public function disableContentNegotiation()
     {
         $this->disableContentNegotation = true;
         return $this;
+    }
+
+    /**
+     * returns list of callback annotations
+     *
+     * @return  \stubbles\webapp\routing\RoutingAnnotations
+     */
+    private function routingAnnotations()
+    {
+        if (null === $this->routingAnnotations) {
+            $this->routingAnnotations = new RoutingAnnotations($this->callback);
+        }
+
+        return $this->routingAnnotations;
     }
 }

@@ -7,8 +7,9 @@
  *
  * @package  stubbles\webapp
  */
-namespace stubbles\webapp;
+namespace stubbles\webapp\routing;
 use stubbles\input\web\WebRequest;
+use stubbles\webapp\UriRequest;
 use stubbles\webapp\interceptor\Interceptors;
 use stubbles\webapp\response\Response;
 use stubbles\webapp\response\SupportedMimeTypes;

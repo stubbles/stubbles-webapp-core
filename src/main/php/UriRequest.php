@@ -8,7 +8,6 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp;
-use stubbles\lang\exception\IllegalArgumentException;
 use stubbles\peer\http\HttpUri;
 /**
  * Utility methods to handle operations based on the uri called in the current request.
@@ -34,13 +33,13 @@ class UriRequest
      * constructor
      *
      * @param   string|\stubbles\peer\http\HttpUri  $requestUri
-     * @param   string          $requestMethod
-     * @throws  \stubbles\lang\exception\IllegalArgumentException
+     * @param   string                              $requestMethod
+     * @throws  \InvalidArgumentException
      */
     public function __construct($requestUri, $requestMethod)
     {
         if (empty($requestMethod)) {
-            throw new IllegalArgumentException('Request method can not be empty');
+            throw new \InvalidArgumentException('Request method can not be empty');
         }
 
         $this->uri    = HttpUri::castFrom($requestUri, 'requestUri');

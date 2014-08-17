@@ -7,12 +7,14 @@
  *
  * @package  stubbles\webapp
  */
-namespace stubbles\webapp;
+namespace stubbles\webapp\routing;
 use stubbles\input\web\WebRequest;
+use stubbles\webapp\UriPath;
+use stubbles\webapp\UriRequest;
 use stubbles\webapp\response\Response;
 use stubbles\webapp\response\SupportedMimeTypes;
 /**
- * Tests for stubbles\webapp\MatchingRoute.
+ * Tests for stubbles\webapp\routing\MatchingRoute.
  *
  * @since  2.0.0
  * @group  core

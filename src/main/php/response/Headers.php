@@ -8,7 +8,6 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\response;
-use stubbles\lang\exception\MethodNotSupportedException;
 use stubbles\peer\http\HttpUri;
 /**
  * List of response headers.
@@ -150,10 +149,10 @@ class Headers implements \IteratorAggregate, \ArrayAccess
     * removes header with given name
     *
     * @param   string  $offset
-    * @throws  \stubbles\lang\exception\MethodNotSupportedException
+    * @throws  \BadMethodCallException
     */
     public function offsetUnset($offset)
     {
-        throw new MethodNotSupportedException('Removing headers is not supported');
+        throw new \BadMethodCallException('Removing headers is not supported');
     }
 }

@@ -7,7 +7,7 @@
  *
  * @package  stubbles\webapp
  */
-namespace stubbles\webapp;
+namespace stubbles\webapp\routing;
 use stubbles\input\web\WebRequest;
 use stubbles\webapp\response\Response;
 /**

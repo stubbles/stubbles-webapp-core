@@ -9,6 +9,8 @@
  */
 namespace stubbles\webapp\ioc;
 use stubbles\ioc\Binder;
+use stubbles\lang\exception\RuntimeException;
+use stubbles\webapp\websession;
 /**
  * Tests for stubbles\webapp\ioc\IoBindingModule.
  *
@@ -82,6 +84,29 @@ class IoBindingModuleTest extends \PHPUnit_Framework_TestCase
     {
         $injector = $this->createInjector(new IoBindingModule());
         $this->assertFalse($injector->hasExplicitBinding('stubbles\webapp\session\Session'));
+    }
+
+    /**
+     * @since  5.0.0
+     * @test
+     */
+    public function initializesSessionScopeWhenSessionBound()
+    {
+        $binder      = new Binder();
+        (new IoBindingModule(websession\noneDurable()))->configure($binder);
+        try {
+            $binder->bind('\stdClass')
+                   ->to('\stdClass')
+                   ->inSession();
+        } catch (RuntimeException $re) {
+            $this->fail($re->getMessage());
+        }
+
+        $injector = $binder->getInjector();
+        $this->assertSame(
+                $injector->getInstance('\stdClass'),
+                $injector->getInstance('\stdClass')
+        );
     }
 
     /**

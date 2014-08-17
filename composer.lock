@@ -4,20 +4,20 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "c35c513a09d987e892e7b9084e7d4f5d",
+    "hash": "123cfac3e6ca515e42b6049806aed143",
     "packages": [
         {
             "name": "stubbles/core",
-            "version": "v4.1.3",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/stubbles/stubbles-core.git",
-                "reference": "b4e4398dac224d174d3129ab2b1c95930e4e95ae"
+                "reference": "14053f6e3605cdf93b7287a3eef6301ebbad3db5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/stubbles/stubbles-core/zipball/b4e4398dac224d174d3129ab2b1c95930e4e95ae",
-                "reference": "b4e4398dac224d174d3129ab2b1c95930e4e95ae",
+                "url": "https://api.github.com/repos/stubbles/stubbles-core/zipball/14053f6e3605cdf93b7287a3eef6301ebbad3db5",
+                "reference": "14053f6e3605cdf93b7287a3eef6301ebbad3db5",
                 "shasum": ""
             },
             "require": {
@@ -25,13 +25,12 @@
             },
             "require-dev": {
                 "mikey179/vfsstream": "~1.3",
-                "phpunit/phpunit": "~4.1",
-                "stubbles/core-dev": "dev-master"
+                "phpunit/phpunit": "~4.1"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "4.1.x-dev"
+                    "dev-master": "5.0.x-dev"
                 }
             },
             "autoload": {
@@ -49,38 +48,38 @@
             ],
             "description": "Provides base classes for Stubbles packages.",
             "homepage": "http://stubbles.net/",
-            "time": "2014-08-10 09:11:04"
+            "time": "2014-08-16 13:03:21"
         },
         {
             "name": "stubbles/input",
-            "version": "v3.1.1",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/stubbles/stubbles-input.git",
-                "reference": "123ab0bf9630c863cb9ded1ff471afa0fc05d9c4"
+                "reference": "ede382673fca4d163550147cef7916e481bde45e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/stubbles/stubbles-input/zipball/123ab0bf9630c863cb9ded1ff471afa0fc05d9c4",
-                "reference": "123ab0bf9630c863cb9ded1ff471afa0fc05d9c4",
+                "url": "https://api.github.com/repos/stubbles/stubbles-input/zipball/ede382673fca4d163550147cef7916e481bde45e",
+                "reference": "ede382673fca4d163550147cef7916e481bde45e",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.4.0",
-                "stubbles/core": "~4.1"
+                "stubbles/core": "~5.0"
             },
             "require-dev": {
                 "mikey179/vfsstream": "~1.3",
-                "phpunit/phpunit": "~4.1",
-                "stubbles/date": "~4.0"
+                "phpunit/phpunit": "~4.2",
+                "stubbles/date": "~5.0"
             },
             "suggest": {
-                "stubbles/date": "~4.0"
+                "stubbles/date": "~5.0"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "3.1.x-dev"
+                    "dev-master": "4.0.x-dev"
                 }
             },
             "autoload": {
@@ -94,7 +93,7 @@
             ],
             "description": "Stubbles Input enables to handle input data via validation and filtering.",
             "homepage": "http://stubbles.net/",
-            "time": "2014-08-10 14:12:52"
+            "time": "2014-08-16 11:33:45"
         }
     ],
     "packages-dev": [
@@ -138,16 +137,16 @@
         },
         {
             "name": "ocramius/instantiator",
-            "version": "1.0.0",
+            "version": "1.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Ocramius/Instantiator.git",
-                "reference": "cc754c2289ffd4483c319f6ed6ee88ce21676f64"
+                "reference": "a7abbb5fc9df6e7126af741dd6c140d1a7369435"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Ocramius/Instantiator/zipball/cc754c2289ffd4483c319f6ed6ee88ce21676f64",
-                "reference": "cc754c2289ffd4483c319f6ed6ee88ce21676f64",
+                "url": "https://api.github.com/repos/Ocramius/Instantiator/zipball/a7abbb5fc9df6e7126af741dd6c140d1a7369435",
+                "reference": "a7abbb5fc9df6e7126af741dd6c140d1a7369435",
                 "shasum": ""
             },
             "require": {
@@ -156,6 +155,7 @@
             },
             "require-dev": {
                 "athletic/athletic": "~0.1.8",
+                "ext-pdo": "*",
                 "ext-phar": "*",
                 "phpunit/phpunit": "~4.0",
                 "squizlabs/php_codesniffer": "2.0.*@ALPHA"
@@ -179,8 +179,7 @@
                 {
                     "name": "Marco Pivetta",
                     "email": "ocramius@gmail.com",
-                    "homepage": "http://ocramius.github.com/",
-                    "role": "Developer"
+                    "homepage": "http://ocramius.github.com/"
                 }
             ],
             "description": "A small, lightweight utility to instantiate objects in PHP without invoking their constructors",
@@ -189,7 +188,7 @@
                 "constructor",
                 "instantiate"
             ],
-            "time": "2014-06-15 11:44:46"
+            "time": "2014-08-14 15:10:55"
         },
         {
             "name": "ocramius/lazy-map",
@@ -846,8 +845,7 @@
                 },
                 {
                     "name": "Adam Harvey",
-                    "email": "aharvey@php.net",
-                    "role": "Lead"
+                    "email": "aharvey@php.net"
                 },
                 {
                     "name": "Bernhard Schussek",
@@ -899,29 +897,29 @@
         },
         {
             "name": "stubbles/date",
-            "version": "v4.0.0",
+            "version": "v5.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/stubbles/stubbles-date.git",
-                "reference": "604fd1e3b4147b4317fdda80471ec9d9589d396a"
+                "reference": "d6f549fec1a695f0b6e852e85df8ebe3e30cb02a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/stubbles/stubbles-date/zipball/604fd1e3b4147b4317fdda80471ec9d9589d396a",
-                "reference": "604fd1e3b4147b4317fdda80471ec9d9589d396a",
+                "url": "https://api.github.com/repos/stubbles/stubbles-date/zipball/d6f549fec1a695f0b6e852e85df8ebe3e30cb02a",
+                "reference": "d6f549fec1a695f0b6e852e85df8ebe3e30cb02a",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.4.0",
-                "stubbles/core": "~4.0"
+                "php": ">=5.4.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "~4.1"
+                "phpunit/phpunit": "~4.1",
+                "stubbles/core": "~5.0"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "4.0.x-dev"
+                    "dev-master": "5.0.x-dev"
                 }
             },
             "autoload": {
@@ -935,35 +933,34 @@
             ],
             "description": "Simplified handling of dates and datespans.",
             "homepage": "http://stubbles.net/",
-            "time": "2014-07-31 12:14:28"
+            "time": "2014-08-14 12:05:32"
         },
         {
             "name": "stubbles/webapp-session",
-            "version": "v4.0.0",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/stubbles/stubbles-webapp-session.git",
-                "reference": "7992f288ff2c77452ced92c8c2cf2a58335a735a"
+                "reference": "2c3670327397944187fdc8e932938d984f840eab"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/stubbles/stubbles-webapp-session/zipball/7992f288ff2c77452ced92c8c2cf2a58335a735a",
-                "reference": "7992f288ff2c77452ced92c8c2cf2a58335a735a",
+                "url": "https://api.github.com/repos/stubbles/stubbles-webapp-session/zipball/2c3670327397944187fdc8e932938d984f840eab",
+                "reference": "2c3670327397944187fdc8e932938d984f840eab",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.4.0",
-                "stubbles/core": "~4.0",
-                "stubbles/input": "~3.0"
+                "php": ">=5.4.0"
             },
             "require-dev": {
                 "mikey179/vfsstream": "~1.3",
-                "phpunit/phpunit": "~4.1"
+                "phpunit/phpunit": "~4.2",
+                "stubbles/core": "~5.0"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "4.0.x-dev"
+                    "dev-master": "5.0.x-dev"
                 }
             },
             "autoload": {
@@ -980,35 +977,35 @@
             ],
             "description": "Session classes for Stubbles based web applications.",
             "homepage": "http://stubbles.net/",
-            "time": "2014-07-31 15:37:52"
+            "time": "2014-08-16 15:33:05"
         },
         {
             "name": "stubbles/xml",
-            "version": "v3.0.0",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/stubbles/stubbles-xml.git",
-                "reference": "96f75e7920bcbd4d8ce2a71aa1253fd51f46d542"
+                "reference": "ad27ec1ed78adfba2908f002413ac1c10c401c38"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/stubbles/stubbles-xml/zipball/96f75e7920bcbd4d8ce2a71aa1253fd51f46d542",
-                "reference": "96f75e7920bcbd4d8ce2a71aa1253fd51f46d542",
+                "url": "https://api.github.com/repos/stubbles/stubbles-xml/zipball/ad27ec1ed78adfba2908f002413ac1c10c401c38",
+                "reference": "ad27ec1ed78adfba2908f002413ac1c10c401c38",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.4.0",
-                "stubbles/core": "~4.0",
-                "stubbles/date": "~4.0"
+                "stubbles/core": "~5.0",
+                "stubbles/date": "~5.0"
             },
             "require-dev": {
                 "mikey179/vfsstream": "~1.3",
-                "phpunit/phpunit": "~4.1"
+                "phpunit/phpunit": "~4.2"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "3.0.x-dev"
+                    "dev-master": "4.0.x-dev"
                 }
             },
             "autoload": {
@@ -1022,7 +1019,7 @@
             ],
             "description": "Classes to work with XML",
             "homepage": "http://stubbles.net/",
-            "time": "2014-07-31 14:38:52"
+            "time": "2014-08-16 13:22:35"
         },
         {
             "name": "symfony/yaml",
@@ -1072,18 +1069,12 @@
             "time": "2014-08-05 09:00:40"
         }
     ],
-    "aliases": [
-
-    ],
+    "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": [
-
-    ],
+    "stability-flags": [],
     "prefer-stable": true,
     "platform": {
         "php": ">=5.4.0"
     },
-    "platform-dev": [
-
-    ]
+    "platform-dev": []
 }
