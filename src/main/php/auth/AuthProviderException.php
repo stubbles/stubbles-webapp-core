@@ -14,7 +14,7 @@ use stubbles\lang\exception\Exception;
  *
  * @since  2.3.0
  */
-class AuthProviderException extends Exception
+abstract class AuthProviderException extends Exception
 {
     /**
      * internal error
@@ -37,38 +37,6 @@ class AuthProviderException extends Exception
     {
         parent::__construct($message, $cause, $code);
 
-    }
-
-    /**
-     * creates an auth provider exception which denotes an internal error
-     *
-     * Should be used when the auth provider fails internally, i.e. can not reach
-     * the database or something similar.
-     *
-     * @param   string      $message
-     * @param   \Exception  $cause
-     * @return  \stubbles\webapp\auth\AuthProviderException
-     * @api
-     */
-    public static function internal($message, \Exception $cause = null)
-    {
-        return new self($message, $cause, self::INTERNAL);
-    }
-
-    /**
-     * creates an auth provider exception which denotes an external error
-     *
-     * Should be used when the auth provider requires an external service to
-     * validate the access and the external service fails.
-     *
-     * @param   string      $message
-     * @param   \Exception  $cause
-     * @return  \stubbles\webapp\auth\AuthProviderException
-     * @api
-     */
-    public static function external($message, \Exception $cause = null)
-    {
-        return new self($message, $cause, self::EXTERNAL);
     }
 
     /**

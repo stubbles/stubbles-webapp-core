@@ -142,7 +142,7 @@ class AuthorizingRouteTest extends \PHPUnit_Framework_TestCase
         $mockAuthenticationProvider = $this->mockAuthenticationProvider();
         $mockAuthenticationProvider->expects($this->once())
                                    ->method('authenticate')
-                                   ->will($this->throwException(AuthProviderException::internal('error')));
+                                   ->will($this->throwException(new InternalAuthProviderException('error')));
         $this->mockResponse->expects($this->once())
                            ->method('internalServerError')
                            ->with($this->equalTo('error'));
@@ -160,7 +160,7 @@ class AuthorizingRouteTest extends \PHPUnit_Framework_TestCase
         $mockAuthenticationProvider = $this->mockAuthenticationProvider();
         $mockAuthenticationProvider->expects($this->once())
                                    ->method('authenticate')
-                                   ->will($this->throwException(AuthProviderException::external('error')));
+                                   ->will($this->throwException(new ExternalAuthProviderException('error')));
         $this->mockResponse->expects($this->once())
                            ->method('setStatusCode')
                            ->with($this->equalTo(503))
@@ -273,7 +273,7 @@ class AuthorizingRouteTest extends \PHPUnit_Framework_TestCase
         $mockAuthorizationProvider = $this->mockAuthorizationProvider();
         $mockAuthorizationProvider->expects($this->once())
                                   ->method('roles')
-                                  ->will($this->throwException(AuthProviderException::internal('error')));
+                                  ->will($this->throwException(new InternalAuthProviderException('error')));
         $this->mockResponse->expects($this->once())
                            ->method('internalServerError')
                            ->with($this->equalTo('error'));
@@ -292,7 +292,7 @@ class AuthorizingRouteTest extends \PHPUnit_Framework_TestCase
         $mockAuthorizationProvider = $this->mockAuthorizationProvider();
         $mockAuthorizationProvider->expects($this->once())
                                   ->method('roles')
-                                  ->will($this->throwException(AuthProviderException::external('error')));
+                                  ->will($this->throwException(new ExternalAuthProviderException('error')));
         $this->mockResponse->expects($this->once())
                            ->method('setStatusCode')
                            ->with($this->equalTo(503))
