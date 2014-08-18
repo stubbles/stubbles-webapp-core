@@ -7,7 +7,7 @@
     "require": {
         "php": ">=5.4.0",
         "stubbles/core": "~5.0",
-        "stubbles/input": "~4.0"
+        "stubbles/input": "~4.1"
     },
     "suggest": {
         "stubbles/xml": "~4.0",

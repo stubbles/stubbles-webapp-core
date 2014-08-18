@@ -19,16 +19,15 @@ class TestWebApp extends WebApp
     /**
      * returns list of bindings required for this web app
      *
-     * @param   string  $projectPath
      * @return  array
      */
-    public static function __bindings($projectPath)
+    public static function __bindings()
     {
         return [self::createIoBindingModule(),
-                function(Binder $binder) use ($projectPath)
+                function(Binder $binder)
                 {
                     $binder->bindConstant('stubbles.project.path')
-                           ->to($projectPath);
+                           ->to(self::projectPath());
                 }
         ];
     }
