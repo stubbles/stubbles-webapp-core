@@ -112,21 +112,17 @@ class ResponseNegotiatorTest extends \PHPUnit_Framework_TestCase
      */
     public function missingFormatterForNegotiatedMimeTypeRespondsWithInternalServerError()
     {
-        $this->mockAcceptHeader('application/json');
-        $this->mockInjector->expects($this->once())
-                           ->method('hasBinding')
-                           ->with($this->equalTo('stubbles\webapp\response\format\Formatter'),
-                                  $this->equalTo('application/json')
-                             )
-                           ->will($this->returnValue(false));
+        $this->mockAcceptHeader('application/foo');
         $this->mockResponse->expects($this->once())
                            ->method('internalServerError')
-                           ->with($this->equalTo('No formatter defined for negotiated content type application/json'))
+                           ->with($this->equalTo('No formatter defined for negotiated content type application/foo'))
                            ->will($this->returnSelf());
-        $this->assertSame($this->mockResponse,
-                          $this->responseNegotiator->negotiateMimeType($this->mockRequest,
-                                                                       new SupportedMimeTypes(['application/json', 'application/xml'])
-                          )
+        $this->assertSame(
+                $this->mockResponse,
+                $this->responseNegotiator->negotiateMimeType(
+                        $this->mockRequest,
+                        new SupportedMimeTypes(['application/foo', 'application/xml'])
+                )
         );
     }
 
@@ -138,66 +134,18 @@ class ResponseNegotiatorTest extends \PHPUnit_Framework_TestCase
     {
         $this->mockAcceptHeader(null);
         $this->mockInjector->expects($this->once())
-                           ->method('hasBinding')
-                           ->with($this->equalTo('stubbles\webapp\response\format\Formatter'),
-                                  $this->equalTo('application/json')
-                             )
-                           ->will($this->returnValue(true));
-        $this->mockInjector->expects($this->once())
                            ->method('getInstance')
-                           ->with($this->equalTo('stubbles\webapp\response\format\Formatter'),
-                                  $this->equalTo('application/json')
-                             )
+                           ->with($this->equalTo('example\SpecialJsonFormatter'))
                            ->will($this->returnValue($this->getMock('stubbles\webapp\response\format\Formatter')));
-        $this->assertInstanceOf('stubbles\webapp\response\FormattingResponse',
-                                $this->responseNegotiator->negotiateMimeType($this->mockRequest,
-                                                                             new SupportedMimeTypes(['application/json', 'application/xml'])
-                                )
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function createsFormatterForNegotiatedMimeTypeAndReturnsFormattingResponse()
-    {
-        $this->mockAcceptHeader('application/json');
-        $this->mockInjector->expects($this->once())
-                           ->method('hasBinding')
-                           ->with($this->equalTo('stubbles\webapp\response\format\Formatter'),
-                                  $this->equalTo('application/json')
-                             )
-                           ->will($this->returnValue(true));
-        $this->mockInjector->expects($this->once())
-                           ->method('getInstance')
-                           ->with($this->equalTo('stubbles\webapp\response\format\Formatter'),
-                                  $this->equalTo('application/json')
-                             )
-                           ->will($this->returnValue($this->getMock('stubbles\webapp\response\format\Formatter')));
-        $this->assertInstanceOf('stubbles\webapp\response\FormattingResponse',
-                                $this->responseNegotiator->negotiateMimeType($this->mockRequest,
-                                                                             new SupportedMimeTypes(['application/json', 'application/xml'])
-                                )
-        );
-    }
-
-    /**
-     * @test
-     * @since  3.2.0
-     */
-    public function createsSpecializedFormatterForNegotiatedMimeTypeAndReturnsFormattingResponse()
-    {
-        $this->mockAcceptHeader('application/xml');
-        $this->mockInjector->expects($this->once())
-                           ->method('getInstance')
-                           ->with($this->equalTo('example\SpecialFormatter'))
-                           ->will($this->returnValue($this->getMock('stubbles\webapp\response\format\Formatter')));
-        $this->assertInstanceOf('stubbles\webapp\response\FormattingResponse',
-                                $this->responseNegotiator->negotiateMimeType($this->mockRequest,
-                                                                             new SupportedMimeTypes(['application/json', 'application/xml'],
-                                                                                                    ['application/xml' => 'example\SpecialFormatter']
-                                                                             )
-                                )
+        $this->assertInstanceOf(
+                'stubbles\webapp\response\FormattingResponse',
+                $this->responseNegotiator->negotiateMimeType(
+                        $this->mockRequest,
+                        new SupportedMimeTypes(
+                                ['application/json', 'application/xml'],
+                                ['application/json' => 'example\SpecialJsonFormatter']
+                        )
+                )
         );
     }
 }

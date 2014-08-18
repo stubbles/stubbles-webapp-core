@@ -29,11 +29,24 @@ class SupportedMimeTypes
      */
     private $disableContentNegotation = false;
     /**
-     * map of formatters
+     * map of formatters for mime types
      *
      * @type  array
      */
-    private $formatter;
+    private $formatter    = ['application/json'    => 'stubbles\webapp\response\format\JsonFormatter',
+                             'text/json'           => 'stubbles\webapp\response\format\JsonFormatter',
+                             'text/html'           => 'stubbles\webapp\response\format\HtmlFormatter',
+                             'text/plain'          => 'stubbles\webapp\response\format\PlainTextFormatter'
+                            ];
+    /**
+     * map of xml formatters for mime types
+     *
+     * @var  array
+     */
+    private $xmlFormatter = ['text/xml'            => 'stubbles\webapp\response\format\XmlFormatter',
+                             'application/xml'     => 'stubbles\webapp\response\format\XmlFormatter',
+                             'application/rss+xml' => 'stubbles\webapp\response\format\XmlFormatter'
+                            ];
 
     /**
      * constructor
@@ -44,7 +57,7 @@ class SupportedMimeTypes
     public function __construct(array $mimeTypes, array $formatter = [])
     {
         $this->mimeTypes = $mimeTypes;
-        $this->formatter = $formatter;
+        $this->formatter = array_merge($this->formatter, $formatter);
     }
 
     /**
@@ -98,7 +111,17 @@ class SupportedMimeTypes
      */
     public function provideFormatter($mimeType)
     {
+        $this->addXmlFormatterWhenXmlSerializerPresent();
         return isset($this->formatter[$mimeType]);
+    }
+
+    private function addXmlFormatterWhenXmlSerializerPresent()
+    {
+        foreach ($this->xmlFormatter as $mimeType => $xmlFormatter) {
+            if (!isset($this->formatter[$mimeType]) && class_exists('stubbles\xml\serializer\XmlSerializerFacade')) {
+                $this->formatter[$mimeType] = $xmlFormatter;
+            }
+        }
     }
 
     /**

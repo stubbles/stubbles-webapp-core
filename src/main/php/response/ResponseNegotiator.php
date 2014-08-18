@@ -71,30 +71,14 @@ class ResponseNegotiator
             return $this->response->notAcceptable($supportedMimeTypes->asArray());
         }
 
-        $formatter = $this->createFormatter($mimeType, $supportedMimeTypes);
-        if (null === $formatter) {
+        if (!$supportedMimeTypes->provideFormatter($mimeType)) {
             return $this->response->internalServerError('No formatter defined for negotiated content type ' . $mimeType);
         }
 
-        return new FormattingResponse($this->response, $formatter, $mimeType);
-    }
-
-    /**
-     * creates formatter instance
-     *
-     * @param   string  $mimeType
-     * @return  \stubbles\webapp\response\format\Formatter
-     */
-    private function createFormatter($mimeType, SupportedMimeTypes $supportedMimeTypes)
-    {
-        if ($supportedMimeTypes->provideFormatter($mimeType)) {
-            return $this->injector->getInstance($supportedMimeTypes->formatterFor($mimeType));
-        }
-
-        if ($this->injector->hasBinding('stubbles\webapp\response\format\Formatter', $mimeType)) {
-            return $this->injector->getInstance('stubbles\webapp\response\format\Formatter', $mimeType);
-        }
-
-        return null;
+        return new FormattingResponse(
+                $this->response,
+                $this->injector->getInstance($supportedMimeTypes->formatterFor($mimeType)),
+                $mimeType
+        );
     }
 }
