@@ -33,20 +33,26 @@ class SupportedMimeTypes
      *
      * @type  array
      */
-    private $formatter    = ['application/json'    => 'stubbles\webapp\response\format\JsonFormatter',
-                             'text/json'           => 'stubbles\webapp\response\format\JsonFormatter',
-                             'text/html'           => 'stubbles\webapp\response\format\HtmlFormatter',
-                             'text/plain'          => 'stubbles\webapp\response\format\PlainTextFormatter'
-                            ];
+    private static $supported = ['application/json'    => 'stubbles\webapp\response\format\JsonFormatter',
+                                 'text/json'           => 'stubbles\webapp\response\format\JsonFormatter',
+                                 'text/html'           => 'stubbles\webapp\response\format\HtmlFormatter',
+                                 'text/plain'          => 'stubbles\webapp\response\format\PlainTextFormatter'
+                                 ];
     /**
      * map of xml formatters for mime types
      *
      * @var  array
      */
-    private $xmlFormatter = ['text/xml'            => 'stubbles\webapp\response\format\XmlFormatter',
-                             'application/xml'     => 'stubbles\webapp\response\format\XmlFormatter',
-                             'application/rss+xml' => 'stubbles\webapp\response\format\XmlFormatter'
-                            ];
+    private static $xmlFormatter = ['text/xml'            => 'stubbles\webapp\response\format\XmlFormatter',
+                                    'application/xml'     => 'stubbles\webapp\response\format\XmlFormatter',
+                                    'application/rss+xml' => 'stubbles\webapp\response\format\XmlFormatter'
+                                   ];
+    /**
+     * map of formatters for mime types
+     *
+     * @type  array
+     */
+    private $formatter = [];
 
     /**
      * constructor
@@ -57,7 +63,7 @@ class SupportedMimeTypes
     public function __construct(array $mimeTypes, array $formatter = [])
     {
         $this->mimeTypes = $mimeTypes;
-        $this->formatter = array_merge($this->formatter, $formatter);
+        $this->formatter = array_merge(self::$supported, $formatter);
     }
 
     /**
@@ -103,6 +109,26 @@ class SupportedMimeTypes
     }
 
     /**
+     * checks if a default formatter is known for the given mime type
+     *
+     * @param   string  $mimeType
+     * @return  bool
+     * @since   5.0.0
+     */
+    public static function provideDefaultFormatterFor($mimeType)
+    {
+        if (in_array($mimeType, array_keys(self::$supported))) {
+            return true;
+        }
+
+        if (class_exists('stubbles\xml\serializer\XmlSerializerFacade') && in_array($mimeType, array_keys(self::$xmlFormatter))) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * checks if a special formatter was defined for given mime type
      *
      * @param   string  $mimeType
@@ -115,9 +141,12 @@ class SupportedMimeTypes
         return isset($this->formatter[$mimeType]);
     }
 
+    /**
+     * adds xml formatters to formatters when stubbles/xml is present
+     */
     private function addXmlFormatterWhenXmlSerializerPresent()
     {
-        foreach ($this->xmlFormatter as $mimeType => $xmlFormatter) {
+        foreach (self::$xmlFormatter as $mimeType => $xmlFormatter) {
             if (!isset($this->formatter[$mimeType]) && class_exists('stubbles\xml\serializer\XmlSerializerFacade')) {
                 $this->formatter[$mimeType] = $xmlFormatter;
             }

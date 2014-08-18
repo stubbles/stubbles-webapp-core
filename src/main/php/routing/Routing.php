@@ -553,9 +553,14 @@ class Routing implements RoutingConfigurator
      * @param   string  $mimeType
      * @param   string  $formatterClass  optional  special formatter class to be used for given mime type on this route
      * @return  \stubbles\webapp\routing\Routing
+     * @throws  \InvalidArgumentException
      */
     public function supportsMimeType($mimeType, $formatterClass = null)
     {
+        if (null === $formatterClass && !SupportedMimeTypes::provideDefaultFormatterFor($mimeType)) {
+            throw new \InvalidArgumentException('No default formatter known for mime type ' . $mimeType . ', please provide a formatter');
+        }
+
         $this->mimeTypes[] = $mimeType;
         if (null !== $formatterClass) {
             $this->formatter[$mimeType] = $formatterClass;
