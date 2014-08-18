@@ -407,6 +407,23 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @since 5.0.0
+     * @test
+     */
+    public function passesGlobalFormatterToSupportedMimeTypesOfSelectedRoute()
+    {
+        $this->routing->onGet('/hello', function() {})
+                      ->supportsMimeType('application/json');
+        $this->routing->supportsMimeType('application/foo', 'example\SpecialFormatter');
+        $this->assertEquals(
+                'example\SpecialFormatter',
+                $this->routing->findRoute($this->calledUri)
+                              ->supportedMimeTypes()
+                              ->formatterFor('application/foo')
+        );
+    }
+
+    /**
      * @test
      * @since  2.1.1
      */

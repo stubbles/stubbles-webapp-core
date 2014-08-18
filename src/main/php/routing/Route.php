@@ -85,7 +85,7 @@ class Route implements ConfigurableRoute
     /**
      * map of additional formatters for this route
      *
-     * @type  array
+     * @type  string[]
      */
     private $formatter                = [];
 
@@ -364,19 +364,19 @@ class Route implements ConfigurableRoute
     /**
      * returns list of mime types supported by this route
      *
-     * @param   string[]  $globalMimeTypes  list of globally supported mime types
+     * @param   string[]  $globalMimeTypes  optional list of globally supported mime types
+     * @param   string[]  $globalFormatter  optional list of globally defined formatters
      * @return  \stubbles\webapp\response\SupportedMimeTypes
      */
-    public function supportedMimeTypes(array $globalMimeTypes = [])
+    public function supportedMimeTypes(array $globalMimeTypes = [], array $globalFormatter = [])
     {
         if ($this->disableContentNegotation) {
             return SupportedMimeTypes::createWithDisabledContentNegotation();
         }
 
-        return new SupportedMimeTypes(array_merge($this->mimeTypes,
-                                                  $globalMimeTypes
-                                      ),
-                                      $this->formatter
+        return new SupportedMimeTypes(
+                array_merge($this->mimeTypes, $globalMimeTypes),
+                array_merge($globalFormatter, $this->formatter)
         );
     }
 
