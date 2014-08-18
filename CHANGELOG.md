@@ -17,6 +17,7 @@
      * added support for annotation `@RolesAware` which can be set on processors in case they don't need a specific role but access to the roles of a user in general
    * removed all methods deprecated with 4.0.0 (see below)
    * changed all thrown stubbles/core exceptions to those recommended with stubbles/core 5.0.0
+   * globally defined formatters can not be set via io binding module any more, but directly on the routing when specifying the global mime type
 
 ### Other changes
 
