@@ -20,6 +20,34 @@ use stubbles\webapp\websession\SessionBindingScope;
 class IoBindingModule implements BindingModule
 {
     /**
+     * marker whether runtime was already initialized
+     *
+     * @type  bool
+     */
+    private static $initialized = false;
+
+    /**
+     * checks whether runtime was already bound
+     *
+     * @internal
+     * @return  bool
+     */
+    public static function initialized()
+    {
+        return self::$initialized;
+    }
+
+    /**
+     * resets initialzed status
+     *
+     * @internal
+     */
+    public static function reset()
+    {
+        self::$initialized = false;
+    }
+
+    /**
      * response class to be used
      *
      * @type  string

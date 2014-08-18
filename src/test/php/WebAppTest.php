@@ -23,13 +23,22 @@ class TestWebApp extends WebApp
      */
     public static function __bindings()
     {
-        return [self::createIoBindingModule(),
-                function(Binder $binder)
+        return [function(Binder $binder)
                 {
                     $binder->bindConstant('stubbles.project.path')
                            ->to(self::projectPath());
                 }
         ];
+    }
+
+    /**
+     * returns provided request instance
+     *
+     * @return  \stubbles\input\web\WebRequest
+     */
+    public function request()
+    {
+        return $this->request;
     }
 
     /**
@@ -411,9 +420,19 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertInstanceOf(
                 'stubbles\webapp\TestWebApp',
-                WebApp::createInstance('stubbles\webapp\TestWebApp',
-                                       'projectPath'
-                )
+                TestWebApp::create('projectPath')
+        );
+    }
+
+    /**
+     * @since  5.0.0
+     * @test
+     */
+    public function ioBindingModuleAddedByDefault()
+    {
+        $this->assertInstanceOf(
+                'stubbles\input\web\WebRequest',
+                TestWebApp::create('projectPath')->request()
         );
     }
 }

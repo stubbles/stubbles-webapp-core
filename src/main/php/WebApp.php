@@ -154,7 +154,26 @@ abstract class WebApp extends App
      */
     public static function createInstance($className, $projectPath)
     {
+        IoBindingModule::reset();
         return parent::createInstance($className, $projectPath);
+    }
+
+    /**
+     * creates list of bindings from given class
+     *
+     * @internal  must not be used by applications
+     * @param   string  $className    full qualified class name of class to create an instance of
+     * @param   string  $projectPath  path to project
+     * @return  \stubbles\ioc\module\BindingModule[]
+     */
+    protected static function getBindingsForApp($className)
+    {
+        $bindings = parent::getBindingsForApp($className);
+        if (!IoBindingModule::initialized()) {
+            $bindings[] = self::createIoBindingModule();
+        }
+
+        return $bindings;
     }
 
     /**

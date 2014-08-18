@@ -23,6 +23,7 @@
    * upgraded stubbles/core to 5.0
    * upgraded stubbles/input to 4.0
    * ensured compatibility with stubbles/webapp-session 5.0
+   * io binding module is added to bindings by default if not explicitly specified
 
 
 4.0.0 (2014-07-31)
