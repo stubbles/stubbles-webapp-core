@@ -48,6 +48,12 @@ class Routing implements RoutingConfigurator
      */
     private $mimeTypes                = [];
     /**
+     * map of additional formatters for this route
+     *
+     * @type  string[]
+     */
+    private $formatter                = [];
+    /**
      * whether content negotation is disabled or not
      *
      * @type  bool
@@ -545,11 +551,21 @@ class Routing implements RoutingConfigurator
      * add a supported mime type
      *
      * @param   string  $mimeType
+     * @param   string  $formatterClass  optional  special formatter class to be used for given mime type on this route
      * @return  \stubbles\webapp\routing\Routing
+     * @throws  \InvalidArgumentException
      */
-    public function supportsMimeType($mimeType)
+    public function supportsMimeType($mimeType, $formatterClass = null)
     {
+        if (null === $formatterClass && !SupportedMimeTypes::provideDefaultFormatterFor($mimeType)) {
+            throw new \InvalidArgumentException('No default formatter known for mime type ' . $mimeType . ', please provide a formatter');
+        }
+
         $this->mimeTypes[] = $mimeType;
+        if (null !== $formatterClass) {
+            $this->formatter[$mimeType] = $formatterClass;
+        }
+
         return $this;
     }
 
@@ -578,9 +594,9 @@ class Routing implements RoutingConfigurator
         }
 
         if (null !== $routeConfig) {
-            return $routeConfig->supportedMimeTypes($this->mimeTypes);
+            return $routeConfig->supportedMimeTypes($this->mimeTypes, $this->formatter);
         }
 
-        return new SupportedMimeTypes($this->mimeTypes);
+        return new SupportedMimeTypes($this->mimeTypes, $this->formatter);
     }
 }

@@ -1,4 +1,4 @@
-5.0.0 (2014-08-??)
+5.0.0 (2014-08-18)
 ------------------
 
 ### BC breaks
@@ -17,12 +17,14 @@
      * added support for annotation `@RolesAware` which can be set on processors in case they don't need a specific role but access to the roles of a user in general
    * removed all methods deprecated with 4.0.0 (see below)
    * changed all thrown stubbles/core exceptions to those recommended with stubbles/core 5.0.0
+   * globally defined formatters can not be set via io binding module any more, but directly on the routing when specifying the global mime type
 
 ### Other changes
 
    * upgraded stubbles/core to 5.0
    * upgraded stubbles/input to 4.0
    * ensured compatibility with stubbles/webapp-session 5.0
+   * io binding module is added to bindings by default if not explicitly specified
 
 
 4.0.0 (2014-07-31)

@@ -391,6 +391,16 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
+     * @expectedException  InvalidArgumentException
+     * @since  5.0.0
+     */
+    public function addMimeTypeWithoutFormatterWhenNoDefaultFormatterIsKnownThrowsInvalidArgumentException()
+    {
+        $this->routing->supportsMimeType('application/foo');
+    }
+
+    /**
+     * @test
      */
     public function supportsGlobalAndRouteMimeTypesWhenRouteFound()
     {
@@ -403,6 +413,23 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
                                           ->findRoute($this->calledUri)
                                           ->supportedMimeTypes()
                                           ->asArray()
+        );
+    }
+
+    /**
+     * @since 5.0.0
+     * @test
+     */
+    public function passesGlobalFormatterToSupportedMimeTypesOfSelectedRoute()
+    {
+        $this->routing->onGet('/hello', function() {})
+                      ->supportsMimeType('application/json');
+        $this->routing->supportsMimeType('application/foo', 'example\SpecialFormatter');
+        $this->assertEquals(
+                'example\SpecialFormatter',
+                $this->routing->findRoute($this->calledUri)
+                              ->supportedMimeTypes()
+                              ->formatterFor('application/foo')
         );
     }
 

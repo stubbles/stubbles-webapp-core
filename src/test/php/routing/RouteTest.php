@@ -642,6 +642,16 @@ class RouteTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
+     * @expectedException  InvalidArgumentException
+     * @since  5.0.0
+     */
+    public function addMimeTypeWithoutFormatterWhenNoDefaultFormatterIsKnownThrowsInvalidArgumentException()
+    {
+        $this->createRoute()->supportsMimeType('application/foo');
+    }
+
+    /**
+     * @test
      */
     public function returnsListOfAddedSupportedMimeTypes()
     {
