@@ -1,3 +1,9 @@
+5.0.1 (2014-09-01)
+------------------
+
+  * fixed issue #69: Use status code 504 for external auth provider failures instead of 503
+
+
 5.0.0 (2014-08-18)
 ------------------
 

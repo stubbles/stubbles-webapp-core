@@ -154,8 +154,9 @@ class AuthorizingRouteTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @group  issue_32
+     * @group  issue_69
      */
-    public function applyPreInterceptorsTriggersStatusCode503WhenAuthenticationThrowsExternalAuthHandlerException()
+    public function applyPreInterceptorsTriggersStatusCode504WhenAuthenticationThrowsExternalAuthHandlerException()
     {
         $mockAuthenticationProvider = $this->mockAuthenticationProvider();
         $mockAuthenticationProvider->expects($this->once())
@@ -163,7 +164,7 @@ class AuthorizingRouteTest extends \PHPUnit_Framework_TestCase
                                    ->will($this->throwException(new ExternalAuthProviderException('error')));
         $this->mockResponse->expects($this->once())
                            ->method('setStatusCode')
-                           ->with($this->equalTo(503))
+                           ->with($this->equalTo(504))
                            ->will($this->returnSelf());
         $this->mockResponse->expects($this->once())
                            ->method('write')
@@ -285,8 +286,9 @@ class AuthorizingRouteTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      * @group  issue_32
+     * @group  issue_69
      */
-    public function applyPreInterceptorsTriggersStatusCode503WhenAuthorizationThrowsExternalAuthHandlerException()
+    public function applyPreInterceptorsTriggersStatusCode504WhenAuthorizationThrowsExternalAuthHandlerException()
     {
         $this->authConstraint->requireRole('admin');
         $mockAuthorizationProvider = $this->mockAuthorizationProvider();
@@ -295,7 +297,7 @@ class AuthorizingRouteTest extends \PHPUnit_Framework_TestCase
                                   ->will($this->throwException(new ExternalAuthProviderException('error')));
         $this->mockResponse->expects($this->once())
                            ->method('setStatusCode')
-                           ->with($this->equalTo(503))
+                           ->with($this->equalTo(504))
                            ->will($this->returnSelf());
         $this->mockResponse->expects($this->once())
                            ->method('write')

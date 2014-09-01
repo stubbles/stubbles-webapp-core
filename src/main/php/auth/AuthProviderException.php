@@ -23,7 +23,7 @@ abstract class AuthProviderException extends Exception
     /**
      * external error of upstream server
      */
-    const EXTERNAL = 503;
+    const EXTERNAL = 504;
 
     /**
      * constructor
