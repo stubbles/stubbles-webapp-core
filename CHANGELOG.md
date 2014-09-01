@@ -1,3 +1,9 @@
+5.0.2 (2014-09-01)
+------------------
+
+  * fixed `stubbles\webapp\RoutingConfigurator`, was not in sync with `stubbles\webapp\routing\Routing`
+
+
 5.0.1 (2014-09-01)
 ------------------
 
