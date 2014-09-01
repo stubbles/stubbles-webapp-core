@@ -10,6 +10,7 @@
 namespace stubbles\webapp;
 use stubbles\ioc\Binder;
 use stubbles\lang;
+use stubbles\peer\MalformedUriException;
 use stubbles\peer\http\HttpUri;
 /**
  * Helper class for the test.
@@ -434,5 +435,42 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
                 'stubbles\input\web\WebRequest',
                 TestWebApp::create('projectPath')->request()
         );
+    }
+
+    /**
+     * @since  5.0.1
+     * @test
+     * @group  issue_70
+     */
+    public function malformedUriInRequestLeadsToResponse400BadRequest()
+    {
+        $mockRequest = $this->getMock('stubbles\input\web\WebRequest');
+        $mockRequest->expects($this->any())
+                    ->method('uri')
+                    ->will($this->throwException(new MalformedUriException('invalid uri')));
+        $mockResponse  = $this->getMock('stubbles\webapp\response\Response');
+        $mockResponseNegotiator = $this->getMockBuilder('stubbles\webapp\response\ResponseNegotiator')
+                                       ->disableOriginalConstructor()
+                                       ->getMock();
+        $mockResponseNegotiator->expects($this->any())
+                               ->method('negotiateMimeType')
+                               ->will($this->returnValue($mockResponse));
+        $mockResponse->expects($this->once())
+                     ->method('setStatusCode')
+                     ->with($this->equalTo(400));
+        $webApp  = $this->getMock(
+                'stubbles\webapp\WebApp',
+                ['configureRouting'],
+                [$mockRequest,
+                 $mockResponseNegotiator,
+                 $this->getMockBuilder('stubbles\webapp\routing\Routing')
+                      ->disableOriginalConstructor()
+                      ->getMock(),
+                 $this->getMockBuilder('stubbles\lang\errorhandler\ExceptionLogger')
+                      ->disableOriginalConstructor()
+                      ->getMock()
+                ]
+        );
+        $webApp->run();
     }
 }

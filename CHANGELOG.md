@@ -2,6 +2,7 @@
 ------------------
 
   * fixed issue #69: Use status code 504 for external auth provider failures instead of 503
+  * fixed issue #70: Invalid request should trigger a 400 Bad Request
 
 
 5.0.0 (2014-08-18)

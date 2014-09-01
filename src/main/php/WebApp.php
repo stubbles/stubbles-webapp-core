@@ -11,9 +11,11 @@ namespace stubbles\webapp;
 use stubbles\input\web\WebRequest;
 use stubbles\ioc\App;
 use stubbles\lang\errorhandler\ExceptionLogger;
+use stubbles\peer\MalformedUriException;
 use stubbles\webapp\ioc\IoBindingModule;
 use stubbles\webapp\response\Response;
 use stubbles\webapp\response\ResponseNegotiator;
+use stubbles\webapp\response\SupportedMimeTypes;
 use stubbles\webapp\routing\ProcessableRoute;
 use stubbles\webapp\routing\Routing;
 /**
@@ -76,10 +78,15 @@ abstract class WebApp extends App
     public function run()
     {
         $this->configureRouting($this->routing);
-        $route    = $this->routing->findRoute($this->request->uri(), $this->request->method());
-        $response = $this->responseNegotiator->negotiateMimeType($this->request, $route->supportedMimeTypes());
-        if (!$response->isFixed()) {
-            $this->process($route, $response);
+        try {
+            $route    = $this->routing->findRoute($this->request->uri(), $this->request->method());
+            $response = $this->responseNegotiator->negotiateMimeType($this->request, $route->supportedMimeTypes());
+            if (!$response->isFixed()) {
+                $this->process($route, $response);
+            }
+        } catch (MalformedUriException $mue) {
+            $response = $this->responseNegotiator->negotiateMimeType($this->request);
+            $response->setStatusCode(400);
         }
 
         return $response;

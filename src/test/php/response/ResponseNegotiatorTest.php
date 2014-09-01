@@ -10,7 +10,6 @@
 namespace stubbles\webapp\response;
 use stubbles\input\ValueReader;
 use stubbles\lang;
-use stubbles\peer\http\HttpVersion;
 /**
  * Tests for stubbles\webapp\response\ResponseNegotiator.
  *
@@ -79,14 +78,29 @@ class ResponseNegotiatorTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @since  5.0.1
+     * @test
+     * @group  issue_70
+     */
+    public function doesNotNegotatiateMimeTypeWhenNoSupportedMimeTypesProvided()
+    {
+        $this->assertSame(
+                $this->mockResponse,
+                $this->responseNegotiator->negotiateMimeType($this->mockRequest)
+        );
+    }
+
+    /**
      * @test
      */
     public function doesNotNegotatiateMimeTypeWhenDisabled()
     {
-        $this->assertSame($this->mockResponse,
-                          $this->responseNegotiator->negotiateMimeType($this->mockRequest,
-                                                                       SupportedMimeTypes::createWithDisabledContentNegotation()
-                          )
+        $this->assertSame(
+                $this->mockResponse,
+                $this->responseNegotiator->negotiateMimeType(
+                        $this->mockRequest,
+                        SupportedMimeTypes::createWithDisabledContentNegotation()
+                )
         );
     }
 
@@ -100,10 +114,12 @@ class ResponseNegotiatorTest extends \PHPUnit_Framework_TestCase
                            ->method('notAcceptable')
                            ->with($this->equalTo(['application/json', 'application/xml']))
                            ->will($this->returnSelf());
-        $this->assertSame($this->mockResponse,
-                          $this->responseNegotiator->negotiateMimeType($this->mockRequest,
-                                                                       new SupportedMimeTypes(['application/json', 'application/xml'])
-                          )
+        $this->assertSame(
+                $this->mockResponse,
+                $this->responseNegotiator->negotiateMimeType(
+                        $this->mockRequest,
+                        new SupportedMimeTypes(['application/json', 'application/xml'])
+                )
         );
     }
 
