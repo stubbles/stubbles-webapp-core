@@ -207,6 +207,16 @@ interface RoutingConfigurator
     public function postIntercept($postInterceptor, $path = null, $requestMethod = null);
 
     /**
+     * sets a default formatter for given mime type, but doesn't mark the mime type as supported for all routes
+     *
+     * @param   string  $mimeType        mime type to set default formatter for
+     * @param   string  $formatterClass  formatter class to use
+     * @return  \stubbles\webapp\routing\Routing
+     * @since   5.1.0
+     */
+    public function setDefaultFormatter($mimeType, $formatterClass);
+
+    /**
      * add a supported mime type
      *
      * @param   string  $mimeType

@@ -1,3 +1,9 @@
+5.1.0 (2014-09-??)
+------------------
+
+  * implemented issue #72: Allow to define a default formatter for a mime type
+
+
 5.0.2 (2014-09-01)
 ------------------
 

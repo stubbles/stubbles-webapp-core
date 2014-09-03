@@ -548,6 +548,20 @@ class Routing implements RoutingConfigurator
     }
 
     /**
+     * sets a default formatter for given mime type, but doesn't mark the mime type as supported for all routes
+     *
+     * @param   string  $mimeType
+     * @param   string  $formatterClass
+     * @return  \stubbles\webapp\routing\Routing
+     * @since   5.1.0
+     */
+    public function setDefaultFormatter($mimeType, $formatterClass)
+    {
+        $this->formatter[$mimeType] = $formatterClass;
+        return $this;
+    }
+
+    /**
      * add a supported mime type
      *
      * @param   string  $mimeType

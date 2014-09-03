@@ -434,6 +434,23 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @since 5.1.0
+     * @test
+     * @group  issue_72
+     */
+    public function passesDefaultFormatterToSupportedMimeTypesOfSelectedRoute()
+    {
+        $this->routing->onGet('/hello', function() {});
+        $this->routing->setDefaultFormatter('application/foo', 'example\SpecialFormatter');
+        $this->assertEquals(
+                'example\SpecialFormatter',
+                $this->routing->findRoute($this->calledUri)
+                              ->supportedMimeTypes()
+                              ->formatterFor('application/foo')
+        );
+    }
+
+    /**
      * @test
      * @since  2.1.1
      */
