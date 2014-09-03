@@ -2,6 +2,9 @@
 ------------------
 
   * implemented issue #72: Allow to define a default formatter for a mime type
+  * implemented issue #63: Add support for mime type annotations on callbacks
+    * Added support for @SupportsMimeType
+    * Added support for @DisableContentNegotiation
 
 
 5.0.2 (2014-09-01)

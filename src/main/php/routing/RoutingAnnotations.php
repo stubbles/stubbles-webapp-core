@@ -9,6 +9,7 @@
  */
 namespace stubbles\webapp\routing;
 use stubbles\lang;
+use stubbles\lang\reflect\BaseReflectionClass;
 /**
  * Provides access to routing related annotations on a callback.
  *
@@ -80,5 +81,59 @@ class RoutingAnnotations
         }
 
         return null;
+    }
+
+    /**
+     * checks whether route is annotated with @DisableContentNegotiation
+     *
+     * @return  bool
+     * @since   5.1.0
+     */
+    public function isContentNegotiationDisabled()
+    {
+        return $this->annotations->contain('DisableContentNegotiation');
+    }
+
+    /**
+     * returns a list of all mime types a route supports via @SupportsMimeType
+     *
+     * @return  string[]
+     * @since   5.1.0
+     */
+    public function mimeTypes()
+    {
+        $mimeTypes = [];
+        foreach ($this->annotations->of('SupportsMimeType') as $supportedMimeType) {
+            $mimeTypes[] = $supportedMimeType->mimeType();
+        }
+
+        return $mimeTypes;
+    }
+
+    /**
+     * returns a list of all formatters a route supports via @SupportsMimeType
+     *
+     * @return  string[]
+     * @since   5.1.0
+     */
+    public function formatter()
+    {
+        $formatter = [];
+        foreach ($this->annotations->of('SupportsMimeType') as $supportedMimeType) {
+            if ($supportedMimeType->hasValueByName('formatter')) {
+                $formatter[$supportedMimeType->mimeType()] = $this->formatterClass($supportedMimeType->formatter());
+            }
+        }
+
+        return $formatter;
+    }
+
+    private function formatterClass($formatter)
+    {
+        if ($formatter instanceof BaseReflectionClass) {
+            return $formatter->getName();
+        }
+
+        return $formatter;
     }
 }

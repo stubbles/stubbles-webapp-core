@@ -19,6 +19,9 @@ use stubbles\webapp\response\Response;
  *
  * @RequiresHttps
  * @RequiresLogin
+ * @SupportsMimeType(mimeType="text/plain")
+ * @SupportsMimeType(mimeType="application/bar", formatter="example\\BarFormatter")
+ * @SupportsMimeType(mimeType="application/baz", formatter=stubbles\webapp\routing\BazFormatter.class)
  */
 class AnnotatedProcessor implements Processor
 {
@@ -34,10 +37,15 @@ class AnnotatedProcessor implements Processor
         // intentionally empty
     }
 }
+class BazFormatter
+{
+    // intentionally empty
+}
 /**
  * Class with annotations for tests.
  *
  * @RequiresRole('superadmin')
+ * @DisableContentNegotiation
  */
 class OtherAnnotatedProcessor implements Processor
 {
@@ -710,6 +718,73 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                                ->disableContentNegotiation()
                                ->supportedMimeTypes()
                                ->isContentNegotationDisabled()
+        );
+    }
+
+    /**
+     * @test
+     * @group  issue_63
+     * @since  5.1.0
+     */
+    public function contentNegotationIsDisabledWhenProcessorAnnotated()
+    {
+        $route = new Route('/hello', 'stubbles\webapp\routing\OtherAnnotatedProcessor', 'GET');
+        $this->assertTrue($route->supportedMimeTypes()->isContentNegotationDisabled());
+    }
+
+    /**
+     * @test
+     * @group  issue_63
+     * @since  5.1.0
+     */
+    public function listOfSupportedMimeTypesContainsAnnotatedMimeTypes()
+    {
+        $route = new Route('/hello', 'stubbles\webapp\routing\AnnotatedProcessor', 'GET');
+        $this->assertEquals(
+                ['text/plain', 'application/bar', 'application/baz'],
+                $route->supportedMimeTypes()->asArray()
+        );
+    }
+
+    /**
+     * @return
+     */
+    public function formatters()
+    {
+        return [
+            ['example\BarFormatter', 'application/bar'],
+            ['stubbles\webapp\routing\BazFormatter', 'application/baz']
+        ];
+    }
+
+    /**
+     * @test
+     * @group  issue_63
+     * @dataProvider  formatters
+     * @since  5.1.0
+     */
+    public function listOfSupportedMimeTypesContainsFormatterForAnnotatedMimeTypes($expectedFormatter, $mimeType)
+    {
+        $route = new Route('/hello', 'stubbles\webapp\routing\AnnotatedProcessor', 'GET');
+        $this->assertEquals(
+                $expectedFormatter,
+                $route->supportedMimeTypes()->formatterFor($mimeType)
+        );
+    }
+
+    /**
+     * @test
+     * @group  issue_63
+     * @since  5.1.0
+     */
+    public function annotatedMimeTypeFormatterCanBeOverwritten()
+    {
+        $route = new Route('/hello', 'stubbles\webapp\routing\AnnotatedProcessor', 'GET');
+        $this->assertEquals(
+                'example\OtherBarFormatter',
+                $route->supportsMimeType('application/bar', 'example\OtherBarFormatter')
+                      ->supportedMimeTypes()
+                      ->formatterFor('application/bar')
         );
     }
 }

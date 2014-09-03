@@ -375,13 +375,22 @@ class Route implements ConfigurableRoute
      */
     public function supportedMimeTypes(array $globalMimeTypes = [], array $globalFormatter = [])
     {
-        if ($this->disableContentNegotation) {
+        if ($this->disableContentNegotation || $this->routingAnnotations()->isContentNegotiationDisabled()) {
             return SupportedMimeTypes::createWithDisabledContentNegotation();
         }
 
+
         return new SupportedMimeTypes(
-                array_merge($this->mimeTypes, $globalMimeTypes),
-                array_merge($globalFormatter, $this->formatter)
+                array_merge(
+                        $this->routingAnnotations()->mimeTypes(),
+                        $this->mimeTypes,
+                        $globalMimeTypes
+                ),
+                array_merge(
+                        $globalFormatter,
+                        $this->routingAnnotations()->formatter(),
+                        $this->formatter
+                )
         );
     }
 
