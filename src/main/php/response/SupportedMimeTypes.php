@@ -137,20 +137,15 @@ class SupportedMimeTypes
      */
     public function provideFormatter($mimeType)
     {
-        $this->addXmlFormatterWhenXmlSerializerPresent();
-        return isset($this->formatter[$mimeType]);
-    }
-
-    /**
-     * adds xml formatters to formatters when stubbles/xml is present
-     */
-    private function addXmlFormatterWhenXmlSerializerPresent()
-    {
-        foreach (self::$xmlFormatter as $mimeType => $xmlFormatter) {
-            if (!isset($this->formatter[$mimeType]) && class_exists('stubbles\xml\serializer\XmlSerializerFacade')) {
-                $this->formatter[$mimeType] = $xmlFormatter;
-            }
+        if (isset($this->formatter[$mimeType])) {
+            return true;
         }
+
+        if (class_exists('stubbles\xml\serializer\XmlSerializerFacade')) {
+            return isset(self::$xmlFormatter[$mimeType]);
+        }
+
+        return false;
     }
 
     /**
