@@ -7,7 +7,7 @@
  *
  * @package  stubbles\webapp
  */
-namespace stubbles\webapp\response;#
+namespace stubbles\webapp\response;
 use stubbles\peer\http\HttpUri;
 /**
  * Tests for stubbles\webapp\response\Headers.
@@ -158,5 +158,29 @@ class HeadersTest extends \PHPUnit_Framework_TestCase
     {
         $this->headers->add('X-Foo', 'bar');
         unset($this->headers['X-Foo']);
+    }
+
+    /**
+     * @test
+     * @group  issue_71
+     * @since  5.1.0
+     */
+    public function cacheControlAddsCacheControlHeaderWithDefaultValue()
+    {
+        $this->headers->cacheControl();
+        $this->assertEquals('private', $this->headers[CacheControl::HEADER_NAME]);
+    }
+
+    /**
+     * @test
+     * @group  issue_71
+     * @since  5.1.0
+     */
+    public function cacheControlReturnsCacheControlInstance()
+    {
+        $this->assertInstanceOf(
+                'stubbles\webapp\response\CacheControl',
+                $this->headers->cacheControl()
+        );
     }
 }

@@ -85,6 +85,23 @@ class Headers implements \IteratorAggregate, \ArrayAccess
     }
 
     /**
+     * enables the Cache-Control header
+     *
+     * If no specific directives are enabled the value will be
+     * <code>Cache-Control: private</code>
+     * by default.
+     *
+     * @return  \stubbles\webapp\response\CacheControl
+     * @since   5.1.0
+     */
+    public function cacheControl()
+    {
+        $cacheControl = new CacheControl();
+        $this->add(CacheControl::HEADER_NAME, $cacheControl);
+        return $cacheControl;
+    }
+
+    /**
      * checks if header with given name is present
      *
      * Please note that header names are treated case sensitive.

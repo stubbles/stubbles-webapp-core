@@ -2,9 +2,12 @@
 ------------------
 
   * implemented issue #72: Allow to define a default formatter for a mime type
+    * added `stubbles\webapp\RoutingConfigurator::setDefaultFormatter($mimeType, $formatterClass)`
   * implemented issue #63: Add support for mime type annotations on callbacks
     * Added support for @SupportsMimeType
     * Added support for @DisableContentNegotiation
+  * implemented issue #71: Simple way to add a Cache-Control header
+    * added `stubbles\webapp\response\Headers::cacheControl()`
 
 
 5.0.2 (2014-09-01)
