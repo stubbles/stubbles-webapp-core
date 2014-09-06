@@ -422,6 +422,10 @@ class WebResponse implements Response
             $this->header('Content-Length: ' . strlen($this->body));
         }
 
+        if (!$this->headers->contain('X-Request-ID')) {
+            $this->header('X-Request-ID: ' . $this->request->id());
+        }
+
         return $this;
     }
 

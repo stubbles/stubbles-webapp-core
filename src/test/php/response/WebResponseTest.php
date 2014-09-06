@@ -43,6 +43,9 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     private function createResponse($httpVersion = HttpVersion::HTTP_1_1, $requestMethod = Http::GET, $sapi = null)
     {
         $mockRequest = $this->getMock('stubbles\input\web\WebRequest');
+        $mockRequest->expects($this->any())
+                    ->method('id')
+                    ->will($this->returnValue('example-request-id-foo'));
         $mockRequest->expects($this->once())
                     ->method('protocolVersion')
                     ->will($this->returnValue(HttpVersion::castFrom($httpVersion)));
@@ -111,7 +114,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
         $this->response->expects($this->at(0))
                        ->method('header')
                        ->with($this->equalTo('HTTP/1.1 404 Not Found'));
-        $this->response->expects($this->at(1))
+        $this->response->expects($this->at(2))
                        ->method('header')
                        ->with($this->equalTo('HTTP/1.1 200 OK'));
         $this->response->setStatusCode(404)
@@ -144,7 +147,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     public function statusCodeInCgiSapi()
     {
         $this->response = $this->createResponse(HttpVersion::HTTP_1_1, Http::GET, 'cgi');
-        $this->response->expects($this->once())
+        $this->response->expects($this->at(0))
                        ->method('header')
                        ->with($this->equalTo('Status: 200 OK'));
         $this->response->send();
@@ -221,9 +224,9 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function clearingResponseRemovesAllHeaders()
+    public function clearingResponseRemovesAllHeadersExceptRequestId()
     {
-        $this->response->expects($this->once())
+        $this->response->expects($this->exactly(2))
                        ->method('header');
         $this->response->addHeader('name', 'value1')
                        ->clear()
@@ -325,7 +328,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function clearingResponseRemovesAllCookies()
     {
-        $this->response->expects($this->once())
+        $this->response->expects($this->exactly(2))
                        ->method('header');
         $this->response->addCookie(Cookie::create('foo', 'bar'))
                        ->clear()
@@ -347,9 +350,12 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function doesNotSendContentLengthHeaderWhenNoBodyPresent()
     {
-        $this->response->expects($this->once())
+        $this->response->expects($this->exactly(2))
                        ->method('header')
-                       ->with($this->equalTo(HttpVersion::HTTP_1_1 . ' 200 OK'));
+                       ->withConsecutive(
+                               $this->equalTo(HttpVersion::HTTP_1_1 . ' 200 OK'),
+                               $this->equalTo('X-Request-Id: example-request-id-foo')
+                         );
         $this->response->send();
     }
 
@@ -418,7 +424,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
         $this->response->expects($this->at(1))
                        ->method('header')
                        ->with($this->equalTo('Content-Length: 10'));
-        $this->response->expects($this->exactly(2))
+        $this->response->expects($this->exactly(3))
                        ->method('header');
         $this->response->expects($this->once())
                        ->method('sendBody')
@@ -702,5 +708,46 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
                  ->method('sendBody')
                  ->with($this->equalTo('Unsupported HTTP protocol version, expected HTTP/1.0 or HTTP/1.1'));
         $response->send();
+    }
+
+    /**
+     * @test
+     * @group  issue_74
+     * @since  5.1.0
+     */
+    public function requestIdAddedByDefault()
+    {
+        $this->response->expects($this->at(1))
+                       ->method('header')
+                       ->with($this->equalTo('X-Request-ID: example-request-id-foo'));
+        $this->response->send();
+    }
+
+    /**
+     * @test
+     * @group  issue_74
+     * @since  5.1.0
+     */
+    public function requestIdCanBeChanged()
+    {
+        $this->response->headers()->requestId('another-request-id-bar');
+        $this->response->expects($this->at(1))
+                       ->method('header')
+                       ->with($this->equalTo('X-Request-ID: another-request-id-bar'));
+        $this->response->send();
+    }
+
+    /**
+     * @test
+     * @group  issue_74
+     * @since  5.1.0
+     */
+    public function requestIdIsResetToOriginalValueOnClear()
+    {
+        $this->response->headers()->requestId('another-request-id-bar');
+        $this->response->expects($this->at(1))
+                       ->method('header')
+                       ->with($this->equalTo('X-Request-ID: example-request-id-foo'));
+        $this->response->clear()->send();
     }
 }

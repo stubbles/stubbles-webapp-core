@@ -183,4 +183,16 @@ class HeadersTest extends \PHPUnit_Framework_TestCase
                 $this->headers->cacheControl()
         );
     }
+
+    /**
+     * @test
+     * @group  issue_74
+     * @since  5.1.0
+     */
+    public function requestIdAddsRequestIdHeader()
+    {
+        $this->headers->requestId('example-request-id-foo');
+        $this->assertTrue(isset($this->headers['X-Request-ID']));
+        $this->assertEquals('example-request-id-foo', $this->headers['X-Request-ID']);
+    }
 }

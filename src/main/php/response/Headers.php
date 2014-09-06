@@ -37,6 +37,19 @@ class Headers implements \IteratorAggregate, \ArrayAccess
     }
 
     /**
+     * adds X-Request-ID with given value
+     *
+     * @param   string  $requestId
+     * @return  \stubbles\webapp\response\Headers
+     * @since   5.1.0
+     * @see     https://devcenter.heroku.com/articles/http-request-id
+     */
+    public function requestId($requestId)
+    {
+        return $this->add('X-Request-ID', $requestId);
+    }
+
+    /**
      * adds location header with given uri
      *
      * @param   string|\stubbles\peer\http\HttpUri  $uri
