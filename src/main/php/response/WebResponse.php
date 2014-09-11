@@ -33,11 +33,11 @@ class WebResponse implements Response
      */
     private $version;
     /**
-     * status code to be send
+     * status to be send
      *
-     * @type  int
+     * @type  \stubbles\webapp\response\Status
      */
-    private $status   = 200;
+    private $status;
     /**
      * list of headers for this response
      *
@@ -84,12 +84,11 @@ class WebResponse implements Response
         $this->request = $request;
         $this->sapi    = $sapi;
         $this->headers = new Headers();
+        $this->status  = new Status($this->headers);
         $this->version = $request->protocolVersion();
         if (null === $this->version || $this->version->major() != 1) {
             $this->version = HttpVersion::fromString(HttpVersion::HTTP_1_1);
             $this->httpVersionNotSupported();
-        } else {
-            $this->setStatusCode(200);
         }
     }
 
@@ -100,8 +99,8 @@ class WebResponse implements Response
      */
     public function clear()
     {
-        $this->setStatusCode(200);
         $this->headers = new Headers();
+        $this->status  = new Status($this->headers);
         $this->cookies = [];
         $this->body    = null;
         $this->fixed   = false;
@@ -119,7 +118,7 @@ class WebResponse implements Response
      */
     public function setStatusCode($statusCode)
     {
-        $this->status = $statusCode . ' ' . Http::reasonPhraseFor($statusCode);
+        $this->status->setCode($statusCode);
         return $this;
     }
 
@@ -131,7 +130,7 @@ class WebResponse implements Response
      */
     public function statusCode()
     {
-        return (int) explode(' ', $this->status)[0];
+        return $this->status->code();
     }
 
     /**
@@ -404,12 +403,7 @@ class WebResponse implements Response
      */
     private function sendHead()
     {
-        if ('cgi' === $this->sapi) {
-            $this->header('Status: ' . $this->status);
-        } else {
-            $this->header($this->version . ' ' . $this->status);
-        }
-
+        $this->header($this->status->line($this->version, $this->sapi));
         foreach ($this->headers as $name => $value) {
             $this->header($name . ': ' . $value);
         }
