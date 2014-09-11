@@ -21,13 +21,13 @@ class Status
      *
      * @type  int
      */
-    private $code          = 200;
+    private $code;
     /**
      * reason phrase for status code
      *
      * @type  string
      */
-    private $reasonPhrase  = null;
+    private $reasonPhrase;
     /**
      * switch whether response is fixed or not
      *
@@ -55,6 +55,7 @@ class Status
     public function __construct(Headers $headers)
     {
         $this->headers = $headers;
+        $this->setCode(200);
     }
 
     /**
@@ -70,7 +71,7 @@ class Status
     public function setCode($code, $reasonPhrase = null)
     {
         $this->code         = $code;
-        $this->reasonPhrase = $reasonPhrase;
+        $this->reasonPhrase = null === $reasonPhrase ? Http::reasonPhraseFor($code) : $reasonPhrase;
         return $this;
     }
 
@@ -197,7 +198,7 @@ class Status
      * @return  \stubbles\webapp\response\Status
      * @throws  \InvalidArgumentException  in case $challenges is empty
      */
-    public function unauthorized(array $challenges = [])
+    public function unauthorized(array $challenges)
     {
         if (count($challenges) === 0) {
             throw new \InvalidArgumentException('Challenges must contain at least one entry');
@@ -368,14 +369,6 @@ class Status
     /**
      * a status is fixed when a final status has been set
      *
-     * A final status is set when one of the following methods is called:
-     * - forbidden()
-     * - notFound()
-     * - methodNotAllowed()
-     * - notAcceptable()
-     * - internalServerError()
-     * - httpVersionNotSupported()
-     *
      * @return  bool
      */
     public function isFixed()
@@ -393,10 +386,10 @@ class Status
     public function line($httpVersion, $sapi = PHP_SAPI)
     {
         if ('cgi' === $sapi) {
-            return 'Status: ' . $this->code . ' ' . $this->reasonPhrase();
+            return 'Status: ' . $this->code . ' ' . $this->reasonPhrase;
         }
 
-        return $httpVersion . ' ' . $this->code . ' ' . $this->reasonPhrase();
+        return $httpVersion . ' ' . $this->code . ' ' . $this->reasonPhrase;
     }
 
     /**
@@ -407,19 +400,5 @@ class Status
     public function allowsPayload()
     {
         return $this->allowsPayload;
-    }
-
-    /**
-     * returns reason phrase for the status
-     *
-     * @return  string
-     */
-    private function reasonPhrase()
-    {
-        if (null !== $this->reasonPhrase) {
-            return $this->reasonPhrase;
-        }
-
-        return Http::reasonPhraseFor($this->code);
     }
 }
