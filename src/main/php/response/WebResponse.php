@@ -57,12 +57,6 @@ class WebResponse implements Response
      */
     private $body;
     /**
-     * switch whether response is fixed or not
-     *
-     * @type  bool
-     */
-    private $fixed    = false;
-    /**
      * original request method
      *
      * @type  string
@@ -103,7 +97,6 @@ class WebResponse implements Response
         $this->status  = new Status($this->headers);
         $this->cookies = [];
         $this->body    = null;
-        $this->fixed   = false;
         return $this;
     }
 
@@ -264,7 +257,7 @@ class WebResponse implements Response
      */
     public function isFixed()
     {
-        return $this->fixed;
+        return $this->status->isFixed();
     }
 
     /**
@@ -279,8 +272,7 @@ class WebResponse implements Response
      */
     public function redirect($uri, $statusCode = 302)
     {
-        $this->headers->location($uri);
-        $this->setStatusCode($statusCode);
+        $this->status->redirect($uri, $statusCode);
         return $this;
     }
 
@@ -292,8 +284,7 @@ class WebResponse implements Response
      */
     public function forbidden()
     {
-        $this->setStatusCode(403);
-        $this->fixed = true;
+        $this->status->forbidden();
         return $this;
     }
 
@@ -305,8 +296,7 @@ class WebResponse implements Response
      */
     public function notFound()
     {
-        $this->setStatusCode(404);
-        $this->fixed = true;
+        $this->status->notFound();
         return $this;
     }
 
@@ -320,9 +310,7 @@ class WebResponse implements Response
      */
     public function methodNotAllowed($requestMethod, array $allowedMethods)
     {
-        $this->setStatusCode(405);
-        $this->headers->allow($allowedMethods);
-        $this->fixed = true;
+        $this->status->methodNotAllowed($allowedMethods);
         return $this;
     }
 
@@ -335,9 +323,7 @@ class WebResponse implements Response
      */
     public function notAcceptable(array $supportedMimeTypes = [])
     {
-        $this->setStatusCode(406);
-        $this->headers->acceptable($supportedMimeTypes);
-        $this->fixed = true;
+        $this->status->notAcceptable($supportedMimeTypes);
         return $this;
     }
 
@@ -350,9 +336,8 @@ class WebResponse implements Response
      */
     public function internalServerError($errorMessage)
     {
-        $this->setStatusCode(500)
-             ->write($errorMessage);
-        $this->fixed = true;
+        $this->status->internalServerError();
+        $this->write($errorMessage);
         return $this;
     }
 
@@ -364,9 +349,8 @@ class WebResponse implements Response
      */
     public function httpVersionNotSupported()
     {
-        $this->setStatusCode(505)
-             ->write('Unsupported HTTP protocol version, expected HTTP/1.0 or HTTP/1.1');
-        $this->fixed = true;
+        $this->status->httpVersionNotSupported();
+        $this->write('Unsupported HTTP protocol version, expected HTTP/1.0 or HTTP/1.1');
         return $this;
     }
 
