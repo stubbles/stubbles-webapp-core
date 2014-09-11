@@ -29,10 +29,22 @@ interface Response extends SendableResponse
      * This needs only to be done if another status code then the default one
      * 200 OK should be send.
      *
-     * @param   int  $statusCode
+     * If reason phrase is null it will use the default reason phrase for given
+     * status code.
+     *
+     * @param   int     $statusCode
+     * @param   string  $reasonPhrase  optional
      * @return  \stubbles\webapp\response\Response
      */
-    public function setStatusCode($statusCode);
+    public function setStatusCode($statusCode, $reasonPhrase = null);
+
+    /**
+     * provide direct access to set a status code
+     *
+     * @return  \stubbles\webapp\response\Status
+     * @since   5.1.0
+     */
+    public function status();
 
     /**
      * add a header to the response

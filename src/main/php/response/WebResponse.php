@@ -106,12 +106,13 @@ class WebResponse implements Response
      * This needs only to be done if another status code then the default one
      * 200 OK should be send.
      *
-     * @param   int  $statusCode
+     * @param   int     $statusCode
+     * @param   string  $reasonPhrase  optional
      * @return  \stubbles\webapp\response\Response
      */
-    public function setStatusCode($statusCode)
+    public function setStatusCode($statusCode, $reasonPhrase = null)
     {
-        $this->status->setCode($statusCode);
+        $this->status->setCode($statusCode, $reasonPhrase);
         return $this;
     }
 
@@ -124,6 +125,17 @@ class WebResponse implements Response
     public function statusCode()
     {
         return $this->status->code();
+    }
+
+    /**
+     * provide direct access to set a status code
+     *
+     * @return  \stubbles\webapp\response\Status
+     * @since   5.1.0
+     */
+    public function status()
+    {
+        return $this->status;
     }
 
     /**

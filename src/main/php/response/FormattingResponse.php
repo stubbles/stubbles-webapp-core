@@ -66,12 +66,13 @@ class FormattingResponse implements Response
      * This needs only to be done if another status code then the default one
      * 200 OK should be send.
      *
-     * @param   int  $statusCode
+     * @param   int     $statusCode
+     * @param   string  $reasonPhrase  optional
      * @return  \stubbles\webapp\response\Response
      */
-    public function setStatusCode($statusCode)
+    public function setStatusCode($statusCode, $reasonPhrase = null)
     {
-        $this->response->setStatusCode($statusCode);
+        $this->response->setStatusCode($statusCode, $reasonPhrase);
         return $this;
     }
 
@@ -84,6 +85,17 @@ class FormattingResponse implements Response
     public function statusCode()
     {
         return $this->response->statusCode();
+    }
+
+    /**
+     * provide direct access to set a status code
+     *
+     * @return  \stubbles\webapp\response\Status
+     * @since   5.1.0
+     */
+    public function status()
+    {
+        return $this->response->status();
     }
 
     /**
