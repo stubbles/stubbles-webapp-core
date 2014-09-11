@@ -21,25 +21,31 @@ class Status
      *
      * @type  int
      */
-    private $code         = 200;
+    private $code          = 200;
     /**
      * reason phrase for status code
      *
      * @type  string
      */
-    private $reasonPhrase = null;
+    private $reasonPhrase  = null;
     /**
      * switch whether response is fixed or not
      *
      * @type  bool
      */
-    private $fixed        = false;
+    private $fixed         = false;
     /**
      * list of headers for this response
      *
      * @type  \stubbles\webapp\response\Headers
      */
     private $headers;
+    /**
+     * whether response code allows a response payload
+     *
+     * @type  bool
+     */
+    private $allowsPayload = true;
 
     /**
      * constructor
@@ -69,9 +75,89 @@ class Status
     }
 
     /**
-     * creates a Location header which causes a redirect when the response is send
+     * sets status code and sets status to fixed
      *
-     * Status code is optional, default is 302.
+     * @param   int  $code
+     * @return  \stubbles\webapp\response\Status
+     */
+    private function fixateCode($code)
+    {
+        $this->setCode($code);
+        $this->fixed = true;
+        return $this;
+    }
+
+    /**
+     * sets status to 201 Created
+     *
+     * @param   string|\stubbles\peer\http\HttpUri  $uri  uri under which created resource can be found
+     * @param   string                              $etag  optional  entity-tag of the newly created resource's representation
+     * @return  \stubbles\webapp\response\Status
+     */
+    public function created($uri, $etag = null)
+    {
+        $this->headers->location($uri);
+        if (null !== $etag) {
+            $this->headers->add('ETag', $etag);
+        }
+
+        return $this->fixateCode(201);
+    }
+
+    /**
+     * sets status code to 202 Accepted
+     *
+     * @return  \stubbles\webapp\response\Status
+     */
+    public function accepted()
+    {
+        return $this->fixateCode(202);
+    }
+
+    /**
+     * sets status code to 204 No Content
+     *
+     * @return  \stubbles\webapp\response\Status
+     */
+    public function noContent()
+    {
+        $this->allowsPayload = false;
+        $this->headers->add('Content-Length', 0);
+        return $this->fixateCode(204);
+    }
+
+    /**
+     * sets status code to 205 Reset Content
+     *
+     * @return  \stubbles\webapp\response\Status
+     */
+    public function resetContent()
+    {
+        $this->allowsPayload = false;
+        $this->headers->add('Content-Length', 0);
+        return $this->fixateCode(205);
+    }
+
+    /**
+     * sets status code to 206 Partial Content
+     *
+     * @param   int         $lower      lower border of range
+     * @param   int         $upper      upper border of range
+     * @param   int|string  $total      optional    total length of content, defaults to * for "unknown"
+     * @param   string      $rangeUnit  optional    range unit, defaults to "bytes"
+     * @return  \stubbles\webapp\response\Status
+     */
+    public function partialContent($lower, $upper, $total = '*', $rangeUnit = 'bytes')
+    {
+        $this->headers->add(
+                'Content-Range',
+                $rangeUnit . ' ' . $lower . '-' . $upper  . '/' . $total
+        );
+        return $this->fixateCode(206);
+    }
+
+    /**
+     * sets status to 30x
      *
      * @param   string|\stubbles\peer\http\HttpUri  $uri         http uri to redirect to
      * @param   int                                 $statusCode  HTTP status code to redirect with (301, 302, ...)
@@ -80,8 +166,45 @@ class Status
     public function redirect($uri, $statusCode = 302)
     {
         $this->headers->location($uri);
-        $this->setCode($statusCode);
-        return $this;
+        return $this->fixateCode($statusCode);
+    }
+
+    /**
+     * sets status to 304 Not Modified
+     *
+     * @return  \stubbles\webapp\response\Status
+     * @todo enforce any of Cache-Control, Content-Location, Date, ETag, Expires, and Vary.
+     */
+    public function notModified()
+    {
+        return $this->fixateCode(304);
+    }
+
+    /**
+     * sets status to 400 Bad Request
+     *
+     * @return  \stubbles\webapp\response\Status
+     */
+    public function badRequest()
+    {
+        return $this->fixateCode(400);
+    }
+
+    /**
+     * sets status to 401 Unauthorized
+     *
+     * @param   string[]  $challenges  list of challenges
+     * @return  \stubbles\webapp\response\Status
+     * @throws  \InvalidArgumentException  in case $challenges is empty
+     */
+    public function unauthorized(array $challenges = [])
+    {
+        if (count($challenges) === 0) {
+            throw new \InvalidArgumentException('Challenges must contain at least one entry');
+        }
+
+        $this->headers->add('WWW-Authenticate', join(', ', $challenges));
+        return $this->fixateCode(401);
     }
 
     /**
@@ -91,9 +214,7 @@ class Status
      */
     public function forbidden()
     {
-        $this->setCode(403);
-        $this->fixed = true;
-        return $this;
+        return $this->fixateCode(403);
     }
 
     /**
@@ -103,9 +224,7 @@ class Status
      */
     public function notFound()
     {
-        $this->setCode(404);
-        $this->fixed = true;
-        return $this;
+        return $this->fixateCode(404);
     }
 
     /**
@@ -117,10 +236,8 @@ class Status
      */
     public function methodNotAllowed(array $allowedMethods)
     {
-        $this->setCode(405);
         $this->headers->allow($allowedMethods);
-        $this->fixed = true;
-        return $this;
+        return $this->fixateCode(405);
     }
 
     /**
@@ -131,23 +248,101 @@ class Status
      */
     public function notAcceptable(array $supportedMimeTypes = [])
     {
-        $this->setCode(406);
         $this->headers->acceptable($supportedMimeTypes);
-        $this->fixed = true;
-        return $this;
+        return $this->fixateCode(406);
+    }
+
+    /**
+     * sets status to 409 Conflict
+     *
+     * @return  \stubbles\webapp\response\Status
+     */
+    public function conflict()
+    {
+        return $this->fixateCode(409);
+    }
+
+    /**
+     * sets status to 410 Gone
+     *
+     * @return  \stubbles\webapp\response\Status
+     */
+    public function gone()
+    {
+        return $this->fixateCode(410);
+    }
+
+    /**
+     * sets status to 411 Length Required
+     *
+     * @return  \stubbles\webapp\response\Status
+     */
+    public function lengthRequired()
+    {
+        return $this->fixateCode(411);
+    }
+
+    /**
+     * sets status to 412 Precondition Failed
+     *
+     * @return  \stubbles\webapp\response\Status
+     */
+    public function preconditionFailed()
+    {
+        return $this->fixateCode(412);
+    }
+
+    /**
+     * sets status to 415 Unsupported Media Type
+     *
+     * @return  \stubbles\webapp\response\Status
+     */
+    public function unsupportedMediaType()
+    {
+        return $this->fixateCode(415);
+    }
+
+    /**
+     * sets status to 416 Range Not Satisfiable
+     *
+     * @param   int     $total      total length of content
+     * @param   string  $rangeUnit  optional  range unit, defaults to "bytes"
+     * @return  \stubbles\webapp\response\Status
+     */
+    public function rangeNotSatisfiable($total, $rangeUnit = 'bytes')
+    {
+        $this->headers->add('Content-Range', $rangeUnit . ' */' . $total);
+        return $this->fixateCode(416);
     }
 
     /**
      * sets status to 500 Internal Server Error
      *
      * @return  \stubbles\webapp\response\Status
-     * @since   2.0.0
      */
     public function internalServerError()
     {
-        $this->setCode(500);
-        $this->fixed = true;
-        return $this;
+        return $this->fixateCode(500);
+    }
+
+    /**
+     * sets status to 501 Not Implemented
+     *
+     * @return  \stubbles\webapp\response\Status
+     */
+    public function notImplemented()
+    {
+        return $this->fixateCode(501);
+    }
+
+    /**
+     * sets status to 503 Service Unavailable
+     *
+     * @return  \stubbles\webapp\response\Status
+     */
+    public function serviceUnavailable()
+    {
+        return $this->fixateCode(503);
     }
 
     /**
@@ -157,9 +352,7 @@ class Status
      */
     public function httpVersionNotSupported()
     {
-        $this->setCode(505);
-        $this->fixed = true;
-        return $this;
+        return $this->fixateCode(505);
     }
 
     /**
@@ -204,6 +397,16 @@ class Status
         }
 
         return $httpVersion . ' ' . $this->code . ' ' . $this->reasonPhrase();
+    }
+
+    /**
+     * whether response is allowed to contain a payload
+     *
+     * @return  bool
+     */
+    public function allowsPayload()
+    {
+        return $this->allowsPayload;
     }
 
     /**
