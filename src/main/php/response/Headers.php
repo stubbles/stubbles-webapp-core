@@ -105,6 +105,7 @@ class Headers implements \IteratorAggregate, \ArrayAccess
      * by default.
      *
      * @return  \stubbles\webapp\response\CacheControl
+     * @see     http://tools.ietf.org/html/rfc7234#section-5.2
      * @since   5.1.0
      */
     public function cacheControl()
@@ -112,6 +113,19 @@ class Headers implements \IteratorAggregate, \ArrayAccess
         $cacheControl = new CacheControl();
         $this->add(CacheControl::HEADER_NAME, $cacheControl);
         return $cacheControl;
+    }
+
+    /**
+     * adds Age header with given amount of seconds
+     *
+     * @param   int  $seconds
+     * @return  \stubbles\webapp\response\Headers
+     * @see     http://tools.ietf.org/html/rfc7234#section-5.1
+     * @since   5.1.0
+     */
+    public function age($seconds)
+    {
+        return $this->add('Age', $seconds);
     }
 
     /**

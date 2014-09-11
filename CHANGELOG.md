@@ -9,6 +9,7 @@
   * implemented #71: Simple way to add a Cache-Control header
     * added `stubbles\webapp\response\Headers::cacheControl()`
   * implemented #74: Possibility to automatically generate and log request ids
+  * added `stubbles\webapp\response\Headers::age()`
 
 
 5.0.2 (2014-09-01)

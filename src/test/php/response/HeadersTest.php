@@ -195,4 +195,15 @@ class HeadersTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue(isset($this->headers['X-Request-ID']));
         $this->assertEquals('example-request-id-foo', $this->headers['X-Request-ID']);
     }
+
+    /**
+     * @test
+     * @since  5.1.0
+     */
+    public function ageAddsAgeHeader()
+    {
+        $this->headers->age(12);
+        $this->assertTrue(isset($this->headers['Age']));
+        $this->assertEquals(12, $this->headers['Age']);
+    }
 }
