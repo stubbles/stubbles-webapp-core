@@ -15,7 +15,6 @@ use stubbles\peer\MalformedUriException;
 use stubbles\webapp\ioc\IoBindingModule;
 use stubbles\webapp\response\Response;
 use stubbles\webapp\response\ResponseNegotiator;
-use stubbles\webapp\response\SupportedMimeTypes;
 use stubbles\webapp\routing\ProcessableRoute;
 use stubbles\webapp\routing\Routing;
 /**
