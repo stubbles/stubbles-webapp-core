@@ -4,33 +4,33 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "9d51548e196762a7d10b10b80727ed1a",
+    "hash": "2aba8bae3f0e1ac09299457e1115ab83",
     "packages": [
         {
             "name": "stubbles/core",
-            "version": "v5.0.1",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/stubbles/stubbles-core.git",
-                "reference": "8db30f944232db7e687cbbe9cef91a9fcd0fecfb"
+                "reference": "2f36a00b4536c72d2fcefca8e056fdf136aade07"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/stubbles/stubbles-core/zipball/8db30f944232db7e687cbbe9cef91a9fcd0fecfb",
-                "reference": "8db30f944232db7e687cbbe9cef91a9fcd0fecfb",
+                "url": "https://api.github.com/repos/stubbles/stubbles-core/zipball/2f36a00b4536c72d2fcefca8e056fdf136aade07",
+                "reference": "2f36a00b4536c72d2fcefca8e056fdf136aade07",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.4.0"
             },
             "require-dev": {
-                "mikey179/vfsstream": "~1.3",
+                "mikey179/vfsstream": "~1.4",
                 "phpunit/phpunit": "~4.1"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "5.0.x-dev"
+                    "dev-master": "5.1.x-dev"
                 }
             },
             "autoload": {
@@ -48,7 +48,7 @@
             ],
             "description": "Provides base classes for Stubbles packages.",
             "homepage": "http://stubbles.net/",
-            "time": "2014-09-01 09:40:10"
+            "time": "2014-09-24 07:37:36"
         },
         {
             "name": "stubbles/input",
@@ -56,20 +56,20 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/stubbles/stubbles-input.git",
-                "reference": "3b4f5cc63ce5007b63163156601e64b94e8f159d"
+                "reference": "357b6abcc92f899b8624a3e64b95c3eca9273efa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/stubbles/stubbles-input/zipball/3b4f5cc63ce5007b63163156601e64b94e8f159d",
-                "reference": "3b4f5cc63ce5007b63163156601e64b94e8f159d",
+                "url": "https://api.github.com/repos/stubbles/stubbles-input/zipball/357b6abcc92f899b8624a3e64b95c3eca9273efa",
+                "reference": "357b6abcc92f899b8624a3e64b95c3eca9273efa",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.4.0",
-                "stubbles/core": "~5.0"
+                "stubbles/core": "~5.1"
             },
             "require-dev": {
-                "mikey179/vfsstream": "~1.3",
+                "mikey179/vfsstream": "~1.4",
                 "phpunit/phpunit": "~4.2",
                 "stubbles/date": "~5.0"
             },
@@ -93,34 +93,34 @@
             ],
             "description": "Stubbles Input enables to handle input data via validation and filtering.",
             "homepage": "http://stubbles.net/",
-            "time": "2014-09-06 09:41:00"
+            "time": "2014-09-23 20:27:54"
         }
     ],
     "packages-dev": [
         {
             "name": "mikey179/vfsStream",
-            "version": "v1.3.0",
+            "version": "v1.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mikey179/vfsStream.git",
-                "reference": "8571f349567e02af1b7efc0fc4e3a4a1c98e664e"
+                "reference": "61b12172292cf539685507aa65b076c1530e83c1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mikey179/vfsStream/zipball/8571f349567e02af1b7efc0fc4e3a4a1c98e664e",
-                "reference": "8571f349567e02af1b7efc0fc4e3a4a1c98e664e",
+                "url": "https://api.github.com/repos/mikey179/vfsStream/zipball/61b12172292cf539685507aa65b076c1530e83c1",
+                "reference": "61b12172292cf539685507aa65b076c1530e83c1",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "~4.1"
+                "phpunit/phpunit": "~4.2"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.3.x-dev"
+                    "dev-master": "1.4.x-dev"
                 }
             },
             "autoload": {
@@ -133,7 +133,7 @@
                 "BSD"
             ],
             "homepage": "http://vfs.bovigo.org/",
-            "time": "2014-07-21 20:15:54"
+            "time": "2014-09-14 10:18:53"
         },
         {
             "name": "ocramius/instantiator",
@@ -497,16 +497,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "4.2.4",
+            "version": "4.2.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "f0c2d374ad06ec1e56c721f4ed87c59ff35f440e"
+                "reference": "c28a790620fe30b049bb693be1ef9cd4e0fe906c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/f0c2d374ad06ec1e56c721f4ed87c59ff35f440e",
-                "reference": "f0c2d374ad06ec1e56c721f4ed87c59ff35f440e",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/c28a790620fe30b049bb693be1ef9cd4e0fe906c",
+                "reference": "c28a790620fe30b049bb693be1ef9cd4e0fe906c",
                 "shasum": ""
             },
             "require": {
@@ -567,20 +567,20 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2014-08-31 06:46:49"
+            "time": "2014-09-14 09:31:24"
         },
         {
             "name": "phpunit/phpunit-mock-objects",
-            "version": "2.2.0",
+            "version": "2.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit-mock-objects.git",
-                "reference": "42e589e08bc86e3e9bdf20d385e948347788505b"
+                "reference": "b241b18d87a47093f20fae8b0ba40379b00bd53a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit-mock-objects/zipball/42e589e08bc86e3e9bdf20d385e948347788505b",
-                "reference": "42e589e08bc86e3e9bdf20d385e948347788505b",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit-mock-objects/zipball/b241b18d87a47093f20fae8b0ba40379b00bd53a",
+                "reference": "b241b18d87a47093f20fae8b0ba40379b00bd53a",
                 "shasum": ""
             },
             "require": {
@@ -589,7 +589,7 @@
                 "phpunit/php-text-template": "~1.2"
             },
             "require-dev": {
-                "phpunit/phpunit": "4.2.*@dev"
+                "phpunit/phpunit": "~4.2"
             },
             "suggest": {
                 "ext-soap": "*"
@@ -606,9 +606,6 @@
                 ]
             },
             "notification-url": "https://packagist.org/downloads/",
-            "include-path": [
-                ""
-            ],
             "license": [
                 "BSD-3-Clause"
             ],
@@ -625,7 +622,7 @@
                 "mock",
                 "xunit"
             ],
-            "time": "2014-08-02 13:50:58"
+            "time": "2014-09-06 17:32:37"
         },
         {
             "name": "sebastian/comparator",
@@ -1069,12 +1066,18 @@
             "time": "2014-08-31 03:22:04"
         }
     ],
-    "aliases": [],
+    "aliases": [
+
+    ],
     "minimum-stability": "dev",
-    "stability-flags": [],
+    "stability-flags": [
+
+    ],
     "prefer-stable": true,
     "platform": {
         "php": ">=5.4.0"
     },
-    "platform-dev": []
+    "platform-dev": [
+
+    ]
 }

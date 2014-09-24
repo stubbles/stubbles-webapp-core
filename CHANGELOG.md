@@ -1,6 +1,7 @@
 5.1.0 (2014-09-??)
 ------------------
 
+  * upgraded stubbles/core to 5.1
   * implemented #72: Allow to define a default formatter for a mime type
     * added `stubbles\webapp\RoutingConfigurator::setDefaultFormatter($mimeType, $formatterClass)`
   * implemented #63: Add support for mime type annotations on callbacks

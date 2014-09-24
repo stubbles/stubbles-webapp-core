@@ -30,31 +30,21 @@ class HtmlFormatter implements Formatter
     private $title;
 
     /**
-     * sets template to be used
+     * constructor
      *
-     * @param   string  $template
-     * @return  \stubbles\webapp\response\format\HtmlFormatter
-     * @Inject(optional=true)
-     * @Named('stubbles.webapp.response.format.html.template')
+     * @param   string  $template  optional  template to be used for output
+     * @param   string  $title     optional  base title of web application
+     * @Inject
+     * @Named{template}('stubbles.webapp.response.format.html.template')
+     * @Named{title}('stubbles.webapp.response.format.html.title')
      */
-    public function setTemplate($template)
+    public function __construct($template = null, $title = null)
     {
-        $this->template = $template;
-        return $this;
-    }
+        if (null !== $template) {
+            $this->template = $template;
+        }
 
-    /**
-     * sets base title for web application
-     *
-     * @param   string  $title
-     * @return  \stubbles\webapp\response\format\HtmlFormatter
-     * @Inject(optional=true)
-     * @Named('stubbles.webapp.response.format.html.title')
-     */
-    public function setBaseTitle($title)
-    {
         $this->title = $title;
-        return $this;
     }
 
     /**

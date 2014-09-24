@@ -19,12 +19,6 @@ use stubbles\lang;
 class AddAccessControlAllowOriginHeaderTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * instance to test
-     *
-     * @type  AddAccessControlAllowOriginHeader
-     */
-    private $addAccessControlAllowOriginHeader;
-    /**
      * mocked request instance
      *
      * @type  \PHPUnit_Framework_MockObject_MockObject
@@ -42,7 +36,6 @@ class AddAccessControlAllowOriginHeaderTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->addAccessControlAllowOriginHeader = new AddAccessControlAllowOriginHeader();
         $this->mockRequest  = $this->getMock('stubbles\input\web\WebRequest');
         $this->mockResponse = $this->getMock('stubbles\webapp\response\Response');
     }
@@ -50,26 +43,32 @@ class AddAccessControlAllowOriginHeaderTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function annotationsPresentOnAllowOriginHostsMethod()
+    public function annotationsPresentOnConstructor()
     {
-        $method = lang\reflect($this->addAccessControlAllowOriginHeader, 'allowOriginHosts');
-        $this->assertTrue($method->hasAnnotation('Inject'));
-        $this->assertTrue($method->getAnnotation('Inject')->isOptional());
-        $this->assertTrue($method->hasAnnotation('Property'));
+        $constructor = lang\reflectConstructor('stubbles\webapp\interceptor\AddAccessControlAllowOriginHeader');
+        $this->assertTrue($constructor->hasAnnotation('Inject'));
+        $this->assertTrue($constructor->hasAnnotation('Property'));
         $this->assertEquals(
                 'stubbles.webapp.origin.hosts',
-                $method->getAnnotation('Property')->getValue()
+                $constructor->annotation('Property')->getValue()
         );
+    }
+
+    public function emptyConfigs()
+    {
+        return [[null], [''], [[]]];
     }
 
     /**
      * @test
+     * @dataProvider  emptyConfigs
      */
-    public function doesNotAddHeaderWhenNoAllowedOriginHostConfigured()
+    public function doesNotAddHeaderWhenNoAllowedOriginHostConfigured($emptyConfig)
     {
         $this->mockResponse->expects($this->never())
                            ->method('addHeader');
-        $this->addAccessControlAllowOriginHeader->postProcess($this->mockRequest, $this->mockResponse);
+        $addAccessControlAllowOriginHeader = new AddAccessControlAllowOriginHeader($emptyConfig);
+        $addAccessControlAllowOriginHeader->postProcess($this->mockRequest, $this->mockResponse);
     }
 
     /**
@@ -82,8 +81,8 @@ class AddAccessControlAllowOriginHeaderTest extends \PHPUnit_Framework_TestCase
                           ->will($this->returnValue(false));
         $this->mockResponse->expects($this->never())
                            ->method('addHeader');
-        $this->addAccessControlAllowOriginHeader->allowOriginHosts('^http://[a-zA-Z0-9-\.]+example\.com(:[0-9]{4})?$')
-                                                ->postProcess($this->mockRequest, $this->mockResponse);
+        $addAccessControlAllowOriginHeader = new AddAccessControlAllowOriginHeader('^http://[a-zA-Z0-9-\.]+example\.com(:[0-9]{4})?$');
+        $addAccessControlAllowOriginHeader->postProcess($this->mockRequest, $this->mockResponse);
     }
 
     /**
@@ -99,8 +98,8 @@ class AddAccessControlAllowOriginHeaderTest extends \PHPUnit_Framework_TestCase
                           ->will($this->returnValue(ValueReader::forValue('http://example.net')));
         $this->mockResponse->expects($this->never())
                            ->method('addHeader');
-        $this->addAccessControlAllowOriginHeader->allowOriginHosts('^http://[a-zA-Z0-9-\.]+example\.com(:[0-9]{4})?$')
-                                                ->postProcess($this->mockRequest, $this->mockResponse);
+        $addAccessControlAllowOriginHeader = new AddAccessControlAllowOriginHeader('^http://[a-zA-Z0-9-\.]+example\.com(:[0-9]{4})?$');
+        $addAccessControlAllowOriginHeader->postProcess($this->mockRequest, $this->mockResponse);
     }
 
     /**
@@ -120,7 +119,7 @@ class AddAccessControlAllowOriginHeaderTest extends \PHPUnit_Framework_TestCase
                                 $this->equalTo('Access-Control-Allow-Origin'),
                                 $this->equalTo('http://foo.example.com:9039')
                              );
-        $this->addAccessControlAllowOriginHeader->allowOriginHosts('^http://[a-zA-Z0-9-\.]+example\.net(:[0-9]{4})?$|^http://[a-zA-Z0-9-\.]+example\.com(:[0-9]{4})?$')
-                                                ->postProcess($this->mockRequest, $this->mockResponse);
+        $addAccessControlAllowOriginHeader = new AddAccessControlAllowOriginHeader('^http://[a-zA-Z0-9-\.]+example\.net(:[0-9]{4})?$|^http://[a-zA-Z0-9-\.]+example\.com(:[0-9]{4})?$');
+        $addAccessControlAllowOriginHeader->postProcess($this->mockRequest, $this->mockResponse);
     }
 }
