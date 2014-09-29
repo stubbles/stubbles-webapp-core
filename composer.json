@@ -10,11 +10,11 @@
         "stubbles/input": "~4.2"
     },
     "suggest": {
-        "stubbles/xml": "~4.0",
+        "stubbles/xml": "~4.1",
         "stubbles/webapp-session": "~5.0"
     },
     "require-dev": {
-        "stubbles/xml": "~4.0",
+        "stubbles/xml": "~4.1",
         "stubbles/webapp-session": "~5.0",
         "phpunit/phpunit": "~4.2",
         "mikey179/vfsStream": "~1.4"
