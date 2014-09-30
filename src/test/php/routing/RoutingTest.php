@@ -38,11 +38,20 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
+        SupportedMimeTypes::removeDefaultFormatter('application/foo');
         $this->routing   = new Routing($this->getMockBuilder('stubbles\ioc\Injector')
                                             ->disableOriginalConstructor()
                                             ->getMock()
                            );
         $this->calledUri = new UriRequest('http://example.net/hello', 'GET');
+    }
+
+    /**
+     * clean up test environment
+     */
+    public function tearDown()
+    {
+        SupportedMimeTypes::removeDefaultFormatter('application/foo');
     }
 
     /**
@@ -438,15 +447,32 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
      * @test
      * @group  issue_72
      */
-    public function passesDefaultFormatterToSupportedMimeTypesOfSelectedRoute()
+    public function doesNotEnableMimeTypeForDefaultFormatterWhenRouteDoesNotSupportMimeType()
     {
-        $this->routing->onGet('/hello', function() {});
         $this->routing->setDefaultFormatter('application/foo', 'example\SpecialFormatter');
-        $this->assertEquals(
-                'example\SpecialFormatter',
+        $this->routing->onGet('/hello', function() {});
+        $this->assertNotContains(
+                'application/foo',
                 $this->routing->findRoute($this->calledUri)
                               ->supportedMimeTypes()
-                              ->formatterFor('application/foo')
+                              ->asArray()
+        );
+    }
+
+    /**
+     * @since 5.1.1
+     * @test
+     * @group  issue_72
+     */
+    public function passesDefaultFormatterToSupportedMimeTypesOfSelectedRouteWhenRouteSupportsMimeType()
+    {
+        $this->routing->setDefaultFormatter('application/foo', 'example\SpecialFormatter');
+        $this->routing->onGet('/hello', function() {})->supportsMimeType('application/foo');
+        $this->assertContains(
+                'application/foo',
+                $this->routing->findRoute($this->calledUri)
+                              ->supportedMimeTypes()
+                              ->asArray()
         );
     }
 

@@ -557,7 +557,7 @@ class Routing implements RoutingConfigurator
      */
     public function setDefaultFormatter($mimeType, $formatterClass)
     {
-        $this->formatter[$mimeType] = $formatterClass;
+        SupportedMimeTypes::setDefaultFormatter($mimeType, $formatterClass);
         return $this;
     }
 

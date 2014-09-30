@@ -109,6 +109,31 @@ class SupportedMimeTypes
     }
 
     /**
+     * sets a default formatter for given mime type
+     *
+     * @param  string  $mimeType
+     * @param  string  $formatterClass
+     * @since  5.1.1
+     */
+    public static function setDefaultFormatter($mimeType, $formatterClass)
+    {
+        self::$supported[$mimeType] = $formatterClass;
+    }
+
+    /**
+     * removes default formatter for given mime type
+     *
+     * @param  string  $mimeType
+     * @since  5.1.1
+     */
+    public static function removeDefaultFormatter($mimeType)
+    {
+        if (isset(self::$supported[$mimeType])) {
+            unset(self::$supported[$mimeType]);
+        }
+    }
+
+    /**
      * checks if a default formatter is known for the given mime type
      *
      * @param   string  $mimeType

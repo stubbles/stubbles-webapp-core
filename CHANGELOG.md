@@ -1,3 +1,9 @@
+5.1.1 (2014-09-30)
+------------------
+
+  * fixed bug that default formatter were not recognized correctly
+
+
 5.1.0 (2014-09-29)
 ------------------
 
