@@ -24,6 +24,7 @@ class IoBindingModuleTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
+        IoBindingModule::reset();
         $_SERVER['REQUEST_METHOD']  = 'GET';
         $_SERVER['SERVER_PROTOCOL'] = 'HTTP/1.1';
     }
@@ -33,6 +34,7 @@ class IoBindingModuleTest extends \PHPUnit_Framework_TestCase
      */
     public function tearDown()
     {
+        IoBindingModule::reset();
         unset($_SERVER['REQUEST_METHOD']);
         unset($_SERVER['SERVER_PROTOCOL']);
     }
@@ -122,5 +124,15 @@ class IoBindingModuleTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf($otherResponseClass,
                                 $injector->getInstance('stubbles\webapp\response\Response')
         );
+    }
+
+    /**
+     * @test
+     * @since  5.1.2
+     */
+    public function createInstanceMarksInitializedAsTrue()
+    {
+        $iobindingingModule = new IoBindingModule();
+        $this->assertTrue(IoBindingModule::initialized());
     }
 }

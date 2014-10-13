@@ -1,3 +1,8 @@
+5.1.2 (2014-10-13)
+------------------
+
+  * fixed bug that IoBindingModule was not marked as initialized when explicitly created in bindings
+
 5.1.1 (2014-09-30)
 ------------------
 

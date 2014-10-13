@@ -78,6 +78,7 @@ class IoBindingModule implements BindingModule
     public function __construct(callable $sessionCreator = null)
     {
         $this->sessionCreator = $sessionCreator;
+        self::$initialized    = true;
     }
 
     /**
