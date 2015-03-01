@@ -8,7 +8,7 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\auth\ioc;
-use stubbles\lang;
+use stubbles\lang\reflect;
 use stubbles\webapp\auth\Roles;
 /**
  * Test for stubbles\webapp\auth\ioc\RolesProvider.
@@ -48,7 +48,8 @@ class RolesProviderTest extends \PHPUnit_Framework_TestCase
     public function annotationsPresentOnClass()
     {
         $this->assertTrue(
-                lang\reflect($this->rolesProvider)->hasAnnotation('Singleton')
+                reflect\annotationsOf($this->rolesProvider)
+                        ->contain('Singleton')
         );
     }
 
@@ -59,8 +60,8 @@ class RolesProviderTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals(
                 get_class($this->rolesProvider),
-                lang\reflect('stubbles\webapp\auth\Roles')
-                    ->getAnnotation('ProvidedBy')
+                reflect\annotationsOf('stubbles\webapp\auth\Roles')
+                    ->firstNamed('ProvidedBy')
                     ->getValue()
                     ->getName()
         );

@@ -9,7 +9,7 @@
  */
 namespace stubbles\webapp\interceptor;
 use stubbles\input\ValueReader;
-use stubbles\lang;
+use stubbles\lang\reflect;
 /**
  * Tests for stubbles\webapp\interceptor\AddAccessControlAllowOriginHeader.
  *
@@ -45,12 +45,14 @@ class AddAccessControlAllowOriginHeaderTest extends \PHPUnit_Framework_TestCase
      */
     public function annotationsPresentOnConstructor()
     {
-        $constructor = lang\reflectConstructor('stubbles\webapp\interceptor\AddAccessControlAllowOriginHeader');
-        $this->assertTrue($constructor->hasAnnotation('Inject'));
-        $this->assertTrue($constructor->hasAnnotation('Property'));
+        $annotations = reflect\constructorAnnotationsOf(
+                'stubbles\webapp\interceptor\AddAccessControlAllowOriginHeader'
+        );
+        $this->assertTrue($annotations->contain('Inject'));
+        $this->assertTrue($annotations->contain('Property'));
         $this->assertEquals(
                 'stubbles.webapp.origin.hosts',
-                $constructor->annotation('Property')->getValue()
+                $annotations->firstNamed('Property')->getValue()
         );
     }
 

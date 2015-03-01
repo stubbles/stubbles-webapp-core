@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/stubbles/stubbles-core.git",
-                "reference": "37a067edd00163f9eb1eaf8a6631e08b7951c0d3"
+                "reference": "48d5f9c9db5f418dd200c24f317dbcda18d2d009"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/stubbles/stubbles-core/zipball/37a067edd00163f9eb1eaf8a6631e08b7951c0d3",
-                "reference": "37a067edd00163f9eb1eaf8a6631e08b7951c0d3",
+                "url": "https://api.github.com/repos/stubbles/stubbles-core/zipball/48d5f9c9db5f418dd200c24f317dbcda18d2d009",
+                "reference": "48d5f9c9db5f418dd200c24f317dbcda18d2d009",
                 "shasum": ""
             },
             "require": {
@@ -39,6 +39,7 @@
                 },
                 "files": [
                     "src/main/php/lang/functions.php",
+                    "src/main/php/lang/reflect/functions.php",
                     "src/main/php/peer/functions.php",
                     "src/main/php/streams/functions.php"
                 ]
@@ -49,7 +50,7 @@
             ],
             "description": "Provides base classes for Stubbles packages.",
             "homepage": "http://stubbles.net/",
-            "time": "2015-02-27 12:12:09"
+            "time": "2015-03-01 13:57:41"
         },
         {
             "name": "stubbles/input",
@@ -57,12 +58,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/stubbles/stubbles-input.git",
-                "reference": "62479cfd5851eb6f1ced77d218c4b48a307f590d"
+                "reference": "3d37b52cef10cbd55f96a7b30243e9b88b8e6cd4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/stubbles/stubbles-input/zipball/62479cfd5851eb6f1ced77d218c4b48a307f590d",
-                "reference": "62479cfd5851eb6f1ced77d218c4b48a307f590d",
+                "url": "https://api.github.com/repos/stubbles/stubbles-input/zipball/3d37b52cef10cbd55f96a7b30243e9b88b8e6cd4",
+                "reference": "3d37b52cef10cbd55f96a7b30243e9b88b8e6cd4",
                 "shasum": ""
             },
             "require": {
@@ -94,7 +95,7 @@
             ],
             "description": "Stubbles Input enables to handle input data via validation and filtering.",
             "homepage": "http://stubbles.net/",
-            "time": "2015-02-27 15:27:16"
+            "time": "2015-03-01 14:22:36"
         }
     ],
     "packages-dev": [

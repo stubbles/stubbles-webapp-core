@@ -10,7 +10,6 @@
 namespace stubbles\webapp\websession;
 use stubbles\ioc\InjectionProvider;
 use stubbles\ioc\binding\BindingScope;
-use stubbles\lang\reflect\BaseReflectionClass;
 use stubbles\webapp\session\Session;
 /**
  * Interface for session storages.
@@ -41,11 +40,11 @@ class SessionBindingScope implements BindingScope
     /**
      * returns the requested instance from the scope
      *
-     * @param   BaseReflectionClass  $impl      concrete implementation
-     * @param   InjectionProvider    $provider
-     * @return  Object
+     * @param   \ReflectionClass                 $impl      concrete implementation
+     * @param   \stubbles\ioc\InjectionProvider  $provider
+     * @return  object
      */
-    public function getInstance(BaseReflectionClass $impl, InjectionProvider $provider)
+    public function getInstance(\ReflectionClass $impl, InjectionProvider $provider)
     {
         $key = self::SESSION_KEY . $impl->getName();
         if ($this->session->hasValue($key) === true) {

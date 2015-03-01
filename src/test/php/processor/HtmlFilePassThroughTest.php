@@ -9,7 +9,7 @@
  */
 namespace stubbles\webapp\processor;
 use org\bovigo\vfs\vfsStream;
-use stubbles\lang;
+use stubbles\lang\reflect;
 use stubbles\webapp\UriPath;
 /**
  * Test for stubbles\webapp\processor\HtmlFilePassThrough.
@@ -67,10 +67,13 @@ class HtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
      */
     public function annotationsPresentOnConstructor()
     {
-        $constructor = lang\reflectConstructor($this->htmlFilePassThrough);
-        $this->assertTrue($constructor->hasAnnotation('Inject'));
-        $this->assertTrue($constructor->hasAnnotation('Named'));
-        $this->assertEquals('stubbles.pages.path', $constructor->getAnnotation('Named')->getName());
+        $annotations = reflect\constructorAnnotationsOf($this->htmlFilePassThrough);
+        $this->assertTrue($annotations->contain('Inject'));
+        $this->assertTrue($annotations->contain('Named'));
+        $this->assertEquals(
+                'stubbles.pages.path',
+                $annotations->firstNamed('Named')->getName()
+        );
     }
 
     /**

@@ -8,7 +8,7 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\auth\ioc;
-use stubbles\lang;
+use stubbles\lang\reflect;
 /**
  * Test for stubbles\webapp\auth\ioc\UserProvider.
  *
@@ -47,7 +47,7 @@ class UserProviderTest extends \PHPUnit_Framework_TestCase
     public function annotationsPresentOnClass()
     {
         $this->assertTrue(
-                lang\reflect($this->userProvider)->hasAnnotation('Singleton')
+                reflect\annotationsOf($this->userProvider)->contain('Singleton')
         );
     }
 
@@ -58,8 +58,8 @@ class UserProviderTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals(
                 get_class($this->userProvider),
-                lang\reflect('stubbles\webapp\auth\User')
-                    ->getAnnotation('ProvidedBy')
+                reflect\annotationsOf('stubbles\webapp\auth\User')
+                    ->firstNamed('ProvidedBy')
                     ->getValue()
                     ->getName()
         );

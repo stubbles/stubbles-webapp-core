@@ -8,7 +8,7 @@
  * @package  stubbles\webapp\rest
  */
 namespace stubbles\webapp\response\format;
-use stubbles\lang;
+use stubbles\lang\reflect;
 use stubbles\webapp\response\Headers;
 /**
  * Tests for stubbles\webapp\response\format\XmlFormatter.
@@ -47,7 +47,10 @@ class XmlFormatterTest extends \PHPUnit_Framework_TestCase
      */
     public function annotationsPresent()
     {
-        $this->assertTrue(lang\reflectConstructor($this->xmlFormatter)->hasAnnotation('Inject'));
+        $this->assertTrue(
+                reflect\constructorAnnotationsOf($this->xmlFormatter)
+                        ->contain('Inject')
+        );
     }
 
     /**

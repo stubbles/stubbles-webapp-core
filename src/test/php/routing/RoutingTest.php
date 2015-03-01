@@ -8,7 +8,7 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\routing;
-use stubbles\lang;
+use stubbles\lang\reflect;
 use stubbles\webapp\UriRequest;
 use stubbles\webapp\interceptor\Interceptors;
 use stubbles\webapp\response\SupportedMimeTypes;
@@ -39,10 +39,11 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         SupportedMimeTypes::removeDefaultFormatter('application/foo');
-        $this->routing   = new Routing($this->getMockBuilder('stubbles\ioc\Injector')
-                                            ->disableOriginalConstructor()
-                                            ->getMock()
-                           );
+        $this->routing   = new Routing(
+                $this->getMockBuilder('stubbles\ioc\Injector')
+                        ->disableOriginalConstructor()
+                        ->getMock()
+        );
         $this->calledUri = new UriRequest('http://example.net/hello', 'GET');
     }
 
@@ -60,7 +61,8 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
     public function annotationsPresentOnConstructor()
     {
         $this->assertTrue(
-                lang\reflectConstructor($this->routing)->hasAnnotation('Inject')
+                reflect\constructorAnnotationsOf($this->routing)
+                        ->contain('Inject')
         );
     }
 
@@ -69,8 +71,9 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsMissingRouteOnRouteSelectionWhenNoRouteAdded()
     {
-        $this->assertInstanceOf('stubbles\webapp\routing\MissingRoute',
-                                $this->routing->findRoute($this->calledUri)
+        $this->assertInstanceOf(
+                'stubbles\webapp\routing\MissingRoute',
+                $this->routing->findRoute($this->calledUri)
         );
     }
 
@@ -81,8 +84,9 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
     {
         $this->routing->onHead('/bar', function() {});
         $this->routing->onGet('/foo', function() {});
-        $this->assertInstanceOf('stubbles\webapp\routing\MissingRoute',
-                                $this->routing->findRoute($this->calledUri)
+        $this->assertInstanceOf(
+                'stubbles\webapp\routing\MissingRoute',
+                $this->routing->findRoute($this->calledUri)
         );
     }
 
@@ -94,8 +98,9 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
     {
         $this->routing->onHead('/hello', function() {});
         $this->routing->onGet('/foo', function() {});
-        $this->assertInstanceOf('stubbles\webapp\routing\OptionsRoute',
-                                $this->routing->findRoute('http://example.net/hello', 'OPTIONS')
+        $this->assertInstanceOf(
+                'stubbles\webapp\routing\OptionsRoute',
+                $this->routing->findRoute('http://example.net/hello', 'OPTIONS')
         );
     }
 
@@ -107,8 +112,9 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
     {
         $this->routing->onHead('/hello', function() {});
         $this->routing->onGet('/foo', function() {});
-        $this->assertInstanceOf('stubbles\webapp\routing\MethodNotAllowedRoute',
-                                $this->routing->findRoute($this->calledUri)
+        $this->assertInstanceOf(
+                'stubbles\webapp\routing\MethodNotAllowedRoute',
+                $this->routing->findRoute($this->calledUri)
         );
     }
 
@@ -119,8 +125,9 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
     public function returnsAuthorizingRouteWhenMatchingRouteRequiresLogin()
     {
         $this->routing->onGet('/hello', function() {})->withLoginOnly();
-        $this->assertInstanceOf('stubbles\webapp\auth\AuthorizingRoute',
-                                $this->routing->findRoute($this->calledUri)
+        $this->assertInstanceOf(
+                'stubbles\webapp\auth\AuthorizingRoute',
+                $this->routing->findRoute($this->calledUri)
         );
     }
 
@@ -131,8 +138,9 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
     public function returnsAuthorizingRouteWhenMatchingRouteRequiresRole()
     {
         $this->routing->onGet('/hello', function() {})->withRoleOnly('admin');
-        $this->assertInstanceOf('stubbles\webapp\auth\AuthorizingRoute',
-                                $this->routing->findRoute($this->calledUri)
+        $this->assertInstanceOf(
+                'stubbles\webapp\auth\AuthorizingRoute',
+                $this->routing->findRoute($this->calledUri)
         );
     }
 
@@ -179,11 +187,12 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
         $mockInjector = $this->getMockBuilder('stubbles\ioc\Injector')
                              ->disableOriginalConstructor()
                              ->getMock();
-        return new MatchingRoute(new UriRequest('http://example.net/' . $path, 'GET'),
-                                 new Interceptors($mockInjector, $preInterceptors, $postInterceptors),
-                                 new SupportedMimeTypes([]),
-                                 $route,
-                                 $mockInjector
+        return new MatchingRoute(
+                new UriRequest('http://example.net/' . $path, 'GET'),
+                new Interceptors($mockInjector, $preInterceptors, $postInterceptors),
+                new SupportedMimeTypes([]),
+                $route,
+                $mockInjector
         );
     }
 
@@ -212,12 +221,13 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
     {
         $preInterceptor = function() {};
         $route = $this->createProcessableRoute($this->routing->onGet('/hello', function() {}));
-        $this->assertEquals($route,
-                            $this->routing->preInterceptOnHead($preInterceptor)
-                                          ->preInterceptOnPost($preInterceptor)
-                                          ->preInterceptOnPut($preInterceptor)
-                                          ->preInterceptOnDelete($preInterceptor)
-                                          ->findRoute($this->calledUri)
+        $this->assertEquals(
+                $route,
+                $this->routing->preInterceptOnHead($preInterceptor)
+                              ->preInterceptOnPost($preInterceptor)
+                              ->preInterceptOnPut($preInterceptor)
+                              ->preInterceptOnDelete($preInterceptor)
+                              ->findRoute($this->calledUri)
         );
     }
 
@@ -230,10 +240,11 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
         $route = $this->createProcessableRoute($this->routing->onGet('/hello', function() {}),
                                                ['array_map', $preInterceptor]
         );
-        $this->assertEquals($route,
-                            $this->routing->preIntercept('array_map')
-                                          ->preInterceptOnGet($preInterceptor)
-                                          ->findRoute($this->calledUri)
+        $this->assertEquals(
+                $route,
+                $this->routing->preIntercept('array_map')
+                              ->preInterceptOnGet($preInterceptor)
+                              ->findRoute($this->calledUri)
         );
     }
 
@@ -247,10 +258,11 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
         $route = $this->createProcessableRoute($this->routing->onGet('/hello', function() {}),
                                                ['array_map']
         );
-        $this->assertEquals($route,
-                            $this->routing->preIntercept('array_map', '/hello')
-                                          ->preInterceptOnGet($preInterceptor, '/world')
-                                          ->findRoute($this->calledUri)
+        $this->assertEquals(
+                $route,
+                $this->routing->preIntercept('array_map', '/hello')
+                              ->preInterceptOnGet($preInterceptor, '/world')
+                              ->findRoute($this->calledUri)
         );
     }
 
@@ -261,15 +273,17 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
     {
         $preInterceptor     = function() {};
         $mockPreFunction    = 'array_map';
-        $route = $this->createProcessableRoute($this->routing->onGet('/hello', function() {}),
-                                               [$preInterceptor,
-                                                $mockPreFunction
-                                               ]
-                 );
-        $this->assertEquals($route,
-                            $this->routing->preIntercept($preInterceptor)
-                                          ->preIntercept($mockPreFunction)
-                                          ->findRoute($this->calledUri)
+        $route = $this->createProcessableRoute(
+                $this->routing->onGet('/hello', function() {}),
+                [$preInterceptor,
+                 $mockPreFunction
+                ]
+        );
+        $this->assertEquals(
+                $route,
+                $this->routing->preIntercept($preInterceptor)
+                              ->preIntercept($mockPreFunction)
+                              ->findRoute($this->calledUri)
         );
     }
 
@@ -279,13 +293,15 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
     public function mergesGlobalAndRoutePreInterceptors()
     {
         $preInterceptor = function() {};
-        $route = $this->createProcessableRoute($this->routing->onGet('/hello', function() {})
-                                                             ->preIntercept('array_map'),
-                                               [$preInterceptor, 'array_map']
-                 );
-        $this->assertEquals($route,
-                            $this->routing->preInterceptOnGet($preInterceptor)
-                                          ->findRoute($this->calledUri)
+        $route = $this->createProcessableRoute(
+                $this->routing->onGet('/hello', function() {})
+                              ->preIntercept('array_map'),
+                [$preInterceptor, 'array_map']
+        );
+        $this->assertEquals(
+                $route,
+                $this->routing->preInterceptOnGet($preInterceptor)
+                              ->findRoute($this->calledUri)
         );
     }
 
@@ -305,12 +321,13 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
     {
         $postInterceptor = function() {};
         $route = $this->createProcessableRoute($this->routing->onGet('/hello', function() {}));
-        $this->assertEquals($route,
-                            $this->routing->postInterceptOnHead($postInterceptor)
-                                          ->postInterceptOnPost($postInterceptor)
-                                          ->postInterceptOnPut($postInterceptor)
-                                          ->postInterceptOnDelete($postInterceptor)
-                                          ->findRoute($this->calledUri)
+        $this->assertEquals(
+                $route,
+                $this->routing->postInterceptOnHead($postInterceptor)
+                              ->postInterceptOnPost($postInterceptor)
+                              ->postInterceptOnPut($postInterceptor)
+                              ->postInterceptOnDelete($postInterceptor)
+                              ->findRoute($this->calledUri)
         );
     }
 
@@ -320,14 +337,16 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
     public function hasGlobalPostInterceptorsEvenWhenNoRouteSelected()
     {
         $postInterceptor = function() {};
-        $route = $this->createProcessableRoute($this->routing->onGet('/hello', function() {}),
-                                               [],
-                                               ['array_map', $postInterceptor]
-                 );
-        $this->assertEquals($route,
-                            $this->routing->postIntercept('array_map')
-                                          ->postInterceptOnGet($postInterceptor)
-                                          ->findRoute($this->calledUri)
+        $route = $this->createProcessableRoute(
+                $this->routing->onGet('/hello', function() {}),
+                [],
+                ['array_map', $postInterceptor]
+        );
+        $this->assertEquals(
+                $route,
+                $this->routing->postIntercept('array_map')
+                              ->postInterceptOnGet($postInterceptor)
+                              ->findRoute($this->calledUri)
         );
     }
 
@@ -338,14 +357,16 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
     public function hasGlobalPostInterceptorsWithMatchingPath()
     {
         $postInterceptor = function() {};
-        $route = $this->createProcessableRoute($this->routing->onGet('/hello', function() {}),
-                                               [],
-                                               ['array_map']
-                 );
-        $this->assertEquals($route,
-                            $this->routing->postIntercept('array_map', '/hello')
-                                          ->postInterceptOnGet($postInterceptor, '/world')
-                                          ->findRoute($this->calledUri)
+        $route = $this->createProcessableRoute(
+                $this->routing->onGet('/hello', function() {}),
+                [],
+                ['array_map']
+        );
+        $this->assertEquals(
+                $route,
+                $this->routing->postIntercept('array_map', '/hello')
+                              ->postInterceptOnGet($postInterceptor, '/world')
+                              ->findRoute($this->calledUri)
         );
     }
 
@@ -356,16 +377,18 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
     {
         $postInterceptor  = function() {};
         $mockPostFunction = 'array_map';
-        $route = $this->createProcessableRoute($this->routing->onGet('/hello', function() {}),
-                                               [],
-                                               [$postInterceptor,
-                                                $mockPostFunction
-                                               ]
-                 );
-        $this->assertEquals($route,
-                            $this->routing->postIntercept($postInterceptor)
-                                          ->postIntercept($mockPostFunction)
-                                          ->findRoute($this->calledUri)
+        $route = $this->createProcessableRoute(
+                $this->routing->onGet('/hello', function() {}),
+                [],
+                [$postInterceptor,
+                 $mockPostFunction
+                ]
+        );
+        $this->assertEquals(
+                $route,
+                $this->routing->postIntercept($postInterceptor)
+                              ->postIntercept($mockPostFunction)
+                              ->findRoute($this->calledUri)
         );
     }
 
@@ -375,14 +398,16 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
     public function mergesGlobalAndRoutePostInterceptors()
     {
         $postInterceptor = function() {};
-        $route = $this->createProcessableRoute($this->routing->onGet('/hello', function() {})
-                                                             ->postIntercept('array_map'),
-                                               [],
-                                               ['array_map', $postInterceptor]
-                 );
-        $this->assertEquals($route,
-                            $this->routing->postInterceptOnGet($postInterceptor)
-                                          ->findRoute($this->calledUri)
+        $route = $this->createProcessableRoute(
+                $this->routing->onGet('/hello', function() {})
+                              ->postIntercept('array_map'),
+                [],
+                ['array_map', $postInterceptor]
+        );
+        $this->assertEquals(
+                $route,
+                $this->routing->postInterceptOnGet($postInterceptor)
+                              ->findRoute($this->calledUri)
         );
     }
 
@@ -391,10 +416,11 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
      */
     public function supportsNoMimeTypeByDefault()
     {
-        $this->assertEquals([],
-                            $this->routing->findRoute($this->calledUri)
-                                          ->supportedMimeTypes()
-                                          ->asArray()
+        $this->assertEquals(
+                [],
+                $this->routing->findRoute($this->calledUri)
+                              ->supportedMimeTypes()
+                              ->asArray()
         );
     }
 
@@ -415,13 +441,14 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
     {
         $this->routing->onGet('/hello', function() {})
                       ->supportsMimeType('application/json');
-        $this->assertEquals(['application/json',
-                             'application/xml'
-                            ],
-                            $this->routing->supportsMimeType('application/xml')
-                                          ->findRoute($this->calledUri)
-                                          ->supportedMimeTypes()
-                                          ->asArray()
+        $this->assertEquals(
+                ['application/json',
+                 'application/xml'
+                ],
+                $this->routing->supportsMimeType('application/xml')
+                              ->findRoute($this->calledUri)
+                              ->supportedMimeTypes()
+                              ->asArray()
         );
     }
 
@@ -483,9 +510,10 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
     public function contentNegotationIsEnabledByDefault()
     {
         $this->routing->onGet('/hello', function() {});
-        $this->assertFalse($this->routing->findRoute($this->calledUri)
-                                         ->supportedMimeTypes()
-                                         ->isContentNegotationDisabled()
+        $this->assertFalse(
+                $this->routing->findRoute($this->calledUri)
+                              ->supportedMimeTypes()
+                              ->isContentNegotationDisabled()
         );
     }
 
@@ -496,10 +524,11 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
     public function contentNegotationCanBeDisabled()
     {
         $this->routing->onGet('/hello', function() {});
-        $this->assertTrue($this->routing->disableContentNegotiation()
-                                        ->findRoute($this->calledUri)
-                                        ->supportedMimeTypes()
-                                        ->isContentNegotationDisabled()
+        $this->assertTrue(
+                $this->routing->disableContentNegotiation()
+                              ->findRoute($this->calledUri)
+                              ->supportedMimeTypes()
+                              ->isContentNegotationDisabled()
         );
     }
 
@@ -511,10 +540,11 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
     {
         $this->routing->onGet('/hello', function() {})
                       ->disableContentNegotiation();
-        $this->assertTrue($this->routing->disableContentNegotiation()
-                                        ->findRoute($this->calledUri)
-                                        ->supportedMimeTypes()
-                                        ->isContentNegotationDisabled()
+        $this->assertTrue(
+                $this->routing->disableContentNegotiation()
+                              ->findRoute($this->calledUri)
+                              ->supportedMimeTypes()
+                              ->isContentNegotationDisabled()
         );
     }
 

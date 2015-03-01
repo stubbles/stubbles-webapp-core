@@ -9,7 +9,7 @@
  */
 namespace stubbles\webapp;
 use stubbles\ioc\Binder;
-use stubbles\lang;
+use stubbles\lang\reflect;
 use stubbles\peer\MalformedUriException;
 use stubbles\peer\http\HttpUri;
 /**
@@ -154,7 +154,8 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
     public function annotationPresentOnConstructor()
     {
         $this->assertTrue(
-                lang\reflectConstructor($this->webApp)->hasAnnotation('Inject')
+                reflect\constructorAnnotationsOf($this->webApp)
+                        ->contain('Inject')
         );
     }
 

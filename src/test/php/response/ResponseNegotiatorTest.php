@@ -9,7 +9,7 @@
  */
 namespace stubbles\webapp\response;
 use stubbles\input\ValueReader;
-use stubbles\lang;
+use stubbles\lang\reflect;
 /**
  * Tests for stubbles\webapp\response\ResponseNegotiator.
  *
@@ -61,7 +61,10 @@ class ResponseNegotiatorTest extends \PHPUnit_Framework_TestCase
      */
     public function annotationPresentOnConstructor()
     {
-        $this->assertTrue(lang\reflectConstructor($this->responseNegotiator)->hasAnnotation('Inject'));
+        $this->assertTrue(
+                reflect\constructorAnnotationsOf($this->responseNegotiator)
+                        ->contain('Inject')
+        );
     }
 
     /**

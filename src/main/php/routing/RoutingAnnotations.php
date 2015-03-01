@@ -8,8 +8,7 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\routing;
-use stubbles\lang;
-use stubbles\lang\reflect\BaseReflectionClass;
+use stubbles\lang\reflect;
 /**
  * Provides access to routing related annotations on a callback.
  *
@@ -32,7 +31,7 @@ class RoutingAnnotations
      */
     public function __construct($callback)
     {
-        $this->annotations = lang\reflect($callback)->annotations();
+        $this->annotations = reflect\annotationsOf($callback);
     }
 
     /**
@@ -77,7 +76,7 @@ class RoutingAnnotations
     public function requiredRole()
     {
         if ($this->annotations->contain('RequiresRole')) {
-            return $this->annotations->of('RequiresRole')[0]->getValue();
+            return $this->annotations->firstNamed('RequiresRole')->getValue();
         }
 
         return null;
@@ -103,7 +102,7 @@ class RoutingAnnotations
     public function mimeTypes()
     {
         $mimeTypes = [];
-        foreach ($this->annotations->of('SupportsMimeType') as $supportedMimeType) {
+        foreach ($this->annotations->named('SupportsMimeType') as $supportedMimeType) {
             $mimeTypes[] = $supportedMimeType->mimeType();
         }
 
@@ -119,7 +118,7 @@ class RoutingAnnotations
     public function formatter()
     {
         $formatter = [];
-        foreach ($this->annotations->of('SupportsMimeType') as $supportedMimeType) {
+        foreach ($this->annotations->named('SupportsMimeType') as $supportedMimeType) {
             if ($supportedMimeType->hasValueByName('formatter')) {
                 $formatter[$supportedMimeType->mimeType()] = $this->formatterClass($supportedMimeType->formatter());
             }
@@ -128,9 +127,15 @@ class RoutingAnnotations
         return $formatter;
     }
 
+    /**
+     * returns class name of formatter
+     *
+     * @param   \ReflectionClass  $formatter
+     * @return  string
+     */
     private function formatterClass($formatter)
     {
-        if ($formatter instanceof BaseReflectionClass) {
+        if ($formatter instanceof \ReflectionClass) {
             return $formatter->getName();
         }
 

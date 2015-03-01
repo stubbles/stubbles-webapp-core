@@ -8,7 +8,7 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\auth\session;
-use stubbles\lang;
+use stubbles\lang\reflect;
 use stubbles\webapp\auth\User;
 /**
  * Tests for stubbles\webapp\auth\session\CachingAuthenticationProvider
@@ -54,12 +54,20 @@ class CachingAuthenticationProviderTest extends \PHPUnit_Framework_TestCase
      */
     public function annotationsPresentOnConstructor()
     {
-        $constructor = lang\reflectConstructor($this->cachingAuthenticationProvider);
-        $this->assertTrue($constructor->hasAnnotation('Inject'));
+        $this->assertTrue(
+                reflect\constructorAnnotationsOf($this->cachingAuthenticationProvider)
+                        ->contain('Inject')
+        );
 
-        $parameters = $constructor->getParameters();
-        $this->assertTrue($parameters[1]->hasAnnotation('Named'));
-        $this->assertEquals('original', $parameters[1]->getAnnotation('Named')->getName());
+        $parameterAnnotations = reflect\annotationsOfConstructorParameter(
+                'authenticationProvider',
+                $this->cachingAuthenticationProvider
+        );
+        $this->assertTrue($parameterAnnotations->contain('Named'));
+        $this->assertEquals(
+                'original',
+                $parameterAnnotations->firstNamed('Named')->getName()
+        );
     }
 
     /**

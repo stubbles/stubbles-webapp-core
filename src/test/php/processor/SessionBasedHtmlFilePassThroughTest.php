@@ -9,7 +9,7 @@
  */
 namespace stubbles\webapp\processor;
 use org\bovigo\vfs\vfsStream;
-use stubbles\lang;
+use stubbles\lang\reflect;
 use stubbles\webapp\UriPath;
 /**
  * Test for stubbles\webapp\processor\SessionBasedHtmlFilePassThrough.
@@ -86,12 +86,20 @@ class SessionBasedHtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
      */
     public function annotationsPresentOnConstructor()
     {
-        $constructor = lang\reflectConstructor($this->sessionBasedHtmlFilePassThrough);
-        $this->assertTrue($constructor->hasAnnotation('Inject'));
+        $this->assertTrue(
+                reflect\constructorAnnotationsOf($this->sessionBasedHtmlFilePassThrough)
+                        ->contain('Inject')
+        );
 
-        $refParams = $constructor->getParameters();
-        $this->assertTrue($refParams[0]->hasAnnotation('Named'));
-        $this->assertEquals('stubbles.pages.path', $refParams[0]->getAnnotation('Named')->getName());
+        $routePathParamAnnotations = reflect\annotationsOfConstructorParameter(
+                'routePath',
+                $this->sessionBasedHtmlFilePassThrough
+        );
+        $this->assertTrue($routePathParamAnnotations->contain('Named'));
+        $this->assertEquals(
+                'stubbles.pages.path',
+                $routePathParamAnnotations->firstNamed('Named')->getName()
+        );
     }
 
     /**

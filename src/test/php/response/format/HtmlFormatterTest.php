@@ -8,7 +8,7 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\response\format;
-use stubbles\lang;
+use stubbles\lang\reflect;
 use stubbles\webapp\response\Headers;
 /**
  * Tests for stubbles\webapp\response\format\HtmlFormatter.
@@ -39,19 +39,29 @@ class HtmlFormatterTest extends \PHPUnit_Framework_TestCase
      */
     public function annotationsPresentOnSetTemplateMethod()
     {
-        $constructor = lang\reflectConstructor($this->htmlFormatter);
-        $this->assertTrue($constructor->hasAnnotation('Inject'));
+        $this->assertTrue(
+                reflect\constructorAnnotationsOf($this->htmlFormatter)
+                        ->contain('Inject')
+        );
 
-        $parameters = $constructor->getParameters();
-        $this->assertTrue($parameters[0]->hasAnnotation('Named'));
+        $templateParamAnnotations = reflect\annotationsOfConstructorParameter(
+                'template',
+                $this->htmlFormatter
+        );
+        $this->assertTrue($templateParamAnnotations->contain('Named'));
         $this->assertEquals(
                 'stubbles.webapp.response.format.html.template',
-                $parameters[0]->annotation('Named')->getName()
+                $templateParamAnnotations->firstNamed('Named')->getName()
         );
-        $this->assertTrue($parameters[1]->hasAnnotation('Named'));
+
+        $titleParamAnnotations = reflect\annotationsOfConstructorParameter(
+                'title',
+                $this->htmlFormatter
+        );
+        $this->assertTrue($titleParamAnnotations->contain('Named'));
         $this->assertEquals(
                 'stubbles.webapp.response.format.html.title',
-                $parameters[1]->annotation('Named')->getName()
+                $titleParamAnnotations->firstNamed('Named')->getName()
         );
     }
 

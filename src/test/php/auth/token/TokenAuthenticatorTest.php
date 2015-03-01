@@ -9,7 +9,7 @@
  */
 namespace stubbles\webapp\auth\token;
 use stubbles\input\ValueReader;
-use stubbles\lang;
+use stubbles\lang\reflect;
 use stubbles\webapp\auth\Token;
 /**
  * Test for stubbles\webapp\auth\token\TokenAuthenticator.
@@ -65,20 +65,29 @@ class TokenAuthenticatorTest extends \PHPUnit_Framework_TestCase
      */
     public function annotationsPresentOnConstructor()
     {
-        $constructor = lang\reflectConstructor($this->tokenAuthenticator);
-        $this->assertTrue($constructor->hasAnnotation('Inject'));
-
-        $parameters = $constructor->getParameters();
-        $this->assertTrue($parameters[1]->hasAnnotation('Property'));
-        $this->assertEquals(
-                'stubbles.webapp.auth.token.salt',
-                $parameters[1]->getAnnotation('Property')->getName()
+        $this->assertTrue(
+                reflect\constructorAnnotationsOf($this->tokenAuthenticator)
+                        ->contain('Inject')
         );
 
-        $this->assertTrue($parameters[2]->hasAnnotation('Named'));
+        $tokenSaltParamAnnotations = reflect\annotationsOfConstructorParameter(
+                'tokenSalt',
+                $this->tokenAuthenticator
+        );
+        $this->assertTrue($tokenSaltParamAnnotations->contain('Property'));
+        $this->assertEquals(
+                'stubbles.webapp.auth.token.salt',
+                $tokenSaltParamAnnotations->firstNamed('Property')->getName()
+        );
+
+        $loginProviderParamAnnotations = reflect\annotationsOfConstructorParameter(
+                'loginProvider',
+                $this->tokenAuthenticator
+        );
+        $this->assertTrue($loginProviderParamAnnotations->contain('Named'));
         $this->assertEquals(
                 'stubbles.webapp.auth.token.loginProvider',
-                $parameters[2]->getAnnotation('Named')->getName()
+                $loginProviderParamAnnotations->firstNamed('Named')->getName()
         );
     }
 
