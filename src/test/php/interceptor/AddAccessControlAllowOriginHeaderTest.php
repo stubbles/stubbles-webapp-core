@@ -45,7 +45,7 @@ class AddAccessControlAllowOriginHeaderTest extends \PHPUnit_Framework_TestCase
      */
     public function annotationsPresentOnConstructor()
     {
-        $annotations = reflect\constructorAnnotationsOf(
+        $annotations = reflect\annotationsOfConstructor(
                 'stubbles\webapp\interceptor\AddAccessControlAllowOriginHeader'
         );
         $this->assertTrue($annotations->contain('Inject'));

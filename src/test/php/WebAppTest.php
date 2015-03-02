@@ -154,7 +154,7 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
     public function annotationPresentOnConstructor()
     {
         $this->assertTrue(
-                reflect\constructorAnnotationsOf($this->webApp)
+                reflect\annotationsOfConstructor($this->webApp)
                         ->contain('Inject')
         );
     }

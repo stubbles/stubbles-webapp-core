@@ -48,7 +48,7 @@ class XmlFormatterTest extends \PHPUnit_Framework_TestCase
     public function annotationsPresent()
     {
         $this->assertTrue(
-                reflect\constructorAnnotationsOf($this->xmlFormatter)
+                reflect\annotationsOfConstructor($this->xmlFormatter)
                         ->contain('Inject')
         );
     }

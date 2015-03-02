@@ -87,7 +87,7 @@ class SessionBasedHtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
     public function annotationsPresentOnConstructor()
     {
         $this->assertTrue(
-                reflect\constructorAnnotationsOf($this->sessionBasedHtmlFilePassThrough)
+                reflect\annotationsOfConstructor($this->sessionBasedHtmlFilePassThrough)
                         ->contain('Inject')
         );
 

@@ -55,7 +55,7 @@ class CachingAuthenticationProviderTest extends \PHPUnit_Framework_TestCase
     public function annotationsPresentOnConstructor()
     {
         $this->assertTrue(
-                reflect\constructorAnnotationsOf($this->cachingAuthenticationProvider)
+                reflect\annotationsOfConstructor($this->cachingAuthenticationProvider)
                         ->contain('Inject')
         );
 

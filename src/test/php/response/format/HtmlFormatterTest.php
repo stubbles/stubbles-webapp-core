@@ -40,7 +40,7 @@ class HtmlFormatterTest extends \PHPUnit_Framework_TestCase
     public function annotationsPresentOnSetTemplateMethod()
     {
         $this->assertTrue(
-                reflect\constructorAnnotationsOf($this->htmlFormatter)
+                reflect\annotationsOfConstructor($this->htmlFormatter)
                         ->contain('Inject')
         );
 

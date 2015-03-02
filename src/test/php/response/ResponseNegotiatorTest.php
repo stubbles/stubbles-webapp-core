@@ -62,7 +62,7 @@ class ResponseNegotiatorTest extends \PHPUnit_Framework_TestCase
     public function annotationPresentOnConstructor()
     {
         $this->assertTrue(
-                reflect\constructorAnnotationsOf($this->responseNegotiator)
+                reflect\annotationsOfConstructor($this->responseNegotiator)
                         ->contain('Inject')
         );
     }
