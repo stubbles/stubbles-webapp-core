@@ -1,3 +1,9 @@
+5.2.0 (2015-03-09)
+------------------
+
+  * upgraded stubbles/core to 5.3 to ensure session scope compatibility
+
+
 5.1.2 (2014-10-13)
 ------------------
 
