@@ -100,15 +100,14 @@ class IoBindingModuleTest extends \PHPUnit_Framework_TestCase
             $binder->bind('\stdClass')
                    ->to('\stdClass')
                    ->inSession();
+            $injector = $binder->getInjector();
+            $this->assertSame(
+                    $injector->getInstance('\stdClass'),
+                    $injector->getInstance('\stdClass')
+            );
         } catch (RuntimeException $re) {
             $this->fail($re->getMessage());
         }
-
-        $injector = $binder->getInjector();
-        $this->assertSame(
-                $injector->getInstance('\stdClass'),
-                $injector->getInstance('\stdClass')
-        );
     }
 
     /**
@@ -121,8 +120,9 @@ class IoBindingModuleTest extends \PHPUnit_Framework_TestCase
                 (new IoBindingModule())->setResponseClass($otherResponseClass)
         );
         $this->assertTrue($injector->hasBinding('stubbles\webapp\response\Response'));
-        $this->assertInstanceOf($otherResponseClass,
-                                $injector->getInstance('stubbles\webapp\response\Response')
+        $this->assertInstanceOf(
+                $otherResponseClass,
+                $injector->getInstance('stubbles\webapp\response\Response')
         );
     }
 

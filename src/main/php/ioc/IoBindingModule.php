@@ -11,7 +11,6 @@ namespace stubbles\webapp\ioc;
 use stubbles\input\web\BaseWebRequest;
 use stubbles\ioc\Binder;
 use stubbles\ioc\module\BindingModule;
-use stubbles\webapp\websession\SessionBindingScope;
 /**
  * Module to configure the binder with instances for request, session and response.
  *
@@ -114,7 +113,7 @@ class IoBindingModule implements BindingModule
             $sessionCreator = $this->sessionCreator;
             $session = $sessionCreator($request, $response);
             $binder->bind('stubbles\webapp\session\Session')->toInstance($session);
-            $binder->setSessionScope(new SessionBindingScope($session));
+            $binder->setSession(new SessionAdapter($session));
         }
     }
 }
