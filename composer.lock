@@ -4,20 +4,20 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "a30f85adf929451c6197b2af09c205ef",
+    "hash": "9463e885e029c8c84b7476b951aed606",
     "packages": [
         {
             "name": "stubbles/core",
-            "version": "v5.3.1",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/stubbles/stubbles-core.git",
-                "reference": "6ea79c0be795ba55cf4b6f3abbb282ea3d655f3b"
+                "reference": "180428c1d45ef10ab5bd8027449abe7f4f627252"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/stubbles/stubbles-core/zipball/6ea79c0be795ba55cf4b6f3abbb282ea3d655f3b",
-                "reference": "6ea79c0be795ba55cf4b6f3abbb282ea3d655f3b",
+                "url": "https://api.github.com/repos/stubbles/stubbles-core/zipball/180428c1d45ef10ab5bd8027449abe7f4f627252",
+                "reference": "180428c1d45ef10ab5bd8027449abe7f4f627252",
                 "shasum": ""
             },
             "require": {
@@ -30,7 +30,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "5.3.x-dev"
+                    "dev-master": "5.4.x-dev"
                 }
             },
             "autoload": {
@@ -50,7 +50,7 @@
             ],
             "description": "Provides base classes for Stubbles packages.",
             "homepage": "http://stubbles.net/",
-            "time": "2015-03-09 10:40:51"
+            "time": "2015-03-10 16:53:45"
         },
         {
             "name": "stubbles/input",
@@ -1130,31 +1130,31 @@
         },
         {
             "name": "stubbles/xml",
-            "version": "v4.1.0",
+            "version": "v4.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/stubbles/stubbles-xml.git",
-                "reference": "49abb62821e8013c2a4b255f8cb2e0b76a23593b"
+                "reference": "4bf5f81dce3fb588d1542c9366bd4fc8a53ff171"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/stubbles/stubbles-xml/zipball/49abb62821e8013c2a4b255f8cb2e0b76a23593b",
-                "reference": "49abb62821e8013c2a4b255f8cb2e0b76a23593b",
+                "url": "https://api.github.com/repos/stubbles/stubbles-xml/zipball/4bf5f81dce3fb588d1542c9366bd4fc8a53ff171",
+                "reference": "4bf5f81dce3fb588d1542c9366bd4fc8a53ff171",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.4.0",
-                "stubbles/core": "~5.1",
-                "stubbles/date": "~5.0"
+                "stubbles/core": "~5.3",
+                "stubbles/date": "~5.2"
             },
             "require-dev": {
                 "mikey179/vfsstream": "~1.4",
-                "phpunit/phpunit": "~4.2"
+                "phpunit/phpunit": "~4.5"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "4.1.x-dev"
+                    "dev-master": "4.2.x-dev"
                 }
             },
             "autoload": {
@@ -1168,7 +1168,7 @@
             ],
             "description": "Classes to work with XML",
             "homepage": "http://stubbles.net/",
-            "time": "2014-09-29 09:37:16"
+            "time": "2015-03-09 20:48:21"
         },
         {
             "name": "symfony/yaml",
