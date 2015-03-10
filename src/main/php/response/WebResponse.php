@@ -62,6 +62,11 @@ class WebResponse implements Response
      * @type  string
      */
     private $request;
+    /**
+     *
+     * @type  \stubbles\webapp\response\stream\ResponseStream
+     */
+    private $stream;
 
     /**
      * constructor
@@ -73,9 +78,10 @@ class WebResponse implements Response
      * @param  \stubbles\input\web\WebRequest  $request  http request for which this is the response
      * @param  string                          $sapi     optional  current php sapi, defaults to value of PHP_SAPI constant
      */
-    public function __construct(WebRequest $request, $sapi = PHP_SAPI)
+    public function __construct(WebRequest $request, ResponseStream $stream, $sapi = PHP_SAPI)
     {
         $this->request = $request;
+        $this->stream  = $stream;
         $this->sapi    = $sapi;
         $this->headers = new Headers();
         $this->status  = new Status($this->headers);
@@ -408,10 +414,6 @@ class WebResponse implements Response
             $cookie->send();
         }
 
-        if (null != $this->body && !$this->headers->contain('Content-Length')) {
-            $this->header('Content-Length: ' . strlen($this->body));
-        }
-
         if (!$this->headers->contain('X-Request-ID')) {
             $this->header('X-Request-ID: ' . $this->request->id());
         }
@@ -436,7 +438,6 @@ class WebResponse implements Response
      */
     protected function sendBody($body)
     {
-        echo $body;
-        flush();
+        $this->stream->stream($body);
     }
 }
