@@ -36,6 +36,7 @@ class XmlFormatterTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
+        $this->markTestSkipped();
         $this->mockXmlSerializerFacade = $this->getMockBuilder('stubbles\xml\serializer\XmlSerializerFacade')
                                               ->disableOriginalConstructor()
                                               ->getMock();

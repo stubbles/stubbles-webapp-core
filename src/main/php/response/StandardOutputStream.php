@@ -7,10 +7,12 @@
  *
  * @package  stubbles\webapp
  */
-namespace stubbles\webapp\response\stream;
+namespace stubbles\webapp\response;
 use stubbles\streams\ResourceOutputStream;
 /**
  * Output stream for writing to standard output.
+ *
+ * @internal
  */
 class StandardOutputStream extends ResourceOutputStream
 {

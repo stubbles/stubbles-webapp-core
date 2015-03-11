@@ -17,11 +17,11 @@ namespace stubbles\webapp\response;
 interface Response extends SendableResponse
 {
     /**
-     * clears the response
+     * returns mime type for response body
      *
-     * @return  \stubbles\webapp\response\Response
+     * @return  \stubbles\webapp\response\mimetypes\MimeType
      */
-    public function clear();
+    public function mimeType();
 
     /**
      * sets the status code to be send

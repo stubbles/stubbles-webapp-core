@@ -11,6 +11,8 @@ namespace stubbles\webapp\response;
 use stubbles\input\web\WebRequest;
 use stubbles\peer\http\Http;
 use stubbles\peer\http\HttpVersion;
+use stubbles\streams\OutputStream;
+use stubbles\webapp\response\mimetypes\MimeType;
 /**
  * Base class for a response to a request.
  *
@@ -53,9 +55,9 @@ class WebResponse implements Response
     /**
      * data to send as body of response
      *
-     * @type  string
+     * @type  mixed
      */
-    private $body;
+    private $resource;
     /**
      * original request method
      *
@@ -63,10 +65,11 @@ class WebResponse implements Response
      */
     private $request;
     /**
+     * mime type for response body
      *
-     * @type  \stubbles\webapp\response\stream\ResponseStream
+     * @type  \stubbles\webapp\response\mimetypes\MimeType
      */
-    private $stream;
+    private $mimeType;
 
     /**
      * constructor
@@ -75,17 +78,18 @@ class WebResponse implements Response
      * protocol major version is not 1 the response automatically sets itself
      * to 500 Method Not Supported.
      *
-     * @param  \stubbles\input\web\WebRequest  $request  http request for which this is the response
-     * @param  string                          $sapi     optional  current php sapi, defaults to value of PHP_SAPI constant
+     * @param  \stubbles\input\web\WebRequest                $request   http request for which this is the response
+     * @param  \stubbles\webapp\response\mimetypes\MimeType  $mimeType  mime type for response body
+     * @param  string                                        $sapi      optional  current php sapi, defaults to value of PHP_SAPI constant
      */
-    public function __construct(WebRequest $request, ResponseStream $stream, $sapi = PHP_SAPI)
+    public function __construct(WebRequest $request, MimeType $mimeType, $sapi = PHP_SAPI)
     {
-        $this->request = $request;
-        $this->stream  = $stream;
-        $this->sapi    = $sapi;
-        $this->headers = new Headers();
-        $this->status  = new Status($this->headers);
-        $this->version = $request->protocolVersion();
+        $this->request  = $request;
+        $this->mimeType = $mimeType;
+        $this->sapi     = $sapi;
+        $this->headers  = new Headers();
+        $this->status   = new Status($this->headers);
+        $this->version  = $request->protocolVersion();
         if (null === $this->version || $this->version->major() != 1) {
             $this->version = HttpVersion::fromString(HttpVersion::HTTP_1_1);
             $this->httpVersionNotSupported();
@@ -93,17 +97,13 @@ class WebResponse implements Response
     }
 
     /**
-     * clears the response
+     * returns mime type for response body
      *
-     * @return  \stubbles\webapp\response\Response
+     * @return  \stubbles\webapp\response\mimetypes\MimeType
      */
-    public function clear()
+    public function mimeType()
     {
-        $this->headers = new Headers();
-        $this->status  = new Status($this->headers);
-        $this->cookies = [];
-        $this->body    = null;
-        return $this;
+        return $this->mimeType;
     }
 
     /**
@@ -240,23 +240,13 @@ class WebResponse implements Response
     /**
      * write data into the response
      *
-     * @param   string  $body
+     * @param   mixed  $resource
      * @return  \stubbles\webapp\response\Response
      */
-    public function write($body)
+    public function write($resource)
     {
-        $this->body = $body;
+        $this->resource = $resource;
         return $this;
-    }
-
-    /**
-     * returns response body
-     *
-     * @return  string
-     */
-    public function body()
-    {
-        return $this->body;
     }
 
     /**
@@ -303,6 +293,7 @@ class WebResponse implements Response
     public function forbidden()
     {
         $this->status->forbidden();
+        $this->resource = ['error' => 'You are not allowed to access this resource.'];
         return $this;
     }
 
@@ -315,6 +306,7 @@ class WebResponse implements Response
     public function notFound()
     {
         $this->status->notFound();
+        $this->resource = ['error' => 'Given resource could not be found.'];
         return $this;
     }
 
@@ -329,6 +321,12 @@ class WebResponse implements Response
     public function methodNotAllowed($requestMethod, array $allowedMethods)
     {
         $this->status->methodNotAllowed($allowedMethods);
+        $this->resource = [
+            'error' => 'The given request method '
+                        . strtoupper($requestMethod)
+                        . ' is not valid. Please use one of '
+                        . join(', ', $allowedMethods) . '.'
+        ];
         return $this;
     }
 
@@ -355,7 +353,7 @@ class WebResponse implements Response
     public function internalServerError($errorMessage)
     {
         $this->status->internalServerError();
-        $this->write($errorMessage);
+        $this->resource = ['error' => 'Internal Server Error: ' . $errorMessage];
         return $this;
     }
 
@@ -368,20 +366,24 @@ class WebResponse implements Response
     public function httpVersionNotSupported()
     {
         $this->status->httpVersionNotSupported();
-        $this->write('Unsupported HTTP protocol version, expected HTTP/1.0 or HTTP/1.1');
+        $this->resource = 'Unsupported HTTP protocol version, expected HTTP/1.0 or HTTP/1.1';
         return $this;
     }
 
     /**
-     * send the response out
+     * sends response
      *
+     * @param   \stubbles\streams\OutputStream  $out  optional
      * @return  \stubbles\webapp\response\Response
      */
-    public function send()
+    public function send(OutputStream $out = null)
     {
         $this->sendHead();
-        if ($this->requestAllowsBody() && null != $this->body) {
-            $this->sendBody($this->body);
+        if ($this->requestAllowsBody() && null != $this->resource) {
+            $this->mimeType->serialize(
+                    $this->resource,
+                    (null === $out ? new StandardOutputStream() : $out)
+            );
         }
 
         return $this;
@@ -414,6 +416,7 @@ class WebResponse implements Response
             $cookie->send();
         }
 
+        $this->header('Content-type: ' . $this->mimeType);
         if (!$this->headers->contain('X-Request-ID')) {
             $this->header('X-Request-ID: ' . $this->request->id());
         }
@@ -429,15 +432,5 @@ class WebResponse implements Response
     protected function header($header)
     {
         header($header);
-    }
-
-    /**
-     * helper method to send the body
-     *
-     * @param  string  $body
-     */
-    protected function sendBody($body)
-    {
-        $this->stream->stream($body);
     }
 }
