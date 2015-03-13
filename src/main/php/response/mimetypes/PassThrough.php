@@ -34,6 +34,10 @@ class PassThrough extends MimeType
      */
     public function serialize($resource, OutputStream $out)
     {
-        $out->write((string) $resource);
+        if (is_array($resource) && isset($resource['error'])) {
+            $out->write($resource['error']);
+        } else {
+            $out->write((string) $resource);
+        }
     }
 }
