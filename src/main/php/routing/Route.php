@@ -87,7 +87,7 @@ class Route implements ConfigurableRoute
      *
      * @type  string[]
      */
-    private $formatter                = [];
+    private $mimeTypeClasses                = [];
 
     /**
      * constructor
@@ -348,19 +348,19 @@ class Route implements ConfigurableRoute
      * add a mime type which this route supports
      *
      * @param   string  $mimeType
-     * @param   string  $formatterClass  optional  special formatter class to be used for given mime type on this route
+     * @param   string  $class     optional  special class to be used for given mime type on this route
      * @return  \stubbles\webapp\routing\Route
      * @throws  \InvalidArgumentException
      */
-    public function supportsMimeType($mimeType, $formatterClass = null)
+    public function supportsMimeType($mimeType, $class = null)
     {
-        if (null === $formatterClass && !SupportedMimeTypes::provideDefaultFormatterFor($mimeType)) {
-            throw new \InvalidArgumentException('No default formatter known for mime type ' . $mimeType . ', please provide a formatter');
+        if (null === $class && !SupportedMimeTypes::provideDefaultClassFor($mimeType)) {
+            throw new \InvalidArgumentException('No default class known for mime type ' . $mimeType . ', please provide a class');
         }
 
         $this->mimeTypes[] = $mimeType;
-        if (null !== $formatterClass) {
-            $this->formatter[$mimeType] = $formatterClass;
+        if (null !== $class) {
+            $this->mimeTypeClasses[$mimeType] = $class;
         }
 
         return $this;
@@ -370,10 +370,10 @@ class Route implements ConfigurableRoute
      * returns list of mime types supported by this route
      *
      * @param   string[]  $globalMimeTypes  optional list of globally supported mime types
-     * @param   string[]  $globalFormatter  optional list of globally defined formatters
+     * @param   string[]  $globalClasses    optional list of globally defined formatters
      * @return  \stubbles\webapp\response\SupportedMimeTypes
      */
-    public function supportedMimeTypes(array $globalMimeTypes = [], array $globalFormatter = [])
+    public function supportedMimeTypes(array $globalMimeTypes = [], array $globalClasses = [])
     {
         if ($this->disableContentNegotation || $this->routingAnnotations()->isContentNegotiationDisabled()) {
             return SupportedMimeTypes::createWithDisabledContentNegotation();
@@ -387,9 +387,9 @@ class Route implements ConfigurableRoute
                         $globalMimeTypes
                 ),
                 array_merge(
-                        $globalFormatter,
-                        $this->routingAnnotations()->formatter(),
-                        $this->formatter
+                        $globalClasses,
+                        $this->routingAnnotations()->mimeTypeClasses(),
+                        $this->mimeTypeClasses
                 )
         );
     }

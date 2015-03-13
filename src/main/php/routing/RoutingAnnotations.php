@@ -110,35 +110,35 @@ class RoutingAnnotations
     }
 
     /**
-     * returns a list of all formatters a route supports via @SupportsMimeType
+     * returns a list of all mime type classes a route supports via @SupportsMimeType
      *
      * @return  string[]
      * @since   5.1.0
      */
-    public function formatter()
+    public function mimeTypeClasses()
     {
-        $formatter = [];
+        $mimeTypeClasses = [];
         foreach ($this->annotations->named('SupportsMimeType') as $supportedMimeType) {
-            if ($supportedMimeType->hasValueByName('formatter')) {
-                $formatter[$supportedMimeType->mimeType()] = $this->formatterClass($supportedMimeType->formatter());
+            if ($supportedMimeType->hasValueByName('class')) {
+                $mimeTypeClasses[$supportedMimeType->mimeType()] = $this->nameForMimeTypeClass($supportedMimeType->class());
             }
         }
 
-        return $formatter;
+        return $mimeTypeClasses;
     }
 
     /**
      * returns class name of formatter
      *
-     * @param   \ReflectionClass  $formatter
+     * @param   \ReflectionClass  $class
      * @return  string
      */
-    private function formatterClass($formatter)
+    private function nameForMimeTypeClass($class)
     {
-        if ($formatter instanceof \ReflectionClass) {
-            return $formatter->getName();
+        if ($class instanceof \ReflectionClass) {
+            return $class->getName();
         }
 
-        return $formatter;
+        return $class;
     }
 }

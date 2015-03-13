@@ -22,8 +22,9 @@ class SupportedMimeTypesTest extends \PHPUnit_Framework_TestCase
      */
     public function contentNegotiationIsDisabledWhenFactoryMethodUsed()
     {
-        $this->assertTrue(SupportedMimeTypes::createWithDisabledContentNegotation()
-                                            ->isContentNegotationDisabled()
+        $this->assertTrue(
+                SupportedMimeTypes::createWithDisabledContentNegotation()
+                        ->isContentNegotationDisabled()
         );
     }
 
@@ -32,9 +33,10 @@ class SupportedMimeTypesTest extends \PHPUnit_Framework_TestCase
      */
     public function matchForDisabledContentNegotationIsAlwaysTextHtml()
     {
-        $this->assertEquals('text/html',
-                            SupportedMimeTypes::createWithDisabledContentNegotation()
-                                              ->findMatch(new AcceptHeader())
+        $this->assertEquals(
+                'text/html',
+                SupportedMimeTypes::createWithDisabledContentNegotation()
+                        ->findMatch(new AcceptHeader())
         );
     }
 
@@ -43,9 +45,10 @@ class SupportedMimeTypesTest extends \PHPUnit_Framework_TestCase
      */
     public function listOfSupportedMimeTypedWithDisabledContentNegotationIsEmpty()
     {
-        $this->assertEquals([],
-                            SupportedMimeTypes::createWithDisabledContentNegotation()
-                                              ->asArray()
+        $this->assertEquals(
+                [],
+                SupportedMimeTypes::createWithDisabledContentNegotation()
+                        ->asArray()
         );
     }
 
@@ -54,8 +57,9 @@ class SupportedMimeTypesTest extends \PHPUnit_Framework_TestCase
      */
     private function createInstance()
     {
-        return new SupportedMimeTypes(['application/xml', 'application/json', 'application/foo'],
-                                      ['application/xml' => 'example\SpecialFormatter']
+        return new SupportedMimeTypes(
+                ['application/xml', 'application/json', 'application/foo'],
+                ['application/xml' => 'example\SpecialFormatter']
         );
     }
 
@@ -64,9 +68,7 @@ class SupportedMimeTypesTest extends \PHPUnit_Framework_TestCase
      */
     public function contentNegotationIsEnabledWhenCreatedWithListOfMimeTypes()
     {
-        $this->assertFalse($this->createInstance()
-                                ->isContentNegotationDisabled()
-        );
+        $this->assertFalse($this->createInstance()->isContentNegotationDisabled());
     }
 
     /**
@@ -75,9 +77,9 @@ class SupportedMimeTypesTest extends \PHPUnit_Framework_TestCase
     public function returnsFirstMimeTypeFromGivenListWhenAcceptHeaderIsEmpty()
     {
 
-        $this->assertEquals('application/xml',
-                            $this->createInstance()
-                                 ->findMatch(new AcceptHeader())
+        $this->assertEquals(
+                'application/xml',
+                $this->createInstance()->findMatch(new AcceptHeader())
         );
     }
 
@@ -86,9 +88,11 @@ class SupportedMimeTypesTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsMimeTypeWithGreatesPriorityAccordingToAcceptHeader()
     {
-        $this->assertEquals('application/json',
-                            $this->createInstance()
-                                 ->findMatch(AcceptHeader::parse('text/*;q=0.3, text/html;q=0.7, application/json;q=0.4, */*;q=0.5'))
+        $this->assertEquals(
+                'application/json',
+                $this->createInstance()->findMatch(
+                        AcceptHeader::parse('text/*;q=0.3, text/html;q=0.7, application/json;q=0.4, */*;q=0.5')
+                )
         );
     }
 
@@ -97,8 +101,10 @@ class SupportedMimeTypesTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsNoMimeTypeWhenNoMatchWithAcceptHeaderFound()
     {
-        $this->assertNull($this->createInstance()
-                               ->findMatch(AcceptHeader::parse('text/*;q=0.3, text/html;q=0.7'))
+        $this->assertNull(
+                $this->createInstance()->findMatch(
+                        AcceptHeader::parse('text/*;q=0.3, text/html;q=0.7')
+                )
         );
     }
 
@@ -107,9 +113,9 @@ class SupportedMimeTypesTest extends \PHPUnit_Framework_TestCase
      */
     public function listOfSupportedMimeTypedContainsListFromCreation()
     {
-        $this->assertEquals(['application/xml', 'application/json', 'application/foo'],
-                            $this->createInstance()
-                                 ->asArray()
+        $this->assertEquals(
+                ['application/xml', 'application/json', 'application/foo'],
+                $this->createInstance()->asArray()
         );
     }
 
@@ -121,7 +127,6 @@ class SupportedMimeTypesTest extends \PHPUnit_Framework_TestCase
         return [
             ['application/json'],
             ['text/json'],
-            ['text/html'],
             ['text/plain'],
             ['text/xml'],
             ['application/xml'],
@@ -136,7 +141,7 @@ class SupportedMimeTypesTest extends \PHPUnit_Framework_TestCase
      */
     public function hasFormatterForAllPredefinedMimeTypes($mimeType)
     {
-        $this->assertTrue($this->createInstance()->provideFormatter($mimeType));
+        $this->assertTrue($this->createInstance()->provideClass($mimeType));
     }
 
     /**
@@ -145,7 +150,7 @@ class SupportedMimeTypesTest extends \PHPUnit_Framework_TestCase
      */
     public function hasNoFormatterWhenNotDefinedForMimeType()
     {
-        $this->assertFalse($this->createInstance()->provideFormatter('application/foo'));
+        $this->assertFalse($this->createInstance()->provideClass('application/foo'));
     }
 
     /**
@@ -154,7 +159,7 @@ class SupportedMimeTypesTest extends \PHPUnit_Framework_TestCase
      */
     public function hasNoFormatterForUnknownMimeType()
     {
-        $this->assertFalse($this->createInstance()->provideFormatter('application/bar'));
+        $this->assertFalse($this->createInstance()->provideClass('application/bar'));
     }
 
     /**
@@ -163,7 +168,7 @@ class SupportedMimeTypesTest extends \PHPUnit_Framework_TestCase
      */
     public function formatterClassIsNullWhenNotDefinedForMimeType()
     {
-        $this->assertNull($this->createInstance()->formatterFor('application/foo'));
+        $this->assertNull($this->createInstance()->classFor('application/foo'));
     }
 
     /**
@@ -172,7 +177,7 @@ class SupportedMimeTypesTest extends \PHPUnit_Framework_TestCase
      */
     public function formatterClassIsNullForUnknownMimeType()
     {
-        $this->assertNull($this->createInstance()->formatterFor('application/bar'));
+        $this->assertNull($this->createInstance()->classFor('application/bar'));
     }
 
     /**
@@ -181,7 +186,7 @@ class SupportedMimeTypesTest extends \PHPUnit_Framework_TestCase
      */
     public function hasFormatterWhenDefinedForMimeType()
     {
-        $this->assertTrue($this->createInstance()->provideFormatter('application/xml'));
+        $this->assertTrue($this->createInstance()->provideClass('application/xml'));
     }
 
     /**
@@ -190,8 +195,9 @@ class SupportedMimeTypesTest extends \PHPUnit_Framework_TestCase
      */
     public function defaultFormatterCanBeOverriden()
     {
-        $this->assertEquals('example\SpecialFormatter',
-                            $this->createInstance()->formatterFor('application/xml')
+        $this->assertEquals(
+                'example\SpecialFormatter',
+                $this->createInstance()->classFor('application/xml')
         );
     }
 }

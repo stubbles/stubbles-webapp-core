@@ -20,8 +20,8 @@ use stubbles\webapp\response\Response;
  * @RequiresHttps
  * @RequiresLogin
  * @SupportsMimeType(mimeType="text/plain")
- * @SupportsMimeType(mimeType="application/bar", formatter="example\\BarFormatter")
- * @SupportsMimeType(mimeType="application/baz", formatter=stubbles\webapp\routing\BazFormatter.class)
+ * @SupportsMimeType(mimeType="application/bar", class="example\\BarFormatter")
+ * @SupportsMimeType(mimeType="application/baz", class=stubbles\webapp\routing\BazFormatter.class)
  */
 class AnnotatedProcessor implements Processor
 {
@@ -681,7 +681,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($this->createRoute()
                                ->supportsMimeType('foo/bar', 'example\FooBarFormatter')
                                ->supportedMimeTypes()
-                               ->provideFormatter('foo/bar')
+                               ->provideClass('foo/bar')
         );
     }
 
@@ -695,7 +695,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                             $this->createRoute()
                                  ->supportsMimeType('foo/bar', 'example\FooBarFormatter')
                                  ->supportedMimeTypes()
-                                 ->formatterFor('foo/bar')
+                                 ->classFor('foo/bar')
         );
     }
 
@@ -768,7 +768,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         $route = new Route('/hello', 'stubbles\webapp\routing\AnnotatedProcessor', 'GET');
         $this->assertEquals(
                 $expectedFormatter,
-                $route->supportedMimeTypes()->formatterFor($mimeType)
+                $route->supportedMimeTypes()->classFor($mimeType)
         );
     }
 
@@ -784,7 +784,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 'example\OtherBarFormatter',
                 $route->supportsMimeType('application/bar', 'example\OtherBarFormatter')
                       ->supportedMimeTypes()
-                      ->formatterFor('application/bar')
+                      ->classFor('application/bar')
         );
     }
 }

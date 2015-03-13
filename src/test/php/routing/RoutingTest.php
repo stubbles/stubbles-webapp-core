@@ -38,7 +38,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        SupportedMimeTypes::removeDefaultFormatter('application/foo');
+        SupportedMimeTypes::removeDefaultMimeTypeClass('application/foo');
         $this->routing   = new Routing(
                 $this->getMockBuilder('stubbles\ioc\Injector')
                         ->disableOriginalConstructor()
@@ -52,7 +52,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
      */
     public function tearDown()
     {
-        SupportedMimeTypes::removeDefaultFormatter('application/foo');
+        SupportedMimeTypes::removeDefaultMimeTypeClass('application/foo');
     }
 
     /**
@@ -465,7 +465,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
                 'example\SpecialFormatter',
                 $this->routing->findRoute($this->calledUri)
                               ->supportedMimeTypes()
-                              ->formatterFor('application/foo')
+                              ->classFor('application/foo')
         );
     }
 
