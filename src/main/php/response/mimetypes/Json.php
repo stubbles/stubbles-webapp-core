@@ -29,11 +29,13 @@ class Json extends MimeType
     /**
      * serializes resource to output stream
      *
-     * @param  mixed  $resource
-     * @param  \stubbles\streams\OutputStream $out
+     * @param   mixed  $resource
+     * @param   \stubbles\streams\OutputStream  $out
+     * @return  \stubbles\streams\OutputStream
      */
     public function serialize($resource, OutputStream $out)
     {
         $out->write(json_encode($resource));
+        return $out;
     }
 }

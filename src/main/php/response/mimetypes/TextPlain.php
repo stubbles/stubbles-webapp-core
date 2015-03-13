@@ -29,8 +29,9 @@ class TextPlain extends MimeType
     /**
      * serializes resource to output stream
      *
-     * @param  mixed  $resource
-     * @param  \stubbles\streams\OutputStream $out
+     * @param   mixed  $resource
+     * @param   \stubbles\streams\OutputStream  $out
+     * @return  \stubbles\streams\OutputStream
      */
     public function serialize($resource, OutputStream $out)
     {
@@ -45,5 +46,7 @@ class TextPlain extends MimeType
         } else {
             $out->write((string) $resource);
         }
+
+        return $out;
     }
 }
