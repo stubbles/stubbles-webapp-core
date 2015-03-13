@@ -293,11 +293,22 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function doesNotReturnOutputStreamWhenNonePassedAndNoResourceGiven()
+    {
+        $this->assertNull($this->response->send());
+    }
+
+    /**
+     * @test
+     */
     public function bodyIsSend()
     {
-        $this->response->write('foo')
-                       ->send($this->memoryOutputStream);
-        $this->assertEquals('foo', $this->memoryOutputStream->buffer());
+        $this->assertEquals(
+                'foo',
+                $this->response->write('foo')
+                        ->send($this->memoryOutputStream)
+                        ->buffer()
+        );
     }
 
     /**
@@ -354,15 +365,6 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
                        ->with($this->equalTo('Location: http://example.com/'));
         $this->response->redirect('http://example.com/')
                        ->send($this->memoryOutputStream);
-    }
-
-    /**
-     * @since  1.5.0
-     * @test
-     */
-    public function sendReturnsItself()
-    {
-        $this->assertSame($this->response, $this->response->send($this->memoryOutputStream));
     }
 
     /**
@@ -434,7 +436,10 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function methodNotAllowedFixatesResponse()
     {
-        $this->assertTrue($this->response->methodNotAllowed('POST', ['GET', 'HEAD'])->isFixed());
+        $this->assertTrue(
+                $this->response->methodNotAllowed('POST', ['GET', 'HEAD'])
+                        ->isFixed()
+        );
     }
 
     /**
@@ -485,11 +490,11 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
         $this->response->expects($this->at(0))
                        ->method('header')
                        ->with($this->equalTo('HTTP/1.1 500 Internal Server Error'));
-        $this->response->internalServerError('ups!')
-                       ->send($this->memoryOutputStream);
         $this->assertEquals(
                 'Internal Server Error: ups!',
-                $this->memoryOutputStream->buffer()
+                $this->response->internalServerError('ups!')
+                        ->send($this->memoryOutputStream)
+                        ->buffer()
         );
     }
 
@@ -512,11 +517,11 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
         $this->response->expects($this->at(0))
                        ->method('header')
                        ->with($this->equalTo('HTTP/1.1 505 HTTP Version Not Supported'));
-        $this->response->httpVersionNotSupported()
-                       ->send($this->memoryOutputStream);
         $this->assertEquals(
                 'Unsupported HTTP protocol version, expected HTTP/1.0 or HTTP/1.1',
-                $this->memoryOutputStream->buffer()
+                $this->response->httpVersionNotSupported()
+                        ->send($this->memoryOutputStream)
+                        ->buffer()
         );
     }
 
@@ -554,10 +559,9 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
         $response->expects($this->at(0))
                  ->method('header')
                  ->with($this->equalTo('HTTP/1.1 505 HTTP Version Not Supported'));
-        $response->send($this->memoryOutputStream);
         $this->assertEquals(
                 'Unsupported HTTP protocol version, expected HTTP/1.0 or HTTP/1.1',
-                $this->memoryOutputStream->buffer()
+                $response->send($this->memoryOutputStream)->buffer()
         );
     }
 

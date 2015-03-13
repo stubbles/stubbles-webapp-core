@@ -61,7 +61,10 @@ class Image extends MimeType
             $image = $resource;
         }
 
-        // can't write image to stream (imagepng() for example outputs directly to browser)
+        // must use output buffering
+        // PHP's image*() functions write directly to stdout
+        ob_start([$out, 'write']);
         $image->display();
+        ob_end_clean();
     }
 }
