@@ -20,8 +20,8 @@ use stubbles\webapp\response\Response;
  * @RequiresHttps
  * @RequiresLogin
  * @SupportsMimeType(mimeType="text/plain")
- * @SupportsMimeType(mimeType="application/bar", class="example\\BarFormatter")
- * @SupportsMimeType(mimeType="application/baz", class=stubbles\webapp\routing\BazFormatter.class)
+ * @SupportsMimeType(mimeType="application/bar", class="example\\Bar")
+ * @SupportsMimeType(mimeType="application/baz", class=stubbles\webapp\routing\Baz.class)
  */
 class AnnotatedProcessor implements Processor
 {
@@ -37,7 +37,7 @@ class AnnotatedProcessor implements Processor
         // intentionally empty
     }
 }
-class BazFormatter
+class Baz
 {
     // intentionally empty
 }
@@ -653,7 +653,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
      * @expectedException  InvalidArgumentException
      * @since  5.0.0
      */
-    public function addMimeTypeWithoutFormatterWhenNoDefaultFormatterIsKnownThrowsInvalidArgumentException()
+    public function addMimeTypeWithoutClassWhenNoDefaultClassIsKnownThrowsInvalidArgumentException()
     {
         $this->createRoute()->supportsMimeType('application/foo');
     }
@@ -676,10 +676,10 @@ class RouteTest extends \PHPUnit_Framework_TestCase
      * @test
      * @since  3.2.0
      */
-    public function supportedMimeTypesContainSpecialFormatter()
+    public function supportedMimeTypesContainSpecialClass()
     {
         $this->assertTrue($this->createRoute()
-                               ->supportsMimeType('foo/bar', 'example\FooBarFormatter')
+                               ->supportsMimeType('foo/bar', 'example\FooBar')
                                ->supportedMimeTypes()
                                ->provideClass('foo/bar')
         );
@@ -689,11 +689,11 @@ class RouteTest extends \PHPUnit_Framework_TestCase
      * @test
      * @since  3.2.0
      */
-    public function supportedMimeTypesContainSpecialFormatterClass()
+    public function supportedMimeTypesReturnSpecialClass()
     {
-        $this->assertEquals('example\FooBarFormatter',
+        $this->assertEquals('example\FooBar',
                             $this->createRoute()
-                                 ->supportsMimeType('foo/bar', 'example\FooBarFormatter')
+                                 ->supportsMimeType('foo/bar', 'example\FooBar')
                                  ->supportedMimeTypes()
                                  ->classFor('foo/bar')
         );
@@ -749,25 +749,25 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     /**
      * @return
      */
-    public function formatters()
+    public function mimeTypeClasses()
     {
         return [
-            ['example\BarFormatter', 'application/bar'],
-            ['stubbles\webapp\routing\BazFormatter', 'application/baz']
+            ['example\Bar', 'application/bar'],
+            ['stubbles\webapp\routing\Baz', 'application/baz']
         ];
     }
 
     /**
      * @test
      * @group  issue_63
-     * @dataProvider  formatters
+     * @dataProvider  mimeTypeClasses
      * @since  5.1.0
      */
-    public function listOfSupportedMimeTypesContainsFormatterForAnnotatedMimeTypes($expectedFormatter, $mimeType)
+    public function listOfSupportedMimeTypesContainsClassForAnnotatedMimeTypes($expectedMimeTypeClass, $mimeType)
     {
         $route = new Route('/hello', 'stubbles\webapp\routing\AnnotatedProcessor', 'GET');
         $this->assertEquals(
-                $expectedFormatter,
+                $expectedMimeTypeClass,
                 $route->supportedMimeTypes()->classFor($mimeType)
         );
     }
@@ -777,12 +777,12 @@ class RouteTest extends \PHPUnit_Framework_TestCase
      * @group  issue_63
      * @since  5.1.0
      */
-    public function annotatedMimeTypeFormatterCanBeOverwritten()
+    public function annotatedMimeTypeClassCanBeOverwritten()
     {
         $route = new Route('/hello', 'stubbles\webapp\routing\AnnotatedProcessor', 'GET');
         $this->assertEquals(
-                'example\OtherBarFormatter',
-                $route->supportsMimeType('application/bar', 'example\OtherBarFormatter')
+                'example\OtherBar',
+                $route->supportsMimeType('application/bar', 'example\OtherBar')
                       ->supportedMimeTypes()
                       ->classFor('application/bar')
         );

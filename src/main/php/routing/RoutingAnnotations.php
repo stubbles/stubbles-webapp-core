@@ -128,7 +128,7 @@ class RoutingAnnotations
     }
 
     /**
-     * returns class name of formatter
+     * returns class name of mime type class
      *
      * @param   \ReflectionClass  $class
      * @return  string

@@ -48,7 +48,7 @@ class Routing implements RoutingConfigurator
      */
     private $mimeTypes                = [];
     /**
-     * map of additional formatters for this route
+     * map of additional mime tyoe classes for this route
      *
      * @type  string[]
      */
@@ -556,14 +556,14 @@ class Routing implements RoutingConfigurator
     }
 
     /**
-     * sets a default formatter for given mime type, but doesn't mark the mime type as supported for all routes
+     * sets a default mime type class for given mime type, but doesn't mark the mime type as supported for all routes
      *
-     * @param   string  $mimeType
-     * @param   string  $mimeTypeClass
+     * @param   string  $mimeType       mime type to set default class for
+     * @param   string  $mimeTypeClass  class to use
      * @return  \stubbles\webapp\routing\Routing
      * @since   5.1.0
      */
-    public function setDefaultFormatter($mimeType, $mimeTypeClass)
+    public function setDefaultMimeTypeClass($mimeType, $mimeTypeClass)
     {
         SupportedMimeTypes::setDefaultMimeTypeClass($mimeType, $mimeTypeClass);
         return $this;
@@ -573,7 +573,7 @@ class Routing implements RoutingConfigurator
      * add a supported mime type
      *
      * @param   string  $mimeType
-     * @param   string  $mimeTypeClass  optional  special formatter class to be used for given mime type on this route
+     * @param   string  $mimeTypeClass  optional  special class to be used for given mime type on this route
      * @return  \stubbles\webapp\routing\Routing
      * @throws  \InvalidArgumentException
      */

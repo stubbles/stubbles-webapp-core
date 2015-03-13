@@ -59,7 +59,7 @@ class SupportedMimeTypesTest extends \PHPUnit_Framework_TestCase
     {
         return new SupportedMimeTypes(
                 ['application/xml', 'application/json', 'application/foo'],
-                ['application/xml' => 'example\SpecialFormatter']
+                ['application/xml' => 'example\SpecialMimeType']
         );
     }
 
@@ -139,7 +139,7 @@ class SupportedMimeTypesTest extends \PHPUnit_Framework_TestCase
      * @dataProvider  predefinedMimeTypes
      * @since  5.0.0
      */
-    public function hasFormatterForAllPredefinedMimeTypes($mimeType)
+    public function hasClassForAllPredefinedMimeTypes($mimeType)
     {
         $this->assertTrue($this->createInstance()->provideClass($mimeType));
     }
@@ -148,7 +148,7 @@ class SupportedMimeTypesTest extends \PHPUnit_Framework_TestCase
      * @test
      * @since  3.2.0
      */
-    public function hasNoFormatterWhenNotDefinedForMimeType()
+    public function hasNoClassWhenNotDefinedForMimeType()
     {
         $this->assertFalse($this->createInstance()->provideClass('application/foo'));
     }
@@ -157,7 +157,7 @@ class SupportedMimeTypesTest extends \PHPUnit_Framework_TestCase
      * @test
      * @since  3.2.0
      */
-    public function hasNoFormatterForUnknownMimeType()
+    public function hasNoClassForUnknownMimeType()
     {
         $this->assertFalse($this->createInstance()->provideClass('application/bar'));
     }
@@ -166,7 +166,7 @@ class SupportedMimeTypesTest extends \PHPUnit_Framework_TestCase
      * @test
      * @since  3.2.0
      */
-    public function formatterClassIsNullWhenNotDefinedForMimeType()
+    public function classIsNullWhenNotDefinedForMimeType()
     {
         $this->assertNull($this->createInstance()->classFor('application/foo'));
     }
@@ -175,7 +175,7 @@ class SupportedMimeTypesTest extends \PHPUnit_Framework_TestCase
      * @test
      * @since  3.2.0
      */
-    public function formatterClassIsNullForUnknownMimeType()
+    public function classIsNullForUnknownMimeType()
     {
         $this->assertNull($this->createInstance()->classFor('application/bar'));
     }
@@ -184,7 +184,7 @@ class SupportedMimeTypesTest extends \PHPUnit_Framework_TestCase
      * @test
      * @since  3.2.0
      */
-    public function hasFormatterWhenDefinedForMimeType()
+    public function hasClassWhenDefinedForMimeType()
     {
         $this->assertTrue($this->createInstance()->provideClass('application/xml'));
     }
@@ -193,10 +193,10 @@ class SupportedMimeTypesTest extends \PHPUnit_Framework_TestCase
      * @test
      * @since  3.2.0
      */
-    public function defaultFormatterCanBeOverriden()
+    public function defaultClassCanBeOverriden()
     {
         $this->assertEquals(
-                'example\SpecialFormatter',
+                'example\SpecialMimeType',
                 $this->createInstance()->classFor('application/xml')
         );
     }

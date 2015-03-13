@@ -53,7 +53,7 @@ class SupportedMimeTypes
      */
     private static $image = ['image/png' => 'stubbles\webapp\response\mimetypes\Image'];
     /**
-     * map of formatters for mime types
+     * map of available mime types classes
      *
      * @type  array
      */

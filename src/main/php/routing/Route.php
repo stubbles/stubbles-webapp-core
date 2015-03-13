@@ -83,7 +83,7 @@ class Route implements ConfigurableRoute
      */
     private $disableContentNegotation = false;
     /**
-     * map of additional formatters for this route
+     * map of additional mime type classes for this route
      *
      * @type  string[]
      */
@@ -370,7 +370,7 @@ class Route implements ConfigurableRoute
      * returns list of mime types supported by this route
      *
      * @param   string[]  $globalMimeTypes  optional list of globally supported mime types
-     * @param   string[]  $globalClasses    optional list of globally defined formatters
+     * @param   string[]  $globalClasses    optional list of globally defined mime type classes
      * @return  \stubbles\webapp\response\SupportedMimeTypes
      */
     public function supportedMimeTypes(array $globalMimeTypes = [], array $globalClasses = [])
