@@ -61,7 +61,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
                     ->will($this->returnValue($requestMethod));
         return $this->getMock(
                 'stubbles\webapp\response\WebResponse',
-                ['header', 'sendBody'],
+                ['header'],
                 [$mockRequest, new PassThrough(), $sapi]
         );
     }
