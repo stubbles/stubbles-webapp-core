@@ -11,6 +11,7 @@ namespace stubbles\webapp\response;
 use stubbles\peer\http\Http;
 use stubbles\peer\http\HttpVersion;
 use stubbles\streams\memory\MemoryOutputStream;
+use stubbles\webapp\response\mimetypes\PassThrough;
 /**
  * Tests for stubbles\webapp\response\WebResponse.
  *
@@ -61,7 +62,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
         return $this->getMock(
                 'stubbles\webapp\response\WebResponse',
                 ['header', 'sendBody'],
-                [$mockRequest, new mimetypes\PassThrough(), $sapi]
+                [$mockRequest, new PassThrough(), $sapi]
         );
     }
 
