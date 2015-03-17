@@ -18,6 +18,7 @@ use stubbles\peer\IpAddress;
 use stubbles\peer\http\Http;
 use stubbles\peer\http\HttpUri;
 use stubbles\peer\http\HttpVersion;
+use stubbles\streams\StandardInputStream;
 /**
  * Request implementation for web applications.
  */
@@ -455,6 +456,7 @@ class WebRequest extends AbstractRequest implements Request
      *
      * @return  \stubbles\input\ValueValidator
      * @since   1.3.0
+     * @deprecated  since 5.3.0, use body() instead, will be removed with 6.0.0
      */
     public function validateBody()
     {
@@ -466,6 +468,7 @@ class WebRequest extends AbstractRequest implements Request
      *
      * @return  \stubbles\input\ValueReader
      * @since   1.3.0
+     * @deprecated  since 5.3.0, use body() instead, will be removed with 6.0.0
      */
     public function readBody()
     {
@@ -484,5 +487,19 @@ class WebRequest extends AbstractRequest implements Request
     {
         $bodyParser = $this->bodyParser;
         return new Param('body', $bodyParser());
+    }
+
+    /**
+     * returns an input stream which allows to read the request body
+     *
+     * It returns the data raw and unsanitized, any filtering and validating
+     * must be done by the caller.
+     *
+     * @since   5.3.0
+     * @return  \stubbles\streams\InputStream
+     */
+    public function body()
+    {
+        return new StandardInputStream();
     }
 }

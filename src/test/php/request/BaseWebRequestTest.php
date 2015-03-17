@@ -1012,4 +1012,16 @@ class BaseWebRequestTest extends \PHPUnit_Framework_TestCase
                 $this->createBaseWebRequest([], ['HTTP_X_REQUEST_ID' => $validValue])->id()
         );
     }
+
+    /**
+     * @test
+     * @since  5.3.0
+     */
+    public function bodyReturnsInputStream()
+    {
+        $this->assertInstanceOf(
+                'stubbles\streams\InputStream',
+                $this->createBaseWebRequest()->body()
+        );
+    }
 }

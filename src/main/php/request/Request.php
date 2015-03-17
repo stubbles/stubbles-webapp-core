@@ -15,5 +15,14 @@ namespace stubbles\webapp\request;
  */
 interface Request extends \stubbles\input\web\WebRequest
 {
-    // intentionally empty
+    /**
+     * returns an input stream which allows to read the request body
+     *
+     * It returns the data raw and unsanitized, any filtering and validating
+     * must be done by the caller.
+     *
+     * @since   5.3.0
+     * @return  \stubbles\streams\InputStream
+     */
+    public function body();
 }
