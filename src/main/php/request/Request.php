@@ -13,7 +13,7 @@ namespace stubbles\webapp\request;
  *
  * @api
  */
-interface WebRequest extends \stubbles\input\web\WebRequest
+interface Request extends \stubbles\input\web\WebRequest
 {
     // intentionally empty
 }

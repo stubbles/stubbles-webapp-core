@@ -36,7 +36,7 @@ class AddAccessControlAllowOriginHeaderTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->mockRequest  = $this->getMock('stubbles\input\web\WebRequest');
+        $this->mockRequest  = $this->getMock('stubbles\webapp\request\Request');
         $this->mockResponse = $this->getMock('stubbles\webapp\response\Response');
     }
 

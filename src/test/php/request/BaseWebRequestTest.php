@@ -64,11 +64,11 @@ class BaseWebRequestTest extends \PHPUnit_Framework_TestCase
      * @param   array  $params   optional
      * @param   array  $headers  optional
      * @param   array  $cookies  optional
-     * @return  BaseWebRequest
+     * @return  WebRequest
      */
     private function createBaseWebRequest(array $params = [], array $headers = [], array $cookies = [])
     {
-        return new BaseWebRequest(
+        return new WebRequest(
                 $params,
                 $headers,
                 $cookies,
@@ -97,7 +97,7 @@ class BaseWebRequestTest extends \PHPUnit_Framework_TestCase
         $this->fillGlobals('GET');
         $this->assertEquals(
                 ['foo', 'roland'],
-                BaseWebRequest::fromRawSource()->paramNames()
+                WebRequest::fromRawSource()->paramNames()
         );
     }
 
@@ -109,7 +109,7 @@ class BaseWebRequestTest extends \PHPUnit_Framework_TestCase
         $this->fillGlobals('POST');
         $this->assertEquals(
                 ['baz', 'donald'],
-                BaseWebRequest::fromRawSource()->paramNames()
+                WebRequest::fromRawSource()->paramNames()
         );
     }
 
@@ -121,7 +121,7 @@ class BaseWebRequestTest extends \PHPUnit_Framework_TestCase
         $this->fillGlobals();
         $this->assertEquals(
                 ['REQUEST_METHOD', 'HTTP_ACCEPT'],
-                BaseWebRequest::fromRawSource()->headerNames()
+                WebRequest::fromRawSource()->headerNames()
         );
     }
 
@@ -133,7 +133,7 @@ class BaseWebRequestTest extends \PHPUnit_Framework_TestCase
         $this->fillGlobals();
         $this->assertEquals(
                 ['chocolateChip', 'master'],
-                BaseWebRequest::fromRawSource()->cookieNames()
+                WebRequest::fromRawSource()->cookieNames()
         );
     }
 
@@ -145,7 +145,7 @@ class BaseWebRequestTest extends \PHPUnit_Framework_TestCase
         $this->fillGlobals();
         $this->assertEquals(
                 '',
-                BaseWebRequest::fromRawSource()->readBody()->unsecure()
+                WebRequest::fromRawSource()->readBody()->unsecure()
         );
     }
 

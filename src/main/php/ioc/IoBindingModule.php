@@ -8,7 +8,7 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\ioc;
-use stubbles\input\web\BaseWebRequest;
+use stubbles\webapp\request\WebRequest;
 use stubbles\ioc\Binder;
 use stubbles\ioc\module\BindingModule;
 /**
@@ -100,7 +100,7 @@ class IoBindingModule implements BindingModule
      */
     public function configure(Binder $binder)
     {
-        $request       = BaseWebRequest::fromRawSource();
+        $request       = WebRequest::fromRawSource();
         $responseClass = $this->responseClass;
         $response      = new $responseClass($request);
         $binder->bind('stubbles\input\web\WebRequest')

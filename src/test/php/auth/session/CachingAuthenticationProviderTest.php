@@ -86,7 +86,7 @@ class CachingAuthenticationProviderTest extends \PHPUnit_Framework_TestCase
                                          ->method('authenticate');
         $this->assertSame(
                 $user,
-                $this->cachingAuthenticationProvider->authenticate($this->getMock('stubbles\input\web\WebRequest'))
+                $this->cachingAuthenticationProvider->authenticate($this->getMock('stubbles\webapp\request\Request'))
         );
     }
 
@@ -103,7 +103,7 @@ class CachingAuthenticationProviderTest extends \PHPUnit_Framework_TestCase
                                          ->will($this->returnValue(null));
         $this->mockSession->expects($this->never())
                           ->method('putValue');
-        $this->assertNull($this->cachingAuthenticationProvider->authenticate($this->getMock('stubbles\input\web\WebRequest')));
+        $this->assertNull($this->cachingAuthenticationProvider->authenticate($this->getMock('stubbles\webapp\request\Request')));
     }
 
     /**
@@ -123,7 +123,7 @@ class CachingAuthenticationProviderTest extends \PHPUnit_Framework_TestCase
                           ->with($this->equalTo(User::SESSION_KEY), $this->equalTo($user));
         $this->assertSame(
                 $user,
-                $this->cachingAuthenticationProvider->authenticate($this->getMock('stubbles\input\web\WebRequest'))
+                $this->cachingAuthenticationProvider->authenticate($this->getMock('stubbles\webapp\request\Request'))
         );
     }
 
@@ -137,7 +137,7 @@ class CachingAuthenticationProviderTest extends \PHPUnit_Framework_TestCase
                                          ->will($this->returnValue('http://login.example.net/'));
         $this->assertEquals(
                 'http://login.example.net/',
-                $this->cachingAuthenticationProvider->loginUri($this->getMock('stubbles\input\web\WebRequest'))
+                $this->cachingAuthenticationProvider->loginUri($this->getMock('stubbles\webapp\request\Request'))
         );
     }
 }

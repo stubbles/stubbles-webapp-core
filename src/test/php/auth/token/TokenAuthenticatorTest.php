@@ -57,7 +57,7 @@ class TokenAuthenticatorTest extends \PHPUnit_Framework_TestCase
                 'some salt',
                 $this->mockLoginProvider
         );
-        $this->mockRequest = $this->getMock('stubbles\input\web\WebRequest');
+        $this->mockRequest = $this->getMock('stubbles\webapp\request\Request');
     }
 
     /**

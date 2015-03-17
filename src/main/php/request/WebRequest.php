@@ -21,7 +21,7 @@ use stubbles\peer\http\HttpVersion;
 /**
  * Request implementation for web applications.
  */
-class BaseWebRequest extends AbstractRequest implements WebRequest
+class WebRequest extends AbstractRequest implements Request
 {
     /**
      * generated id for request if no or an invalid X-Request-ID header is present
@@ -74,7 +74,7 @@ class BaseWebRequest extends AbstractRequest implements WebRequest
      * creates an instance from raw data, meaning $_GET/$_POST, $_SERVER and $_COOKIE
      *
      * @api
-     * @return  \stubbles\webapp\request\WebRequest
+     * @return  \stubbles\webapp\request\Request
      */
     public static function fromRawSource()
     {

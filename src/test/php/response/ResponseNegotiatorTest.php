@@ -53,7 +53,7 @@ class ResponseNegotiatorTest extends \PHPUnit_Framework_TestCase
                                          ->disableOriginalConstructor()
                                          ->getMock();
         $this->responseNegotiator = new ResponseNegotiator($this->mockResponse, $this->mockInjector);
-        $this->mockRequest        = $this->getMock('stubbles\input\web\WebRequest');
+        $this->mockRequest        = $this->getMock('stubbles\webapp\request\Request');
     }
 
     /**

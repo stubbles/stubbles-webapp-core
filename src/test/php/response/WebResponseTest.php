@@ -42,7 +42,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      */
     private function createResponse($httpVersion = HttpVersion::HTTP_1_1, $requestMethod = Http::GET, $sapi = null)
     {
-        $mockRequest = $this->getMock('stubbles\input\web\WebRequest');
+        $mockRequest = $this->getMock('stubbles\webapp\request\Request');
         $mockRequest->expects($this->any())
                     ->method('id')
                     ->will($this->returnValue('example-request-id-foo'));

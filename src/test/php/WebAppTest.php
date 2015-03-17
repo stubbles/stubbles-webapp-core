@@ -35,7 +35,7 @@ class TestWebApp extends WebApp
     /**
      * returns provided request instance
      *
-     * @return  \stubbles\input\web\WebRequest
+     * @return  \stubbles\webapp\request\Request
      */
     public function request()
     {
@@ -109,7 +109,7 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->mockRequest  = $this->getMock('stubbles\input\web\WebRequest');
+        $this->mockRequest  = $this->getMock('stubbles\webapp\request\Request');
         $this->mockRequest->expects($this->any())
                           ->method('getMethod')
                           ->will($this->returnValue('GET'));
@@ -433,7 +433,7 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
     public function ioBindingModuleAddedByDefault()
     {
         $this->assertInstanceOf(
-                'stubbles\input\web\WebRequest',
+                'stubbles\webapp\request\Request',
                 TestWebApp::create('projectPath')->request()
         );
     }
@@ -445,7 +445,7 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
      */
     public function malformedUriInRequestLeadsToResponse400BadRequest()
     {
-        $mockRequest = $this->getMock('stubbles\input\web\WebRequest');
+        $mockRequest = $this->getMock('stubbles\webapp\request\Request');
         $mockRequest->expects($this->any())
                     ->method('uri')
                     ->will($this->throwException(new MalformedUriException('invalid uri')));
