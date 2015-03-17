@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "9463e885e029c8c84b7476b951aed606",
+    "hash": "59511ddc80f7757d74f80b4a875fd0ab",
     "packages": [
         {
             "name": "stubbles/core",
@@ -54,21 +54,21 @@
         },
         {
             "name": "stubbles/input",
-            "version": "v4.3.0",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/stubbles/stubbles-input.git",
-                "reference": "938572ba525d08a7499f7057f845f5615e3731a8"
+                "reference": "54440acfafcd4039f34e74a1b6f6ac887616742f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/stubbles/stubbles-input/zipball/938572ba525d08a7499f7057f845f5615e3731a8",
-                "reference": "938572ba525d08a7499f7057f845f5615e3731a8",
+                "url": "https://api.github.com/repos/stubbles/stubbles-input/zipball/54440acfafcd4039f34e74a1b6f6ac887616742f",
+                "reference": "54440acfafcd4039f34e74a1b6f6ac887616742f",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.4.0",
-                "stubbles/core": "~5.3"
+                "stubbles/core": "~5.4"
             },
             "require-dev": {
                 "mikey179/vfsstream": "~1.4",
@@ -81,7 +81,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "4.3.x-dev"
+                    "dev-master": "4.4.x-dev"
                 }
             },
             "autoload": {
@@ -95,7 +95,7 @@
             ],
             "description": "Stubbles Input enables to handle input data via validation and filtering.",
             "homepage": "http://stubbles.net/",
-            "time": "2015-03-06 16:23:36"
+            "time": "2015-03-17 22:26:02"
         }
     ],
     "packages-dev": [
