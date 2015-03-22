@@ -12,7 +12,7 @@ use stubbles\peer\http\HttpVersion;
 /**
  * Tests for stubbles\webapp\request\WebRequest.
  *
- * @group  web
+ * @group  request
  */
 class WebRequestTest extends \PHPUnit_Framework_TestCase
 {
@@ -961,6 +961,53 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf(
                 'stubbles\streams\InputStream',
                 $this->createBaseWebRequest()->body()
+        );
+    }
+
+    /**
+     * @test
+     * @since  6.0.0
+     */
+    public function hasNoSessionAttachedByDefault()
+    {
+        $this->assertFalse($this->createBaseWebRequest()->hasSessionAttached());
+    }
+
+    /**
+     * @test
+     * @since  6.0.0
+     */
+    public function defaultSessionIsNull()
+    {
+        $this->assertNull($this->createBaseWebRequest()->attachedSession());
+    }
+
+    /**
+     * @test
+     * @since  6.0.0
+     */
+    public function hasSessionWhenAttached()
+    {
+        $mockSession = $this->getMock('stubbles\webapp\session\Session');
+        $this->assertTrue(
+                $this->createBaseWebRequest()
+                        ->attachSession($mockSession)
+                        ->hasSessionAttached()
+        );
+    }
+
+    /**
+     * @test
+     * @since  6.0.0
+     */
+    public function returnsAttachedSession()
+    {
+        $mockSession = $this->getMock('stubbles\webapp\session\Session');
+        $this->assertSame(
+                $mockSession,
+                $this->createBaseWebRequest()
+                        ->attachSession($mockSession)
+                        ->attachedSession()
         );
     }
 }

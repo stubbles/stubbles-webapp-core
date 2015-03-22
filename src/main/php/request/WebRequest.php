@@ -17,6 +17,7 @@ use stubbles\peer\http\Http;
 use stubbles\peer\http\HttpUri;
 use stubbles\peer\http\HttpVersion;
 use stubbles\streams\StandardInputStream;
+use stubbles\webapp\session\Session;
 /**
  * Request implementation for web applications.
  */
@@ -40,6 +41,12 @@ class WebRequest extends AbstractRequest implements Request
      * @type  \stubbles\input\Params
      */
     private $cookies;
+    /**
+     * reference to attached session
+     *
+     * @type  \stubbles\webapp\session\Session
+     */
+    private $session;
 
     /**
      * constructor
@@ -424,5 +431,41 @@ class WebRequest extends AbstractRequest implements Request
     public function body()
     {
         return new StandardInputStream();
+    }
+
+    /**
+     * attaches session to request
+     *
+     * @internal
+     * @param   \stubbles\webapp\session\Session  $session
+     * @return  \stubbles\webapp\request\Request
+     * @since   6.0.0
+     */
+    public function attachSession(Session $session = null)
+    {
+        $this->session = $session;
+        return $this;
+    }
+
+    /**
+     * checks if a session is attached to the request
+     *
+     * @return  bool
+     * @since   6.0.0
+     */
+    public function hasSessionAttached()
+    {
+        return null !== $this->session;
+    }
+
+    /**
+     * returns attached session
+     *
+     * @return  \stubbles\webapp\session\Session
+     * @since   6.0.0
+     */
+    public function attachedSession()
+    {
+        return $this->session;
     }
 }

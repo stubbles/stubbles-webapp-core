@@ -8,6 +8,7 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\request;
+use stubbles\webapp\session\Session;
 /**
  * Interface for web applications requests.
  *
@@ -236,4 +237,30 @@ interface Request extends \stubbles\input\Request
      * @return  \stubbles\streams\InputStream
      */
     public function body();
+
+    /**
+     * attaches session to request
+     *
+     * @internal
+     * @param   \stubbles\webapp\session\Session  $session  optional
+     * @return  \stubbles\webapp\request\Request
+     * @since   6.0.0
+     */
+    public function attachSession(Session $session = null);
+
+    /**
+     * checks if a session is attached to the request
+     *
+     * @return  bool
+     * @since   6.0.0
+     */
+    public function hasSessionAttached();
+
+    /**
+     * returns attached session
+     *
+     * @return  \stubbles\webapp\session\Session
+     * @since   6.0.0
+     */
+    public function attachedSession();
 }
