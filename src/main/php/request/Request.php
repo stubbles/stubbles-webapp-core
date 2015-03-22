@@ -243,7 +243,7 @@ interface Request extends \stubbles\input\Request
      *
      * @internal
      * @param   \stubbles\webapp\session\Session  $session  optional
-     * @return  \stubbles\webapp\request\Request
+     * @return  \stubbles\webapp\session\Session
      * @since   6.0.0
      */
     public function attachSession(Session $session = null);

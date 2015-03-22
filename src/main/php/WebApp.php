@@ -9,12 +9,13 @@
  */
 namespace stubbles\webapp;
 use stubbles\ioc\App;
+use stubbles\ioc\Injector;
 use stubbles\lang\errorhandler\ExceptionLogger;
 use stubbles\peer\MalformedUriException;
-use stubbles\webapp\ioc\IoBindingModule;
 use stubbles\webapp\request\Request;
-use stubbles\webapp\response\Response;
+use stubbles\webapp\request\WebRequest;
 use stubbles\webapp\response\ResponseNegotiator;
+use stubbles\webapp\response\WebResponse;
 use stubbles\webapp\routing\ProcessableRoute;
 use stubbles\webapp\routing\Routing;
 /**
@@ -25,11 +26,9 @@ use stubbles\webapp\routing\Routing;
 abstract class WebApp extends App
 {
     /**
-     * contains request data
-     *
-     * @type  \stubbles\webapp\request\Request
+     * @type  \stubbles\ioc\Injector
      */
-    protected $request;
+    private $injector;
     /**
      * response negotiator
      *
@@ -52,18 +51,19 @@ abstract class WebApp extends App
     /**
      * constructor
      *
-     * @param  \stubbles\webapp\request\Request              $request             request data container
+     * @param  \stubbles\ioc\Injector                        $injector
      * @param  \stubbles\webapp\response\ResponseNegotiator  $responseNegotiator  negoatiates based on request
      * @param  \stubbles\webapp\routing\Routing              $routing             routes to logic based on request
      * @param  \stubbles\lang\errorhandler\ExceptionLogger   $exceptionLogger     logs uncatched exceptions
      * @Inject
      */
-    public function __construct(Request $request,
-                                ResponseNegotiator $responseNegotiator,
-                                Routing $routing,
-                                ExceptionLogger $exceptionLogger)
+    public function __construct(
+            Injector $injector,
+            ResponseNegotiator $responseNegotiator,
+            Routing $routing,
+            ExceptionLogger $exceptionLogger)
     {
-        $this->request            = $request;
+        $this->injector           = $injector;
         $this->responseNegotiator = $responseNegotiator;
         $this->routing            = $routing;
         $this->exceptionLogger    = $exceptionLogger;
@@ -76,44 +76,50 @@ abstract class WebApp extends App
      */
     public function run()
     {
+        $request = WebRequest::fromRawSource();
         $this->configureRouting($this->routing);
         try {
-            $route    = $this->routing->findRoute($this->request->uri(), $this->request->method());
-            $response = $this->responseNegotiator->negotiateMimeType($this->request, $route->supportedMimeTypes());
-            if (!$response->isFixed()) {
-                $this->process($route, $response);
+            $route    = $this->routing->findRoute($request->uri(), $request->method());
+            $response = $this->responseNegotiator->negotiateMimeType($request, $route->supportedMimeTypes());
+            if ($response->isFixed()) {
+                return $response;
+            }
+
+            if ($this->switchToHttps($route)) {
+                return $response->redirect($route->httpsUri());
+            }
+
+            $session = $request->attachSession($this->createSession($request));
+            if (null !== $session) {
+                $this->injector->setSession($session);
+            }
+
+            if ($route->applyPreInterceptors($request, $response)) {
+                if ($route->process($request, $response)) {
+                    $route->applyPostInterceptors($request, $response);
+                }
             }
         } catch (MalformedUriException $mue) {
-            $response = $this->responseNegotiator->negotiateMimeType($this->request);
+            $response = new WebResponse($request);
             $response->setStatusCode(400);
+        } catch (\Exception $e) {
+            $this->exceptionLogger->log($e);
+            $response->internalServerError($e->getMessage());
         }
 
         return $response;
     }
 
     /**
-     * handles the request by processing the route
+     * creates a session instance based on current request
      *
-     * @param  \stubbles\webapp\routing\ProcessableRoute  $route
-     * @param  \stubbles\webapp\response\Response         $response
+     * @param   \stubbles\webapp\request\Request  $request
+     * @return  \stubbles\webapp\session\Session
+     * @since   6.0.0
      */
-    private function process(ProcessableRoute $route, Response $response)
+    protected function createSession(Request $request)
     {
-        if ($this->switchToHttps($route)) {
-            $response->redirect($route->httpsUri());
-            return;
-        }
-
-        try {
-            if ($route->applyPreInterceptors($this->request, $response)) {
-                if ($route->process($this->request, $response)) {
-                    $route->applyPostInterceptors($this->request, $response);
-                }
-            }
-        } catch (\Exception $e) {
-            $this->exceptionLogger->log($e);
-            $response->internalServerError($e->getMessage());
-        }
+        return null;
     }
 
     /**
@@ -133,75 +139,6 @@ abstract class WebApp extends App
      * @param  \stubbles\webapp\routing\RoutingConfigurator  $routing
      */
     protected abstract function configureRouting(RoutingConfigurator $routing);
-
-    /**
-     * creates a web app instance via injection
-     *
-     * If the class to create an instance of contains a static __bindings() method
-     * this method will be used to configure the ioc bindings before using the ioc
-     * container to create the instance.
-     *
-     * @api
-     * @param   string  $projectPath  path to project
-     * @return  \stubbles\webapp\WebApp
-     */
-    public static function create($projectPath)
-    {
-        return self::createInstance(get_called_class(), $projectPath);
-    }
-
-    /**
-     * creates a web app instance via injection
-     *
-     * @api
-     * @param   string  $className    full qualified class name of class to create an instance of
-     * @param   string  $projectPath  path to project
-     * @return  \stubbles\webapp\WebApp
-     */
-    public static function createInstance($className, $projectPath)
-    {
-        IoBindingModule::reset();
-        return parent::createInstance($className, $projectPath);
-    }
-
-    /**
-     * creates list of bindings from given class
-     *
-     * @internal  must not be used by applications
-     * @param   string  $className    full qualified class name of class to create an instance of
-     * @param   string  $projectPath  path to project
-     * @return  \stubbles\ioc\module\BindingModule[]
-     */
-    protected static function getBindingsForApp($className)
-    {
-        $bindings = parent::getBindingsForApp($className);
-        if (!IoBindingModule::initialized()) {
-            $bindings[] = self::createIoBindingModule();
-        }
-
-        return $bindings;
-    }
-
-    /**
-     * creates io binding module
-     *
-     * The optional callable $sessionCreator can accept instances of
-     * stubbles\webapp\request\Request and stubbles\webapp\response\Response, and
-     * must return an instance of stubbles\webapp\session\Session:
-     * <code>
-     * function(WebRequest $request, Response $response)
-     * {
-     *    return new MySession($request, $response);
-     * }
-     * </code>
-     *
-     * @param   callable  $sessionCreator  optional
-     * @return  \stubbles\webapp\ioc\IoBindingModule
-     */
-    protected static function createIoBindingModule(callable $sessionCreator = null)
-    {
-        return new IoBindingModule($sessionCreator);
-    }
 
     /**
      * returns post interceptor class which adds Access-Control-Allow-Origin header to the response

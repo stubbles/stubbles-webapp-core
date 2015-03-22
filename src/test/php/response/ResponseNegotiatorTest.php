@@ -74,20 +74,6 @@ class ResponseNegotiatorTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @since  5.0.1
-     * @test
-     * @group  issue_70
-     */
-    public function doesNotNegotatiateMimeTypeWhenNoSupportedMimeTypesProvided()
-    {
-        $this->assertInstanceOf(
-                'stubbles\webapp\response\mimetypes\PassThrough',
-                $this->responseNegotiator->negotiateMimeType($this->mockRequest)
-                        ->mimeType()
-        );
-    }
-
-    /**
      * @test
      */
     public function doesNotNegotatiateMimeTypeWhenDisabled()

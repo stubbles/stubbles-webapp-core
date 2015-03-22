@@ -10,13 +10,19 @@
 namespace stubbles\webapp;
 use stubbles\ioc\Binder;
 use stubbles\lang\reflect;
-use stubbles\peer\MalformedUriException;
-use stubbles\peer\http\HttpUri;
+use stubbles\webapp\request\Request;
 /**
  * Helper class for the test.
  */
 class TestWebApp extends WebApp
 {
+    /**
+     * session to be created
+     *
+     * @type  \stubbles\webapp\session\Session
+     */
+    public static $session;
+
     /**
      * returns list of bindings required for this web app
      *
@@ -33,26 +39,15 @@ class TestWebApp extends WebApp
     }
 
     /**
-     * returns provided request instance
+     * creates a session instance based on current request
      *
-     * @return  \stubbles\webapp\request\Request
+     * @param   \stubbles\webapp\request\Request  $request
+     * @return  \stubbles\webapp\session\Session
+     * @since   6.0.0
      */
-    public function request()
+    protected function createSession(Request $request)
     {
-        return $this->request;
-    }
-
-    /**
-     * call method with given name and parameters and return its return value
-     *
-     * @param   string  $methodName
-     * @param   string  $param1      optional
-     * @param   string  $param2      optional
-     * @return  Object
-     */
-    public static function callMethod($methodName, $param = null)
-    {
-        return self::$methodName($param);
+        return self::$session;
     }
 
     /**
@@ -69,7 +64,7 @@ class TestWebApp extends WebApp
  * Tests for stubbles\webapp\WebApp.
  *
  * @since  1.7.0
- * @group  core
+ * @group  core_webapp
  */
 class WebAppTest extends \PHPUnit_Framework_TestCase
 {
@@ -80,11 +75,11 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
      */
     private $webApp;
     /**
-     * mocked request instance
+     * mocked injector
      *
      * @type  \PHPUnit_Framework_MockObject_MockObject
      */
-    private $mockRequest;
+    private $mockInjector;
     /**
      * mocked response instance
      *
@@ -109,13 +104,9 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->mockRequest  = $this->getMock('stubbles\webapp\request\Request');
-        $this->mockRequest->expects($this->any())
-                          ->method('getMethod')
-                          ->will($this->returnValue('GET'));
-        $this->mockRequest->expects($this->any())
-                          ->method('uri')
-                          ->will($this->returnValue(HttpUri::fromString('http://example.com/hello')));
+        $this->mockInjector = $this->getMockBuilder('stubbles\ioc\Injector')
+                        ->disableOriginalConstructor()
+                        ->getMock();
         $this->mockResponse     = $this->getMock('stubbles\webapp\response\Response');
         $mockResponseNegotiator = $this->getMockBuilder('stubbles\webapp\response\ResponseNegotiator')
                                        ->disableOriginalConstructor()
@@ -129,15 +120,15 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
         $this->mockExceptionLogger = $this->getMockBuilder('stubbles\lang\errorhandler\ExceptionLogger')
                                           ->disableOriginalConstructor()
                                           ->getMock();
-        $this->webApp  = $this->getMock('stubbles\webapp\TestWebApp',
-                                        ['configureRouting'],
-                                        [$this->mockRequest,
-                                         $mockResponseNegotiator,
-                                         $this->routing,
-                                         $this->mockExceptionLogger
-                                        ]
-                         );
+        $this->webApp  = new TestWebApp(
+                $this->mockInjector,
+                $mockResponseNegotiator,
+                $this->routing,
+                $this->mockExceptionLogger
+        );
         $_SERVER['REQUEST_METHOD'] = 'GET';
+        $_SERVER['REQUEST_URI']    = '/hello';
+        $_SERVER['HTTP_HOST']      = 'example.com';
     }
 
     /**
@@ -145,7 +136,10 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
      */
     public function tearDown()
     {
+        TestWebApp::$session = null;
         unset($_SERVER['REQUEST_METHOD']);
+        unset($_SERVER['REQUEST_URI']);
+        unset($_SERVER['HTTP_HOST']);
         restore_error_handler();
     }
 
@@ -161,19 +155,7 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @test
-     */
-    public function canCreateIoBindingModule()
-    {
-        $this->assertInstanceOf(
-                'stubbles\webapp\ioc\IoBindingModule',
-                TestWebApp::callMethod('createIoBindingModule')
-        );
-    }
-
-    /**
-     *
-     * @param type $mockRoute
+     * @return  \PHPUnit_Framework_MockObject_MockObject
      */
     private function createMockRoute()
     {
@@ -211,7 +193,7 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     */
+      */
     public function respondsWithRedirectHttpsUriIfRequiresHttps()
     {
         $mockRoute = $this->createMockRoute();
@@ -230,6 +212,38 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
+     * @since  6.0.0
+     */
+    public function enablesSessionScopeWhenSessionIsAvailable()
+    {
+        TestWebApp::$session = $this->getMock('stubbles\webapp\session\Session');
+        $mockRoute = $this->createMockRoute();
+        $mockRoute->expects($this->once())
+                  ->method('requiresHttps')
+                  ->will($this->returnValue(false));
+        $this->mockInjector->expects($this->once())
+                           ->method('setSession')
+                           ->with($this->equalTo(TestWebApp::$session));
+        $this->assertSame($this->mockResponse, $this->webApp->run());
+    }
+
+    /**
+     * @test
+     * @since  6.0.0
+     */
+    public function doesNotEnableSessionScopeWhenSessionNotAvailable()
+    {
+        $mockRoute = $this->createMockRoute();
+        $mockRoute->expects($this->once())
+                  ->method('requiresHttps')
+                  ->will($this->returnValue(false));
+        $this->mockInjector->expects($this->never())
+                           ->method('setSession');
+        $this->assertSame($this->mockResponse, $this->webApp->run());
+    }
+
+    /**
+     * @test
      */
     public function doesNotExecuteRouteAndPostInterceptorsIfPreInterceptorCancelsRequest()
     {
@@ -239,9 +253,6 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
                   ->will($this->returnValue(false));
         $mockRoute->expects($this->once())
                   ->method('applyPreInterceptors')
-                  ->with($this->equalTo($this->mockRequest),
-                         $this->equalTo($this->mockResponse)
-                    )
                   ->will($this->returnValue(false));
         $mockRoute->expects($this->never())
                   ->method('process');
@@ -262,9 +273,6 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
         $exception = new \Exception('some error');
         $mockRoute->expects($this->once())
                   ->method('applyPreInterceptors')
-                  ->with($this->equalTo($this->mockRequest),
-                         $this->equalTo($this->mockResponse)
-                    )
                   ->will($this->throwException($exception));
         $mockRoute->expects($this->never())
                   ->method('process');
@@ -290,15 +298,9 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
                   ->will($this->returnValue(false));
         $mockRoute->expects($this->once())
                   ->method('applyPreInterceptors')
-                  ->with($this->equalTo($this->mockRequest),
-                         $this->equalTo($this->mockResponse)
-                    )
                   ->will($this->returnValue(true));
         $mockRoute->expects($this->once())
                   ->method('process')
-                  ->with($this->equalTo($this->mockRequest),
-                         $this->equalTo($this->mockResponse)
-                    )
                   ->will($this->returnValue(false));
         $mockRoute->expects($this->never())
                   ->method('applyPostInterceptors');
@@ -316,16 +318,10 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
                   ->will($this->returnValue(false));
         $mockRoute->expects($this->once())
                   ->method('applyPreInterceptors')
-                  ->with($this->equalTo($this->mockRequest),
-                         $this->equalTo($this->mockResponse)
-                    )
                   ->will($this->returnValue(true));
         $exception = new \Exception('some error');
         $mockRoute->expects($this->once())
                   ->method('process')
-                  ->with($this->equalTo($this->mockRequest),
-                         $this->equalTo($this->mockResponse)
-                    )
                   ->will($this->throwException($exception));
         $mockRoute->expects($this->never())
                   ->method('applyPostInterceptors');
@@ -349,21 +345,12 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
                   ->will($this->returnValue(false));
         $mockRoute->expects($this->once())
                   ->method('applyPreInterceptors')
-                  ->with($this->equalTo($this->mockRequest),
-                         $this->equalTo($this->mockResponse)
-                    )
                   ->will($this->returnValue(true));
         $mockRoute->expects($this->once())
                   ->method('process')
-                  ->with($this->equalTo($this->mockRequest),
-                         $this->equalTo($this->mockResponse)
-                    )
                   ->will($this->returnValue(true));
         $mockRoute->expects($this->once())
-                  ->method('applyPostInterceptors')
-                  ->with($this->equalTo($this->mockRequest),
-                         $this->equalTo($this->mockResponse)
-                    );
+                  ->method('applyPostInterceptors');
         $this->assertSame($this->mockResponse, $this->webApp->run());
     }
 
@@ -378,22 +365,13 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
                   ->will($this->returnValue(false));
         $mockRoute->expects($this->once())
                   ->method('applyPreInterceptors')
-                  ->with($this->equalTo($this->mockRequest),
-                         $this->equalTo($this->mockResponse)
-                    )
                   ->will($this->returnValue(true));
         $mockRoute->expects($this->once())
                   ->method('process')
-                  ->with($this->equalTo($this->mockRequest),
-                         $this->equalTo($this->mockResponse)
-                    )
                   ->will($this->returnValue(true));
         $exception = new \Exception('some error');
         $mockRoute->expects($this->once())
                   ->method('applyPostInterceptors')
-                  ->with($this->equalTo($this->mockRequest),
-                         $this->equalTo($this->mockResponse)
-                    )
                   ->will($this->throwException($exception));
         $this->mockExceptionLogger->expects($this->once())
                                   ->method('log')
@@ -429,51 +407,26 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @since  5.0.0
-     * @test
-     */
-    public function ioBindingModuleAddedByDefault()
-    {
-        $this->assertInstanceOf(
-                'stubbles\webapp\request\Request',
-                TestWebApp::create('projectPath')->request()
-        );
-    }
-
-    /**
      * @since  5.0.1
      * @test
      * @group  issue_70
      */
     public function malformedUriInRequestLeadsToResponse400BadRequest()
     {
-        $mockRequest = $this->getMock('stubbles\webapp\request\Request');
-        $mockRequest->expects($this->any())
-                    ->method('uri')
-                    ->will($this->throwException(new MalformedUriException('invalid uri')));
-        $mockResponse  = $this->getMock('stubbles\webapp\response\Response');
+        $_SERVER['REQUEST_URI'] = '/hello';
+        $_SERVER['HTTP_HOST']   = '%&$§!&$!§invalid';
         $mockResponseNegotiator = $this->getMockBuilder('stubbles\webapp\response\ResponseNegotiator')
                                        ->disableOriginalConstructor()
                                        ->getMock();
-        $mockResponseNegotiator->expects($this->any())
-                               ->method('negotiateMimeType')
-                               ->will($this->returnValue($mockResponse));
-        $mockResponse->expects($this->once())
-                     ->method('setStatusCode')
-                     ->with($this->equalTo(400));
-        $webApp  = $this->getMock(
-                'stubbles\webapp\WebApp',
-                ['configureRouting'],
-                [$mockRequest,
-                 $mockResponseNegotiator,
-                 $this->getMockBuilder('stubbles\webapp\routing\Routing')
-                      ->disableOriginalConstructor()
-                      ->getMock(),
-                 $this->getMockBuilder('stubbles\lang\errorhandler\ExceptionLogger')
-                      ->disableOriginalConstructor()
-                      ->getMock()
-                ]
+        $webApp  = new TestWebApp(
+                $this->mockInjector,
+                $mockResponseNegotiator,
+                $this->routing,
+                $this->mockExceptionLogger
         );
-        $webApp->run();
+        $this->assertEquals(
+                400,
+                $webApp->run()->statusCode()
+        );
     }
 }

@@ -45,19 +45,20 @@ class ResponseNegotiator
      * response in case a mime type but no suitable formatter was found.
      *
      * @param   \stubbles\webapp\request\Request              $request
-     * @param   \stubbles\webapp\response\SupportedMimeTypes  $supportedMimeTypes  optional
+     * @param   \stubbles\webapp\response\SupportedMimeTypes  $supportedMimeTypes
      * @return  \stubbles\webapp\response\Response
      */
-    public function negotiateMimeType(Request $request, SupportedMimeTypes $supportedMimeTypes = null)
+    public function negotiateMimeType(Request $request, SupportedMimeTypes $supportedMimeTypes)
     {
-        if (null === $supportedMimeTypes || $supportedMimeTypes->isContentNegotationDisabled()) {
+        if ($supportedMimeTypes->isContentNegotationDisabled()) {
             return new WebResponse($request);
         }
 
-        $mimeType = $supportedMimeTypes->findMatch($request->readHeader('HTTP_ACCEPT')
-                                                           ->defaultingTo(http\emptyAcceptHeader())
-                                                           ->withFilter(new AcceptFilter())
-                    );
+        $mimeType = $supportedMimeTypes->findMatch(
+                $request->readHeader('HTTP_ACCEPT')
+                        ->defaultingTo(http\emptyAcceptHeader())
+                        ->withFilter(new AcceptFilter())
+        );
         if (null === $mimeType) {
             $response = new WebResponse($request);
             return $response->notAcceptable($supportedMimeTypes->asArray());
