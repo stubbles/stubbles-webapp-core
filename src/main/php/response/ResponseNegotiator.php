@@ -51,7 +51,7 @@ class ResponseNegotiator
     public function negotiateMimeType(Request $request, SupportedMimeTypes $supportedMimeTypes = null)
     {
         if (null === $supportedMimeTypes || $supportedMimeTypes->isContentNegotationDisabled()) {
-            return new WebResponse($request, new mimetypes\PassThrough());
+            return new WebResponse($request);
         }
 
         $mimeType = $supportedMimeTypes->findMatch($request->readHeader('HTTP_ACCEPT')
@@ -59,13 +59,13 @@ class ResponseNegotiator
                                                            ->withFilter(new AcceptFilter())
                     );
         if (null === $mimeType) {
-            $response = new WebResponse($request, new mimetypes\PassThrough());
+            $response = new WebResponse($request);
             return $response->notAcceptable($supportedMimeTypes->asArray());
 
         }
 
         if (!$supportedMimeTypes->provideClass($mimeType)) {
-            $response = new WebResponse($request, new mimetypes\PassThrough());
+            $response = new WebResponse($request);
             return $response->internalServerError(
                     'No formatter defined for negotiated content type ' . $mimeType
             );

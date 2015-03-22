@@ -12,6 +12,7 @@ use stubbles\peer\http\Http;
 use stubbles\peer\http\HttpVersion;
 use stubbles\webapp\request\Request;
 use stubbles\webapp\response\mimetypes\MimeType;
+use stubbles\webapp\response\mimetypes\PassThrough;
 use stubbles\streams\OutputStream;
 use stubbles\streams\StandardOutputStream;
 
@@ -80,14 +81,14 @@ class WebResponse implements Response
      * protocol major version is not 1 the response automatically sets itself
      * to 500 Method Not Supported.
      *
-     * @param  \stubbles\webapp\request\Request              $request  http request for which this is the response
-     * @param  \stubbles\webapp\response\mimetypes\MimeType  $mimeType  mime type for response body
+     * @param  \stubbles\webapp\request\Request              $request   http request for which this is the response
+     * @param  \stubbles\webapp\response\mimetypes\MimeType  $mimeType  optional  mime type for response body
      * @param  string                                        $sapi      optional  current php sapi, defaults to value of PHP_SAPI constant
      */
-    public function __construct(Request $request, MimeType $mimeType, $sapi = PHP_SAPI)
+    public function __construct(Request $request, MimeType $mimeType = null, $sapi = PHP_SAPI)
     {
         $this->request  = $request;
-        $this->mimeType = $mimeType;
+        $this->mimeType = null !== $mimeType ? $mimeType : new PassThrough();
         $this->sapi     = $sapi;
         $this->headers  = new Headers();
         $this->status   = new Status($this->headers);
