@@ -43,8 +43,11 @@ abstract class MimeType
     /**
      * serializes resource to output stream
      *
-     * @param  mixed  $resource
-     * @param  \stubbles\streams\OutputStream $out
+     * It returns the output stream that was passed.
+     *
+     * @param   mixed  $resource
+     * @param   \stubbles\streams\OutputStream  $out
+     * @return  \stubbles\streams\OutputStream
      */
     public abstract function serialize($resource, OutputStream $out);
 

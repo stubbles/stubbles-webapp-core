@@ -8,11 +8,11 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\response\mimetypes;
-use stubbles\img\Image;
+use stubbles\img\Image as ImageSource;
 use stubbles\lang\ResourceLoader;
 use stubbles\streams\OutputStream;
 /**
- * Serializes resources to application/json.
+ * Can handle images.
  *
  * @since  6.0.0
  */
@@ -31,7 +31,7 @@ class Image extends MimeType
      */
     public function __construct(ResourceLoader $resourceLoader)
     {
-        $this->resourceLoader   = $resourceLoader;
+        $this->resourceLoader = $resourceLoader;
     }
 
     /**
@@ -47,21 +47,26 @@ class Image extends MimeType
     /**
      * serializes resource to output stream
      *
-     * @param  mixed  $resource
-     * @param  \stubbles\streams\OutputStream $out
+     * @param   mixed  $resource
+     * @param   \stubbles\streams\OutputStream  $out
+     * @return  \stubbles\streams\OutputStream
      */
     public function serialize($resource, OutputStream $out)
     {
-        if (!($resource instanceof Image)) {
+        if (!($resource instanceof ImageSource)) {
             $image = $this->resourceLoader->load(
                     $resource,
-                    function($fileName) { return Image::load($fileName); }
+                    function($fileName) { return ImageSource::load($fileName); }
             );
         } else {
             $image = $resource;
         }
 
-        // can't write image to stream (imagepng() for example outputs directly to browser)
+        // must use output buffering
+        // PHP's image*() functions write directly to stdout
+        ob_start([$out, 'write']);
         $image->display();
+        ob_end_clean();
+        return $out;
     }
 }

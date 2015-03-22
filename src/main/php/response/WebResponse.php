@@ -10,9 +10,11 @@
 namespace stubbles\webapp\response;
 use stubbles\peer\http\Http;
 use stubbles\peer\http\HttpVersion;
-use stubbles\streams\OutputStream;
 use stubbles\webapp\request\Request;
 use stubbles\webapp\response\mimetypes\MimeType;
+use stubbles\streams\OutputStream;
+use stubbles\streams\StandardOutputStream;
+
 /**
  * Base class for a response to a request.
  *
@@ -373,20 +375,29 @@ class WebResponse implements Response
     /**
      * sends response
      *
-     * @param   \stubbles\streams\OutputStream  $out  optional
-     * @return  \stubbles\webapp\response\Response
+     * In case no output stream is passed it will create a
+     * stubbles\streams\StandardOutputStream where the response body will be
+     * written to.
+     * The output stream is returned. In case no output stream was passed and
+     * the request doesn't allow a response body or no resource for the response
+     * body was set the return value is null because no standard stream will be
+     * created in such a case.
+     *
+     * @param   \stubbles\streams\OutputStream  $out  optional  where to write response body to
+     * @return  \stubbles\streams\OutputStream
      */
     public function send(OutputStream $out = null)
     {
         $this->sendHead();
         if ($this->requestAllowsBody() && null != $this->resource) {
+            $out = (null === $out ? new StandardOutputStream() : $out);
             $this->mimeType->serialize(
                     $this->resource,
-                    (null === $out ? new StandardOutputStream() : $out)
+                    $out
             );
         }
 
-        return $this;
+        return $out;
     }
 
     /**

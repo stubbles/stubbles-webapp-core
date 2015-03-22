@@ -44,7 +44,17 @@ interface SendableResponse
     /**
      * sends response
      *
-     * @param  \stubbles\streams\OutputStream  $out  optional
+
+     * In case no output stream is passed it will create a
+     * stubbles\streams\StandardOutputStream where the response body will be
+     * written to.
+     * The output stream is returned. In case no output stream was passed and
+     * the request doesn't allow a response body or no resource for the response
+     * body was set the return value is null because no standard stream will be
+     * created in such a case.
+     *
+     * @param   \stubbles\streams\OutputStream  $out  optional  where to write response body to
+     * @return  \stubbles\streams\OutputStream
      */
     public function send(OutputStream $out = null);
 }

@@ -172,10 +172,10 @@ class MatchingRouteTest extends \PHPUnit_Framework_TestCase
     /**
      * helper method for the test
      *
-     * @param  WebRequest  $request
-     * @param  Response    $response
+     * @param  \stubbles\webapp\request\Request    $request
+     * @param  \stubbles\webapp\response\Response  $response
      */
-    public function theCallable(WebRequest $request, Response $response, UriPath $uriPath)
+    public function theCallable(Request $request, Response $response, UriPath $uriPath)
     {
         $response->setStatusCode(418)
                  ->write('Hello ' . $uriPath->readArgument('name')->asString());

@@ -38,7 +38,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        SupportedMimeTypes::removeDefaultFormatter('application/foo');
+        SupportedMimeTypes::removeDefaultMimeTypeClass('application/foo');
         $this->routing   = new Routing(
                 $this->getMockBuilder('stubbles\ioc\Injector')
                         ->disableOriginalConstructor()
@@ -52,7 +52,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
      */
     public function tearDown()
     {
-        SupportedMimeTypes::removeDefaultFormatter('application/foo');
+        SupportedMimeTypes::removeDefaultMimeTypeClass('application/foo');
     }
 
     /**
@@ -429,7 +429,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
      * @expectedException  InvalidArgumentException
      * @since  5.0.0
      */
-    public function addMimeTypeWithoutFormatterWhenNoDefaultFormatterIsKnownThrowsInvalidArgumentException()
+    public function addMimeTypeWithoutClassWhenNoDefaultClassIsKnownThrowsInvalidArgumentException()
     {
         $this->routing->supportsMimeType('application/foo');
     }
@@ -456,16 +456,16 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
      * @since 5.0.0
      * @test
      */
-    public function passesGlobalFormatterToSupportedMimeTypesOfSelectedRoute()
+    public function passesGlobalClassToSupportedMimeTypesOfSelectedRoute()
     {
         $this->routing->onGet('/hello', function() {})
                       ->supportsMimeType('application/json');
-        $this->routing->supportsMimeType('application/foo', 'example\SpecialFormatter');
+        $this->routing->supportsMimeType('application/foo', 'example\Special');
         $this->assertEquals(
-                'example\SpecialFormatter',
+                'example\Special',
                 $this->routing->findRoute($this->calledUri)
                               ->supportedMimeTypes()
-                              ->formatterFor('application/foo')
+                              ->classFor('application/foo')
         );
     }
 
@@ -474,9 +474,9 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
      * @test
      * @group  issue_72
      */
-    public function doesNotEnableMimeTypeForDefaultFormatterWhenRouteDoesNotSupportMimeType()
+    public function doesNotEnableMimeTypeForDefaultClassWhenRouteDoesNotSupportMimeType()
     {
-        $this->routing->setDefaultFormatter('application/foo', 'example\SpecialFormatter');
+        $this->routing->setDefaultMimeTypeClass('application/foo', 'example\Special');
         $this->routing->onGet('/hello', function() {});
         $this->assertNotContains(
                 'application/foo',
@@ -491,9 +491,9 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
      * @test
      * @group  issue_72
      */
-    public function passesDefaultFormatterToSupportedMimeTypesOfSelectedRouteWhenRouteSupportsMimeType()
+    public function passesDefaultClassToSupportedMimeTypesOfSelectedRouteWhenRouteSupportsMimeType()
     {
-        $this->routing->setDefaultFormatter('application/foo', 'example\SpecialFormatter');
+        $this->routing->setDefaultMimeTypeClass('application/foo', 'example\Special');
         $this->routing->onGet('/hello', function() {})->supportsMimeType('application/foo');
         $this->assertContains(
                 'application/foo',

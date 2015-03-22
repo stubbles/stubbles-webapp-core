@@ -64,14 +64,18 @@ class ResponseNegotiator
 
         }
 
-        if (!$supportedMimeTypes->provideFormatter($mimeType)) {
+        if (!$supportedMimeTypes->provideClass($mimeType)) {
             $response = new WebResponse($request, new mimetypes\PassThrough());
-            return $response->internalServerError('No formatter defined for negotiated content type ' . $mimeType);
+            return $response->internalServerError(
+                    'No formatter defined for negotiated content type ' . $mimeType
+            );
         }
 
         return new WebResponse(
                 $request,
-                $this->injector->getInstance($supportedMimeTypes->formatterFor($mimeType))->specialise($mimeType)
+                $this->injector->getInstance(
+                        $supportedMimeTypes->classFor($mimeType)
+                )->specialise($mimeType)
         );
     }
 }

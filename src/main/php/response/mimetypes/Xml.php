@@ -9,6 +9,7 @@
  */
 namespace stubbles\webapp\response\mimetypes;
 use stubbles\streams\OutputStream;
+use stubbles\xml\serializer\XmlSerializerFacade;
 /**
  * Serializes resources to anything/xml.
  *
@@ -47,11 +48,13 @@ class Xml extends MimeType
     /**
      * serializes resource to output stream
      *
-     * @param  mixed  $resource
-     * @param  \stubbles\streams\OutputStream $out
+     * @param   mixed  $resource
+     * @param   \stubbles\streams\OutputStream  $out
+     * @return  \stubbles\streams\OutputStream
      */
     public function serialize($resource, OutputStream $out)
     {
         $out->write($this->xmlSerializerFacade->serializeToXml($resource));
+        return $out;
     }
 }

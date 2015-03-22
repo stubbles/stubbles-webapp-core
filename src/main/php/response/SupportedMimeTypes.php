@@ -29,41 +29,46 @@ class SupportedMimeTypes
      */
     private $disableContentNegotation = false;
     /**
-     * map of formatters for mime types
+     * map of mime types classes
      *
      * @type  array
      */
-    private static $supported = ['application/json'    => 'stubbles\webapp\response\format\JsonFormatter',
-                                 'text/json'           => 'stubbles\webapp\response\format\JsonFormatter',
-                                 'text/html'           => 'stubbles\webapp\response\format\HtmlFormatter',
-                                 'text/plain'          => 'stubbles\webapp\response\format\PlainTextFormatter'
+    private static $supported = ['application/json' => 'stubbles\webapp\response\mimetypes\Json',
+                                 'text/json'        => 'stubbles\webapp\response\mimetypes\Json',
+                                 'text/plain'       => 'stubbles\webapp\response\mimetypes\TextPlain'
                                  ];
     /**
-     * map of xml formatters for mime types
-     *
-     * @var  array
-     */
-    private static $xmlFormatter = ['text/xml'            => 'stubbles\webapp\response\format\XmlFormatter',
-                                    'application/xml'     => 'stubbles\webapp\response\format\XmlFormatter',
-                                    'application/rss+xml' => 'stubbles\webapp\response\format\XmlFormatter'
-                                   ];
-    /**
-     * map of formatters for mime types
+     * map of xml mime type classes
      *
      * @type  array
      */
-    private $formatter = [];
+    private static $xml = ['text/xml'            => 'stubbles\webapp\response\mimetypes\Xml',
+                           'application/xml'     => 'stubbles\webapp\response\mimetypes\Xml',
+                           'application/rss+xml' => 'stubbles\webapp\response\mimetypes\Xml'
+                          ];
+    /**
+     * map of image mime type classes
+     *
+     * @type  array
+     */
+    private static $image = ['image/png' => 'stubbles\webapp\response\mimetypes\Image'];
+    /**
+     * map of available mime types classes
+     *
+     * @type  array
+     */
+    private $mimeTypeClasses = [];
 
     /**
      * constructor
      *
      * @param  string[]  $mimeTypes
-     * @param  array     $formatter
+     * @param  array     $mimeTypeClasses
      */
-    public function __construct(array $mimeTypes, array $formatter = [])
+    public function __construct(array $mimeTypes, array $mimeTypeClasses = [])
     {
-        $this->mimeTypes = $mimeTypes;
-        $this->formatter = array_merge(self::$supported, $formatter);
+        $this->mimeTypes       = $mimeTypes;
+        $this->mimeTypeClasses = array_merge(self::$supported, $mimeTypeClasses);
     }
 
     /**
@@ -109,24 +114,24 @@ class SupportedMimeTypes
     }
 
     /**
-     * sets a default formatter for given mime type
+     * sets a default mime type class for given mime type
      *
      * @param  string  $mimeType
-     * @param  string  $formatterClass
+     * @param  string  $mimeTypeClass
      * @since  5.1.1
      */
-    public static function setDefaultFormatter($mimeType, $formatterClass)
+    public static function setDefaultMimeTypeClass($mimeType, $mimeTypeClass)
     {
-        self::$supported[$mimeType] = $formatterClass;
+        self::$supported[$mimeType] = $mimeTypeClass;
     }
 
     /**
-     * removes default formatter for given mime type
+     * removes default mime type class for given mime type
      *
      * @param  string  $mimeType
      * @since  5.1.1
      */
-    public static function removeDefaultFormatter($mimeType)
+    public static function removeDefaultMimeTypeClass($mimeType)
     {
         if (isset(self::$supported[$mimeType])) {
             unset(self::$supported[$mimeType]);
@@ -134,19 +139,23 @@ class SupportedMimeTypes
     }
 
     /**
-     * checks if a default formatter is known for the given mime type
+     * checks if a default class is known for the given mime type
      *
      * @param   string  $mimeType
      * @return  bool
      * @since   5.0.0
      */
-    public static function provideDefaultFormatterFor($mimeType)
+    public static function provideDefaultClassFor($mimeType)
     {
         if (in_array($mimeType, array_keys(self::$supported))) {
             return true;
         }
 
-        if (class_exists('stubbles\xml\serializer\XmlSerializerFacade') && in_array($mimeType, array_keys(self::$xmlFormatter))) {
+        if (class_exists('stubbles\xml\serializer\XmlSerializerFacade') && in_array($mimeType, array_keys(self::$xml))) {
+            return true;
+        }
+
+        if (class_exists('stubbles\img\Image') && in_array($mimeType, array_keys(self::$image))) {
             return true;
         }
 
@@ -154,43 +163,47 @@ class SupportedMimeTypes
     }
 
     /**
-     * checks if a special formatter was defined for given mime type
+     * checks if a special class was defined for given mime type
      *
      * @param   string  $mimeType
      * @return  bool
      * @since   3.2.0
      */
-    public function provideFormatter($mimeType)
+    public function provideClass($mimeType)
     {
-        if (isset($this->formatter[$mimeType])) {
+        if (isset($this->mimeTypeClasses[$mimeType])) {
             return true;
         }
 
         if (class_exists('stubbles\xml\serializer\XmlSerializerFacade')) {
-            return isset(self::$xmlFormatter[$mimeType]);
+            return isset(self::$xml[$mimeType]);
+        }
+
+        if (class_exists('stubbles\img\Image')) {
+            return isset(self::$image[$mimeType]);
         }
 
         return false;
     }
 
     /**
-     * returns special formatter was defined for given mime type or null if none defined
+     * returns special class which was defined for given mime type or null if none defined
      *
      * @param   string  $mimeType
      * @return  string
      * @since   3.2.0
      */
-    public function formatterFor($mimeType)
+    public function classFor($mimeType)
     {
-        if ($this->provideFormatter($mimeType)) {
-            return $this->formatter[$mimeType];
+        if ($this->provideClass($mimeType)) {
+            return $this->mimeTypeClasses[$mimeType];
         }
 
         return null;
     }
 
     /**
-     * returns supported mime types as list of strings
+     * returns list of supported mime types
      *
      * @return  string[]
      */

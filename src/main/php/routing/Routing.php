@@ -48,11 +48,11 @@ class Routing implements RoutingConfigurator
      */
     private $mimeTypes                = [];
     /**
-     * map of additional formatters for this route
+     * map of additional mime tyoe classes for this route
      *
      * @type  string[]
      */
-    private $formatter                = [];
+    private $mimeTypeClasses                = [];
     /**
      * whether content negotation is disabled or not
      *
@@ -198,9 +198,10 @@ class Routing implements RoutingConfigurator
             return $this->handleNonMethodMatchingRoute($uriRequest);
         }
 
-        return new MissingRoute($uriRequest,
-                                $this->collectInterceptors($uriRequest),
-                                SupportedMimeTypes::createWithDisabledContentNegotation()
+        return new MissingRoute(
+                $uriRequest,
+                $this->collectInterceptors($uriRequest),
+                SupportedMimeTypes::createWithDisabledContentNegotation()
         );
     }
 
@@ -233,11 +234,12 @@ class Routing implements RoutingConfigurator
      */
     private function createMatchingRoute(UriRequest $calledUri, Route $routeConfig)
     {
-        return new MatchingRoute($calledUri,
-                                 $this->collectInterceptors($calledUri, $routeConfig),
-                                 $this->getSupportedMimeTypes($routeConfig),
-                                 $routeConfig,
-                                 $this->injector
+        return new MatchingRoute(
+                $calledUri,
+                $this->collectInterceptors($calledUri, $routeConfig),
+                $this->getSupportedMimeTypes($routeConfig),
+                $routeConfig,
+                $this->injector
         );
     }
 
@@ -250,18 +252,20 @@ class Routing implements RoutingConfigurator
     private function handleNonMethodMatchingRoute(UriRequest $calledUri)
     {
         if ($calledUri->methodEquals('OPTIONS')) {
-            return new OptionsRoute($calledUri,
-                                    $this->collectInterceptors($calledUri),
-                                    SupportedMimeTypes::createWithDisabledContentNegotation(),
-                                    $this->getAllowedMethods($calledUri)
+            return new OptionsRoute(
+                    $calledUri,
+                    $this->collectInterceptors($calledUri),
+                    SupportedMimeTypes::createWithDisabledContentNegotation(),
+                    $this->getAllowedMethods($calledUri)
 
             );
         }
 
-        return new MethodNotAllowedRoute($calledUri,
-                                         $this->collectInterceptors($calledUri),
-                                         SupportedMimeTypes::createWithDisabledContentNegotation(),
-                                         $this->getAllowedMethods($calledUri)
+        return new MethodNotAllowedRoute(
+                $calledUri,
+                $this->collectInterceptors($calledUri),
+                SupportedMimeTypes::createWithDisabledContentNegotation(),
+                $this->getAllowedMethods($calledUri)
         );
     }
 
@@ -293,7 +297,10 @@ class Routing implements RoutingConfigurator
         $allowedMethods = [];
         foreach ($this->routes as $route) {
             if ($route->matchesPath($calledUri)) {
-                $allowedMethods = array_merge($allowedMethods, $route->allowedRequestMethods());
+                $allowedMethods = array_merge(
+                        $allowedMethods,
+                        $route->allowedRequestMethods()
+                );
             }
         }
 
@@ -488,9 +495,10 @@ class Routing implements RoutingConfigurator
      */
     private function collectInterceptors(UriRequest $calledUri, Route $routeConfig = null)
     {
-        return new Interceptors($this->injector,
-                                $this->getPreInterceptors($calledUri, $routeConfig),
-                                $this->getPostInterceptors($calledUri, $routeConfig)
+        return new Interceptors(
+                $this->injector,
+                $this->getPreInterceptors($calledUri, $routeConfig),
+                $this->getPostInterceptors($calledUri, $routeConfig)
         );
     }
 
@@ -548,16 +556,16 @@ class Routing implements RoutingConfigurator
     }
 
     /**
-     * sets a default formatter for given mime type, but doesn't mark the mime type as supported for all routes
+     * sets a default mime type class for given mime type, but doesn't mark the mime type as supported for all routes
      *
-     * @param   string  $mimeType
-     * @param   string  $formatterClass
+     * @param   string  $mimeType       mime type to set default class for
+     * @param   string  $mimeTypeClass  class to use
      * @return  \stubbles\webapp\routing\Routing
      * @since   5.1.0
      */
-    public function setDefaultFormatter($mimeType, $formatterClass)
+    public function setDefaultMimeTypeClass($mimeType, $mimeTypeClass)
     {
-        SupportedMimeTypes::setDefaultFormatter($mimeType, $formatterClass);
+        SupportedMimeTypes::setDefaultMimeTypeClass($mimeType, $mimeTypeClass);
         return $this;
     }
 
@@ -565,19 +573,19 @@ class Routing implements RoutingConfigurator
      * add a supported mime type
      *
      * @param   string  $mimeType
-     * @param   string  $formatterClass  optional  special formatter class to be used for given mime type on this route
+     * @param   string  $mimeTypeClass  optional  special class to be used for given mime type on this route
      * @return  \stubbles\webapp\routing\Routing
      * @throws  \InvalidArgumentException
      */
-    public function supportsMimeType($mimeType, $formatterClass = null)
+    public function supportsMimeType($mimeType, $mimeTypeClass = null)
     {
-        if (null === $formatterClass && !SupportedMimeTypes::provideDefaultFormatterFor($mimeType)) {
-            throw new \InvalidArgumentException('No default formatter known for mime type ' . $mimeType . ', please provide a formatter');
+        if (null === $mimeTypeClass && !SupportedMimeTypes::provideDefaultClassFor($mimeType)) {
+            throw new \InvalidArgumentException('No default class known for mime type ' . $mimeType . ', please provide a class');
         }
 
         $this->mimeTypes[] = $mimeType;
-        if (null !== $formatterClass) {
-            $this->formatter[$mimeType] = $formatterClass;
+        if (null !== $mimeTypeClass) {
+            $this->mimeTypeClasses[$mimeType] = $mimeTypeClass;
         }
 
         return $this;
@@ -608,9 +616,12 @@ class Routing implements RoutingConfigurator
         }
 
         if (null !== $routeConfig) {
-            return $routeConfig->supportedMimeTypes($this->mimeTypes, $this->formatter);
+            return $routeConfig->supportedMimeTypes(
+                    $this->mimeTypes,
+                    $this->mimeTypeClasses
+            );
         }
 
-        return new SupportedMimeTypes($this->mimeTypes, $this->formatter);
+        return new SupportedMimeTypes($this->mimeTypes, $this->mimeTypeClasses);
     }
 }
