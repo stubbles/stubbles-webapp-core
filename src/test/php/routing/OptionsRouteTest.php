@@ -14,7 +14,7 @@ use stubbles\webapp\response\SupportedMimeTypes;
  * Tests for stubbles\webapp\routing\OptionsRoute.
  *
  * @since  2.2.0
- * @group  core
+ * @group  routing
  */
 class OptionsRouteTest extends \PHPUnit_Framework_TestCase
 {

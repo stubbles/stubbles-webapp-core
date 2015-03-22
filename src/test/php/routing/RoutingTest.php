@@ -16,7 +16,7 @@ use stubbles\webapp\response\SupportedMimeTypes;
  * Tests for stubbles\webapp\routing\Routing.
  *
  * @since  2.0.0
- * @group  core
+ * @group  routing
  */
 class RoutingTest extends \PHPUnit_Framework_TestCase
 {

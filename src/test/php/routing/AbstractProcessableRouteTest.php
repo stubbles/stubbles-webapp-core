@@ -61,7 +61,7 @@ class TestAbstractProcessableRoute extends AbstractProcessableRoute
  * Tests for stubbles\webapp\routing\AbstractProcessableRoute.
  *
  * @since  2.0.0
- * @group  core
+ * @group  routing
  */
 class AbstractProcessableRouteTest extends \PHPUnit_Framework_TestCase
 {

@@ -85,7 +85,7 @@ class RoleAwareAnnotatedProcessor implements Processor
  * Tests for stubbles\webapp\routing\Route.
  *
  * @since  2.0.0
- * @group  core
+ * @group  routing
  */
 class RouteTest extends \PHPUnit_Framework_TestCase
 {

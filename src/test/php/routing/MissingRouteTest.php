@@ -14,7 +14,7 @@ use stubbles\webapp\response\SupportedMimeTypes;
  * Tests for stubbles\webapp\routing\MissingRoute.
  *
  * @since  2.2.0
- * @group  core
+ * @group  routing
  */
 class MissingRouteTest extends \PHPUnit_Framework_TestCase
 {
