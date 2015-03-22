@@ -7,11 +7,11 @@
  *
  * @package  stubbles\webapp
  */
-namespace stubbles\webapp\ioc;
+namespace stubbles\webapp\auth;
 use stubbles\ioc\Binder;
 use stubbles\lang;
 /**
- * Tests for stubbles\webapp\ioc\Auth.
+ * Tests for stubbles\webapp\auth\Auth.
  *
  * @since  5.0.0
  */

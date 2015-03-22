@@ -7,7 +7,7 @@
  *
  * @package  stubbles\webapp
  */
-namespace stubbles\webapp\ioc;
+namespace stubbles\webapp\auth;
 use stubbles\ioc\Binder;
 use stubbles\ioc\module\BindingModule;
 /**
