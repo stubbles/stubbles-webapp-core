@@ -10,18 +10,18 @@
 namespace stubbles\webapp\request;
 use stubbles\peer\http\HttpVersion;
 /**
- * Tests for stubbles\webapp\request\BaseWebRequest.
+ * Tests for stubbles\webapp\request\WebRequest.
  *
  * @group  web
  */
-class BaseWebRequestTest extends \PHPUnit_Framework_TestCase
+class WebRequestTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * instance to test
      *
-     * @type  \stubbles\webapp\request\BaseWebRequest
+     * @type  \stubbles\webapp\request\WebRequest
      */
-    private $baseWebRequest;
+    private $webRequest;
     /**
      * backup of globals $_GET, $_POST, $_SERVER, $COOKIE
      *
@@ -40,7 +40,7 @@ class BaseWebRequestTest extends \PHPUnit_Framework_TestCase
                                  'COOKIE' => $_COOKIE
 
                                 ];
-        $this->baseWebRequest = $this->createBaseWebRequest(
+        $this->webRequest = $this->createBaseWebRequest(
                 ['foo' => 'bar', 'roland' => 'TB-303'],
                 ['HTTP_ACCEPT' => 'text/html', 'REQUEST_METHOD' => 'post'],
                 ['chocolateChip' => 'Omnomnomnom', 'master' => 'servant']
@@ -68,12 +68,7 @@ class BaseWebRequestTest extends \PHPUnit_Framework_TestCase
      */
     private function createBaseWebRequest(array $params = [], array $headers = [], array $cookies = [])
     {
-        return new WebRequest(
-                $params,
-                $headers,
-                $cookies,
-                function() { return 'request body'; }
-        );
+        return new WebRequest($params, $headers, $cookies);
     }
 
     /**
@@ -140,21 +135,9 @@ class BaseWebRequestTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function usesPhpInputForCookieFromRawSource()
-    {
-        $this->fillGlobals();
-        $this->assertEquals(
-                '',
-                WebRequest::fromRawSource()->readBody()->unsecure()
-        );
-    }
-
-    /**
-     * @test
-     */
     public function returnsRequestMethodInUpperCase()
     {
-        $this->assertEquals('POST', $this->baseWebRequest->method());
+        $this->assertEquals('POST', $this->webRequest->method());
     }
 
     /**
@@ -428,7 +411,7 @@ class BaseWebRequestTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals(
                 ['foo', 'roland'],
-                $this->baseWebRequest->paramNames()
+                $this->webRequest->paramNames()
         );
     }
 
@@ -439,7 +422,7 @@ class BaseWebRequestTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertInstanceOf(
                 'stubbles\input\errors\ParamErrors',
-                $this->baseWebRequest->paramErrors()
+                $this->webRequest->paramErrors()
         );
     }
 
@@ -448,7 +431,7 @@ class BaseWebRequestTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsFalseOnCheckForNonExistingParam()
     {
-        $this->assertFalse($this->baseWebRequest->hasParam('baz'));
+        $this->assertFalse($this->webRequest->hasParam('baz'));
     }
 
     /**
@@ -456,7 +439,7 @@ class BaseWebRequestTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsTrueOnCheckForExistingParam()
     {
-        $this->assertTrue($this->baseWebRequest->hasParam('foo'));
+        $this->assertTrue($this->webRequest->hasParam('foo'));
     }
 
     /**
@@ -466,7 +449,7 @@ class BaseWebRequestTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertInstanceOf(
                 'stubbles\input\ValueValidator',
-                $this->baseWebRequest->validateParam('foo')
+                $this->webRequest->validateParam('foo')
         );
     }
 
@@ -477,7 +460,7 @@ class BaseWebRequestTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertInstanceOf(
                 'stubbles\input\ValueValidator',
-                $this->baseWebRequest->validateParam('baz')
+                $this->webRequest->validateParam('baz')
         );
     }
 
@@ -488,7 +471,7 @@ class BaseWebRequestTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertInstanceOf(
                 'stubbles\input\ValueReader',
-                $this->baseWebRequest->readParam('foo')
+                $this->webRequest->readParam('foo')
         );
     }
 
@@ -499,7 +482,7 @@ class BaseWebRequestTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertInstanceOf(
                 'stubbles\input\ValueReader',
-                $this->baseWebRequest->readParam('baz')
+                $this->webRequest->readParam('baz')
         );
     }
 
@@ -510,7 +493,7 @@ class BaseWebRequestTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals(
                 ['HTTP_ACCEPT', 'REQUEST_METHOD'],
-                $this->baseWebRequest->headerNames()
+                $this->webRequest->headerNames()
         );
     }
 
@@ -521,7 +504,7 @@ class BaseWebRequestTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertInstanceOf(
                 'stubbles\input\errors\ParamErrors',
-                $this->baseWebRequest->headerErrors()
+                $this->webRequest->headerErrors()
         );
     }
 
@@ -530,7 +513,7 @@ class BaseWebRequestTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsFalseOnCheckForNonExistingHeader()
     {
-        $this->assertFalse($this->baseWebRequest->hasHeader('baz'));
+        $this->assertFalse($this->webRequest->hasHeader('baz'));
     }
 
     /**
@@ -538,7 +521,7 @@ class BaseWebRequestTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsTrueOnCheckForExistingHeader()
     {
-        $this->assertTrue($this->baseWebRequest->hasHeader('HTTP_ACCEPT'));
+        $this->assertTrue($this->webRequest->hasHeader('HTTP_ACCEPT'));
     }
 
     /**
@@ -586,7 +569,7 @@ class BaseWebRequestTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertInstanceOf(
                 'stubbles\input\ValueValidator',
-                $this->baseWebRequest->validateHeader('HTTP_ACCEPT')
+                $this->webRequest->validateHeader('HTTP_ACCEPT')
         );
     }
 
@@ -597,7 +580,7 @@ class BaseWebRequestTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertInstanceOf(
                 'stubbles\input\ValueValidator',
-                $this->baseWebRequest->validateHeader('baz')
+                $this->webRequest->validateHeader('baz')
         );
     }
 
@@ -655,7 +638,7 @@ class BaseWebRequestTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertInstanceOf(
                 'stubbles\input\ValueReader',
-                $this->baseWebRequest->readHeader('HTTP_ACCEPT')
+                $this->webRequest->readHeader('HTTP_ACCEPT')
         );
     }
 
@@ -666,7 +649,7 @@ class BaseWebRequestTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertInstanceOf(
                 'stubbles\input\ValueReader',
-                $this->baseWebRequest->readHeader('baz')
+                $this->webRequest->readHeader('baz')
         );
     }
 
@@ -723,7 +706,7 @@ class BaseWebRequestTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals(
                 ['chocolateChip', 'master'],
-                $this->baseWebRequest->cookieNames()
+                $this->webRequest->cookieNames()
         );
     }
 
@@ -734,7 +717,7 @@ class BaseWebRequestTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertInstanceOf(
                 'stubbles\input\errors\ParamErrors',
-                $this->baseWebRequest->cookieErrors()
+                $this->webRequest->cookieErrors()
         );
     }
 
@@ -743,7 +726,7 @@ class BaseWebRequestTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsFalseOnCheckForNonExistingCookie()
     {
-        $this->assertFalse($this->baseWebRequest->hasCookie('baz'));
+        $this->assertFalse($this->webRequest->hasCookie('baz'));
     }
 
     /**
@@ -751,7 +734,7 @@ class BaseWebRequestTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsTrueOnCheckForExistingCookie()
     {
-        $this->assertTrue($this->baseWebRequest->hasCookie('chocolateChip'));
+        $this->assertTrue($this->webRequest->hasCookie('chocolateChip'));
     }
 
     /**
@@ -761,7 +744,7 @@ class BaseWebRequestTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertInstanceOf(
                 'stubbles\input\ValueValidator',
-                $this->baseWebRequest->validateCookie('chocolateChip')
+                $this->webRequest->validateCookie('chocolateChip')
         );
     }
 
@@ -772,7 +755,7 @@ class BaseWebRequestTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertInstanceOf(
                 'stubbles\input\ValueValidator',
-                $this->baseWebRequest->validateCookie('baz')
+                $this->webRequest->validateCookie('baz')
         );
     }
 
@@ -783,7 +766,7 @@ class BaseWebRequestTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertInstanceOf(
                 'stubbles\input\ValueReader',
-                $this->baseWebRequest->readCookie('chocolateChip')
+                $this->webRequest->readCookie('chocolateChip')
         );
     }
 
@@ -794,51 +777,7 @@ class BaseWebRequestTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertInstanceOf(
                 'stubbles\input\ValueReader',
-                $this->baseWebRequest->readCookie('baz')
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function returnsBodyErrors()
-    {
-        $this->assertInstanceOf(
-                'stubbles\input\errors\ParamErrors',
-                $this->baseWebRequest->bodyErrors()
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function validateBodyReturnsValueValidator()
-    {
-        $this->assertInstanceOf(
-                'stubbles\input\ValueValidator',
-                $this->baseWebRequest->validateBody()
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function readBodyReturnsValueReader()
-    {
-        $this->assertInstanceOf(
-                'stubbles\input\ValueReader',
-                $this->baseWebRequest->readBody()
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function bodyIsParsedFromGivenBodyParserFunction()
-    {
-        $this->assertEquals(
-                'request body',
-                $this->baseWebRequest->readBody()->unsecure()
+                $this->webRequest->readCookie('baz')
         );
     }
 
@@ -1015,7 +954,7 @@ class BaseWebRequestTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @since  5.3.0
+     * @since  6.0.0
      */
     public function bodyReturnsInputStream()
     {

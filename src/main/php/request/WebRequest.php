@@ -9,11 +9,9 @@
  */
 namespace stubbles\webapp\request;
 use stubbles\input\AbstractRequest;
-use stubbles\input\Param;
 use stubbles\input\Params;
 use stubbles\input\ValueReader;
 use stubbles\input\ValueValidator;
-use stubbles\input\errors\ParamErrors;
 use stubbles\peer\IpAddress;
 use stubbles\peer\http\Http;
 use stubbles\peer\http\HttpUri;
@@ -42,18 +40,6 @@ class WebRequest extends AbstractRequest implements Request
      * @type  \stubbles\input\Params
      */
     private $cookies;
-    /**
-     * list of body errors
-     *
-     * @type  \stubbles\input\errors\ParamErrors
-     */
-    private $bodyErrors;
-    /**
-     * reader for request body
-     *
-     * @type  \Closure
-     */
-    private $bodyParser;
 
     /**
      * constructor
@@ -61,14 +47,12 @@ class WebRequest extends AbstractRequest implements Request
      * @param  array     $params      map of request parameters
      * @param  array     $headers     map of request headers
      * @param  array     $cookies     map of request cookies
-     * @param  \Closure  $bodyParser  function which returns the request body
      */
-    public function __construct(array $params, array $headers, array $cookies, \Closure $bodyParser)
+    public function __construct(array $params, array $headers, array $cookies)
     {
         parent::__construct(new Params($params));
-        $this->headers    = new Params($headers);
-        $this->cookies    = new Params($cookies);
-        $this->bodyParser = $bodyParser;
+        $this->headers = new Params($headers);
+        $this->cookies = new Params($cookies);
     }
 
     /**
@@ -86,15 +70,7 @@ class WebRequest extends AbstractRequest implements Request
             $params = $_GET;
         }
 
-        return new self(
-                $params,
-                $_SERVER,
-                $_COOKIE,
-                function()
-                {
-                    return file_get_contents('php://input');
-                }
-        );
+        return new self($params, $_SERVER, $_COOKIE);
     }
 
     /**
@@ -437,65 +413,12 @@ class WebRequest extends AbstractRequest implements Request
     }
 
     /**
-     * returns error collection for request body
-     *
-     * @return  \stubbles\input\errors\ParamErrors
-     * @since   1.3.0
-     */
-    public function bodyErrors()
-    {
-        if (null === $this->bodyErrors) {
-            $this->bodyErrors = new ParamErrors();
-        }
-
-        return $this->bodyErrors;
-    }
-
-    /**
-     * checks whether a request body is valid or not
-     *
-     * @return  \stubbles\input\ValueValidator
-     * @since   1.3.0
-     * @deprecated  since 5.3.0, use body() instead, will be removed with 6.0.0
-     */
-    public function validateBody()
-    {
-        return new ValueValidator($this->parseBody());
-    }
-
-    /**
-     * returns request body for filtering or validation
-     *
-     * @return  \stubbles\input\ValueReader
-     * @since   1.3.0
-     * @deprecated  since 5.3.0, use body() instead, will be removed with 6.0.0
-     */
-    public function readBody()
-    {
-        return new ValueReader(
-                $this->bodyErrors(),
-                $this->parseBody()
-        );
-    }
-
-    /**
-     * read request body
-     *
-     * @return  \stubbles\input\Param
-     */
-    private function parseBody()
-    {
-        $bodyParser = $this->bodyParser;
-        return new Param('body', $bodyParser());
-    }
-
-    /**
      * returns an input stream which allows to read the request body
      *
      * It returns the data raw and unsanitized, any filtering and validating
      * must be done by the caller.
      *
-     * @since   5.3.0
+     * @since   6.0.0
      * @return  \stubbles\streams\InputStream
      */
     public function body()
