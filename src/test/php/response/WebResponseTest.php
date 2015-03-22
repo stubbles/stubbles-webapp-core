@@ -55,7 +55,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
         return $this->getMock(
                 'stubbles\webapp\response\WebResponse',
                 ['header', 'sendBody'],
-                [$mockRequest, $sapi]
+                [$mockRequest, new mimetypes\PassThrough(), $sapi]
         );
     }
 
@@ -80,36 +80,6 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
                  ->method('header')
                  ->with($this->equalTo('HTTP/1.0 200 OK'));
         $response->send();
-    }
-
-    /**
-     * @test
-     */
-    public function clearingResponseDoesNotResetVersion()
-    {
-        $response = $this->createResponse(HttpVersion::HTTP_1_0);
-        $response->expects($this->at(0))
-                 ->method('header')
-                 ->with($this->equalTo('HTTP/1.0 200 OK'));
-        $response->clear()
-                 ->send();
-    }
-
-    /**
-     * @test
-     */
-    public function clearResetsStatusCodeTo200()
-    {
-        $this->response->expects($this->at(0))
-                       ->method('header')
-                       ->with($this->equalTo('HTTP/1.1 404 Not Found'));
-        $this->response->expects($this->at(2))
-                       ->method('header')
-                       ->with($this->equalTo('HTTP/1.1 200 OK'));
-        $this->response->setStatusCode(404)
-                       ->send()
-                       ->clear()
-                       ->send();
     }
 
     /**
@@ -211,18 +181,6 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @test
-     */
-    public function clearingResponseRemovesAllHeadersExceptRequestId()
-    {
-        $this->response->expects($this->exactly(2))
-                       ->method('header');
-        $this->response->addHeader('name', 'value1')
-                       ->clear()
-                       ->send();
-    }
-
-    /**
      * creates mock cookie
      *
      * @param   string  $value  optional  cookie value
@@ -315,18 +273,6 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function clearingResponseRemovesAllCookies()
-    {
-        $this->response->expects($this->exactly(2))
-                       ->method('header');
-        $this->response->addCookie(Cookie::create('foo', 'bar'))
-                       ->clear()
-                       ->send();
-    }
-
-    /**
-     * @test
-     */
     public function hasNoBodyByDefault()
     {
         $this->response->expects($this->never())
@@ -339,10 +285,11 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function doesNotSendContentLengthHeaderWhenNoBodyPresent()
     {
-        $this->response->expects($this->exactly(2))
+        $this->response->expects($this->exactly(3))
                        ->method('header')
                        ->withConsecutive(
                                $this->equalTo(HttpVersion::HTTP_1_1 . ' 200 OK'),
+                               $this->equalTo('Content-type: text/html'),
                                $this->equalTo('X-Request-Id: example-request-id-foo')
                          );
         $this->response->send();
@@ -351,25 +298,12 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function sendsContentLengthHeaderWhenBodyIsPresent()
-    {
-        $this->response->expects($this->at(1))
-                       ->method('header')
-                       ->with($this->equalTo('Content-Length: 3'));
-        $this->response->write('foo')
-                       ->send();
-    }
-
-    /**
-     * @test
-     */
     public function bodyIsSend()
     {
-        $this->response->expects($this->once())
-                       ->method('sendBody')
-                       ->with($this->equalTo('foo'));
+        $memoryOutputStream = new \stubbles\streams\memory\MemoryOutputStream();
         $this->response->write('foo')
-                       ->send();
+                       ->send($memoryOutputStream);
+        $this->assertEquals('foo', $memoryOutputStream->buffer());
     }
 
     /**
@@ -379,47 +313,10 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     public function bodyIsNotSendWhenRequestMethodIsHead()
     {
         $this->response = $this->createResponse(HttpVersion::HTTP_1_1, Http::HEAD);
-        $this->response->expects($this->never())
-                       ->method('sendBody');
+        $mockOutputStream = $this->getMock('stubbles\streams\OutputStream');
+        $mockOutputStream->expects($this->never())->method('write');
         $this->response->write('foo')
-                       ->send();
-    }
-
-    /**
-     * @test
-     * @since  4.0.0
-     */
-    public function contentLengthHeaderIsSendWhenRequestMethodIsHeadAndBodyIsSet()
-    {
-        $this->response = $this->createResponse(HttpVersion::HTTP_1_1, Http::HEAD);
-        $this->response->expects($this->at(1))
-                       ->method('header')
-                       ->with($this->equalTo('Content-Length: 3'));
-        $this->response->write('foo')
-                       ->send();
-    }
-
-    /**
-     * @test
-     */
-    public function sendBodyDoesNotAddContentLengthHeaderWhenAlreadyInHeadersSetBefore()
-    {
-        // used wrong content length on purpose to distinguish between
-        // internally added header which has correct length
-        $this->response->addHeader('Content-Length', 10);
-        $this->response->expects($this->at(0))
-                       ->method('header')
-                       ->with($this->equalTo('HTTP/1.1 200 OK'));
-        $this->response->expects($this->at(1))
-                       ->method('header')
-                       ->with($this->equalTo('Content-Length: 10'));
-        $this->response->expects($this->exactly(3))
-                       ->method('header');
-        $this->response->expects($this->once())
-                       ->method('sendBody')
-                       ->with($this->equalTo('foo'));
-        $this->response->write('foo')
-                       ->send();
+                       ->send($mockOutputStream);
     }
 
     /**
@@ -427,21 +324,9 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function doesNotWriteBodyIfNoBodyPresent()
     {
-        $this->response->expects($this->never())
-                       ->method('sendBody');
+        $mockOutputStream = $this->getMock('stubbles\streams\OutputStream');
+        $mockOutputStream->expects($this->never())->method('write');
         $this->response->send();
-    }
-
-    /**
-     * @test
-     */
-    public function clearingResponseRemovesBody()
-    {
-        $this->response->expects($this->never())
-                       ->method('sendBody');
-        $this->response->write('foo')
-                       ->clear()
-                       ->send();
     }
 
     /**
@@ -452,16 +337,6 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     public function isNotFixedByDefault()
     {
         $this->assertFalse($this->response->isFixed());
-    }
-
-    /**
-     * @test
-     * @since  3.1.0
-     * @group  final_response
-     */
-    public function clearUnfixesResponse()
-    {
-        $this->assertFalse($this->response->forbidden()->clear()->isFixed());
     }
 
     /**
@@ -626,11 +501,10 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
         $this->response->expects($this->at(0))
                        ->method('header')
                        ->with($this->equalTo('HTTP/1.1 500 Internal Server Error'));
-        $this->response->expects($this->once())
-                       ->method('sendBody')
-                       ->with($this->equalTo('ups!'));
+        $memoryOutputStream = new \stubbles\streams\memory\MemoryOutputStream();
         $this->response->internalServerError('ups!')
-                       ->send();
+                       ->send($memoryOutputStream);
+        $this->assertEquals('ups!', $memoryOutputStream->buffer());
     }
 
     /**
@@ -652,11 +526,13 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
         $this->response->expects($this->at(0))
                        ->method('header')
                        ->with($this->equalTo('HTTP/1.1 505 HTTP Version Not Supported'));
-        $this->response->expects($this->once())
-                       ->method('sendBody')
-                       ->with($this->equalTo('Unsupported HTTP protocol version, expected HTTP/1.0 or HTTP/1.1'));
+        $memoryOutputStream = new \stubbles\streams\memory\MemoryOutputStream();
         $this->response->httpVersionNotSupported()
-                       ->send();
+                       ->send($memoryOutputStream);
+        $this->assertEquals(
+                'Unsupported HTTP protocol version, expected HTTP/1.0 or HTTP/1.1',
+                $memoryOutputStream->buffer()
+        );
     }
 
     /**
@@ -706,7 +582,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function requestIdAddedByDefault()
     {
-        $this->response->expects($this->at(1))
+        $this->response->expects($this->at(2))
                        ->method('header')
                        ->with($this->equalTo('X-Request-ID: example-request-id-foo'));
         $this->response->send();
@@ -720,23 +596,9 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     public function requestIdCanBeChanged()
     {
         $this->response->headers()->requestId('another-request-id-bar');
-        $this->response->expects($this->at(1))
+        $this->response->expects($this->at(2))
                        ->method('header')
                        ->with($this->equalTo('X-Request-ID: another-request-id-bar'));
         $this->response->send();
-    }
-
-    /**
-     * @test
-     * @group  issue_74
-     * @since  5.1.0
-     */
-    public function requestIdIsResetToOriginalValueOnClear()
-    {
-        $this->response->headers()->requestId('another-request-id-bar');
-        $this->response->expects($this->at(1))
-                       ->method('header')
-                       ->with($this->equalTo('X-Request-ID: example-request-id-foo'));
-        $this->response->clear()->send();
     }
 }

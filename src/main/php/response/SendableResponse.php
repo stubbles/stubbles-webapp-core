@@ -8,6 +8,7 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\response;
+use stubbles\streams\OutputStream;
 /**
  * Final response after webapp has processed the request.
  *
@@ -41,14 +42,9 @@ interface SendableResponse
     public function containsCookie($name, $value = null);
 
     /**
-     * returns response body
-     *
-     * @return  string
-     */
-    public function body();
-
-    /**
      * sends response
+     *
+     * @param  \stubbles\streams\OutputStream  $out  optional
      */
-    public function send();
+    public function send(OutputStream $out = null);
 }

@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "d3ea88db059eaf48b413ffc5b9088b8e",
+    "hash": "763ec28ee5ae00558aea719aac5abf17",
     "packages": [
         {
             "name": "stubbles/core",
@@ -1083,6 +1083,46 @@
             "description": "Simplified handling of dates and datespans.",
             "homepage": "http://stubbles.net/",
             "time": "2015-03-06 16:21:58"
+        },
+        {
+            "name": "stubbles/image",
+            "version": "v4.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/stubbles/stubbles-image.git",
+                "reference": "946329835a3a5d6e2eb071a0a5029425545a7bda"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/stubbles/stubbles-image/zipball/946329835a3a5d6e2eb071a0a5029425545a7bda",
+                "reference": "946329835a3a5d6e2eb071a0a5029425545a7bda",
+                "shasum": ""
+            },
+            "require": {
+                "ext-gd": "*",
+                "php": ">=5.4.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.2"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "4.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "stubbles\\img\\": "src/main/php"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "description": "Simple image handling support.",
+            "homepage": "http://stubbles.net/",
+            "time": "2014-09-01 15:01:01"
         },
         {
             "name": "stubbles/webapp-session",

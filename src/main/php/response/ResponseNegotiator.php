@@ -20,12 +20,6 @@ use stubbles\webapp\request\Request;
 class ResponseNegotiator
 {
     /**
-     * base response implementation
-     *
-     * @type  \stubbles\webapp\response\Response
-     */
-    private $response;
-    /**
      * injector instance
      *
      * @type  \stubbles\ioc\Injector
@@ -35,14 +29,11 @@ class ResponseNegotiator
     /**
      * constructor
      *
-     * @param  \stubbles\webapp\response\Response  $response  base response implementation
      * @param  \stubbles\ioc\Injector              $injector  injector to create required formatter with
      * @Inject
      */
-    public function __construct(Response $response,
-                                Injector $injector)
+    public function __construct(Injector $injector)
     {
-        $this->response = $response;
         $this->injector = $injector;
     }
 
@@ -55,12 +46,12 @@ class ResponseNegotiator
      *
      * @param   \stubbles\webapp\request\Request              $request
      * @param   \stubbles\webapp\response\SupportedMimeTypes  $supportedMimeTypes  optional
-     * @return  Response
+     * @return  \stubbles\webapp\response\Response
      */
     public function negotiateMimeType(Request $request, SupportedMimeTypes $supportedMimeTypes = null)
     {
         if (null === $supportedMimeTypes || $supportedMimeTypes->isContentNegotationDisabled()) {
-            return $this->response;
+            return new WebResponse($request, new mimetypes\PassThrough());
         }
 
         $mimeType = $supportedMimeTypes->findMatch($request->readHeader('HTTP_ACCEPT')
@@ -68,17 +59,19 @@ class ResponseNegotiator
                                                            ->withFilter(new AcceptFilter())
                     );
         if (null === $mimeType) {
-            return $this->response->notAcceptable($supportedMimeTypes->asArray());
+            $response = new WebResponse($request, new mimetypes\PassThrough());
+            return $response->notAcceptable($supportedMimeTypes->asArray());
+
         }
 
         if (!$supportedMimeTypes->provideFormatter($mimeType)) {
-            return $this->response->internalServerError('No formatter defined for negotiated content type ' . $mimeType);
+            $response = new WebResponse($request, new mimetypes\PassThrough());
+            return $response->internalServerError('No formatter defined for negotiated content type ' . $mimeType);
         }
 
-        return new FormattingResponse(
-                $this->response,
-                $this->injector->getInstance($supportedMimeTypes->formatterFor($mimeType)),
-                $mimeType
+        return new WebResponse(
+                $request,
+                $this->injector->getInstance($supportedMimeTypes->formatterFor($mimeType))->specialise($mimeType)
         );
     }
 }

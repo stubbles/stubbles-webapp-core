@@ -25,12 +25,6 @@ class ResponseNegotiatorTest extends \PHPUnit_Framework_TestCase
      */
     private $responseNegotiator;
     /**
-     * mocked base response
-     *
-     * @type  \PHPUnit_Framework_MockObject_MockObject
-     */
-    private $mockResponse;
-    /**
      * mocked injector
      *
      * @type  \PHPUnit_Framework_MockObject_MockObject
@@ -48,11 +42,10 @@ class ResponseNegotiatorTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->mockResponse       = $this->getMock('stubbles\webapp\response\Response');
         $this->mockInjector       = $this->getMockBuilder('stubbles\ioc\Injector')
                                          ->disableOriginalConstructor()
                                          ->getMock();
-        $this->responseNegotiator = new ResponseNegotiator($this->mockResponse, $this->mockInjector);
+        $this->responseNegotiator = new ResponseNegotiator($this->mockInjector);
         $this->mockRequest        = $this->getMock('stubbles\webapp\request\Request');
     }
 
@@ -87,9 +80,10 @@ class ResponseNegotiatorTest extends \PHPUnit_Framework_TestCase
      */
     public function doesNotNegotatiateMimeTypeWhenNoSupportedMimeTypesProvided()
     {
-        $this->assertSame(
-                $this->mockResponse,
+        $this->assertInstanceOf(
+                'stubbles\webapp\response\mimetypes\PassThrough',
                 $this->responseNegotiator->negotiateMimeType($this->mockRequest)
+                        ->mimeType()
         );
     }
 
@@ -98,12 +92,12 @@ class ResponseNegotiatorTest extends \PHPUnit_Framework_TestCase
      */
     public function doesNotNegotatiateMimeTypeWhenDisabled()
     {
-        $this->assertSame(
-                $this->mockResponse,
+        $this->assertInstanceOf(
+                'stubbles\webapp\response\mimetypes\PassThrough',
                 $this->responseNegotiator->negotiateMimeType(
                         $this->mockRequest,
                         SupportedMimeTypes::createWithDisabledContentNegotation()
-                )
+                )->mimeType()
         );
     }
 
@@ -113,17 +107,17 @@ class ResponseNegotiatorTest extends \PHPUnit_Framework_TestCase
     public function failedMimeTypeNegotiationForExistingRouteRespondsWithNotAcceptable()
     {
         $this->mockAcceptHeader('text/html');
-        $this->mockResponse->expects($this->once())
-                           ->method('notAcceptable')
-                           ->with($this->equalTo(['application/json', 'application/xml']))
-                           ->will($this->returnSelf());
-        $this->assertSame(
-                $this->mockResponse,
-                $this->responseNegotiator->negotiateMimeType(
-                        $this->mockRequest,
-                        new SupportedMimeTypes(['application/json', 'application/xml'])
-                )
+        $response = $this->responseNegotiator->negotiateMimeType(
+                $this->mockRequest,
+                new SupportedMimeTypes(['application/json', 'application/xml'])
         );
+
+        $this->assertInstanceOf(
+                'stubbles\webapp\response\mimetypes\PassThrough',
+                $response->mimeType()
+        );
+        $this->assertTrue($response->headers()->contain('X-Acceptable'));
+        $this->assertEquals(406, $response->statusCode());
     }
 
     /**
@@ -132,17 +126,16 @@ class ResponseNegotiatorTest extends \PHPUnit_Framework_TestCase
     public function missingFormatterForNegotiatedMimeTypeRespondsWithInternalServerError()
     {
         $this->mockAcceptHeader('application/foo');
-        $this->mockResponse->expects($this->once())
-                           ->method('internalServerError')
-                           ->with($this->equalTo('No formatter defined for negotiated content type application/foo'))
-                           ->will($this->returnSelf());
-        $this->assertSame(
-                $this->mockResponse,
-                $this->responseNegotiator->negotiateMimeType(
-                        $this->mockRequest,
-                        new SupportedMimeTypes(['application/foo', 'application/xml'])
-                )
+        $response = $this->responseNegotiator->negotiateMimeType(
+                $this->mockRequest,
+                new SupportedMimeTypes(['application/foo', 'application/xml'])
         );
+
+        $this->assertInstanceOf(
+                'stubbles\webapp\response\mimetypes\PassThrough',
+                $response->mimeType()
+        );
+        $this->assertEquals(500, $response->statusCode());
     }
 
     /**
@@ -151,20 +144,21 @@ class ResponseNegotiatorTest extends \PHPUnit_Framework_TestCase
      */
     public function createsFormatterForFirstMimeTypeWhenAcceptHeaderEmpty()
     {
+        $mimeType = new mimetypes\Json();
         $this->mockAcceptHeader(null);
         $this->mockInjector->expects($this->once())
                            ->method('getInstance')
                            ->with($this->equalTo('example\SpecialJsonFormatter'))
-                           ->will($this->returnValue($this->getMock('stubbles\webapp\response\format\Formatter')));
-        $this->assertInstanceOf(
-                'stubbles\webapp\response\FormattingResponse',
+                           ->will($this->returnValue($mimeType));
+        $this->assertSame(
+                $mimeType,
                 $this->responseNegotiator->negotiateMimeType(
                         $this->mockRequest,
                         new SupportedMimeTypes(
                                 ['application/json', 'application/xml'],
                                 ['application/json' => 'example\SpecialJsonFormatter']
                         )
-                )
+                )->mimeType()
         );
     }
 }

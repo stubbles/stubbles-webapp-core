@@ -13,7 +13,7 @@ use stubbles\webapp\session\Session as WebAppSession;
 /**
  * Session adapter for webapp session to ioc session.
  *
- * @since  5.3.0
+ * @since  6.0.0
  */
 class SessionAdapter implements IocSession
 {

@@ -11,6 +11,7 @@ namespace stubbles\webapp\ioc;
 use stubbles\ioc\Binder;
 use stubbles\ioc\module\BindingModule;
 use stubbles\webapp\request\WebRequest;
+use stubbles\webapp\response\mimetypes\PassThrough;
 /**
  * Module to configure the binder with instances for request, session and response.
  *
@@ -102,7 +103,7 @@ class IoBindingModule implements BindingModule
     {
         $request       = WebRequest::fromRawSource();
         $responseClass = $this->responseClass;
-        $response      = new $responseClass($request);
+        $response      = new $responseClass($request, new PassThrough());
         $binder->bind('stubbles\webapp\request\Request')
                ->toInstance($request);
         $binder->bind('stubbles\input\Request')
