@@ -91,7 +91,10 @@ abstract class WebApp extends App
 
             $session = $request->attachSession($this->createSession($request));
             if (null !== $session) {
-                $this->injector->setSession($session);
+                $this->injector->setSession(
+                        $session,
+                        'stubbles\webapp\session\Session'
+                );
             }
 
             if ($route->applyPreInterceptors($request, $response)) {
