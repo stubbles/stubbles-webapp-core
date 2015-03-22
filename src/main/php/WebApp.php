@@ -10,7 +10,6 @@
 namespace stubbles\webapp;
 use stubbles\ioc\App;
 use stubbles\ioc\Injector;
-use stubbles\lang\errorhandler\ExceptionLogger;
 use stubbles\peer\MalformedUriException;
 use stubbles\webapp\request\Request;
 use stubbles\webapp\request\WebRequest;
@@ -35,29 +34,18 @@ abstract class WebApp extends App
      * @type  \stubbles\webapp\routing\Routing
      */
     private $routing;
-    /**
-     * logger for logging uncatched exceptions
-     *
-     * @type  \stubbles\lang\errorhandler\ExceptionLogger
-     */
-    private $exceptionLogger;
 
     /**
      * constructor
      *
-     * @param  \stubbles\ioc\Injector                        $injector
-     * @param  \stubbles\webapp\routing\Routing              $routing          routes to logic based on request
-     * @param  \stubbles\lang\errorhandler\ExceptionLogger   $exceptionLogger  logs uncatched exceptions
+     * @param  \stubbles\ioc\Injector            $injector
+     * @param  \stubbles\webapp\routing\Routing  $routing   routes to logic based on request
      * @Inject
      */
-    public function __construct(
-            Injector $injector,
-            Routing $routing,
-            ExceptionLogger $exceptionLogger)
+    public function __construct(Injector $injector, Routing $routing)
     {
-        $this->injector        = $injector;
-        $this->routing         = $routing;
-        $this->exceptionLogger = $exceptionLogger;
+        $this->injector = $injector;
+        $this->routing  = $routing;
     }
 
     /**
@@ -102,7 +90,9 @@ abstract class WebApp extends App
             $response = new WebResponse($request);
             $response->setStatusCode(400);
         } catch (\Exception $e) {
-            $this->exceptionLogger->log($e);
+            $this->injector->getInstance(
+                    'stubbles\lang\errorhandler\ExceptionLogger'
+            )->log($e);
             $response->internalServerError($e->getMessage());
         }
 

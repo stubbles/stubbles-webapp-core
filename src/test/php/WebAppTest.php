@@ -89,12 +89,6 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
      * @type  Routing
      */
     private $routing;
-    /**
-     * mocked exception logger
-     *
-     * @type  \PHPUnit_Framework_MockObject_MockObject
-     */
-    private $mockExceptionLogger;
 
     /**
      * set up test environment
@@ -107,14 +101,7 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
         $this->routing = $this->getMockBuilder('stubbles\webapp\routing\Routing')
                               ->disableOriginalConstructor()
                               ->getMock();
-        $this->mockExceptionLogger = $this->getMockBuilder('stubbles\lang\errorhandler\ExceptionLogger')
-                                          ->disableOriginalConstructor()
-                                          ->getMock();
-        $this->webApp  = new TestWebApp(
-                $this->mockInjector,
-                $this->routing,
-                $this->mockExceptionLogger
-        );
+        $this->webApp  = new TestWebApp($this->mockInjector, $this->routing);
         $_SERVER['REQUEST_METHOD'] = 'GET';
         $_SERVER['REQUEST_URI']    = '/hello';
         $_SERVER['HTTP_HOST']      = 'example.com';
@@ -265,6 +252,22 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @param  \Exception  $expected
+     */
+    private function setUpExceptionLogger(\Exception $expected)
+    {
+        $mockExceptionLogger = $this->getMockBuilder('stubbles\lang\errorhandler\ExceptionLogger')
+                ->disableOriginalConstructor()
+                ->getMock();
+        $mockExceptionLogger->expects($this->once())
+                ->method('log')
+                ->with($this->equalTo($expected));
+        $this->mockInjector->expects($this->once())
+                ->method('getInstance')
+                ->will($this->returnValue($mockExceptionLogger));
+    }
+
+    /**
      * @test
      */
     public function sendsInternalServerErrorIfExceptionThrownFromPreInterceptors()
@@ -281,9 +284,7 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
                   ->method('process');
         $mockRoute->expects($this->never())
                   ->method('applyPostInterceptors');
-        $this->mockExceptionLogger->expects($this->once())
-                                  ->method('log')
-                                  ->with($this->equalTo($exception));
+        $this->setUpExceptionLogger($exception);
         $response = $this->webApp->run();
         $this->assertEquals(500, $response->statusCode());
     }
@@ -326,9 +327,7 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
                   ->will($this->throwException($exception));
         $mockRoute->expects($this->never())
                   ->method('applyPostInterceptors');
-        $this->mockExceptionLogger->expects($this->once())
-                                  ->method('log')
-                                  ->with($this->equalTo($exception));
+        $this->setUpExceptionLogger($exception);
         $response = $this->webApp->run();
         $this->assertEquals(500, $response->statusCode());
     }
@@ -372,9 +371,7 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
         $mockRoute->expects($this->once())
                   ->method('applyPostInterceptors')
                   ->will($this->throwException($exception));
-        $this->mockExceptionLogger->expects($this->once())
-                                  ->method('log')
-                                  ->with($this->equalTo($exception));
+        $this->setUpExceptionLogger($exception);
         $response = $this->webApp->run();
         $this->assertEquals(500, $response->statusCode());
     }
@@ -412,11 +409,7 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
     {
         $_SERVER['REQUEST_URI'] = '/hello';
         $_SERVER['HTTP_HOST']   = '%&$§!&$!§invalid';
-        $webApp  = new TestWebApp(
-                $this->mockInjector,
-                $this->routing,
-                $this->mockExceptionLogger
-        );
+        $webApp  = new TestWebApp($this->mockInjector, $this->routing);
         $this->assertEquals(
                 400,
                 $webApp->run()->statusCode()
