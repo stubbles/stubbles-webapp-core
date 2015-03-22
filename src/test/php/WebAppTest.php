@@ -146,6 +146,7 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
     public function tearDown()
     {
         unset($_SERVER['REQUEST_METHOD']);
+        restore_error_handler();
     }
 
     /**
@@ -222,7 +223,8 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
                   ->will($this->returnValue('https://example.net/admin'));
         $this->mockResponse->expects($this->once())
                            ->method('redirect')
-                           ->with($this->equalTo('https://example.net/admin'));
+                           ->with($this->equalTo('https://example.net/admin'))
+                           ->will($this->returnSelf());
         $this->assertSame($this->mockResponse, $this->webApp->run());
     }
 

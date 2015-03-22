@@ -10,7 +10,7 @@
 namespace stubbles\webapp\ioc;
 use stubbles\ioc\Binder;
 use stubbles\lang\exception\RuntimeException;
-use stubbles\webapp\websession;
+use stubbles\webapp\session;
 /**
  * Tests for stubbles\webapp\ioc\IoBindingModule.
  *
@@ -95,7 +95,7 @@ class IoBindingModuleTest extends \PHPUnit_Framework_TestCase
     public function initializesSessionScopeWhenSessionBound()
     {
         $binder      = new Binder();
-        (new IoBindingModule(websession\noneDurable()))->configure($binder);
+        (new IoBindingModule(function() { return session\noneDurable();}))->configure($binder);
         try {
             $binder->bind('\stdClass')
                    ->to('\stdClass')

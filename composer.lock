@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "763ec28ee5ae00558aea719aac5abf17",
+    "hash": "34a3911ec3553ce2f876ad9dd46c285a",
     "packages": [
         {
             "name": "stubbles/core",
@@ -1123,50 +1123,6 @@
             "description": "Simple image handling support.",
             "homepage": "http://stubbles.net/",
             "time": "2014-09-01 15:01:01"
-        },
-        {
-            "name": "stubbles/webapp-session",
-            "version": "v5.0.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/stubbles/stubbles-webapp-session.git",
-                "reference": "434dd0206a5bd27a597fad341dce3a154a59b495"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/stubbles/stubbles-webapp-session/zipball/434dd0206a5bd27a597fad341dce3a154a59b495",
-                "reference": "434dd0206a5bd27a597fad341dce3a154a59b495",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.4.0"
-            },
-            "require-dev": {
-                "mikey179/vfsstream": "~1.3",
-                "phpunit/phpunit": "~4.2",
-                "stubbles/core": "~5.0"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "5.0.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "stubbles\\webapp\\session\\": "src/main/php"
-                },
-                "files": [
-                    "src/main/php/functions.php"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-3-Clause"
-            ],
-            "description": "Session classes for Stubbles based web applications.",
-            "homepage": "http://stubbles.net/",
-            "time": "2014-10-14 11:10:02"
         },
         {
             "name": "stubbles/xml",

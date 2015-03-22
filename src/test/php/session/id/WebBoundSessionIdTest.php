@@ -7,13 +7,13 @@
  *
  * @package  stubbles\webapp
  */
-namespace stubbles\webapp\websession;
+namespace stubbles\webapp\session\id;
 use stubbles\input\ValueReader;
 /**
- * Tests for stubbles\webapp\websession\WebBoundSessionId.
+ * Tests for stubbles\webapp\session\id\WebBoundSessionId.
  *
  * @since  2.0.0
- * @group  websession
+ * @group  session
  * @group  id
  */
 class WebBoundSessionIdTest extends \PHPUnit_Framework_TestCase
@@ -21,7 +21,7 @@ class WebBoundSessionIdTest extends \PHPUnit_Framework_TestCase
     /**
      * instance to test
      *
-     * @type  \stubbles\webapp\websession\WebBoundSessionId
+     * @type  \stubbles\webapp\session\id\WebBoundSessionId
      */
     private $webBoundSessionId;
     /**
@@ -44,10 +44,11 @@ class WebBoundSessionIdTest extends \PHPUnit_Framework_TestCase
     {
         $this->mockWebRequest    = $this->getMock('stubbles\webapp\request\Request');
         $this->mockResponse      = $this->getMock('stubbles\webapp\response\Response');
-        $this->webBoundSessionId = new WebBoundSessionId($this->mockWebRequest,
-                                                         $this->mockResponse,
-                                                         'foo'
-                                   );
+        $this->webBoundSessionId = new WebBoundSessionId(
+                $this->mockWebRequest,
+                $this->mockResponse,
+                'foo'
+        );
     }
 
     /**
@@ -71,8 +72,9 @@ class WebBoundSessionIdTest extends \PHPUnit_Framework_TestCase
                              ->method('hasCookie')
                              ->with($this->equalTo('foo'))
                              ->will($this->returnValue(false));
-        $this->assertRegExp('/^([a-zA-Z0-9]{32})$/D',
-                            (string) $this->webBoundSessionId
+        $this->assertRegExp(
+                '/^([a-zA-Z0-9]{32})$/D',
+                (string) $this->webBoundSessionId
         );
     }
 
@@ -89,8 +91,9 @@ class WebBoundSessionIdTest extends \PHPUnit_Framework_TestCase
                              ->method('readParam')
                              ->with($this->equalTo('foo'))
                              ->will($this->returnValue(ValueReader::forValue('invalid')));
-        $this->assertRegExp('/^([a-zA-Z0-9]{32})$/D',
-                            (string) $this->webBoundSessionId
+        $this->assertRegExp(
+                '/^([a-zA-Z0-9]{32})$/D',
+                (string) $this->webBoundSessionId
         );
     }
 
@@ -107,8 +110,9 @@ class WebBoundSessionIdTest extends \PHPUnit_Framework_TestCase
                              ->method('readParam')
                              ->with($this->equalTo('foo'))
                              ->will($this->returnValue(ValueReader::forValue('abcdefghij1234567890abcdefghij12')));
-        $this->assertEquals('abcdefghij1234567890abcdefghij12',
-                            (string) $this->webBoundSessionId
+        $this->assertEquals(
+                'abcdefghij1234567890abcdefghij12',
+                (string) $this->webBoundSessionId
         );
     }
 
@@ -129,8 +133,9 @@ class WebBoundSessionIdTest extends \PHPUnit_Framework_TestCase
                              ->method('readCookie')
                              ->with($this->equalTo('foo'))
                              ->will($this->returnValue(ValueReader::forValue('invalid')));
-        $this->assertRegExp('/^([a-zA-Z0-9]{32})$/D',
-                            (string) $this->webBoundSessionId
+        $this->assertRegExp(
+                '/^([a-zA-Z0-9]{32})$/D',
+                (string) $this->webBoundSessionId
         );
     }
 
@@ -151,8 +156,9 @@ class WebBoundSessionIdTest extends \PHPUnit_Framework_TestCase
                              ->method('readCookie')
                              ->with($this->equalTo('foo'))
                              ->will($this->returnValue(ValueReader::forValue('abcdefghij1234567890abcdefghij12')));
-        $this->assertEquals('abcdefghij1234567890abcdefghij12',
-                            (string) $this->webBoundSessionId
+        $this->assertEquals(
+                'abcdefghij1234567890abcdefghij12',
+                (string) $this->webBoundSessionId
         );
     }
 
@@ -162,8 +168,9 @@ class WebBoundSessionIdTest extends \PHPUnit_Framework_TestCase
     public function regenerateChangesSessionId()
     {
         $previous = (string) $this->webBoundSessionId;
-        $this->assertNotEquals($previous,
-                               (string) $this->webBoundSessionId->regenerate()
+        $this->assertNotEquals(
+                $previous,
+                (string) $this->webBoundSessionId->regenerate()
         );
     }
 
@@ -172,8 +179,9 @@ class WebBoundSessionIdTest extends \PHPUnit_Framework_TestCase
      */
     public function regeneratedSessionIdIsValid()
     {
-        $this->assertRegExp('/^([a-zA-Z0-9]{32})$/D',
-                            (string) $this->webBoundSessionId->regenerate()
+        $this->assertRegExp(
+                '/^([a-zA-Z0-9]{32})$/D',
+                (string) $this->webBoundSessionId->regenerate()
         );
     }
 
@@ -195,8 +203,9 @@ class WebBoundSessionIdTest extends \PHPUnit_Framework_TestCase
         $this->mockResponse->expects($this->once())
                            ->method('removeCookie')
                            ->with($this->equalTo('foo'));
-        $this->assertSame($this->webBoundSessionId,
-                          $this->webBoundSessionId->invalidate()
+        $this->assertSame(
+                $this->webBoundSessionId,
+                $this->webBoundSessionId->invalidate()
         );
     }
 }
