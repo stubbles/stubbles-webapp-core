@@ -73,8 +73,8 @@ class AuthorizingRouteTest extends \PHPUnit_Framework_TestCase
                 $this->mockActualRoute,
                 $this->mockInjector
         );
-        $this->mockRequest      = $this->getMock('stubbles\webapp\request\Request');
-        $this->mockResponse     = $this->getMock('stubbles\webapp\response\Response');
+        $this->mockRequest      = $this->getMock('stubbles\webapp\Request');
+        $this->mockResponse     = $this->getMock('stubbles\webapp\Response');
     }
 
     /**

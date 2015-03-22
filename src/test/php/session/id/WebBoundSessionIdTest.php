@@ -42,8 +42,8 @@ class WebBoundSessionIdTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->mockWebRequest    = $this->getMock('stubbles\webapp\request\Request');
-        $this->mockResponse      = $this->getMock('stubbles\webapp\response\Response');
+        $this->mockWebRequest    = $this->getMock('stubbles\webapp\Request');
+        $this->mockResponse      = $this->getMock('stubbles\webapp\Response');
         $this->webBoundSessionId = new WebBoundSessionId(
                 $this->mockWebRequest,
                 $this->mockResponse,

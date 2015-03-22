@@ -61,8 +61,8 @@ class SessionBasedHtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
                                               ->disableOriginalConstructor()
                                               ->getMock();
         $this->mockSession             = $this->getMock('stubbles\webapp\session\Session');
-        $this->mockRequest             = $this->getMock('stubbles\webapp\request\Request');
-        $this->mockResponse            = $this->getMock('stubbles\webapp\response\Response');
+        $this->mockRequest             = $this->getMock('stubbles\webapp\Request');
+        $this->mockResponse            = $this->getMock('stubbles\webapp\Response');
         $this->sessionBasedHtmlFilePassThrough = new SessionBasedHtmlFilePassThrough(
                 vfsStream::url('root'),
                 $this->mockuserAgent,

@@ -8,9 +8,9 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\session\id;
-use stubbles\webapp\request\Request;
+use stubbles\webapp\Request;
+use stubbles\webapp\Response;
 use stubbles\webapp\response\Cookie;
-use stubbles\webapp\response\Response;
 use stubbles\webapp\session\id\SessionId;
 /**
  * Session id which is stored in a cookie.
@@ -28,7 +28,7 @@ class WebBoundSessionId implements SessionId
     /**
      * request instance
      *
-     * @type  \stubbles\webapp\request\Request
+     * @type  \stubbles\webapp\Request
      */
     private $request;
     /**
@@ -53,9 +53,9 @@ class WebBoundSessionId implements SessionId
     /**
      * constructor
      *
-     * @param  \stubbles\webapp\request\Request    $request
-     * @param  \stubbles\webapp\response\Response  $response
-     * @param  string                              $sessionName
+     * @param  \stubbles\webapp\Request   $request
+     * @param  \stubbles\webapp\Response  $response
+     * @param  string                     $sessionName
      */
     public function __construct(Request $request, Response $response, $sessionName)
     {
@@ -125,8 +125,9 @@ class WebBoundSessionId implements SessionId
     public function regenerate()
     {
         $this->id = $this->create();
-        $this->response->addCookie(Cookie::create($this->sessionName, $this->id)
-                                         ->forPath('/')
+        $this->response->addCookie(
+                Cookie::create($this->sessionName, $this->id)
+                        ->forPath('/')
         );
         return $this;
     }

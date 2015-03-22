@@ -167,13 +167,13 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
     public function routeWithoutMethodRestrictionProvidesListOfAllMethodsOnOptionRequest()
     {
         $this->routing->onAll('/hello', function() { });
-        $mockResponse = $this->getMock('stubbles\webapp\response\Response');
+        $mockResponse = $this->getMock('stubbles\webapp\Response');
         $mockResponse->expects($this->at(0))
                      ->method('addHeader')
                      ->with($this->equalTo('Allow'), $this->equalTo('GET, HEAD, POST, PUT, DELETE, OPTIONS'))
                      ->will($this->returnSelf());
         $this->routing->findRoute('http://example.net/hello', 'OPTIONS')
-                      ->process($this->getMock('stubbles\webapp\request\Request'), $mockResponse);
+                      ->process($this->getMock('stubbles\webapp\Request'), $mockResponse);
     }
 
     /**
@@ -459,7 +459,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
      */
     public function passesGlobalClassToSupportedMimeTypesOfSelectedRoute()
     {
-        $mockRequest = $this->getMock('stubbles\webapp\request\Request');
+        $mockRequest = $this->getMock('stubbles\webapp\Request');
         $mockRequest->expects($this->once())
                 ->method('readHeader')
                 ->with($this->equalTo('HTTP_ACCEPT'))
@@ -522,7 +522,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
                 'stubbles\webapp\response\mimetypes\PassThrough',
                 $this->routing->disableContentNegotiation()
                               ->findRoute($this->calledUri)
-                              ->negotiateMimeType($this->getMock('stubbles\webapp\request\Request'))
+                              ->negotiateMimeType($this->getMock('stubbles\webapp\Request'))
         );
     }
 
@@ -538,7 +538,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
                 'stubbles\webapp\response\mimetypes\PassThrough',
                 $this->routing->disableContentNegotiation()
                               ->findRoute($this->calledUri)
-                              ->negotiateMimeType($this->getMock('stubbles\webapp\request\Request'))
+                              ->negotiateMimeType($this->getMock('stubbles\webapp\Request'))
         );
     }
 

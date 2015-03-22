@@ -32,8 +32,8 @@ namespace stubbles\webapp {
 
 }
 namespace stubbles\webapp\session {
-    use stubbles\webapp\request\Request;
-    use stubbles\webapp\response\Response;
+    use stubbles\webapp\Request;
+    use stubbles\webapp\Response;
     use stubbles\webapp\session\NullSession;
     use stubbles\webapp\session\WebSession;
     use stubbles\webapp\session\id\NoneDurableSessionId;
@@ -90,7 +90,9 @@ namespace stubbles\webapp\session {
      * The resulting session will keep the session id between requests, but not
      * any value that is stored within the session.
      *
-     * @param   string  $sessionCookieName  name of cookie to store session id in
+     * @param   \stubbles\webapp\Request   $request
+     * @param   \stubbles\webapp\Response  $response
+     * @param   string                     $sessionCookieName  name of cookie to store session id in
      * @return  \stubbles\webapp\session\NullSession
      * @since   4.0.0
      */

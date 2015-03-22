@@ -9,10 +9,10 @@
  */
 namespace stubbles\webapp\routing;
 use stubbles\ioc\Injector;
+use stubbles\webapp\Request;
+use stubbles\webapp\Response;
 use stubbles\webapp\UriRequest;
 use stubbles\webapp\interceptor\Interceptors;
-use stubbles\webapp\request\Request;
-use stubbles\webapp\response\Response;
 /**
  * Processable route which denotes a 405 Method Not Allowed route.
  *
@@ -63,8 +63,8 @@ class MethodNotAllowedRoute extends AbstractProcessableRoute
     /**
      * creates processor instance
      *
-     * @param   \stubbles\webapp\request\Request    $request   current request
-     * @param   \stubbles\webapp\response\Response  $response  response to send
+     * @param   \stubbles\webapp\Request   $request   current request
+     * @param   \stubbles\webapp\Response  $response  response to send
      * @return  bool
      */
     public function process(Request $request, Response $response)

@@ -7,7 +7,7 @@
  *
  * @package  stubbles\webapp
  */
-namespace stubbles\webapp\request;
+namespace stubbles\webapp;
 use stubbles\webapp\session\Session;
 /**
  * Interface for web applications requests.

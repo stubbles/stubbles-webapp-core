@@ -3,7 +3,8 @@
 
  ### BC breaks
 
-   * changed request interface from `stubbles\input\web\WebRequest` to `stubbles\webapp\request\Request`
+   * changed request interface from `stubbles\input\web\WebRequest` to `stubbles\webapp\Request`
+   * renamed `stubbles\webapp\response\Response` to `stubbles\webapp\Response`
    * both request and response are not available via injection any more
    * session instance must now be created in `stubbles\webapp\Webapp::createSession()` instead of passing a session creator closure to io bindings
    * moved `stubbles\webapp\ioc\Auth` to `stubbles\webapp\auth\Auth`

@@ -8,10 +8,10 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\routing;
+use stubbles\webapp\Request;
+use stubbles\webapp\Response;
 use stubbles\webapp\UriPath;
 use stubbles\webapp\UriRequest;
-use stubbles\webapp\request\Request;
-use stubbles\webapp\response\Response;
 /**
  * Tests for stubbles\webapp\routing\MatchingRoute.
  *
@@ -44,8 +44,8 @@ class MatchingRouteTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->mockRequest  = $this->getMock('stubbles\webapp\request\Request');
-        $this->mockResponse = $this->getMock('stubbles\webapp\response\Response');
+        $this->mockRequest  = $this->getMock('stubbles\webapp\Request');
+        $this->mockResponse = $this->getMock('stubbles\webapp\Response');
         $this->mockInjector = $this->getMockBuilder('stubbles\ioc\Injector')
                                    ->disableOriginalConstructor()
                                    ->getMock();
@@ -172,8 +172,8 @@ class MatchingRouteTest extends \PHPUnit_Framework_TestCase
     /**
      * helper method for the test
      *
-     * @param  \stubbles\webapp\request\Request    $request
-     * @param  \stubbles\webapp\response\Response  $response
+     * @param  \stubbles\webapp\Request   $request
+     * @param  \stubbles\webapp\Response  $response
      */
     public function theCallable(Request $request, Response $response, UriPath $uriPath)
     {
@@ -201,7 +201,7 @@ class MatchingRouteTest extends \PHPUnit_Framework_TestCase
     /**
      * helper method for the test
      *
-     * @param   \stubbles\webapp\request\Request   $request
+     * @param   \stubbles\webapp\Request   $request
      * @param   \stubbles\webapp\respone\Response  $response
      * @throws  \Exception
      */

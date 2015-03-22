@@ -16,6 +16,7 @@ use stubbles\peer\IpAddress;
 use stubbles\peer\http\Http;
 use stubbles\peer\http\HttpUri;
 use stubbles\peer\http\HttpVersion;
+use stubbles\webapp\Request;
 use stubbles\streams\StandardInputStream;
 use stubbles\webapp\session\Session;
 /**
@@ -66,7 +67,7 @@ class WebRequest extends AbstractRequest implements Request
      * creates an instance from raw data, meaning $_GET/$_POST, $_SERVER and $_COOKIE
      *
      * @api
-     * @return  \stubbles\webapp\request\Request
+     * @return  \stubbles\webapp\Request
      */
     public static function fromRawSource()
     {

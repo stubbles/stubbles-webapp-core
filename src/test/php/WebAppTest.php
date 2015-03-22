@@ -10,8 +10,6 @@
 namespace stubbles\webapp;
 use stubbles\ioc\Binder;
 use stubbles\lang\reflect;
-use stubbles\webapp\request\Request;
-use stubbles\webapp\response\Response;
 use stubbles\webapp\response\mimetypes\PassThrough;
 /**
  * Helper class for the test.
@@ -43,8 +41,8 @@ class TestWebApp extends WebApp
     /**
      * creates a session instance based on current request
      *
-     * @param   \stubbles\webapp\request\Request    $request
-     * @param   \stubbles\webapp\response\Response  $response
+     * @param   \stubbles\webapp\Request   $request
+     * @param   \stubbles\webapp\Response  $response
      * @return  \stubbles\webapp\session\Session
      * @since   6.0.0
      */

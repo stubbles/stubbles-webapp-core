@@ -8,7 +8,7 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\auth;
-use stubbles\webapp\request\Request;
+use stubbles\webapp\Request;
 /**
  * An authentication provider delivers user information for the given request.
  *
@@ -23,7 +23,7 @@ interface AuthenticationProvider
      * In case it can not find a user because it stumbles about an error it can
      * not resolve it should throw an stubbles\webapp\auth\AuthProviderException.
      *
-     * @param   \stubbles\webapp\request\Request  $request
+     * @param   \stubbles\webapp\Request  $request
      * @return  \stubbles\webapp\auth\User
      * @throws  \stubbles\webapp\auth\AuthProviderException
      */
@@ -34,7 +34,7 @@ interface AuthenticationProvider
      *
      * The method is called when the authenticate() method returns <null>.
      *
-     * @param   \stubbles\webapp\request\Request  $request
+     * @param   \stubbles\webapp\Request  $request
      * @return  string|\stubbles\peer\http\HttpUri
      */
     public function loginUri(Request $request);

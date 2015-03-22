@@ -8,9 +8,9 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\auth\token;
+use stubbles\webapp\Request;
 use stubbles\webapp\auth\Token;
 use stubbles\webapp\auth\User;
-use stubbles\webapp\request\Request;
 /**
  * A token store holds tokens of users.
  *
@@ -24,7 +24,7 @@ interface TokenStore
     /**
      * store token for given user
      *
-     * @param  \stubbles\webapp\request\Request  $request  request the token was issued with
+     * @param  \stubbles\webapp\Request  $request  request the token was issued with
      * @param  \stubbles\webapp\auth\Token       $token    actual token
      * @param  \stubbles\webapp\auth\User        $user     user the the token is for
      */
@@ -33,7 +33,7 @@ interface TokenStore
     /**
      * returns the user for the given token if it is valid
      *
-     * @param   \stubbles\webapp\request\Request  $request  request the token was provided with
+     * @param   \stubbles\webapp\Request  $request  request the token was provided with
      * @param   \stubbles\webapp\auth\Token       $token    actual token
      * @return  \stubbles\webapp\auth\User
      */

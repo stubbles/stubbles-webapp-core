@@ -9,9 +9,9 @@
  */
 namespace stubbles\webapp\processor;
 use stubbles\webapp\Processor;
+use stubbles\webapp\Request;
+use stubbles\webapp\Response;
 use stubbles\webapp\UriPath;
-use stubbles\webapp\request\Request;
-use stubbles\webapp\response\Response;
 /**
  * Processor to pass through hole HTML pages.
  *
@@ -41,9 +41,9 @@ class HtmlFilePassThrough implements Processor
     /**
      * processes the request
      *
-     * @param  \stubbles\webapp\request\Request    $request   current request
-     * @param  \stubbles\webapp\response\Response  $response  response to send
-     * @param  \stubbles\webapp\UriPath            $uriPath   information about called uri path
+     * @param  \stubbles\webapp\Request   $request   current request
+     * @param  \stubbles\webapp\Response  $response  response to send
+     * @param  \stubbles\webapp\UriPath   $uriPath   information about called uri path
      */
     public function process(Request $request, Response $response, UriPath $uriPath)
     {

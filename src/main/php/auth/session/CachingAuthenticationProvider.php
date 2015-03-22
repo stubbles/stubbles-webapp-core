@@ -8,9 +8,9 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\auth\session;
+use stubbles\webapp\Request;
 use stubbles\webapp\auth\AuthenticationProvider;
 use stubbles\webapp\auth\User;
-use stubbles\webapp\request\Request;
 use stubbles\webapp\session\Session;
 /**
  * Authentication provider which caches the user within the session.
@@ -49,7 +49,7 @@ class CachingAuthenticationProvider implements AuthenticationProvider
     /**
      * authenticates that the given request is valid
      *
-     * @param   \stubbles\webapp\request\Request  $request
+     * @param   \stubbles\webapp\Request  $request
      * @return  \stubbles\webapp\auth\User
      */
     public function authenticate(Request $request)
@@ -70,7 +70,7 @@ class CachingAuthenticationProvider implements AuthenticationProvider
     /**
      * returns login uri
      *
-     * @param   \stubbles\webapp\request\Request  $request
+     * @param   \stubbles\webapp\Request  $request
      * @return  string|\stubbles\peer\http\HttpUri
      */
     public function loginUri(Request $request)

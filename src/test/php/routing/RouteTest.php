@@ -9,11 +9,11 @@
  */
 namespace stubbles\webapp\routing;
 use stubbles\webapp\Processor;
+use stubbles\webapp\Request;
+use stubbles\webapp\Response;
 use stubbles\webapp\UriPath;
 use stubbles\webapp\UriRequest;
 use stubbles\webapp\auth\Roles;
-use stubbles\webapp\request\Request;
-use stubbles\webapp\response\Response;
 /**
  * Class with annotations for tests.
  *
@@ -28,9 +28,9 @@ class AnnotatedProcessor implements Processor
     /**
      * processes the request
      *
-     * @param  \stubbles\webapp\request\Request   $request   current request
-     * @param  \stubbles\webapp\respone\Response  $response  response to send
-     * @param  \stubbles\webapp\UriPath           $uriPath   information about called uri path
+     * @param  \stubbles\webapp\Request   $request   current request
+     * @param  \stubbles\webapp\Response  $response  response to send
+     * @param  \stubbles\webapp\UriPath   $uriPath   information about called uri path
      */
     public function process(Request $request, Response $response, UriPath $uriPath)
     {
@@ -52,7 +52,7 @@ class OtherAnnotatedProcessor implements Processor
     /**
      * processes the request
      *
-     * @param  \stubbles\webapp\request\Request   $request   current request
+     * @param  \stubbles\webapp\Request   $request   current request
      * @param  \stubbles\webapp\respone\Response  $response  response to send
      * @param  \stubbles\webapp\UriPath           $uriPath   information about called uri path
      */
@@ -72,7 +72,7 @@ class RoleAwareAnnotatedProcessor implements Processor
     /**
      * processes the request
      *
-     * @param  \stubbles\webapp\request\Request   $request   current request
+     * @param  \stubbles\webapp\Request   $request   current request
      * @param  \stubbles\webapp\respone\Response  $response  response to send
      * @param  \stubbles\webapp\UriPath           $uriPath   information about called uri path
      */

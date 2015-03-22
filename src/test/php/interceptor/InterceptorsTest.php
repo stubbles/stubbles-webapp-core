@@ -8,8 +8,8 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\interceptor;
-use stubbles\webapp\request\Request;
-use stubbles\webapp\response\Response;
+use stubbles\webapp\Request;
+use stubbles\webapp\Response;
 /**
  * Tests for stubbles\webapp\interceptor\Interceptors.
  *
@@ -42,8 +42,8 @@ class InterceptorsTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->mockRequest  = $this->getMock('stubbles\webapp\request\Request');
-        $this->mockResponse = $this->getMock('stubbles\webapp\response\Response');
+        $this->mockRequest  = $this->getMock('stubbles\webapp\Request');
+        $this->mockResponse = $this->getMock('stubbles\webapp\Response');
         $this->mockInjector = $this->getMockBuilder('stubbles\ioc\Injector')
                                    ->disableOriginalConstructor()
                                    ->getMock();
@@ -64,8 +64,8 @@ class InterceptorsTest extends \PHPUnit_Framework_TestCase
     /**
      * a callback
      *
-     * @param  \stubbles\webapp\request\Request    $request
-     * @param  \stubbles\webapp\response\Response  $response
+     * @param  \stubbles\webapp\Request   $request
+     * @param  \stubbles\webapp\Response  $response
      */
     public function callableMethod(Request $request, Response $response)
     {

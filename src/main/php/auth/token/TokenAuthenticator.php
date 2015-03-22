@@ -8,9 +8,9 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\auth\token;
+use stubbles\webapp\Request;
 use stubbles\webapp\auth\AuthenticationProvider;
 use stubbles\webapp\auth\InternalAuthProviderException;
-use stubbles\webapp\request\Request;
 /**
  * Supports token handling for intranet users.
  *
@@ -60,7 +60,7 @@ class TokenAuthenticator implements AuthenticationProvider
     /**
      * authenticates that the given request is valid
      *
-     * @param   \stubbles\webapp\request\Request  $request
+     * @param   \stubbles\webapp\Request  $request
      * @return  \stubbles\webapp\auth\User
      * @throws  \stubbles\webapp\auth\InternalAuthProviderException
      */
@@ -87,7 +87,7 @@ class TokenAuthenticator implements AuthenticationProvider
     /**
      * performs login when token not found or invalid
      *
-     * @param   \stubbles\webapp\request\Request $request
+     * @param   \stubbles\webapp\Request $request
      * @return  \stubbles\webapp\auth\User
      * @throws  \stubbles\webapp\auth\InternalAuthProviderException
      */
@@ -110,7 +110,7 @@ class TokenAuthenticator implements AuthenticationProvider
     /**
      * reads token from authorization header
      *
-     * @param   \stubbles\webapp\request\Request  $request  current request
+     * @param   \stubbles\webapp\Request  $request  current request
      * @return  \stubbles\webapp\auth\Token
      */
     private function readToken(Request $request)
@@ -125,7 +125,7 @@ class TokenAuthenticator implements AuthenticationProvider
     /**
      * returns login uri
      *
-     * @param   \stubbles\webapp\request\Request  $request
+     * @param   \stubbles\webapp\Request  $request
      * @return  string|\stubbles\peer\http\HttpUri
      */
     public function loginUri(Request $request)

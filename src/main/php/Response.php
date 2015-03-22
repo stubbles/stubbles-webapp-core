@@ -7,7 +7,9 @@
  *
  * @package  stubbles\webapp
  */
-namespace stubbles\webapp\response;
+namespace stubbles\webapp;
+use stubbles\webapp\response\Cookie;
+use stubbles\webapp\response\SendableResponse;
 /**
  * Interface for a response to a request.
  *
@@ -34,7 +36,7 @@ interface Response extends SendableResponse
      *
      * @param   int     $statusCode
      * @param   string  $reasonPhrase  optional
-     * @return  \stubbles\webapp\response\Response
+     * @return  \stubbles\webapp\Response
      */
     public function setStatusCode($statusCode, $reasonPhrase = null);
 
@@ -51,7 +53,7 @@ interface Response extends SendableResponse
      *
      * @param   string  $name   the name of the header
      * @param   string  $value  the value of the header
-     * @return  \stubbles\webapp\response\Response
+     * @return  \stubbles\webapp\Response
      */
     public function addHeader($name, $value);
 
@@ -67,7 +69,7 @@ interface Response extends SendableResponse
      * add a cookie to the response
      *
      * @param   \stubbles\webapp\response\Cookie  $cookie  the cookie to set
-     * @return  \stubbles\webapp\response\Response
+     * @return  \stubbles\webapp\Response
      */
     public function addCookie(Cookie $cookie);
 
@@ -75,7 +77,7 @@ interface Response extends SendableResponse
      * removes cookie with given name
      *
      * @param   string  $name
-     * @return  \stubbles\webapp\response\Response
+     * @return  \stubbles\webapp\Response
      * @since   2.0.0
      */
     public function removeCookie($name);
@@ -84,7 +86,7 @@ interface Response extends SendableResponse
      * write body into the response
      *
      * @param   string  $body
-     * @return  \stubbles\webapp\response\Response
+     * @return  \stubbles\webapp\Response
      */
     public function write($body);
 
@@ -111,7 +113,7 @@ interface Response extends SendableResponse
      *
      * @param   string|\stubbles\peer\http\HttpUri  $uri         http uri to redirect to
      * @param   int                                 $statusCode  HTTP status code to redirect with (301, 302, ...)
-     * @return  \stubbles\webapp\response\Response
+     * @return  \stubbles\webapp\Response
      * @since   1.3.0
      */
     public function redirect($uri, $statusCode = 302);
@@ -119,7 +121,7 @@ interface Response extends SendableResponse
     /**
      * creates a 403 Forbidden message
      *
-     * @return  \stubbles\webapp\response\Response
+     * @return  \stubbles\webapp\Response
      * @since   2.0.0
      */
     public function forbidden();
@@ -127,7 +129,7 @@ interface Response extends SendableResponse
     /**
      * creates a 404 Not Found message into
      *
-     * @return  \stubbles\webapp\response\Response
+     * @return  \stubbles\webapp\Response
      * @since   2.0.0
      */
     public function notFound();
@@ -137,7 +139,7 @@ interface Response extends SendableResponse
      *
      * @param   string    $requestMethod
      * @param   string[]  $allowedMethods
-     * @return  \stubbles\webapp\response\Response
+     * @return  \stubbles\webapp\Response
      * @since   2.0.0
      */
     public function methodNotAllowed($requestMethod, array $allowedMethods);
@@ -146,7 +148,7 @@ interface Response extends SendableResponse
      * creates a 406 Not Acceptable message
      *
      * @param   string[]  $supportedMimeTypes  list of supported mime types
-     * @return  \stubbles\webapp\response\Response
+     * @return  \stubbles\webapp\Response
      * @since   2.0.0
      */
     public function notAcceptable(array $supportedMimeTypes = []);
@@ -155,7 +157,7 @@ interface Response extends SendableResponse
      * creates a 500 Internal Server Error message
      *
      * @param   string  $errorMessage
-     * @return  \stubbles\webapp\response\Response
+     * @return  \stubbles\webapp\Response
      * @since   2.0.0
      */
     public function internalServerError($errorMessage);
@@ -163,7 +165,7 @@ interface Response extends SendableResponse
     /**
      * creates a 505 HTTP Version Not Supported message
      *
-     * @return  \stubbles\webapp\response\Response
+     * @return  \stubbles\webapp\Response
      * @since   2.0.0
      */
     public function httpVersionNotSupported();

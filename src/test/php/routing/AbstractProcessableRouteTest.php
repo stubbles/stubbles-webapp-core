@@ -9,10 +9,10 @@
  */
 namespace stubbles\webapp\routing;
 use stubbles\input\ValueReader;
+use stubbles\webapp\Request;
+use stubbles\webapp\Response;
 use stubbles\webapp\UriRequest;
 use stubbles\webapp\auth\AuthHandler;
-use stubbles\webapp\request\Request;
-use stubbles\webapp\response\Response;
 use stubbles\webapp\response\mimetypes\Json;
 /**
  * Helper class for the test.
@@ -52,8 +52,8 @@ class TestAbstractProcessableRoute extends AbstractProcessableRoute
     /**
      * creates processor instance
      *
-     * @param   \stubbles\webapp\request\Request    $request    current request
-     * @param   \stubbles\webapp\response\Response  $response   response to send
+     * @param   \stubbles\webapp\Request   $request    current request
+     * @param   \stubbles\webapp\Response  $response   response to send
      * @return  bool
      */
     public function process(Request $request, Response $response) {}
@@ -92,8 +92,8 @@ class AbstractProcessableRouteTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->mockRequest  = $this->getMock('stubbles\webapp\request\Request');
-        $this->mockResponse = $this->getMock('stubbles\webapp\response\Response');
+        $this->mockRequest  = $this->getMock('stubbles\webapp\Request');
+        $this->mockResponse = $this->getMock('stubbles\webapp\Response');
         $this->mockInjector = $this->getMockBuilder('stubbles\ioc\Injector')
                         ->disableOriginalConstructor()
                         ->getMock();
@@ -141,7 +141,7 @@ class AbstractProcessableRouteTest extends \PHPUnit_Framework_TestCase
                 'stubbles\webapp\response\mimetypes\PassThrough',
                 $this->createRoute(
                         SupportedMimeTypes::createWithDisabledContentNegotation()
-                )->negotiateMimeType($this->getMock('stubbles\webapp\request\Request'))
+                )->negotiateMimeType($this->getMock('stubbles\webapp\Request'))
         );
     }
 
@@ -151,7 +151,7 @@ class AbstractProcessableRouteTest extends \PHPUnit_Framework_TestCase
      */
     public function negotiatesNothingIfNoMatchCanBeFound()
     {
-        $mockRequest = $this->getMock('stubbles\webapp\request\Request');
+        $mockRequest = $this->getMock('stubbles\webapp\Request');
         $mockRequest->expects($this->once())
                 ->method('readHeader')
                 ->with($this->equalTo('HTTP_ACCEPT'))
@@ -169,7 +169,7 @@ class AbstractProcessableRouteTest extends \PHPUnit_Framework_TestCase
      */
     public function missingMimeTypeClassForNegotiatedMimeTypeThrowsRuntimeException()
     {
-        $mockRequest = $this->getMock('stubbles\webapp\request\Request');
+        $mockRequest = $this->getMock('stubbles\webapp\Request');
         $mockRequest->expects($this->once())
                 ->method('readHeader')
                 ->with($this->equalTo('HTTP_ACCEPT'))
@@ -184,7 +184,7 @@ class AbstractProcessableRouteTest extends \PHPUnit_Framework_TestCase
      */
     public function createsNegotiatedMimeType()
     {
-        $mockRequest = $this->getMock('stubbles\webapp\request\Request');
+        $mockRequest = $this->getMock('stubbles\webapp\Request');
         $mockRequest->expects($this->once())
                 ->method('readHeader')
                 ->with($this->equalTo('HTTP_ACCEPT'))

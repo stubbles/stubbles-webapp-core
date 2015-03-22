@@ -8,8 +8,8 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\routing;
-use stubbles\webapp\request\Request;
-use stubbles\webapp\response\Response;
+use stubbles\webapp\Request;
+use stubbles\webapp\Response;
 /**
  * Contains logic to process the route.
  *
@@ -34,7 +34,7 @@ interface ProcessableRoute
     /**
      * negotiates proper mime type for given request
      *
-     * @param   \stubbles\webapp\response\Request  $request
+     * @param   \stubbles\webapp\Request  $request
      * @return  \stubbles\webapp\response\mimetypes\MimeType
      * @since   6.0.0
      */
@@ -52,8 +52,8 @@ interface ProcessableRoute
      *
      * Returns false if one of the pre interceptors cancels the request.
      *
-     * @param   \stubbles\webapp\request\Request    $request   current request
-     * @param   \stubbles\webapp\response\Response  $response  response to send
+     * @param   \stubbles\webapp\Request   $request   current request
+     * @param   \stubbles\webapp\Response  $response  response to send
      * @return  bool
      */
     public function applyPreInterceptors(Request $request, Response $response);
@@ -61,8 +61,8 @@ interface ProcessableRoute
     /**
      * creates processor instance
      *
-     * @param   \stubbles\webapp\request\Request    $request   current request
-     * @param   \stubbles\webapp\response\Response  $response  response to send
+     * @param   \stubbles\webapp\Request   $request   current request
+     * @param   \stubbles\webapp\Response  $response  response to send
      * @return  bool
      */
     public function process(Request $request, Response $response);
@@ -70,8 +70,8 @@ interface ProcessableRoute
     /**
      * apply post interceptors
      *
-     * @param   \stubbles\webapp\request\Request    $request   current request
-     * @param   \stubbles\webapp\response\Response  $response  response to send
+     * @param   \stubbles\webapp\Request   $request   current request
+     * @param   \stubbles\webapp\Response  $response  response to send
      * @return  bool
      */
     public function applyPostInterceptors(Request $request, Response $response);

@@ -11,10 +11,10 @@ namespace stubbles\webapp\routing;
 use stubbles\input\filter\AcceptFilter;
 use stubbles\peer\http;
 use stubbles\ioc\Injector;
+use stubbles\webapp\Request;
+use stubbles\webapp\Response;
 use stubbles\webapp\UriRequest;
 use stubbles\webapp\interceptor\Interceptors;
-use stubbles\webapp\request\Request;
-use stubbles\webapp\response\Response;
 use stubbles\webapp\response\mimetypes\PassThrough;
 /**
  * Contains logic to process the route.
@@ -81,7 +81,7 @@ abstract class AbstractProcessableRoute implements ProcessableRoute
     /**
      * negotiates proper mime type for given request
      *
-     * @param   \stubbles\webapp\response\Request  $request
+     * @param   \stubbles\webapp\Request  $request
      * @return  \stubbles\webapp\response\mimetypes\MimeType
      * @since   6.0.0
      */
@@ -124,8 +124,8 @@ abstract class AbstractProcessableRoute implements ProcessableRoute
      *
      * Returns false if one of the pre interceptors cancels the request.
      *
-     * @param   \stubbles\webapp\request\Request    $request   current request
-     * @param   \stubbles\webapp\response\Response  $response  response to send
+     * @param   \stubbles\webapp\Request   $request   current request
+     * @param   \stubbles\webapp\Response  $response  response to send
      * @return  bool
      */
     public function applyPreInterceptors(Request $request, Response $response)
@@ -136,8 +136,8 @@ abstract class AbstractProcessableRoute implements ProcessableRoute
     /**
      * apply post interceptors
      *
-     * @param   \stubbles\webapp\request\Request    $request   current request
-     * @param   \stubbles\webapp\response\Response  $response  response to send
+     * @param   \stubbles\webapp\Request   $request   current request
+     * @param   \stubbles\webapp\Response  $response  response to send
      * @return  bool
      */
     public function applyPostInterceptors(Request $request, Response $response)

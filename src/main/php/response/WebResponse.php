@@ -10,7 +10,8 @@
 namespace stubbles\webapp\response;
 use stubbles\peer\http\Http;
 use stubbles\peer\http\HttpVersion;
-use stubbles\webapp\request\Request;
+use stubbles\webapp\Request;
+use stubbles\webapp\Response;
 use stubbles\webapp\response\mimetypes\MimeType;
 use stubbles\webapp\response\mimetypes\PassThrough;
 use stubbles\streams\OutputStream;
@@ -81,7 +82,7 @@ class WebResponse implements Response
      * protocol major version is not 1 the response automatically sets itself
      * to 500 Method Not Supported.
      *
-     * @param  \stubbles\webapp\request\Request              $request   http request for which this is the response
+     * @param  \stubbles\webapp\Request                      $request   http request for which this is the response
      * @param  \stubbles\webapp\response\mimetypes\MimeType  $mimeType  optional  mime type for response body
      * @param  string                                        $sapi      optional  current php sapi, defaults to value of PHP_SAPI constant
      */
@@ -117,7 +118,7 @@ class WebResponse implements Response
      *
      * @param   int     $statusCode
      * @param   string  $reasonPhrase  optional
-     * @return  \stubbles\webapp\response\Response
+     * @return  \stubbles\webapp\Response
      */
     public function setStatusCode($statusCode, $reasonPhrase = null)
     {
@@ -139,7 +140,7 @@ class WebResponse implements Response
     /**
      * provide direct access to set a status code
      *
-     * @return  \stubbles\webapp\response\Status
+     * @return  \stubbles\webapp\Status
      * @since   5.1.0
      */
     public function status()
@@ -152,7 +153,7 @@ class WebResponse implements Response
      *
      * @param   string  $name   the name of the header
      * @param   string  $value  the value of the header
-     * @return  \stubbles\webapp\response\Response
+     * @return  \stubbles\webapp\Response
      */
     public function addHeader($name, $value)
     {
@@ -196,7 +197,7 @@ class WebResponse implements Response
      * add a cookie to the response
      *
      * @param   \stubbles\webapp\response\Cookie  $cookie  the cookie to set
-     * @return  \stubbles\webapp\response\Response
+     * @return  \stubbles\webapp\Response
      */
     public function addCookie(Cookie $cookie)
     {
@@ -208,7 +209,7 @@ class WebResponse implements Response
      * removes cookie with given name
      *
      * @param   string  $name
-     * @return  \stubbles\webapp\response\Response
+     * @return  \stubbles\webapp\Response
      * @since   2.0.0
      */
     public function removeCookie($name)
@@ -244,7 +245,7 @@ class WebResponse implements Response
      * write data into the response
      *
      * @param   mixed  $resource
-     * @return  \stubbles\webapp\response\Response
+     * @return  \stubbles\webapp\Response
      */
     public function write($resource)
     {
@@ -278,7 +279,7 @@ class WebResponse implements Response
      *
      * @param   string|\stubbles\peer\http\HttpUri  $uri         http uri to redirect to
      * @param   int                                 $statusCode  HTTP status code to redirect with (301, 302, ...)
-     * @return  \stubbles\webapp\response\Response
+     * @return  \stubbles\webapp\Response
      * @since   1.3.0
      */
     public function redirect($uri, $statusCode = 302)
@@ -290,7 +291,7 @@ class WebResponse implements Response
     /**
      * creates a 403 Forbidden message
      *
-     * @return  \stubbles\webapp\response\Response
+     * @return  \stubbles\webapp\Response
      * @since   2.0.0
      */
     public function forbidden()
@@ -303,7 +304,7 @@ class WebResponse implements Response
     /**
      * creates a 404 Not Found message
      *
-     * @return  \stubbles\webapp\response\Response
+     * @return  \stubbles\webapp\Response
      * @since   2.0.0
      */
     public function notFound()
@@ -318,7 +319,7 @@ class WebResponse implements Response
      *
      * @param   string    $requestMethod
      * @param   string[]  $allowedMethods
-     * @return  \stubbles\webapp\response\Response
+     * @return  \stubbles\webapp\Response
      * @since   2.0.0
      */
     public function methodNotAllowed($requestMethod, array $allowedMethods)
@@ -337,7 +338,7 @@ class WebResponse implements Response
      * creates a 406 Not Acceptable message
      *
      * @param   string[]  $supportedMimeTypes  list of supported mime types
-     * @return  \stubbles\webapp\response\Response
+     * @return  \stubbles\webapp\Response
      * @since   2.0.0
      */
     public function notAcceptable(array $supportedMimeTypes = [])
@@ -350,7 +351,7 @@ class WebResponse implements Response
      * creates a 500 Internal Server Error message
      *
      * @param   string  $errorMessage
-     * @return  \stubbles\webapp\response\Response
+     * @return  \stubbles\webapp\Response
      * @since   2.0.0
      */
     public function internalServerError($errorMessage)
@@ -363,7 +364,7 @@ class WebResponse implements Response
     /**
      * creates a 505 HTTP Version Not Supported message
      *
-     * @return  \stubbles\webapp\response\Response
+     * @return  \stubbles\webapp\Response
      * @since   2.0.0
      */
     public function httpVersionNotSupported()
@@ -415,7 +416,7 @@ class WebResponse implements Response
     /**
      * sends head only
      *
-     * @return  \stubbles\webapp\response\Response
+     * @return  \stubbles\webapp\Response
      */
     private function sendHead()
     {

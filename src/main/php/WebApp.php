@@ -11,9 +11,7 @@ namespace stubbles\webapp;
 use stubbles\ioc\App;
 use stubbles\ioc\Injector;
 use stubbles\peer\MalformedUriException;
-use stubbles\webapp\request\Request;
 use stubbles\webapp\request\WebRequest;
-use stubbles\webapp\response\Response;
 use stubbles\webapp\response\WebResponse;
 use stubbles\webapp\routing\ProcessableRoute;
 use stubbles\webapp\routing\Routing;
@@ -102,8 +100,8 @@ abstract class WebApp extends App
     /**
      * creates a session instance based on current request
      *
-     * @param   \stubbles\webapp\request\Request    $request
-     * @param   \stubbles\webapp\response\Response  $response
+     * @param   \stubbles\webapp\Request   $request
+     * @param   \stubbles\webapp\Response  $response
      * @return  \stubbles\webapp\session\Session
      * @since   6.0.0
      */

@@ -10,10 +10,10 @@
 namespace stubbles\webapp\routing;
 use stubbles\ioc\Injector;
 use stubbles\webapp\Processor;
+use stubbles\webapp\Request;
+use stubbles\webapp\Response;
 use stubbles\webapp\UriRequest;
 use stubbles\webapp\interceptor\Interceptors;
-use stubbles\webapp\request\Request;
-use stubbles\webapp\response\Response;
 /**
  * Contains logic to process the route.
  *
@@ -67,8 +67,8 @@ class MatchingRoute extends AbstractProcessableRoute
      * no post processor will be called, whereas any other or no return value
      * will result in post processors being called by the webapp.
      *
-     * @param   \stubbles\webapp\request\Request    $request   current request
-     * @param   \stubbles\webapp\response\Response  $response  response to send
+     * @param   \stubbles\webapp\Request   $request   current request
+     * @param   \stubbles\webapp\Response  $response  response to send
      * @return  bool
      */
     public function process(Request $request, Response $response)

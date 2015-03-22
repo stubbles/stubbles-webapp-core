@@ -9,10 +9,10 @@
  */
 namespace stubbles\webapp\auth;
 use stubbles\ioc\Injector;
+use stubbles\webapp\Request;
+use stubbles\webapp\Response;
 use stubbles\webapp\auth\ioc\RolesProvider;
 use stubbles\webapp\auth\ioc\UserProvider;
-use stubbles\webapp\request\Request;
-use stubbles\webapp\response\Response;
 use stubbles\webapp\routing\ProcessableRoute;
 /**
  * Description of AuthorizingRoute
@@ -108,8 +108,8 @@ class AuthorizingRoute implements ProcessableRoute
     /**
      * apply pre interceptors
      *
-     * @param   \stubbles\webapp\request\Request    $request   current request
-     * @param   \stubbles\webapp\response\Response  $response  response to send
+     * @param   \stubbles\webapp\Request   $request   current request
+     * @param   \stubbles\webapp\Response  $response  response to send
      * @return  bool
      */
     public function applyPreInterceptors(Request $request, Response $response)
@@ -124,8 +124,8 @@ class AuthorizingRoute implements ProcessableRoute
     /**
      * checks if request is authorized
      *
-     * @param   \stubbles\webapp\request\Request    $request   current request
-     * @param   \stubbles\webapp\response\Response  $response  response to send
+     * @param   \stubbles\webapp\Request   $request   current request
+     * @param   \stubbles\webapp\Response  $response  response to send
      * @return  bool
      */
     private function isAuthorized(Request $request, Response $response)
@@ -150,8 +150,8 @@ class AuthorizingRoute implements ProcessableRoute
     /**
      * checks whether request is authenticated
      *
-     * @param   \stubbles\webapp\request\Request    $request   current request
-     * @param   \stubbles\webapp\response\Response  $response  response to send
+     * @param   \stubbles\webapp\Request   $request   current request
+     * @param   \stubbles\webapp\Response  $response  response to send
      * @return  \stubbles\webapp\auth\User
      */
     private function authenticate(Request $request, Response $response)
@@ -176,8 +176,8 @@ class AuthorizingRoute implements ProcessableRoute
     /**
      * checks whether expected role is given
      *
-     * @param   \stubbles\webapp\response\Response  $response  response to send
-     * @param   \stubbles\webapp\auth\User          $user
+     * @param   \stubbles\webapp\Response   $response  response to send
+     * @param   \stubbles\webapp\auth\User  $user
      * @return  \stubbles\webapp\auth\Roles
      */
     private function roles(Response $response, User $user)
@@ -192,9 +192,10 @@ class AuthorizingRoute implements ProcessableRoute
     }
 
     /**
+     * sets proper response status code depending on exception
      *
      * @param  \stubbles\webapp\auth\AuthProviderException  $ahe
-     * @param  \stubbles\webapp\response\Response          $response
+     * @param  \stubbles\webapp\Response                    $response
      */
     private function handleAuthProviderException(AuthProviderException $ahe, Response $response)
     {
@@ -209,8 +210,8 @@ class AuthorizingRoute implements ProcessableRoute
     /**
      * creates processor instance
      *
-     * @param   \stubbles\webapp\request\Request    $request   current request
-     * @param   \stubbles\webapp\response\Response  $response  response to send
+     * @param   \stubbles\webapp\Request   $request   current request
+     * @param   \stubbles\webapp\Response  $response  response to send
      * @return  bool
      */
     public function process(Request $request, Response $response)
@@ -225,8 +226,8 @@ class AuthorizingRoute implements ProcessableRoute
     /**
      * apply post interceptors
      *
-     * @param   \stubbles\webapp\request\Request    $request   current request
-     * @param   \stubbles\webapp\response\Response  $response  response to send
+     * @param   \stubbles\webapp\Request   $request   current request
+     * @param   \stubbles\webapp\Response  $response  response to send
      * @return  bool
      */
     public function applyPostInterceptors(Request $request, Response $response)
