@@ -14,6 +14,7 @@ use stubbles\lang\errorhandler\ExceptionLogger;
 use stubbles\peer\MalformedUriException;
 use stubbles\webapp\request\Request;
 use stubbles\webapp\request\WebRequest;
+use stubbles\webapp\response\Response;
 use stubbles\webapp\response\ResponseNegotiator;
 use stubbles\webapp\response\WebResponse;
 use stubbles\webapp\routing\ProcessableRoute;
@@ -89,7 +90,9 @@ abstract class WebApp extends App
                 return $response->redirect($route->httpsUri());
             }
 
-            $session = $request->attachSession($this->createSession($request));
+            $session = $request->attachSession(
+                    $this->createSession($request, $response)
+            );
             if (null !== $session) {
                 $this->injector->setSession(
                         $session,
@@ -116,11 +119,12 @@ abstract class WebApp extends App
     /**
      * creates a session instance based on current request
      *
-     * @param   \stubbles\webapp\request\Request  $request
+     * @param   \stubbles\webapp\request\Request    $request
+     * @param   \stubbles\webapp\response\Response  $response
      * @return  \stubbles\webapp\session\Session
      * @since   6.0.0
      */
-    protected function createSession(Request $request)
+    protected function createSession(Request $request, Response $response)
     {
         return null;
     }

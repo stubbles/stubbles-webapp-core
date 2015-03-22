@@ -11,6 +11,8 @@ namespace stubbles\webapp;
 use stubbles\ioc\Binder;
 use stubbles\lang\reflect;
 use stubbles\webapp\request\Request;
+use stubbles\webapp\response\Response;
+use stubbles\webapp\response\SupportedMimeTypes;
 /**
  * Helper class for the test.
  */
@@ -41,11 +43,12 @@ class TestWebApp extends WebApp
     /**
      * creates a session instance based on current request
      *
-     * @param   \stubbles\webapp\request\Request  $request
+     * @param   \stubbles\webapp\request\Request    $request
+     * @param   \stubbles\webapp\response\Response  $response
      * @return  \stubbles\webapp\session\Session
      * @since   6.0.0
      */
-    protected function createSession(Request $request)
+    protected function createSession(Request $request, Response $response)
     {
         return self::$session;
     }
@@ -164,7 +167,7 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
                           ->getMock();
         $mockRoute->expects($this->once())
                   ->method('supportedMimeTypes')
-                  ->will($this->returnValue(new response\SupportedMimeTypes([])));
+                  ->will($this->returnValue(new SupportedMimeTypes([])));
         $this->routing->expects($this->once())
                       ->method('findRoute')
                       ->will($this->returnValue($mockRoute));
