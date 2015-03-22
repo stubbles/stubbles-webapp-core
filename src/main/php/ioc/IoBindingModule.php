@@ -114,7 +114,7 @@ class IoBindingModule implements BindingModule
             $sessionCreator = $this->sessionCreator;
             $session = $sessionCreator($request, $response);
             $binder->bind('stubbles\webapp\session\Session')->toInstance($session);
-            $binder->setSession(new SessionAdapter($session));
+            $binder->setSession($session);
         }
     }
 }

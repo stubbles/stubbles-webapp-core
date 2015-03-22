@@ -11,7 +11,7 @@ namespace stubbles\webapp\session;
 /**
  * Interface for sessions.
  */
-interface Session
+interface Session extends \stubbles\ioc\binding\Session
 {
     /**
      * key to be associated with the fingerprint of the user
@@ -62,32 +62,6 @@ interface Session
      * @return  Session
      */
     public function invalidate();
-
-    /**
-     * checks whether a value associated with key exists
-     *
-     * @param   string  $key  key where value is stored under
-     * @return  bool
-     */
-    public function hasValue($key);
-
-    /**
-     * returns a value associated with the key or the default value
-     *
-     * @param   string  $key      key where value is stored under
-     * @param   mixed   $default  optional  return this if no data is associated with $key
-     * @return  mixed
-     */
-    public function value($key, $default = null);
-
-    /**
-     * stores a value associated with the key
-     *
-     * @param   string  $key    key to store value under
-     * @param   mixed   $value  data to store
-     * @return  Session
-     */
-    public function putValue($key, $value);
 
     /**
      * removes a value from the session
