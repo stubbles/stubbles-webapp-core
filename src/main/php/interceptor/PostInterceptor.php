@@ -8,7 +8,7 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\interceptor;
-use stubbles\input\web\WebRequest;
+use stubbles\webapp\request\Request;
 use stubbles\webapp\response\Response;
 /**
  * Interface for post interceptors.
@@ -21,8 +21,8 @@ interface PostInterceptor
     /**
      * does the postprocessing stuff
      *
-     * @param  \stubbles\input\web\WebRequest      $request   current request
+     * @param  \stubbles\webapp\request\Request    $request   current request
      * @param  \stubbles\webapp\response\Response  $response  response to send
      */
-    public function postProcess(WebRequest $request, Response $response);
+    public function postProcess(Request $request, Response $response);
 }

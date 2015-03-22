@@ -8,9 +8,9 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\response;
-use stubbles\input\web\WebRequest;
 use stubbles\peer\http\Http;
 use stubbles\peer\http\HttpVersion;
+use stubbles\webapp\request\Request;
 /**
  * Base class for a response to a request.
  *
@@ -70,10 +70,10 @@ class WebResponse implements Response
      * protocol major version is not 1 the response automatically sets itself
      * to 500 Method Not Supported.
      *
-     * @param  \stubbles\input\web\WebRequest  $request  http request for which this is the response
-     * @param  string                          $sapi     optional  current php sapi, defaults to value of PHP_SAPI constant
+     * @param  \stubbles\webapp\request\Request  $request  http request for which this is the response
+     * @param  string                            $sapi     optional  current php sapi, defaults to value of PHP_SAPI constant
      */
-    public function __construct(WebRequest $request, $sapi = PHP_SAPI)
+    public function __construct(Request $request, $sapi = PHP_SAPI)
     {
         $this->request = $request;
         $this->sapi    = $sapi;

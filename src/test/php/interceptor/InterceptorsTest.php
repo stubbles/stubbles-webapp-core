@@ -8,7 +8,7 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\interceptor;
-use stubbles\input\web\WebRequest;
+use stubbles\webapp\request\Request;
 use stubbles\webapp\response\Response;
 /**
  * Tests for stubbles\webapp\interceptor\Interceptors.
@@ -64,10 +64,10 @@ class InterceptorsTest extends \PHPUnit_Framework_TestCase
     /**
      * a callback
      *
-     * @param  WebRequest  $request
-     * @param  Response    $response
+     * @param  \stubbles\webapp\request\Request    $request
+     * @param  \stubbles\webapp\response\Response  $response
      */
-    public function callableMethod(WebRequest $request, Response $response)
+    public function callableMethod(Request $request, Response $response)
     {
         $response->addHeader('X-Binford', '6100 (More power!)');
     }

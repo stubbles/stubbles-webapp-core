@@ -8,7 +8,7 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\websession;
-use stubbles\input\web\WebRequest;
+use stubbles\webapp\request\Request;
 use stubbles\webapp\response\Cookie;
 use stubbles\webapp\response\Response;
 use stubbles\webapp\session\id\SessionId;
@@ -28,7 +28,7 @@ class WebBoundSessionId implements SessionId
     /**
      * request instance
      *
-     * @type  \stubbles\input\web\WebRequest
+     * @type  \stubbles\webapp\request\Request
      */
     private $request;
     /**
@@ -53,11 +53,11 @@ class WebBoundSessionId implements SessionId
     /**
      * constructor
      *
-     * @param  \stubbles\input\web\WebRequest      $request
+     * @param  \stubbles\webapp\request\Request    $request
      * @param  \stubbles\webapp\response\Response  $response
      * @param  string                              $sessionName
      */
-    public function __construct(WebRequest $request, Response $response, $sessionName)
+    public function __construct(Request $request, Response $response, $sessionName)
     {
         $this->request     = $request;
         $this->response    = $response;

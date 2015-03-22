@@ -8,9 +8,9 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\ioc;
-use stubbles\webapp\request\WebRequest;
 use stubbles\ioc\Binder;
 use stubbles\ioc\module\BindingModule;
+use stubbles\webapp\request\WebRequest;
 /**
  * Module to configure the binder with instances for request, session and response.
  *
@@ -63,7 +63,7 @@ class IoBindingModule implements BindingModule
      * constructor
      *
      * The optional callable $sessionCreator can accept instances of
-     * stubbles\input\web\WebRequest and stubbles\webapp\response\Response, and
+     * stubbles\webapp\request\Request and stubbles\webapp\response\Response, and
      * must return an instance of stubbles\webapp\session\Session:
      * <code>
      * function(WebRequest $request, Response $response)
@@ -103,7 +103,7 @@ class IoBindingModule implements BindingModule
         $request       = WebRequest::fromRawSource();
         $responseClass = $this->responseClass;
         $response      = new $responseClass($request);
-        $binder->bind('stubbles\input\web\WebRequest')
+        $binder->bind('stubbles\webapp\request\Request')
                ->toInstance($request);
         $binder->bind('stubbles\input\Request')
                ->toInstance($request);

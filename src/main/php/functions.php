@@ -32,7 +32,7 @@ namespace stubbles\webapp {
 
 }
 namespace stubbles\webapp\websession {
-    use stubbles\input\web\WebRequest;
+    use stubbles\webapp\request\Request;
     use stubbles\webapp\response\Response;
     use stubbles\webapp\session\NullSession;
     use stubbles\webapp\websession\WebBoundSessionId;
@@ -46,7 +46,7 @@ namespace stubbles\webapp\websession {
      */
     function native($sessionName)
     {
-        return function(WebRequest $request) use($sessionName)
+        return function(Request $request) use($sessionName)
                {
                     return \stubbles\webapp\session\native($sessionName, md5($request->readHeader('HTTP_USER_AGENT')->unsecure()));
                };
@@ -81,7 +81,7 @@ namespace stubbles\webapp\websession {
      */
     function noneStoring($sessionCookieName)
     {
-        return function(WebRequest $request, Response $response) use($sessionCookieName)
+        return function(Request $request, Response $response) use($sessionCookieName)
                {
                    return new NullSession(new WebBoundSessionId($request, $response, $sessionCookieName));
                };

@@ -8,9 +8,9 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\auth\token;
-use stubbles\input\web\WebRequest;
 use stubbles\webapp\auth\Token;
 use stubbles\webapp\auth\User;
+use stubbles\webapp\request\Request;
 /**
  * A token store holds tokens of users.
  *
@@ -24,18 +24,18 @@ interface TokenStore
     /**
      * store token for given user
      *
-     * @param  \stubbles\input\web\WebRequest  $request  request the token was issued with
-     * @param  \stubbles\webapp\auth\Token     $token    actual token
-     * @param  \stubbles\webapp\auth\User      $user     user the the token is for
+     * @param  \stubbles\webapp\request\Request  $request  request the token was issued with
+     * @param  \stubbles\webapp\auth\Token       $token    actual token
+     * @param  \stubbles\webapp\auth\User        $user     user the the token is for
      */
-    public function store(WebRequest $request, Token $token, User $user);
+    public function store(Request $request, Token $token, User $user);
 
     /**
      * returns the user for the given token if it is valid
      *
-     * @param   \stubbles\input\web\WebRequest  $request  request the token was provided with
-     * @param   \stubbles\webapp\auth\Token     $token    actual token
+     * @param   \stubbles\webapp\request\Request  $request  request the token was provided with
+     * @param   \stubbles\webapp\auth\Token       $token    actual token
      * @return  \stubbles\webapp\auth\User
      */
-    public function findUserByToken(WebRequest $request, Token $token);
+    public function findUserByToken(Request $request, Token $token);
 }

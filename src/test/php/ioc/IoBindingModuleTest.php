@@ -61,7 +61,7 @@ class IoBindingModuleTest extends \PHPUnit_Framework_TestCase
     {
         $injector = $this->createInjector(new IoBindingModule());
         $this->assertTrue($injector->hasExplicitBinding('stubbles\input\Request'));
-        $this->assertTrue($injector->hasExplicitBinding('stubbles\input\web\WebRequest'));
+        $this->assertTrue($injector->hasExplicitBinding('stubbles\webapp\request\Request'));
         $this->assertTrue($injector->hasExplicitBinding('stubbles\webapp\response\Response'));
     }
 

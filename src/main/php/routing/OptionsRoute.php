@@ -8,9 +8,9 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\routing;
-use stubbles\input\web\WebRequest;
 use stubbles\webapp\UriRequest;
 use stubbles\webapp\interceptor\Interceptors;
+use stubbles\webapp\request\Request;
 use stubbles\webapp\response\Response;
 use stubbles\webapp\response\SupportedMimeTypes;
 /**
@@ -64,11 +64,11 @@ class OptionsRoute extends AbstractProcessableRoute
     /**
      * creates processor instance
      *
-     * @param   \stubbles\input\web\WebRequest      $request   current request
+     * @param   \stubbles\webapp\request\Request    $request   current request
      * @param   \stubbles\webapp\response\Response  $response  response to send
      * @return  bool
      */
-    public function process(WebRequest $request, Response $response)
+    public function process(Request $request, Response $response)
     {
         $response->addHeader('Allow', join(', ', $this->allowedMethods))
                  ->addHeader('Access-Control-Allow-Methods', join(', ', $this->allowedMethods));

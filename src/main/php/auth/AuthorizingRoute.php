@@ -8,10 +8,10 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\auth;
-use stubbles\input\web\WebRequest;
 use stubbles\ioc\Injector;
 use stubbles\webapp\auth\ioc\RolesProvider;
 use stubbles\webapp\auth\ioc\UserProvider;
+use stubbles\webapp\request\Request;
 use stubbles\webapp\response\Response;
 use stubbles\webapp\routing\ProcessableRoute;
 /**
@@ -96,11 +96,11 @@ class AuthorizingRoute implements ProcessableRoute
     /**
      * apply pre interceptors
      *
-     * @param   \stubbles\input\web\WebRequest      $request   current request
+     * @param   \stubbles\webapp\request\Request    $request   current request
      * @param   \stubbles\webapp\response\Response  $response  response to send
      * @return  bool
      */
-    public function applyPreInterceptors(WebRequest $request, Response $response)
+    public function applyPreInterceptors(Request $request, Response $response)
     {
         if ($this->isAuthorized($request, $response)) {
             return $this->actualRoute->applyPreInterceptors($request, $response);
@@ -112,11 +112,11 @@ class AuthorizingRoute implements ProcessableRoute
     /**
      * checks if request is authorized
      *
-     * @param   \stubbles\input\web\WebRequest      $request   current request
+     * @param   \stubbles\webapp\request\Request    $request   current request
      * @param   \stubbles\webapp\response\Response  $response  response to send
      * @return  bool
      */
-    private function isAuthorized(WebRequest $request, Response $response)
+    private function isAuthorized(Request $request, Response $response)
     {
         $this->authorized = false;
         $user = $this->authenticate($request, $response);
@@ -138,11 +138,11 @@ class AuthorizingRoute implements ProcessableRoute
     /**
      * checks whether request is authenticated
      *
-     * @param   \stubbles\input\web\WebRequest      $request   current request
+     * @param   \stubbles\webapp\request\Request    $request   current request
      * @param   \stubbles\webapp\response\Response  $response  response to send
      * @return  \stubbles\webapp\auth\User
      */
-    private function authenticate(WebRequest $request, Response $response)
+    private function authenticate(Request $request, Response $response)
     {
         $authenticationProvider = $this->injector->getInstance('stubbles\webapp\auth\AuthenticationProvider');
         try {
@@ -197,11 +197,11 @@ class AuthorizingRoute implements ProcessableRoute
     /**
      * creates processor instance
      *
-     * @param   \stubbles\input\web\WebRequest      $request   current request
+     * @param   \stubbles\webapp\request\Request    $request   current request
      * @param   \stubbles\webapp\response\Response  $response  response to send
      * @return  bool
      */
-    public function process(WebRequest $request, Response $response)
+    public function process(Request $request, Response $response)
     {
         if ($this->authorized) {
             return $this->actualRoute->process($request, $response);
@@ -213,11 +213,11 @@ class AuthorizingRoute implements ProcessableRoute
     /**
      * apply post interceptors
      *
-     * @param   \stubbles\input\web\WebRequest      $request   current request
+     * @param   \stubbles\webapp\request\Request    $request   current request
      * @param   \stubbles\webapp\response\Response  $response  response to send
      * @return  bool
      */
-    public function applyPostInterceptors(WebRequest $request, Response $response)
+    public function applyPostInterceptors(Request $request, Response $response)
     {
         if ($this->authorized) {
             return $this->actualRoute->applyPostInterceptors($request, $response);

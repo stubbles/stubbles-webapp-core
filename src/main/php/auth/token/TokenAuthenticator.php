@@ -10,7 +10,7 @@
 namespace stubbles\webapp\auth\token;
 use stubbles\webapp\auth\AuthenticationProvider;
 use stubbles\webapp\auth\InternalAuthProviderException;
-use stubbles\input\web\WebRequest;
+use stubbles\webapp\request\Request;
 /**
  * Supports token handling for intranet users.
  *
@@ -60,11 +60,11 @@ class TokenAuthenticator implements AuthenticationProvider
     /**
      * authenticates that the given request is valid
      *
-     * @param   \stubbles\input\web\WebRequest  $request
+     * @param   \stubbles\webapp\request\Request  $request
      * @return  \stubbles\webapp\auth\User
      * @throws  \stubbles\webapp\auth\InternalAuthProviderException
      */
-    public function authenticate(WebRequest $request)
+    public function authenticate(Request $request)
     {
         $token = $this->readToken($request);
         if (null === $token || $token->isEmpty()) {
@@ -87,11 +87,11 @@ class TokenAuthenticator implements AuthenticationProvider
     /**
      * performs login when token not found or invalid
      *
-     * @param   \stubbles\input\web\WebRequest $request
+     * @param   \stubbles\webapp\request\Request $request
      * @return  \stubbles\webapp\auth\User
      * @throws  \stubbles\webapp\auth\InternalAuthProviderException
      */
-    private function login(WebRequest $request)
+    private function login(Request $request)
     {
         $user = $this->loginProvider->authenticate($request);
         if (null !== $user) {
@@ -110,10 +110,10 @@ class TokenAuthenticator implements AuthenticationProvider
     /**
      * reads token from authorization header
      *
-     * @param   \stubbles\input\web\WebRequest  $request  current request
+     * @param   \stubbles\webapp\request\Request  $request  current request
      * @return  \stubbles\webapp\auth\Token
      */
-    private function readToken(WebRequest $request)
+    private function readToken(Request $request)
     {
         if (!$request->hasRedirectHeader('HTTP_AUTHORIZATION')) {
             return null;
@@ -125,10 +125,10 @@ class TokenAuthenticator implements AuthenticationProvider
     /**
      * returns login uri
      *
-     * @param   \stubbles\input\web\WebRequest  $request
+     * @param   \stubbles\webapp\request\Request  $request
      * @return  string|\stubbles\peer\http\HttpUri
      */
-    public function loginUri(WebRequest $request)
+    public function loginUri(Request $request)
     {
         return $this->loginProvider->loginUri($request);
     }

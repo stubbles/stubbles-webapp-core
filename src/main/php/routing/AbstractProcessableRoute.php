@@ -8,9 +8,9 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\routing;
-use stubbles\input\web\WebRequest;
 use stubbles\webapp\UriRequest;
 use stubbles\webapp\interceptor\Interceptors;
+use stubbles\webapp\request\Request;
 use stubbles\webapp\response\Response;
 use stubbles\webapp\response\SupportedMimeTypes;
 /**
@@ -80,11 +80,11 @@ abstract class AbstractProcessableRoute implements ProcessableRoute
      *
      * Returns false if one of the pre interceptors cancels the request.
      *
-     * @param   \stubbles\input\web\WebRequest      $request   current request
+     * @param   \stubbles\webapp\request\Request    $request   current request
      * @param   \stubbles\webapp\response\Response  $response  response to send
      * @return  bool
      */
-    public function applyPreInterceptors(WebRequest $request, Response $response)
+    public function applyPreInterceptors(Request $request, Response $response)
     {
         return $this->interceptors->preProcess($request, $response);
     }
@@ -92,11 +92,11 @@ abstract class AbstractProcessableRoute implements ProcessableRoute
     /**
      * apply post interceptors
      *
-     * @param   \stubbles\input\web\WebRequest      $request   current request
+     * @param   \stubbles\webapp\request\Request    $request   current request
      * @param   \stubbles\webapp\response\Response  $response  response to send
      * @return  bool
      */
-    public function applyPostInterceptors(WebRequest $request, Response $response)
+    public function applyPostInterceptors(Request $request, Response $response)
     {
         return $this->interceptors->postProcess($request, $response);
     }

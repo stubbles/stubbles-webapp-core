@@ -8,11 +8,11 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp;
-use stubbles\input\web\WebRequest;
 use stubbles\ioc\App;
 use stubbles\lang\errorhandler\ExceptionLogger;
 use stubbles\peer\MalformedUriException;
 use stubbles\webapp\ioc\IoBindingModule;
+use stubbles\webapp\request\Request;
 use stubbles\webapp\response\Response;
 use stubbles\webapp\response\ResponseNegotiator;
 use stubbles\webapp\routing\ProcessableRoute;
@@ -27,7 +27,7 @@ abstract class WebApp extends App
     /**
      * contains request data
      *
-     * @type  \stubbles\input\web\WebRequest
+     * @type  \stubbles\webapp\request\Request
      */
     protected $request;
     /**
@@ -52,13 +52,13 @@ abstract class WebApp extends App
     /**
      * constructor
      *
-     * @param  \stubbles\input\web\WebRequest                $request             request data container
+     * @param  \stubbles\webapp\request\Request              $request             request data container
      * @param  \stubbles\webapp\response\ResponseNegotiator  $responseNegotiator  negoatiates based on request
      * @param  \stubbles\webapp\routing\Routing              $routing             routes to logic based on request
      * @param  \stubbles\lang\errorhandler\ExceptionLogger   $exceptionLogger     logs uncatched exceptions
      * @Inject
      */
-    public function __construct(WebRequest $request,
+    public function __construct(Request $request,
                                 ResponseNegotiator $responseNegotiator,
                                 Routing $routing,
                                 ExceptionLogger $exceptionLogger)
@@ -186,7 +186,7 @@ abstract class WebApp extends App
      * creates io binding module
      *
      * The optional callable $sessionCreator can accept instances of
-     * stubbles\input\web\WebRequest and stubbles\webapp\response\Response, and
+     * stubbles\webapp\request\Request and stubbles\webapp\response\Response, and
      * must return an instance of stubbles\webapp\session\Session:
      * <code>
      * function(WebRequest $request, Response $response)

@@ -8,9 +8,9 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\routing;
-use stubbles\input\web\WebRequest;
 use stubbles\webapp\UriPath;
 use stubbles\webapp\UriRequest;
+use stubbles\webapp\request\Request;
 use stubbles\webapp\response\Response;
 use stubbles\webapp\response\SupportedMimeTypes;
 /**
@@ -155,7 +155,7 @@ class MatchingRouteTest extends \PHPUnit_Framework_TestCase
         $this->mockResponse->expects($this->once())
                            ->method('write')
                            ->with($this->equalTo('Hello world'));
-        $this->$assert($this->createMatchingRouteWithCallback(function(WebRequest $request, Response $response, UriPath $uriPath)
+        $this->$assert($this->createMatchingRouteWithCallback(function(Request $request, Response $response, UriPath $uriPath)
                                                               use($returnValue)
                                                               {
                                                                   $response->setStatusCode(418)
@@ -201,11 +201,11 @@ class MatchingRouteTest extends \PHPUnit_Framework_TestCase
     /**
      * helper method for the test
      *
-     * @param   WebRequest  $request
-     * @param   Response    $response
+     * @param   \stubbles\webapp\request\Request   $request
+     * @param   \stubbles\webapp\respone\Response  $response
      * @throws  \Exception
      */
-    public function failingCallable(WebRequest $request, Response $response, UriPath $uriPath)
+    public function failingCallable(Request $request, Response $response, UriPath $uriPath)
     {
         throw new \Exception('some error occurred');
     }

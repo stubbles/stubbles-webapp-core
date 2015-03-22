@@ -8,7 +8,7 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\routing;
-use stubbles\input\web\WebRequest;
+use stubbles\webapp\request\Request;
 use stubbles\webapp\response\Response;
 /**
  * Processable route which denotes a 404 Not Found.
@@ -30,11 +30,11 @@ class MissingRoute extends AbstractProcessableRoute
     /**
      * creates processor instance
      *
-     * @param   \stubbles\input\web\WebRequest      $request   current request
+     * @param   \stubbles\webapp\request\Request    $request   current request
      * @param   \stubbles\webapp\response\Response  $response  response to send
      * @return  bool
      */
-    public function process(WebRequest $request, Response $response)
+    public function process(Request $request, Response $response)
     {
         $response->notFound();
         return true;

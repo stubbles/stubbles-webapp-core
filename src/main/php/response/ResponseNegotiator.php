@@ -9,9 +9,9 @@
  */
 namespace stubbles\webapp\response;
 use stubbles\input\filter\AcceptFilter;
-use stubbles\input\web\WebRequest;
 use stubbles\ioc\Injector;
 use stubbles\peer\http;
+use stubbles\webapp\request\Request;
 /**
  * Negotiates correct response for request.
  *
@@ -53,11 +53,11 @@ class ResponseNegotiator
      * agent mime types is supported. Forces a 500 Internal Server Error
      * response in case a mime type but no suitable formatter was found.
      *
-     * @param   \stubbles\input\web\WebRequest                $request
+     * @param   \stubbles\webapp\request\Request              $request
      * @param   \stubbles\webapp\response\SupportedMimeTypes  $supportedMimeTypes  optional
      * @return  Response
      */
-    public function negotiateMimeType(WebRequest $request, SupportedMimeTypes $supportedMimeTypes = null)
+    public function negotiateMimeType(Request $request, SupportedMimeTypes $supportedMimeTypes = null)
     {
         if (null === $supportedMimeTypes || $supportedMimeTypes->isContentNegotationDisabled()) {
             return $this->response;

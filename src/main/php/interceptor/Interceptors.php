@@ -8,8 +8,8 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\interceptor;
-use stubbles\input\web\WebRequest;
 use stubbles\ioc\Injector;
+use stubbles\webapp\request\Request;
 use stubbles\webapp\response\Response;
 /**
  * Interceptor handler.
@@ -54,11 +54,11 @@ class Interceptors
      *
      * Returns false if one of the pre interceptors cancels the request.
      *
-     * @param   \stubbles\input\web\WebRequest      $request   current request
+     * @param   \stubbles\webapp\request\Request    $request   current request
      * @param   \stubbles\webapp\response\Response  $response  response to send
      * @return  bool
      */
-    public function preProcess(WebRequest $request, Response $response)
+    public function preProcess(Request $request, Response $response)
     {
         foreach ($this->preInterceptors as $preInterceptor) {
             if (false === $this->executePreInterceptor($preInterceptor, $request, $response)) {
@@ -73,11 +73,11 @@ class Interceptors
      * executes pre interceptor
      *
      * @param   mixed                               $preInterceptor
-     * @param   \stubbles\input\web\WebRequest      $request   current request
+     * @param   \stubbles\webapp\request\Request    $request   current request
      * @param   \stubbles\webapp\response\Response  $response  response to send
      * @return  bool
      */
-    private function executePreInterceptor($preInterceptor, WebRequest $request, Response $response)
+    private function executePreInterceptor($preInterceptor, Request $request, Response $response)
     {
         if (is_callable($preInterceptor)) {
             return call_user_func_array($preInterceptor, [$request, $response]);
@@ -99,11 +99,11 @@ class Interceptors
     /**
      * apply post interceptors
      *
-     * @param   \stubbles\input\web\WebRequest      $request   current request
+     * @param   \stubbles\webapp\request\Request    $request   current request
      * @param   \stubbles\webapp\response\Response  $response  response to send
      * @return  bool
      */
-    public function postProcess(WebRequest $request, Response $response)
+    public function postProcess(Request $request, Response $response)
     {
         foreach ($this->postInterceptors as $postInterceptor) {
             if (false === $this->executePostInterceptor($postInterceptor, $request, $response)) {
@@ -118,11 +118,11 @@ class Interceptors
      * executes post interceptor
      *
      * @param   mixed                               $postInterceptor
-     * @param   \stubbles\input\web\WebRequest      $request          current request
+     * @param   \stubbles\webapp\request\Request    $request          current request
      * @param   \stubbles\webapp\response\Response  $response         response to send
      * @return  bool
      */
-    private function executePostInterceptor($postInterceptor, WebRequest $request, Response $response)
+    private function executePostInterceptor($postInterceptor, Request $request, Response $response)
     {
         if (is_callable($postInterceptor)) {
             return call_user_func_array($postInterceptor, [$request, $response]);
