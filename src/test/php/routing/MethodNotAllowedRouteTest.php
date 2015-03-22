@@ -9,7 +9,6 @@
  */
 namespace stubbles\webapp\routing;
 use stubbles\webapp\UriRequest;
-use stubbles\webapp\response\SupportedMimeTypes;
 /**
  * Tests for stubbles\webapp\routing\MethodNotAllowedRoute.
  *
@@ -42,13 +41,17 @@ class MethodNotAllowedRouteTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->methodNotAllowedRoute = new MethodNotAllowedRoute(new UriRequest('http://example.com/hello/world', 'GET'),
-                                                                 $this->getMockBuilder('stubbles\webapp\interceptor\Interceptors')
-                                                                      ->disableOriginalConstructor()
-                                                                      ->getMock(),
-                                                                 new SupportedMimeTypes([]),
-                                                                 ['GET', 'POST', 'HEAD']
-                                       );
+        $this->methodNotAllowedRoute = new MethodNotAllowedRoute(
+                $this->getMockBuilder('stubbles\ioc\Injector')
+                        ->disableOriginalConstructor()
+                        ->getMock(),
+                new UriRequest('http://example.com/hello/world', 'GET'),
+                $this->getMockBuilder('stubbles\webapp\interceptor\Interceptors')
+                        ->disableOriginalConstructor()
+                        ->getMock(),
+                new SupportedMimeTypes([]),
+                ['GET', 'POST', 'HEAD']
+        );
         $this->mockRequest  = $this->getMock('stubbles\webapp\request\Request');
         $this->mockResponse = $this->getMock('stubbles\webapp\response\Response');
     }
@@ -71,7 +74,15 @@ class MethodNotAllowedRouteTest extends \PHPUnit_Framework_TestCase
                           ->will($this->returnValue('DELETE'));
         $this->mockResponse->expects($this->once())
                            ->method('methodNotAllowed')
-                           ->with($this->equalTo('DELETE'), $this->equalTo(['GET', 'POST', 'HEAD', 'OPTIONS']));
-        $this->assertTrue($this->methodNotAllowedRoute->process($this->mockRequest, $this->mockResponse));
+                           ->with(
+                                   $this->equalTo('DELETE'),
+                                   $this->equalTo(['GET', 'POST', 'HEAD', 'OPTIONS'])
+                            );
+        $this->assertTrue(
+                $this->methodNotAllowedRoute->process(
+                        $this->mockRequest,
+                        $this->mockResponse
+                )
+        );
     }
 }

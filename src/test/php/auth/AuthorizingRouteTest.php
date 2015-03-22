@@ -11,8 +11,8 @@ namespace stubbles\webapp\auth;
 use stubbles\peer\http\HttpUri;
 use stubbles\webapp\auth\ioc\RolesProvider;
 use stubbles\webapp\auth\ioc\UserProvider;
-use stubbles\webapp\response\SupportedMimeTypes;
 use stubbles\webapp\routing\RoutingAnnotations;
+use stubbles\webapp\routing\SupportedMimeTypes;
 /**
  * Tests for stubbles\webapp\auth\AuthorizingRoute.
  *
@@ -111,14 +111,32 @@ class AuthorizingRouteTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
+     * @since  6.0.0
+     */
+    public function negotiatesMimeTypesOfActualRoute()
+    {
+        $mockMimeType = $this->getMock('stubbles\response\mimetypes\MimeType');
+        $this->mockActualRoute->expects($this->once())
+                              ->method('negotiateMimeType')
+                              ->will($this->returnValue($mockMimeType));
+        $this->assertSame(
+                $mockMimeType,
+                $this->authorizingRoute->negotiateMimeType($this->mockRequest)
+        );
+    }
+
+    /**
+     * @test
      */
     public function returnsSupportedMimeTypesOfActualRoute()
     {
-        $supportedMimeTypes = new SupportedMimeTypes([]);
         $this->mockActualRoute->expects($this->once())
                               ->method('supportedMimeTypes')
-                              ->will($this->returnValue($supportedMimeTypes));
-        $this->assertSame($supportedMimeTypes, $this->authorizingRoute->supportedMimeTypes());
+                              ->will($this->returnValue(['application/foo']));
+        $this->assertEquals(
+                ['application/foo'],
+                $this->authorizingRoute->supportedMimeTypes()
+        );
     }
 
     /**

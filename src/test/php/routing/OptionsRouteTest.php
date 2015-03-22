@@ -9,7 +9,6 @@
  */
 namespace stubbles\webapp\routing;
 use stubbles\webapp\UriRequest;
-use stubbles\webapp\response\SupportedMimeTypes;
 /**
  * Tests for stubbles\webapp\routing\OptionsRoute.
  *
@@ -42,13 +41,17 @@ class OptionsRouteTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->optionsRoute = new OptionsRoute(new UriRequest('http://example.com/hello/world', 'GET'),
-                                               $this->getMockBuilder('stubbles\webapp\interceptor\Interceptors')
-                                                    ->disableOriginalConstructor()
-                                                    ->getMock(),
-                                               new SupportedMimeTypes([]),
-                                               ['GET', 'POST', 'HEAD']
-                              );
+        $this->optionsRoute = new OptionsRoute(
+                $this->getMockBuilder('stubbles\ioc\Injector')
+                        ->disableOriginalConstructor()
+                        ->getMock(),
+                new UriRequest('http://example.com/hello/world', 'GET'),
+                $this->getMockBuilder('stubbles\webapp\interceptor\Interceptors')
+                        ->disableOriginalConstructor()
+                        ->getMock(),
+                new SupportedMimeTypes([]),
+                ['GET', 'POST', 'HEAD']
+        );
         $this->mockRequest  = $this->getMock('stubbles\webapp\request\Request');
         $this->mockResponse = $this->getMock('stubbles\webapp\response\Response');
     }
@@ -72,8 +75,16 @@ class OptionsRouteTest extends \PHPUnit_Framework_TestCase
                            ->will($this->returnSelf());
         $this->mockResponse->expects($this->at(1))
                            ->method('addHeader')
-                           ->with($this->equalTo('Access-Control-Allow-Methods'), $this->equalTo('GET, POST, HEAD, OPTIONS'))
+                           ->with(
+                                   $this->equalTo('Access-Control-Allow-Methods'),
+                                   $this->equalTo('GET, POST, HEAD, OPTIONS')
+                            )
                            ->will($this->returnSelf());
-        $this->assertTrue($this->optionsRoute->process($this->mockRequest, $this->mockResponse));
+        $this->assertTrue(
+                $this->optionsRoute->process(
+                        $this->mockRequest,
+                        $this->mockResponse
+                )
+        );
     }
 }

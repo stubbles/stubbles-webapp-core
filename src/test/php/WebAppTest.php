@@ -12,7 +12,7 @@ use stubbles\ioc\Binder;
 use stubbles\lang\reflect;
 use stubbles\webapp\request\Request;
 use stubbles\webapp\response\Response;
-use stubbles\webapp\response\SupportedMimeTypes;
+use stubbles\webapp\response\mimetypes\PassThrough;
 /**
  * Helper class for the test.
  */
@@ -84,12 +84,6 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
      */
     private $mockInjector;
     /**
-     * mocked response instance
-     *
-     * @type  \PHPUnit_Framework_MockObject_MockObject
-     */
-    private $mockResponse;
-    /**
      * partially mocked routing
      *
      * @type  Routing
@@ -110,13 +104,6 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
         $this->mockInjector = $this->getMockBuilder('stubbles\ioc\Injector')
                         ->disableOriginalConstructor()
                         ->getMock();
-        $this->mockResponse     = $this->getMock('stubbles\webapp\response\Response');
-        $mockResponseNegotiator = $this->getMockBuilder('stubbles\webapp\response\ResponseNegotiator')
-                                       ->disableOriginalConstructor()
-                                       ->getMock();
-        $mockResponseNegotiator->expects($this->any())
-                               ->method('negotiateMimeType')
-                               ->will($this->returnValue($this->mockResponse));
         $this->routing = $this->getMockBuilder('stubbles\webapp\routing\Routing')
                               ->disableOriginalConstructor()
                               ->getMock();
@@ -125,7 +112,6 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
                                           ->getMock();
         $this->webApp  = new TestWebApp(
                 $this->mockInjector,
-                $mockResponseNegotiator,
                 $this->routing,
                 $this->mockExceptionLogger
         );
@@ -165,33 +151,13 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
         $mockRoute = $this->getMockBuilder('stubbles\webapp\routing\ProcessableRoute')
                           ->disableOriginalConstructor()
                           ->getMock();
-        $mockRoute->expects($this->once())
-                  ->method('supportedMimeTypes')
-                  ->will($this->returnValue(new SupportedMimeTypes([])));
+        $mockRoute->expects($this->any())
+                  ->method('negotiateMimeType')
+                  ->will($this->returnValue(new PassThrough()));
         $this->routing->expects($this->once())
                       ->method('findRoute')
                       ->will($this->returnValue($mockRoute));
         return $mockRoute;
-    }
-
-    /**
-     * @test
-     */
-    public function doesNothingIfResponseNegotiationFails()
-    {
-        $mockRoute = $this->createMockRoute();
-        $mockRoute->expects($this->never())
-                  ->method('switchToHttps');
-        $mockRoute->expects($this->never())
-                  ->method('applyPreInterceptors');
-        $mockRoute->expects($this->never())
-                  ->method('process');
-        $mockRoute->expects($this->never())
-                  ->method('applyPostInterceptors');
-        $this->mockResponse->expects($this->once())
-                          ->method('isFixed')
-                          ->will($this->returnValue(true));
-        $this->assertSame($this->mockResponse, $this->webApp->run());
     }
 
     /**
@@ -206,11 +172,45 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
         $mockRoute->expects($this->once())
                   ->method('httpsUri')
                   ->will($this->returnValue('https://example.net/admin'));
-        $this->mockResponse->expects($this->once())
-                           ->method('redirect')
-                           ->with($this->equalTo('https://example.net/admin'))
-                           ->will($this->returnSelf());
-        $this->assertSame($this->mockResponse, $this->webApp->run());
+        $response = $this->webApp->run();
+        $this->assertEquals(302, $response->statusCode());
+        $this->assertTrue(
+                $response->containsHeader(
+                        'Location',
+                        'https://example.net/admin'
+                )
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function respondsWithNotAcceptableIfContentNegotiationFails  ()
+    {
+        $mockRoute = $this->getMockBuilder('stubbles\webapp\routing\ProcessableRoute')
+                          ->disableOriginalConstructor()
+                          ->getMock();
+        $this->routing->expects($this->once())
+                      ->method('findRoute')
+                      ->will($this->returnValue($mockRoute));
+        $mockRoute->expects($this->once())
+                  ->method('requiresHttps')
+                  ->will($this->returnValue(false));
+        $mockRoute->expects($this->once())
+                  ->method('negotiateMimeType')
+                  ->will($this->returnValue(null));
+        $mockRoute->expects($this->once())
+                  ->method('supportedMimeTypes')
+                  ->will($this->returnValue([]));
+        $mockRoute->expects($this->never())
+                  ->method('applyPreInterceptors');
+        $mockRoute->expects($this->never())
+                  ->method('process');
+        $mockRoute->expects($this->never())
+                  ->method('applyPostInterceptors');
+        $response = $this->webApp->run();
+        $this->assertEquals(406, $response->statusCode());
+
     }
 
     /**
@@ -227,7 +227,7 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
         $this->mockInjector->expects($this->once())
                            ->method('setSession')
                            ->with($this->equalTo(TestWebApp::$session));
-        $this->assertSame($this->mockResponse, $this->webApp->run());
+        $this->webApp->run();
     }
 
     /**
@@ -242,7 +242,7 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
                   ->will($this->returnValue(false));
         $this->mockInjector->expects($this->never())
                            ->method('setSession');
-        $this->assertSame($this->mockResponse, $this->webApp->run());
+        $this->webApp->run();
     }
 
     /**
@@ -261,7 +261,7 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
                   ->method('process');
         $mockRoute->expects($this->never())
                   ->method('applyPostInterceptors');
-        $this->assertSame($this->mockResponse, $this->webApp->run());
+        $this->webApp->run();
     }
 
     /**
@@ -284,10 +284,8 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
         $this->mockExceptionLogger->expects($this->once())
                                   ->method('log')
                                   ->with($this->equalTo($exception));
-        $this->mockResponse->expects($this->once())
-                           ->method('internalServerError')
-                           ->with($this->equalTo('some error'));
-        $this->assertSame($this->mockResponse, $this->webApp->run());
+        $response = $this->webApp->run();
+        $this->assertEquals(500, $response->statusCode());
     }
 
     /**
@@ -307,7 +305,7 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
                   ->will($this->returnValue(false));
         $mockRoute->expects($this->never())
                   ->method('applyPostInterceptors');
-        $this->assertSame($this->mockResponse, $this->webApp->run());
+        $this->webApp->run();
     }
 
     /**
@@ -331,10 +329,8 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
         $this->mockExceptionLogger->expects($this->once())
                                   ->method('log')
                                   ->with($this->equalTo($exception));
-        $this->mockResponse->expects($this->once())
-                           ->method('internalServerError')
-                           ->with($this->equalTo('some error'));
-        $this->assertSame($this->mockResponse, $this->webApp->run());
+        $response = $this->webApp->run();
+        $this->assertEquals(500, $response->statusCode());
     }
 
     /**
@@ -354,7 +350,7 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
                   ->will($this->returnValue(true));
         $mockRoute->expects($this->once())
                   ->method('applyPostInterceptors');
-        $this->assertSame($this->mockResponse, $this->webApp->run());
+        $this->webApp->run();
     }
 
     /**
@@ -379,10 +375,8 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
         $this->mockExceptionLogger->expects($this->once())
                                   ->method('log')
                                   ->with($this->equalTo($exception));
-        $this->mockResponse->expects($this->once())
-                           ->method('internalServerError')
-                           ->with($this->equalTo('some error'));
-        $this->assertSame($this->mockResponse, $this->webApp->run());
+        $response = $this->webApp->run();
+        $this->assertEquals(500, $response->statusCode());
     }
 
     /**
@@ -418,12 +412,8 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
     {
         $_SERVER['REQUEST_URI'] = '/hello';
         $_SERVER['HTTP_HOST']   = '%&$§!&$!§invalid';
-        $mockResponseNegotiator = $this->getMockBuilder('stubbles\webapp\response\ResponseNegotiator')
-                                       ->disableOriginalConstructor()
-                                       ->getMock();
         $webApp  = new TestWebApp(
                 $this->mockInjector,
-                $mockResponseNegotiator,
                 $this->routing,
                 $this->mockExceptionLogger
         );

@@ -14,7 +14,6 @@ use stubbles\webapp\UriRequest;
 use stubbles\webapp\auth\AuthConstraint;
 use stubbles\webapp\interceptor\PreInterceptor;
 use stubbles\webapp\interceptor\PostInterceptor;
-use stubbles\webapp\response\SupportedMimeTypes;
 /**
  * Represents information about a route that can be called.
  *
@@ -371,7 +370,7 @@ class Route implements ConfigurableRoute
      *
      * @param   string[]  $globalMimeTypes  optional list of globally supported mime types
      * @param   string[]  $globalClasses    optional list of globally defined mime type classes
-     * @return  \stubbles\webapp\response\SupportedMimeTypes
+     * @return  \stubbles\webapp\routing\SupportedMimeTypes
      */
     public function supportedMimeTypes(array $globalMimeTypes = [], array $globalClasses = [])
     {

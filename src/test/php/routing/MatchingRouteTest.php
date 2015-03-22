@@ -12,7 +12,6 @@ use stubbles\webapp\UriPath;
 use stubbles\webapp\UriRequest;
 use stubbles\webapp\request\Request;
 use stubbles\webapp\response\Response;
-use stubbles\webapp\response\SupportedMimeTypes;
 /**
  * Tests for stubbles\webapp\routing\MatchingRoute.
  *
@@ -60,13 +59,14 @@ class MatchingRouteTest extends \PHPUnit_Framework_TestCase
      */
     private function createMatchingRoute(Route $routeConfig, $uri = 'http://example.com/hello/world')
     {
-        return new MatchingRoute(new UriRequest($uri, 'GET'),
-                                 $this->getMockBuilder('stubbles\webapp\interceptor\Interceptors')
-                                      ->disableOriginalConstructor()
-                                      ->getMock(),
-                                 new SupportedMimeTypes([]),
-                                 $routeConfig,
-                                 $this->mockInjector
+        return new MatchingRoute(
+                $this->mockInjector,
+                new UriRequest($uri, 'GET'),
+                $this->getMockBuilder('stubbles\webapp\interceptor\Interceptors')
+                        ->disableOriginalConstructor()
+                        ->getMock(),
+                new SupportedMimeTypes([]),
+                $routeConfig
         );
     }
 

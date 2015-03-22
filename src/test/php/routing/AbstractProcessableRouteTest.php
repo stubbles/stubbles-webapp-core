@@ -8,11 +8,12 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\routing;
+use stubbles\input\ValueReader;
 use stubbles\webapp\UriRequest;
 use stubbles\webapp\auth\AuthHandler;
 use stubbles\webapp\request\Request;
 use stubbles\webapp\response\Response;
-use stubbles\webapp\response\SupportedMimeTypes;
+use stubbles\webapp\response\mimetypes\Json;
 /**
  * Helper class for the test.
  */
@@ -78,17 +79,13 @@ class AbstractProcessableRouteTest extends \PHPUnit_Framework_TestCase
      */
     private $mockResponse;
     /**
-     * mocked injector instance
-     *
+     * @type  \PHPUnit_Framework_MockObject_MockObject
+     */
+    private $mockInjector;
+    /**
      * @type  \PHPUnit_Framework_MockObject_MockObject
      */
     private $mockInterceptors;
-    /**
-     * mocked list of supported mime types
-     *
-     * @type  SupportedMimeTypes
-     */
-    private $supportedMimeTypes;
 
     /**
      * set up test environment
@@ -97,10 +94,12 @@ class AbstractProcessableRouteTest extends \PHPUnit_Framework_TestCase
     {
         $this->mockRequest  = $this->getMock('stubbles\webapp\request\Request');
         $this->mockResponse = $this->getMock('stubbles\webapp\response\Response');
+        $this->mockInjector = $this->getMockBuilder('stubbles\ioc\Injector')
+                        ->disableOriginalConstructor()
+                        ->getMock();
         $this->mockInterceptors = $this->getMockBuilder('stubbles\webapp\interceptor\Interceptors')
                                    ->disableOriginalConstructor()
                                    ->getMock();
-        $this->supportedMimeTypes = new SupportedMimeTypes([]);
     }
 
     /**
@@ -110,11 +109,13 @@ class AbstractProcessableRouteTest extends \PHPUnit_Framework_TestCase
      * @param   array     $postInterceptors
      * @return  ProcessableRoute
      */
-    private function createRoute()
+    private function createRoute(SupportedMimeTypes $mimeTypes = null)
     {
-        return new TestAbstractProcessableRoute(new UriRequest('http://example.com/hello/world', 'GET'),
-                                                $this->mockInterceptors,
-                                                $this->supportedMimeTypes
+        return new TestAbstractProcessableRoute(
+                $this->mockInjector,
+                new UriRequest('http://example.com/hello/world', 'GET'),
+                $this->mockInterceptors,
+                null === $mimeTypes ? new SupportedMimeTypes([]) : $mimeTypes
 
         );
     }
@@ -124,8 +125,78 @@ class AbstractProcessableRouteTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsHttpsUriFromCalledUri()
     {
-        $this->assertEquals('https://example.com/hello/world',
-                            (string) $this->createRoute()->httpsUri()
+        $this->assertEquals(
+                'https://example.com/hello/world',
+                (string) $this->createRoute()->httpsUri()
+        );
+    }
+
+    /**
+     * @test
+     * @since  6.0.0
+     */
+    public function negotiatesPassThroughIfContentNegotiationDisabled()
+    {
+        $this->assertInstanceOf(
+                'stubbles\webapp\response\mimetypes\PassThrough',
+                $this->createRoute(
+                        SupportedMimeTypes::createWithDisabledContentNegotation()
+                )->negotiateMimeType($this->getMock('stubbles\webapp\request\Request'))
+        );
+    }
+
+    /**
+     * @test
+     * @since  6.0.0
+     */
+    public function negotiatesNothingIfNoMatchCanBeFound()
+    {
+        $mockRequest = $this->getMock('stubbles\webapp\request\Request');
+        $mockRequest->expects($this->once())
+                ->method('readHeader')
+                ->with($this->equalTo('HTTP_ACCEPT'))
+                ->will($this->returnValue(ValueReader::forValue('text/html')));
+        $this->assertNull(
+                $this->createRoute(new SupportedMimeTypes(['application/json', 'application/xml']))
+                        ->negotiateMimeType($mockRequest)
+        );
+    }
+
+    /**
+     * @test
+     * @expectedException  RuntimeException
+     * @since  6.0.0
+     */
+    public function missingMimeTypeClassForNegotiatedMimeTypeThrowsRuntimeException()
+    {
+        $mockRequest = $this->getMock('stubbles\webapp\request\Request');
+        $mockRequest->expects($this->once())
+                ->method('readHeader')
+                ->with($this->equalTo('HTTP_ACCEPT'))
+                ->will($this->returnValue(ValueReader::forValue('application/foo')));
+        $this->createRoute(new SupportedMimeTypes(['application/foo', 'application/xml']))
+                ->negotiateMimeType($mockRequest);
+    }
+
+    /**
+     * @test
+     * @since  6.0.0
+     */
+    public function createsNegotiatedMimeType()
+    {
+        $mockRequest = $this->getMock('stubbles\webapp\request\Request');
+        $mockRequest->expects($this->once())
+                ->method('readHeader')
+                ->with($this->equalTo('HTTP_ACCEPT'))
+                ->will($this->returnValue(ValueReader::forValue('application/json')));
+        $mimeType = new Json();
+        $this->mockInjector->expects($this->once())
+                           ->method('getInstance')
+                           ->will($this->returnValue($mimeType));
+        $this->assertSame(
+                $mimeType,
+                $this->createRoute(new SupportedMimeTypes(['application/json', 'application/xml']))
+                        ->negotiateMimeType($mockRequest)
         );
     }
 
@@ -135,8 +206,9 @@ class AbstractProcessableRouteTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsGivenListOfSupportedMimeTypes()
     {
-        $this->assertSame($this->supportedMimeTypes,
-                          $this->createRoute()->supportedMimeTypes()
+        $this->assertEquals(
+                [],
+                $this->createRoute()->supportedMimeTypes()
         );
     }
 
@@ -149,10 +221,12 @@ class AbstractProcessableRouteTest extends \PHPUnit_Framework_TestCase
                            ->method('preProcess')
                            ->with($this->equalTo($this->mockRequest), $this->equalTo($this->mockResponse))
                            ->will($this->returnValue(true));
-        $this->assertTrue($this->createRoute()
-                               ->applyPreInterceptors($this->mockRequest,
-                                                      $this->mockResponse
-                                 )
+        $this->assertTrue(
+                $this->createRoute()
+                        ->applyPreInterceptors(
+                                $this->mockRequest,
+                                $this->mockResponse
+                        )
         );
     }
 
@@ -165,10 +239,12 @@ class AbstractProcessableRouteTest extends \PHPUnit_Framework_TestCase
                            ->method('postProcess')
                            ->with($this->equalTo($this->mockRequest), $this->equalTo($this->mockResponse))
                            ->will($this->returnValue(true));
-        $this->assertTrue($this->createRoute()
-                                ->applyPostInterceptors($this->mockRequest,
-                                                        $this->mockResponse
-                                  )
+        $this->assertTrue(
+                $this->createRoute()
+                        ->applyPostInterceptors(
+                                $this->mockRequest,
+                                $this->mockResponse
+                        )
         );
     }
 }

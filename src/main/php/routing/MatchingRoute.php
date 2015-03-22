@@ -14,7 +14,6 @@ use stubbles\webapp\UriRequest;
 use stubbles\webapp\interceptor\Interceptors;
 use stubbles\webapp\request\Request;
 use stubbles\webapp\response\Response;
-use stubbles\webapp\response\SupportedMimeTypes;
 /**
  * Contains logic to process the route.
  *
@@ -28,34 +27,25 @@ class MatchingRoute extends AbstractProcessableRoute
      * @type  \stubbles\webapp\Route
      */
     private $route;
-    /**
-     * injector instance
-     *
-     * @type  \stubbles\ioc\Injector
-     */
-    private $injector;
 
     /**
      * constructor
      *
-     * @param  \stubbles\webapp\UriRequest                   $calledUri           actual called uri
-     * @param  \stubbles\webapp\interceptor\Interceptors     $interceptors
-     * @param  \stubbles\webapp\response\SupportedMimeTypes  $supportedMimeTypes
-     * @param  \stubbles\webapp\Route                        $route               route configuration
-     * @param  \stubbles\ioc\Injector                        $injector
+     * @param  \stubbles\ioc\Injector                       $injector
+     * @param  \stubbles\webapp\UriRequest                  $calledUri           actual called uri
+     * @param  \stubbles\webapp\interceptor\Interceptors    $interceptors
+     * @param  \stubbles\webapp\routing\SupportedMimeTypes  $supportedMimeTypes
+     * @param  \stubbles\webapp\Route                       $route               route configuration
      */
-    public function __construct(UriRequest $calledUri,
-                                Interceptors $interceptors,
-                                SupportedMimeTypes $supportedMimeTypes,
-                                Route $route,
-                                Injector $injector)
+    public function __construct(
+            Injector $injector,
+            UriRequest $calledUri,
+            Interceptors $interceptors,
+            SupportedMimeTypes $supportedMimeTypes,
+            Route $route)
     {
-        parent::__construct($calledUri,
-                            $interceptors,
-                            $supportedMimeTypes
-        );
-        $this->route    = $route;
-        $this->injector = $injector;
+        parent::__construct($injector, $calledUri, $interceptors, $supportedMimeTypes);
+        $this->route = $route;
     }
 
     /**

@@ -8,11 +8,11 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\routing;
+use stubbles\ioc\Injector;
 use stubbles\webapp\UriRequest;
 use stubbles\webapp\interceptor\Interceptors;
 use stubbles\webapp\request\Request;
 use stubbles\webapp\response\Response;
-use stubbles\webapp\response\SupportedMimeTypes;
 /**
  * Processable route which denotes an answer to an OPTIONS request when
  * no specific route for such requests was configured.
@@ -31,20 +31,20 @@ class OptionsRoute extends AbstractProcessableRoute
     /**
      * constructor
      *
-     * @param  \stubbles\webapp\UriRequest                   $calledUri           actual called uri
-     * @param  \stubbles\webapp\interceptor\Interceptors     $interceptors
-     * @param  \stubbles\webapp\response\SupportedMimeTypes  $supportedMimeTypes
-     * @param  string[]                                      $allowedMethods
+     * @param  \stubbles\ioc\Injector                       $injector
+     * @param  \stubbles\webapp\UriRequest                  $calledUri           actual called uri
+     * @param  \stubbles\webapp\interceptor\Interceptors    $interceptors
+     * @param  \stubbles\webapp\routing\SupportedMimeTypes  $supportedMimeTypes
+     * @param  string[]                                     $allowedMethods
      */
-    public function __construct(UriRequest $calledUri,
-                                Interceptors $interceptors,
-                                SupportedMimeTypes $supportedMimeTypes,
-                                array $allowedMethods)
+    public function __construct(
+            Injector $injector,
+            UriRequest $calledUri,
+            Interceptors $interceptors,
+            SupportedMimeTypes $supportedMimeTypes,
+            array $allowedMethods)
     {
-        parent::__construct($calledUri,
-                            $interceptors,
-                            $supportedMimeTypes
-        );
+        parent::__construct($injector, $calledUri, $interceptors, $supportedMimeTypes);
         $this->allowedMethods = $allowedMethods;
         if (!in_array('OPTIONS', $this->allowedMethods)) {
             $this->allowedMethods[] = 'OPTIONS';

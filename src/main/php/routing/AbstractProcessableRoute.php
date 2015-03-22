@@ -8,11 +8,14 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\routing;
+use stubbles\input\filter\AcceptFilter;
+use stubbles\peer\http;
+use stubbles\ioc\Injector;
 use stubbles\webapp\UriRequest;
 use stubbles\webapp\interceptor\Interceptors;
 use stubbles\webapp\request\Request;
 use stubbles\webapp\response\Response;
-use stubbles\webapp\response\SupportedMimeTypes;
+use stubbles\webapp\response\mimetypes\PassThrough;
 /**
  * Contains logic to process the route.
  *
@@ -20,6 +23,12 @@ use stubbles\webapp\response\SupportedMimeTypes;
  */
 abstract class AbstractProcessableRoute implements ProcessableRoute
 {
+    /**
+     * injector instance
+     *
+     * @type  \stubbles\ioc\Injector
+     */
+    protected $injector;
     /**
      * actual called uri
      *
@@ -42,14 +51,18 @@ abstract class AbstractProcessableRoute implements ProcessableRoute
     /**
      * constructor
      *
-     * @param  \stubbles\webapp\UriRequest                   $calledUri           actual called uri
-     * @param  \stubbles\webapp\interceptor\Interceptors     $interceptors
-     * @param  \stubbles\webapp\response\SupportedMimeTypes  $supportedMimeTypes
+     * @param  \stubbles\ioc\Injector                       $injector
+     * @param  \stubbles\webapp\UriRequest                  $calledUri           actual called uri
+     * @param  \stubbles\webapp\interceptor\Interceptors    $interceptors
+     * @param  \stubbles\webapp\routing\SupportedMimeTypes  $supportedMimeTypes
      */
-    public function __construct(UriRequest $calledUri,
-                                Interceptors $interceptors,
-                                SupportedMimeTypes $supportedMimeTypes)
+    public function __construct(
+            Injector $injector,
+            UriRequest $calledUri,
+            Interceptors $interceptors,
+            SupportedMimeTypes $supportedMimeTypes)
     {
+        $this->injector           = $injector;
         $this->calledUri          = $calledUri;
         $this->interceptors       = $interceptors;
         $this->supportedMimeTypes = $supportedMimeTypes;
@@ -66,13 +79,44 @@ abstract class AbstractProcessableRoute implements ProcessableRoute
     }
 
     /**
+     * negotiates proper mime type for given request
+     *
+     * @param   \stubbles\webapp\response\Request  $request
+     * @return  \stubbles\webapp\response\mimetypes\MimeType
+     * @since   6.0.0
+     */
+    public function negotiateMimeType(Request $request)
+    {
+        if ($this->supportedMimeTypes->isContentNegotationDisabled()) {
+            return new PassThrough();
+        }
+
+        $mimeType = $this->supportedMimeTypes->findMatch(
+                $request->readHeader('HTTP_ACCEPT')
+                        ->defaultingTo(http\emptyAcceptHeader())
+                        ->withFilter(new AcceptFilter())
+        );
+        if (null === $mimeType) {
+            return null;
+        }
+
+        if (!$this->supportedMimeTypes->provideClass($mimeType)) {
+            throw new \RuntimeException('No formatter defined for negotiated content type ' . $mimeType);
+        }
+
+        return $this->injector->getInstance(
+                $this->supportedMimeTypes->classFor($mimeType)
+        )->specialise($mimeType);
+    }
+
+    /**
      * returns list of supported mime types
      *
-     * @return  \stubbles\webapp\response\SupportedMimeTypes
+     * @return  string[]
      */
     public function supportedMimeTypes()
     {
-        return $this->supportedMimeTypes;
+        return $this->supportedMimeTypes->asArray();
     }
 
     /**

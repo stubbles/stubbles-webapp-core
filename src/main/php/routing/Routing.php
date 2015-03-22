@@ -15,7 +15,6 @@ use stubbles\webapp\auth\AuthorizingRoute;
 use stubbles\webapp\interceptor\Interceptors;
 use stubbles\webapp\interceptor\PreInterceptor;
 use stubbles\webapp\interceptor\PostInterceptor;
-use stubbles\webapp\response\SupportedMimeTypes;
 /**
  * Contains routing information and decides which route is applicable for given request.
  *
@@ -199,9 +198,10 @@ class Routing implements RoutingConfigurator
         }
 
         return new MissingRoute(
+                $this->injector,
                 $uriRequest,
                 $this->collectInterceptors($uriRequest),
-                SupportedMimeTypes::createWithDisabledContentNegotation()
+                $this->supportedMimeTypes()
         );
     }
 
@@ -235,11 +235,11 @@ class Routing implements RoutingConfigurator
     private function createMatchingRoute(UriRequest $calledUri, Route $routeConfig)
     {
         return new MatchingRoute(
+                $this->injector,
                 $calledUri,
                 $this->collectInterceptors($calledUri, $routeConfig),
-                $this->getSupportedMimeTypes($routeConfig),
-                $routeConfig,
-                $this->injector
+                $this->supportedMimeTypes($routeConfig),
+                $routeConfig
         );
     }
 
@@ -253,18 +253,20 @@ class Routing implements RoutingConfigurator
     {
         if ($calledUri->methodEquals('OPTIONS')) {
             return new OptionsRoute(
+                    $this->injector,
                     $calledUri,
                     $this->collectInterceptors($calledUri),
-                    SupportedMimeTypes::createWithDisabledContentNegotation(),
+                    $this->supportedMimeTypes(),
                     $this->getAllowedMethods($calledUri)
 
             );
         }
 
         return new MethodNotAllowedRoute(
+                $this->injector,
                 $calledUri,
                 $this->collectInterceptors($calledUri),
-                SupportedMimeTypes::createWithDisabledContentNegotation(),
+                $this->supportedMimeTypes(),
                 $this->getAllowedMethods($calledUri)
         );
     }
@@ -607,9 +609,9 @@ class Routing implements RoutingConfigurator
      * retrieves list of supported mime types
      *
      * @param   \stubbles\webapp\routing\Route  $routeConfig
-     * @return  \stubbles\webapp\response\SupportedMimeTypes
+     * @return  \stubbles\webapp\routing\SupportedMimeTypes
      */
-    private function getSupportedMimeTypes(Route $routeConfig = null)
+    private function supportedMimeTypes(Route $routeConfig = null)
     {
         if ($this->disableContentNegotation) {
             return SupportedMimeTypes::createWithDisabledContentNegotation();

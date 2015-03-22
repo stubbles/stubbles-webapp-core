@@ -7,7 +7,7 @@
  *
  * @package  stubbles\webapp
  */
-namespace stubbles\webapp\response;
+namespace stubbles\webapp\routing;
 use stubbles\peer\http\AcceptHeader;
 /**
  * Handles list of supported mime types.
@@ -74,7 +74,7 @@ class SupportedMimeTypes
     /**
      * creates instance which denotes that content negotation is disabled
      *
-     * @return  \stubbles\webapp\response\SupportedMimeTypes
+     * @return  \stubbles\webapp\routing\SupportedMimeTypes
      */
     public static function createWithDisabledContentNegotation()
     {

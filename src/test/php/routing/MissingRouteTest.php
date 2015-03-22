@@ -9,7 +9,6 @@
  */
 namespace stubbles\webapp\routing;
 use stubbles\webapp\UriRequest;
-use stubbles\webapp\response\SupportedMimeTypes;
 /**
  * Tests for stubbles\webapp\routing\MissingRoute.
  *
@@ -42,12 +41,16 @@ class MissingRouteTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->missingRoute = new MissingRoute(new UriRequest('http://example.com/hello/world', 'GET'),
-                                               $this->getMockBuilder('stubbles\webapp\interceptor\Interceptors')
-                                                    ->disableOriginalConstructor()
-                                                    ->getMock(),
-                                               new SupportedMimeTypes([])
-                              );
+        $this->missingRoute = new MissingRoute(
+                $this->getMockBuilder('stubbles\ioc\Injector')
+                        ->disableOriginalConstructor()
+                        ->getMock(),
+                new UriRequest('http://example.com/hello/world', 'GET'),
+                $this->getMockBuilder('stubbles\webapp\interceptor\Interceptors')
+                        ->disableOriginalConstructor()
+                        ->getMock(),
+                new SupportedMimeTypes([])
+        );
         $this->mockRequest  = $this->getMock('stubbles\webapp\request\Request');
         $this->mockResponse = $this->getMock('stubbles\webapp\response\Response');
     }
@@ -67,6 +70,11 @@ class MissingRouteTest extends \PHPUnit_Framework_TestCase
     {
         $this->mockResponse->expects($this->once())
                            ->method('notFound');
-        $this->assertTrue($this->missingRoute->process($this->mockRequest, $this->mockResponse));
+        $this->assertTrue(
+                $this->missingRoute->process(
+                        $this->mockRequest,
+                        $this->mockResponse
+                )
+        );
     }
 }

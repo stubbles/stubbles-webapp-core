@@ -7,10 +7,10 @@
  *
  * @package  stubbles\webapp
  */
-namespace stubbles\webapp\response;
+namespace stubbles\webapp\routing;
 use stubbles\peer\http\AcceptHeader;
 /**
- * Tests for stubbles\webapp\response\SupportedMimeTypes.
+ * Tests for stubbles\webapp\routing\SupportedMimeTypes.
  *
  * @since  2.2.0
  * @group  response

@@ -15,7 +15,6 @@ use stubbles\peer\MalformedUriException;
 use stubbles\webapp\request\Request;
 use stubbles\webapp\request\WebRequest;
 use stubbles\webapp\response\Response;
-use stubbles\webapp\response\ResponseNegotiator;
 use stubbles\webapp\response\WebResponse;
 use stubbles\webapp\routing\ProcessableRoute;
 use stubbles\webapp\routing\Routing;
@@ -30,12 +29,6 @@ abstract class WebApp extends App
      * @type  \stubbles\ioc\Injector
      */
     private $injector;
-    /**
-     * response negotiator
-     *
-     * @type  \stubbles\webapp\response\ResponseNegotiator
-     */
-    private $responseNegotiator;
     /**
      * build and contains routing information
      *
@@ -53,21 +46,18 @@ abstract class WebApp extends App
      * constructor
      *
      * @param  \stubbles\ioc\Injector                        $injector
-     * @param  \stubbles\webapp\response\ResponseNegotiator  $responseNegotiator  negoatiates based on request
-     * @param  \stubbles\webapp\routing\Routing              $routing             routes to logic based on request
-     * @param  \stubbles\lang\errorhandler\ExceptionLogger   $exceptionLogger     logs uncatched exceptions
+     * @param  \stubbles\webapp\routing\Routing              $routing          routes to logic based on request
+     * @param  \stubbles\lang\errorhandler\ExceptionLogger   $exceptionLogger  logs uncatched exceptions
      * @Inject
      */
     public function __construct(
             Injector $injector,
-            ResponseNegotiator $responseNegotiator,
             Routing $routing,
             ExceptionLogger $exceptionLogger)
     {
-        $this->injector           = $injector;
-        $this->responseNegotiator = $responseNegotiator;
-        $this->routing            = $routing;
-        $this->exceptionLogger    = $exceptionLogger;
+        $this->injector        = $injector;
+        $this->routing         = $routing;
+        $this->exceptionLogger = $exceptionLogger;
     }
 
     /**
@@ -80,16 +70,19 @@ abstract class WebApp extends App
         $request = WebRequest::fromRawSource();
         $this->configureRouting($this->routing);
         try {
-            $route    = $this->routing->findRoute($request->uri(), $request->method());
-            $response = $this->responseNegotiator->negotiateMimeType($request, $route->supportedMimeTypes());
-            if ($response->isFixed()) {
-                return $response;
-            }
-
+            $route = $this->routing->findRoute($request->uri(), $request->method());
             if ($this->switchToHttps($route)) {
+                $response = new WebResponse($request);
                 return $response->redirect($route->httpsUri());
             }
 
+            $mimeType = $route->negotiateMimeType($request);
+            if (null === $mimeType) {
+                $response = new WebResponse($request);
+                return $response->notAcceptable($route->supportedMimeTypes());
+            }
+
+            $response = new WebResponse($request, $mimeType);
             $session = $request->attachSession(
                     $this->createSession($request, $response)
             );
