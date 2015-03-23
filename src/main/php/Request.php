@@ -83,7 +83,7 @@ interface Request extends \stubbles\input\Request
      * matches the user agent of a bot.
      *
      * @param   string[]  $botSignatures  optional  additional list of bot user agent signatures
-     * @return  \stubbles\input\web\useragent\UserAgent
+     * @return  \stubbles\webapp\request\UserAgent
      * @since   4.1.0
      */
     public function userAgent($botSignatures = []);
