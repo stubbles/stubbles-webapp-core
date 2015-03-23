@@ -11,7 +11,8 @@ namespace stubbles\webapp\response;
 /**
  * Represents an error.
  *
- * @XmlTag(tagName='error');
+ * @XmlTag(tagName='error')
+ * @since  6.0.0
  */
 class Error implements \JsonSerializable
 {
