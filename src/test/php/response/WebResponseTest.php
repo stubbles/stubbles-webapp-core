@@ -320,8 +320,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
         $this->response = $this->createResponse(HttpVersion::HTTP_1_1, Http::HEAD);
         $mockOutputStream = $this->getMock('stubbles\streams\OutputStream');
         $mockOutputStream->expects($this->never())->method('write');
-        $this->response->write('foo')
-                       ->send($mockOutputStream);
+        $this->response->write('foo')->send($mockOutputStream);
     }
 
     /**
@@ -346,8 +345,8 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
         $this->response->expects($this->at(1))
                        ->method('header')
                        ->with($this->equalTo('Location: http://example.com/'));
-        $this->response->redirect('http://example.com/', 301)
-                       ->send($this->memoryOutputStream);
+        $this->response->redirect('http://example.com/', 301);
+        $this->response->send();
     }
 
     /**
@@ -363,8 +362,8 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
         $this->response->expects($this->at(1))
                        ->method('header')
                        ->with($this->equalTo('Location: http://example.com/'));
-        $this->response->redirect('http://example.com/')
-                       ->send($this->memoryOutputStream);
+        $this->response->redirect('http://example.com/');
+        $this->response->send();
     }
 
     /**
@@ -376,8 +375,17 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
         $this->response->expects($this->at(0))
                        ->method('header')
                        ->with($this->equalTo('HTTP/1.1 403 Forbidden'));
-        $this->response->forbidden()
-                       ->send($this->memoryOutputStream);
+        $this->response->forbidden();
+        $this->response->send();
+    }
+
+    /**
+     * @since  6.0.0
+     * @test
+     */
+    public function forbiddenReturnsErrorInstance()
+    {
+        $this->assertEquals(Error::forbidden(), $this->response->forbidden());
     }
 
     /**
@@ -387,7 +395,8 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function forbiddenFixatesResponse()
     {
-        $this->assertTrue($this->response->forbidden()->isFixed());
+        $this->response->forbidden();
+        $this->assertTrue($this->response->isFixed());
     }
 
     /**
@@ -399,8 +408,17 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
         $this->response->expects($this->at(0))
                        ->method('header')
                        ->with($this->equalTo('HTTP/1.1 404 Not Found'));
-        $this->response->notFound()
-                       ->send($this->memoryOutputStream);
+        $this->response->notFound();
+        $this->response->send();
+    }
+
+    /**
+     * @since  6.0.0
+     * @test
+     */
+    public function notFoundReturnsErrorInstance()
+    {
+        $this->assertEquals(Error::notFound(), $this->response->notFound());
     }
 
     /**
@@ -410,7 +428,8 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function notFoundFixatesResponse()
     {
-        $this->assertTrue($this->response->notFound()->isFixed());
+        $this->response->notFound();
+        $this->assertTrue($this->response->isFixed());
     }
 
     /**
@@ -425,8 +444,20 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
         $this->response->expects($this->at(1))
                        ->method('header')
                        ->with($this->equalTo('Allow: GET, HEAD'));
-        $this->response->methodNotAllowed('POST', ['GET', 'HEAD'])
-                       ->send($this->memoryOutputStream);
+        $this->response->methodNotAllowed('POST', ['GET', 'HEAD']);
+        $this->response->send();
+    }
+
+    /**
+     * @since  6.0.0
+     * @test
+     */
+    public function methodNotAllowedReturnsErrorInstance()
+    {
+        $this->assertEquals(
+                Error::methodNotAllowed('POST', ['GET', 'HEAD']),
+                $this->response->methodNotAllowed('POST', ['GET', 'HEAD'])
+        );
     }
 
     /**
@@ -436,10 +467,8 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function methodNotAllowedFixatesResponse()
     {
-        $this->assertTrue(
-                $this->response->methodNotAllowed('POST', ['GET', 'HEAD'])
-                        ->isFixed()
-        );
+        $this->response->methodNotAllowed('POST', ['GET', 'HEAD']);
+        $this->assertTrue($this->response->isFixed());
     }
 
     /**
@@ -451,8 +480,8 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
         $this->response->expects($this->at(0))
                        ->method('header')
                        ->with($this->equalTo('HTTP/1.1 406 Not Acceptable'));
-        $this->response->notAcceptable()
-                       ->send($this->memoryOutputStream);
+        $this->response->notAcceptable();
+        $this->response->send();
     }
 
     /**
@@ -462,7 +491,8 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function notAcceptableFixatesResponse()
     {
-        $this->assertTrue($this->response->notAcceptable()->isFixed());
+        $this->response->notAcceptable();
+        $this->assertTrue($this->response->isFixed());
     }
 
     /**
@@ -477,8 +507,8 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
         $this->response->expects($this->at(1))
                        ->method('header')
                        ->with($this->equalTo('X-Acceptable: application/json, application/xml'));
-        $this->response->notAcceptable(['application/json', 'application/xml'])
-                       ->send($this->memoryOutputStream);
+        $this->response->notAcceptable(['application/json', 'application/xml']);
+        $this->response->send();
     }
 
     /**
@@ -490,11 +520,19 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
         $this->response->expects($this->at(0))
                        ->method('header')
                        ->with($this->equalTo('HTTP/1.1 500 Internal Server Error'));
+        $this->response->internalServerError('ups!');
+        $this->response->send();
+    }
+
+    /**
+     * @since  6.0.0
+     * @test
+     */
+    public function internalServerErrorReturnsErrorInstance()
+    {
         $this->assertEquals(
-                'Internal Server Error: ups!',
+                Error::internalServerError('ups!'),
                 $this->response->internalServerError('ups!')
-                        ->send($this->memoryOutputStream)
-                        ->buffer()
         );
     }
 
@@ -505,7 +543,8 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function internalServerErrorFixatesResponse()
     {
-        $this->assertTrue($this->response->internalServerError('ups')->isFixed());
+        $this->response->internalServerError('ups');
+        $this->assertTrue($this->response->isFixed());
     }
 
     /**
@@ -517,11 +556,10 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
         $this->response->expects($this->at(0))
                        ->method('header')
                        ->with($this->equalTo('HTTP/1.1 505 HTTP Version Not Supported'));
+        $this->response->httpVersionNotSupported();
         $this->assertEquals(
-                'Unsupported HTTP protocol version, expected HTTP/1.0 or HTTP/1.1',
-                $this->response->httpVersionNotSupported()
-                        ->send($this->memoryOutputStream)
-                        ->buffer()
+                'Error: Unsupported HTTP protocol version, expected HTTP/1.0 or HTTP/1.1',
+                $this->response->send($this->memoryOutputStream)->buffer()
         );
     }
 
@@ -532,7 +570,8 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function httpVersionNotSupportedFixatesResponse()
     {
-        $this->assertTrue($this->response->httpVersionNotSupported()->isFixed());
+        $this->response->httpVersionNotSupported();
+        $this->assertTrue($this->response->isFixed());
     }
 
     /**
@@ -560,7 +599,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
                  ->method('header')
                  ->with($this->equalTo('HTTP/1.1 505 HTTP Version Not Supported'));
         $this->assertEquals(
-                'Unsupported HTTP protocol version, expected HTTP/1.0 or HTTP/1.1',
+                'Error: Unsupported HTTP protocol version, expected HTTP/1.0 or HTTP/1.1',
                 $response->send($this->memoryOutputStream)->buffer()
         );
     }

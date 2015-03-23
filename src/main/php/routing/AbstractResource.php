@@ -19,7 +19,7 @@ use stubbles\webapp\interceptor\Interceptors;
  *
  * @since  2.2.0
  */
-abstract class AbstractProcessableRoute implements ProcessableRoute
+abstract class AbstractResource implements Resource
 {
     /**
      * injector instance

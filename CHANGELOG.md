@@ -8,6 +8,15 @@
    * both request and response are not available via injection any more
    * session instance must now be created in `stubbles\webapp\Webapp::createSession()` instead of passing a session creator closure to io bindings
    * moved `stubbles\webapp\ioc\Auth` to `stubbles\webapp\auth\Auth`
+   * changed status code changing methods to return a `stubbles\webapp\response\Error` instead of itself:
+     * `stubbles\webapp\Response::forbidden()`
+     * `stubbles\webapp\Response::notFound()`
+     * `stubbles\webapp\Response::methodNotAllowed()`
+     * `stubbles\webapp\Response::internalServerError()`
+   * changed status code changing methods to return nothing instead of itself:
+     * `stubbles\webapp\Response::redirect()`
+     * `stubbles\webapp\Response::notAcceptable()`
+     * `stubbles\webapp\Response::httpVersionNotSupported()`
 
 ### Other changes
 

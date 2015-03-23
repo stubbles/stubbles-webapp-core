@@ -11,22 +11,22 @@ namespace stubbles\webapp\auth;
 use stubbles\peer\http\HttpUri;
 use stubbles\webapp\auth\ioc\RolesProvider;
 use stubbles\webapp\auth\ioc\UserProvider;
+use stubbles\webapp\response\Error;
 use stubbles\webapp\routing\RoutingAnnotations;
-use stubbles\webapp\routing\SupportedMimeTypes;
 /**
- * Tests for stubbles\webapp\auth\AuthorizingRoute.
+ * Tests for stubbles\webapp\auth\ProtectedResource.
  *
  * @since  3.0.0
  * @group  auth
  */
-class AuthorizingRouteTest extends \PHPUnit_Framework_TestCase
+class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * instance to test
      *
-     * @type  \stubbles\webapp\auth\AuthorizingRoute
+     * @type  \stubbles\webapp\auth\ProtectedResource
      */
-    private $authorizingRoute;
+    private $protectedResource;
     /**
      * route configuration
      *
@@ -64,11 +64,11 @@ class AuthorizingRouteTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->authConstraint   = new AuthConstraint(new RoutingAnnotations(function() {}));
-        $this->mockActualRoute  = $this->getMock('stubbles\webapp\routing\ProcessableRoute');
+        $this->mockActualRoute  = $this->getMock('stubbles\webapp\routing\Resource');
         $this->mockInjector     = $this->getMockBuilder('stubbles\ioc\Injector')
                                        ->disableOriginalConstructor()
                                        ->getMock();
-        $this->authorizingRoute = new AuthorizingRoute(
+        $this->protectedResource = new ProtectedResource(
                 $this->authConstraint,
                 $this->mockActualRoute,
                 $this->mockInjector
@@ -94,7 +94,7 @@ class AuthorizingRouteTest extends \PHPUnit_Framework_TestCase
         $this->mockActualRoute->expects($this->once())
                               ->method('requiresHttps')
                               ->will($this->returnValue(true));
-        $this->assertTrue($this->authorizingRoute->requiresHttps());
+        $this->assertTrue($this->protectedResource->requiresHttps());
     }
 
     /**
@@ -106,7 +106,7 @@ class AuthorizingRouteTest extends \PHPUnit_Framework_TestCase
         $this->mockActualRoute->expects($this->once())
                               ->method('httpsUri')
                               ->will($this->returnValue($httpsUri));
-        $this->assertSame($httpsUri, $this->authorizingRoute->httpsUri());
+        $this->assertSame($httpsUri, $this->protectedResource->httpsUri());
     }
 
     /**
@@ -119,7 +119,7 @@ class AuthorizingRouteTest extends \PHPUnit_Framework_TestCase
                               ->method('negotiateMimeType')
                               ->will($this->returnValue(true));
         $this->assertTrue(
-                $this->authorizingRoute->negotiateMimeType(
+                $this->protectedResource->negotiateMimeType(
                         $this->mockRequest,
                         $this->mockResponse
                 )
@@ -136,7 +136,7 @@ class AuthorizingRouteTest extends \PHPUnit_Framework_TestCase
                               ->will($this->returnValue(['application/foo']));
         $this->assertEquals(
                 ['application/foo'],
-                $this->authorizingRoute->supportedMimeTypes()
+                $this->protectedResource->supportedMimeTypes()
         );
     }
 
@@ -158,16 +158,30 @@ class AuthorizingRouteTest extends \PHPUnit_Framework_TestCase
      */
     public function applyPreInterceptorsTriggersInternalServerErrorWhenAuthenticationThrowsInternalAuthProviderException()
     {
+        $e = new InternalAuthProviderException('error');
         $mockAuthenticationProvider = $this->mockAuthenticationProvider();
         $mockAuthenticationProvider->expects($this->once())
-                                   ->method('authenticate')
-                                   ->will($this->throwException(new InternalAuthProviderException('error')));
+                ->method('authenticate')
+                ->will($this->throwException($e));
         $this->mockResponse->expects($this->once())
                            ->method('internalServerError')
-                           ->with($this->equalTo('error'));
+                           ->with($this->equalTo($e))
+                           ->will($this->returnValue(Error::internalServerError($e)));
         $this->mockActualRoute->expects($this->never())
                               ->method('applyPreInterceptors');
-        $this->assertFalse($this->authorizingRoute->applyPreInterceptors($this->mockRequest, $this->mockResponse));
+        $this->assertFalse(
+                $this->protectedResource->applyPreInterceptors(
+                        $this->mockRequest,
+                        $this->mockResponse
+                )
+        );
+        $this->assertEquals(
+                Error::internalServerError($e),
+                $this->protectedResource->data(
+                        $this->mockRequest,
+                        $this->mockResponse
+                )
+        );
     }
 
     /**
@@ -179,18 +193,27 @@ class AuthorizingRouteTest extends \PHPUnit_Framework_TestCase
     {
         $mockAuthenticationProvider = $this->mockAuthenticationProvider();
         $mockAuthenticationProvider->expects($this->once())
-                                   ->method('authenticate')
-                                   ->will($this->throwException(new ExternalAuthProviderException('error')));
+                ->method('authenticate')
+                ->will($this->throwException(new ExternalAuthProviderException('error')));
         $this->mockResponse->expects($this->once())
                            ->method('setStatusCode')
                            ->with($this->equalTo(504))
                            ->will($this->returnSelf());
-        $this->mockResponse->expects($this->once())
-                           ->method('write')
-                           ->with($this->equalTo('error'));
         $this->mockActualRoute->expects($this->never())
                               ->method('applyPreInterceptors');
-        $this->assertFalse($this->authorizingRoute->applyPreInterceptors($this->mockRequest, $this->mockResponse));
+        $this->assertFalse(
+                $this->protectedResource->applyPreInterceptors(
+                        $this->mockRequest,
+                        $this->mockResponse
+                )
+        );
+        $this->assertEquals(
+                new Error('error'),
+                $this->protectedResource->data(
+                        $this->mockRequest,
+                        $this->mockResponse
+                )
+        );
     }
 
     /**
@@ -200,17 +223,28 @@ class AuthorizingRouteTest extends \PHPUnit_Framework_TestCase
     {
         $mockAuthenticationProvider = $this->mockAuthenticationProvider();
         $mockAuthenticationProvider->expects($this->once())
-                                   ->method('authenticate')
-                                   ->will($this->returnValue(null));
+                ->method('authenticate')
+                ->will($this->returnValue(null));
         $mockAuthenticationProvider->expects($this->once())
-                                   ->method('loginUri')
-                                   ->will($this->returnValue('https://login.example.com/'));
+                ->method('loginUri')
+                ->will($this->returnValue('https://login.example.com/'));
         $this->mockResponse->expects($this->once())
-                           ->method('redirect')
-                           ->with($this->equalTo('https://login.example.com/'));
+                ->method('redirect')
+                ->with($this->equalTo('https://login.example.com/'));
         $this->mockActualRoute->expects($this->never())
-                              ->method('applyPreInterceptors');
-        $this->assertFalse($this->authorizingRoute->applyPreInterceptors($this->mockRequest, $this->mockResponse));
+                ->method('applyPreInterceptors');
+        $this->assertFalse(
+                $this->protectedResource->applyPreInterceptors(
+                        $this->mockRequest,
+                        $this->mockResponse
+                )
+        );
+        $this->assertNull(
+                $this->protectedResource->data(
+                        $this->mockRequest,
+                        $this->mockResponse
+                )
+        );
     }
 
     /**
@@ -223,13 +257,26 @@ class AuthorizingRouteTest extends \PHPUnit_Framework_TestCase
         $this->authConstraint->forbiddenWhenNotAlreadyLoggedIn();
         $mockAuthenticationProvider = $this->mockAuthenticationProvider();
         $mockAuthenticationProvider->expects($this->once())
-                                   ->method('authenticate')
-                                   ->will($this->returnValue(null));
+                ->method('authenticate')
+                ->will($this->returnValue(null));
         $this->mockResponse->expects($this->once())
-                           ->method('forbidden');
+                ->method('forbidden')
+                ->will($this->returnValue(Error::forbidden()));
         $this->mockActualRoute->expects($this->never())
-                              ->method('applyPreInterceptors');
-        $this->assertFalse($this->authorizingRoute->applyPreInterceptors($this->mockRequest, $this->mockResponse));
+                ->method('applyPreInterceptors');
+        $this->assertFalse(
+                $this->protectedResource->applyPreInterceptors(
+                        $this->mockRequest,
+                        $this->mockResponse
+                )
+        );
+        $this->assertEquals(
+                Error::forbidden(),
+                $this->protectedResource->data(
+                        $this->mockRequest,
+                        $this->mockResponse
+                )
+        );
     }
 
     /**
@@ -240,13 +287,18 @@ class AuthorizingRouteTest extends \PHPUnit_Framework_TestCase
         $this->authConstraint->requireLogin();
         $mockAuthenticationProvider = $this->mockAuthenticationProvider();
         $mockAuthenticationProvider->expects($this->once())
-                                   ->method('authenticate')
-                                   ->will($this->returnValue($this->getMock('stubbles\webapp\auth\User')));
+                ->method('authenticate')
+                ->will($this->returnValue($this->getMock('stubbles\webapp\auth\User')));
         $this->mockActualRoute->expects($this->once())
-                              ->method('applyPreInterceptors')
-                              ->with($this->equalTo($this->mockRequest), $this->equalTo($this->mockResponse))
-                              ->will($this->returnValue(true));
-        $this->assertTrue($this->authorizingRoute->applyPreInterceptors($this->mockRequest, $this->mockResponse));
+                ->method('applyPreInterceptors')
+                ->with($this->equalTo($this->mockRequest), $this->equalTo($this->mockResponse))
+                ->will($this->returnValue(true));
+        $this->assertTrue(
+                $this->protectedResource->applyPreInterceptors(
+                        $this->mockRequest,
+                        $this->mockResponse
+                )
+        );
     }
 
     /**
@@ -258,9 +310,9 @@ class AuthorizingRouteTest extends \PHPUnit_Framework_TestCase
         $this->authConstraint->requireLogin();
         $mockAuthenticationProvider = $this->mockAuthenticationProvider();
         $mockAuthenticationProvider->expects($this->once())
-                                   ->method('authenticate')
-                                   ->will($this->returnValue($user));
-        $this->authorizingRoute->applyPreInterceptors($this->mockRequest, $this->mockResponse);
+                ->method('authenticate')
+                ->will($this->returnValue($user));
+        $this->protectedResource->applyPreInterceptors($this->mockRequest, $this->mockResponse);
         $userProvider = new UserProvider();
         $this->assertSame($user, $userProvider->get());
     }
@@ -273,13 +325,15 @@ class AuthorizingRouteTest extends \PHPUnit_Framework_TestCase
     {
         $mockAuthenticationProvider = $this->getMock('stubbles\webapp\auth\AuthenticationProvider');
         $mockAuthenticationProvider->expects($this->once())
-                                   ->method('authenticate')
-                                   ->will($this->returnValue(
-                                           ($user === null) ? $this->getMock('stubbles\webapp\auth\User') : $user));
+                ->method('authenticate')
+                ->will($this->returnValue(
+                        ($user === null) ? $this->getMock('stubbles\webapp\auth\User') : $user
+                    )
+                );
         $mockAuthorizationProvider = $this->getMock('stubbles\webapp\auth\AuthorizationProvider');
         $this->mockInjector->expects($this->exactly(2))
-                           ->method('getInstance')
-                           ->will($this->onConsecutiveCalls($mockAuthenticationProvider, $mockAuthorizationProvider));
+                ->method('getInstance')
+                ->will($this->onConsecutiveCalls($mockAuthenticationProvider, $mockAuthorizationProvider));
         return $mockAuthorizationProvider;
     }
 
@@ -289,17 +343,31 @@ class AuthorizingRouteTest extends \PHPUnit_Framework_TestCase
      */
     public function applyPreInterceptorsTriggersInternalServerErrorWhenAuthorizationThrowsAuthHandlerException()
     {
+        $e = new InternalAuthProviderException('error');
         $this->authConstraint->requireRole('admin');
         $mockAuthorizationProvider = $this->mockAuthorizationProvider();
         $mockAuthorizationProvider->expects($this->once())
-                                  ->method('roles')
-                                  ->will($this->throwException(new InternalAuthProviderException('error')));
+                ->method('roles')
+                ->will($this->throwException($e));
         $this->mockResponse->expects($this->once())
                            ->method('internalServerError')
-                           ->with($this->equalTo('error'));
+                           ->with($this->equalTo($e))
+                           ->will($this->returnValue(Error::internalServerError($e)));
         $this->mockActualRoute->expects($this->never())
                               ->method('applyPreInterceptors');
-        $this->assertFalse($this->authorizingRoute->applyPreInterceptors($this->mockRequest, $this->mockResponse));
+        $this->assertFalse(
+                $this->protectedResource->applyPreInterceptors(
+                        $this->mockRequest,
+                        $this->mockResponse
+                )
+        );
+        $this->assertEquals(
+                Error::internalServerError($e),
+                $this->protectedResource->data(
+                        $this->mockRequest,
+                        $this->mockResponse
+                )
+        );
     }
 
     /**
@@ -312,18 +380,27 @@ class AuthorizingRouteTest extends \PHPUnit_Framework_TestCase
         $this->authConstraint->requireRole('admin');
         $mockAuthorizationProvider = $this->mockAuthorizationProvider();
         $mockAuthorizationProvider->expects($this->once())
-                                  ->method('roles')
-                                  ->will($this->throwException(new ExternalAuthProviderException('error')));
+                ->method('roles')
+                ->will($this->throwException(new ExternalAuthProviderException('error')));
         $this->mockResponse->expects($this->once())
-                           ->method('setStatusCode')
-                           ->with($this->equalTo(504))
-                           ->will($this->returnSelf());
-        $this->mockResponse->expects($this->once())
-                           ->method('write')
-                           ->with($this->equalTo('error'));
+                ->method('setStatusCode')
+                ->with($this->equalTo(504))
+                ->will($this->returnSelf());
         $this->mockActualRoute->expects($this->never())
-                              ->method('applyPreInterceptors');
-        $this->assertFalse($this->authorizingRoute->applyPreInterceptors($this->mockRequest, $this->mockResponse));
+                ->method('applyPreInterceptors');
+        $this->assertFalse(
+                $this->protectedResource->applyPreInterceptors(
+                        $this->mockRequest,
+                        $this->mockResponse
+                )
+        );
+        $this->assertEquals(
+                new Error('error'),
+                $this->protectedResource->data(
+                        $this->mockRequest,
+                        $this->mockResponse
+                )
+        );
     }
 
     /**
@@ -334,13 +411,26 @@ class AuthorizingRouteTest extends \PHPUnit_Framework_TestCase
         $this->authConstraint->requireRole('admin');
         $mockAuthorizationProvider = $this->mockAuthorizationProvider();
         $mockAuthorizationProvider->expects($this->once())
-                                  ->method('roles')
-                                  ->will($this->returnValue(Roles::none()));
+                ->method('roles')
+                ->will($this->returnValue(Roles::none()));
         $this->mockResponse->expects($this->once())
-                           ->method('forbidden');
+                ->method('forbidden')
+                ->will($this->returnValue(Error::forbidden()));
         $this->mockActualRoute->expects($this->never())
-                              ->method('applyPreInterceptors');
-        $this->assertFalse($this->authorizingRoute->applyPreInterceptors($this->mockRequest, $this->mockResponse));
+                ->method('applyPreInterceptors');
+        $this->assertFalse(
+                $this->protectedResource->applyPreInterceptors(
+                        $this->mockRequest,
+                        $this->mockResponse
+                )
+        );
+        $this->assertEquals(
+                Error::forbidden(),
+                $this->protectedResource->data(
+                        $this->mockRequest,
+                        $this->mockResponse
+                )
+        );
     }
 
     /**
@@ -351,13 +441,18 @@ class AuthorizingRouteTest extends \PHPUnit_Framework_TestCase
         $this->authConstraint->requireRole('admin');
         $mockAuthorizationProvider = $this->mockAuthorizationProvider();
         $mockAuthorizationProvider->expects($this->once())
-                                  ->method('roles')
-                                  ->will($this->returnValue(new Roles(['admin'])));
+                ->method('roles')
+                ->will($this->returnValue(new Roles(['admin'])));
         $this->mockActualRoute->expects($this->once())
-                              ->method('applyPreInterceptors')
-                              ->with($this->equalTo($this->mockRequest), $this->equalTo($this->mockResponse))
-                              ->will($this->returnValue(true));
-        $this->assertTrue($this->authorizingRoute->applyPreInterceptors($this->mockRequest, $this->mockResponse));
+                ->method('applyPreInterceptors')
+                ->with($this->equalTo($this->mockRequest), $this->equalTo($this->mockResponse))
+                ->will($this->returnValue(true));
+        $this->assertTrue(
+                $this->protectedResource->applyPreInterceptors(
+                        $this->mockRequest,
+                        $this->mockResponse
+                )
+        );
     }
 
     /**
@@ -369,9 +464,12 @@ class AuthorizingRouteTest extends \PHPUnit_Framework_TestCase
         $this->authConstraint->requireRole('admin');
         $mockAuthorizationProvider = $this->mockAuthorizationProvider($user);
         $mockAuthorizationProvider->expects($this->once())
-                                  ->method('roles')
-                                  ->will($this->returnValue(new Roles(['admin'])));
-        $this->authorizingRoute->applyPreInterceptors($this->mockRequest, $this->mockResponse);
+                ->method('roles')
+                ->will($this->returnValue(new Roles(['admin'])));
+        $this->protectedResource->applyPreInterceptors(
+                $this->mockRequest,
+                $this->mockResponse
+        );
         $userProvider = new UserProvider();
         $this->assertSame($user, $userProvider->get());
     }
@@ -385,9 +483,12 @@ class AuthorizingRouteTest extends \PHPUnit_Framework_TestCase
         $mockAuthorizationProvider = $this->mockAuthorizationProvider();
         $roles = new Roles(['admin']);
         $mockAuthorizationProvider->expects($this->once())
-                                  ->method('roles')
-                                  ->will($this->returnValue($roles));
-        $this->authorizingRoute->applyPreInterceptors($this->mockRequest, $this->mockResponse);
+                ->method('roles')
+                ->will($this->returnValue($roles));
+        $this->protectedResource->applyPreInterceptors(
+                $this->mockRequest,
+                $this->mockResponse
+        );
         $rolesProvider = new RolesProvider();
         $this->assertSame($roles, $rolesProvider->get());
     }
@@ -399,7 +500,12 @@ class AuthorizingRouteTest extends \PHPUnit_Framework_TestCase
     {
         $this->mockActualRoute->expects($this->never())
                               ->method('process');
-        $this->assertFalse($this->authorizingRoute->process($this->mockRequest, $this->mockResponse));
+        $this->assertNull(
+                $this->protectedResource->data(
+                        $this->mockRequest,
+                        $this->mockResponse
+                )
+        );
     }
 
     /**
@@ -410,18 +516,29 @@ class AuthorizingRouteTest extends \PHPUnit_Framework_TestCase
         $this->authConstraint->requireRole('admin');
         $mockAuthorizationProvider = $this->mockAuthorizationProvider();
         $mockAuthorizationProvider->expects($this->once())
-                                  ->method('roles')
-                                  ->will($this->returnValue(new Roles(['admin'])));
+                ->method('roles')
+                ->will($this->returnValue(new Roles(['admin'])));
         $this->mockActualRoute->expects($this->once())
-                              ->method('applyPreInterceptors')
-                              ->with($this->equalTo($this->mockRequest), $this->equalTo($this->mockResponse))
-                              ->will($this->returnValue(true));
+                ->method('applyPreInterceptors')
+                ->with($this->equalTo($this->mockRequest), $this->equalTo($this->mockResponse))
+                ->will($this->returnValue(true));
         $this->mockActualRoute->expects($this->once())
-                              ->method('process')
-                              ->with($this->equalTo($this->mockRequest), $this->equalTo($this->mockResponse))
-                              ->will($this->returnValue(true));
-        $this->assertTrue($this->authorizingRoute->applyPreInterceptors($this->mockRequest, $this->mockResponse));
-        $this->assertTrue($this->authorizingRoute->process($this->mockRequest, $this->mockResponse));
+                ->method('data')
+                ->with($this->equalTo($this->mockRequest), $this->equalTo($this->mockResponse))
+                ->will($this->returnValue('foo'));
+        $this->assertTrue(
+                $this->protectedResource->applyPreInterceptors(
+                        $this->mockRequest,
+                        $this->mockResponse
+                )
+        );
+        $this->assertEquals(
+                'foo',
+                $this->protectedResource->data(
+                        $this->mockRequest,
+                        $this->mockResponse
+                )
+        );
     }
 
     /**
@@ -431,7 +548,12 @@ class AuthorizingRouteTest extends \PHPUnit_Framework_TestCase
     {
         $this->mockActualRoute->expects($this->never())
                               ->method('applyPostInterceptors');
-        $this->assertFalse($this->authorizingRoute->applyPostInterceptors($this->mockRequest, $this->mockResponse));
+        $this->assertFalse(
+                $this->protectedResource->applyPostInterceptors(
+                        $this->mockRequest,
+                        $this->mockResponse
+                )
+        );
     }
 
     /**
@@ -442,17 +564,27 @@ class AuthorizingRouteTest extends \PHPUnit_Framework_TestCase
         $this->authConstraint->requireRole('admin');
         $mockAuthorizationProvider = $this->mockAuthorizationProvider();
         $mockAuthorizationProvider->expects($this->once())
-                                  ->method('roles')
-                                  ->will($this->returnValue(new Roles(['admin'])));
+                ->method('roles')
+                ->will($this->returnValue(new Roles(['admin'])));
         $this->mockActualRoute->expects($this->once())
-                              ->method('applyPreInterceptors')
-                              ->with($this->equalTo($this->mockRequest), $this->equalTo($this->mockResponse))
-                              ->will($this->returnValue(true));
+                ->method('applyPreInterceptors')
+                ->with($this->equalTo($this->mockRequest), $this->equalTo($this->mockResponse))
+                ->will($this->returnValue(true));
         $this->mockActualRoute->expects($this->once())
-                              ->method('applyPostInterceptors')
-                              ->with($this->equalTo($this->mockRequest), $this->equalTo($this->mockResponse))
-                              ->will($this->returnValue(true));
-        $this->assertTrue($this->authorizingRoute->applyPreInterceptors($this->mockRequest, $this->mockResponse));
-        $this->assertTrue($this->authorizingRoute->applyPostInterceptors($this->mockRequest, $this->mockResponse));
+                ->method('applyPostInterceptors')
+                ->with($this->equalTo($this->mockRequest), $this->equalTo($this->mockResponse))
+                ->will($this->returnValue(true));
+        $this->assertTrue(
+                $this->protectedResource->applyPreInterceptors(
+                        $this->mockRequest,
+                        $this->mockResponse
+                )
+        );
+        $this->assertTrue(
+                $this->protectedResource->applyPostInterceptors(
+                        $this->mockRequest,
+                        $this->mockResponse
+                )
+        );
     }
 }

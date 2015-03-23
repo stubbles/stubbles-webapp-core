@@ -13,11 +13,12 @@ use stubbles\webapp\Request;
 use stubbles\webapp\Response;
 use stubbles\webapp\interceptor\Interceptors;
 /**
- * Processable route which denotes a 405 Method Not Allowed route.
+ * Denotes an answer to an OPTIONS request when no specific route for such
+ * requests was configured.
  *
  * @since  2.2.0
  */
-class MethodNotAllowedRoute extends AbstractProcessableRoute
+class ResourceOptions extends AbstractResource
 {
     /**
      * list of actually allowed request methods
@@ -64,12 +65,15 @@ class MethodNotAllowedRoute extends AbstractProcessableRoute
      *
      * @param   \stubbles\webapp\Request   $request   current request
      * @param   \stubbles\webapp\Response  $response  response to send
-     * @return  bool
+     * @return  void
      */
-    public function process(Request $request, Response $response)
+    public function data(Request $request, Response $response)
     {
-        $response->methodNotAllowed($request->method(), $this->allowedMethods);
-        return true;
+        $response->addHeader('Allow', join(', ', $this->allowedMethods))
+                ->addHeader(
+                        'Access-Control-Allow-Methods',
+                        join(', ', $this->allowedMethods)
+                );
     }
 
 }

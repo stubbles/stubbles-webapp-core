@@ -13,7 +13,7 @@ use stubbles\ioc\Injector;
 use stubbles\peer\MalformedUriException;
 use stubbles\webapp\request\WebRequest;
 use stubbles\webapp\response\WebResponse;
-use stubbles\webapp\routing\ProcessableRoute;
+use stubbles\webapp\routing\Resource;
 use stubbles\webapp\routing\Routing;
 /**
  * Abstract base class for web applications.
@@ -67,28 +67,27 @@ abstract class WebApp extends App
         }
 
         $this->configureRouting($this->routing);
-        $route = $this->routing->findRoute($requestUri, $request->method());
-        if ($this->switchToHttps($route)) {
-            $response->status()->redirect($route->httpsUri());
+        $resource = $this->routing->findResource($requestUri, $request->method());
+        if ($this->switchToHttps($resource)) {
+            $response->redirect($resource->httpsUri());
             return $response;
         }
 
         try {
-            if (!$route->negotiateMimeType($request, $response)) {
+            if (!$resource->negotiateMimeType($request, $response)) {
                 return $response;
             }
 
             $this->sessionHandshake($request, $response);
-            if ($route->applyPreInterceptors($request, $response)) {
-                if ($route->process($request, $response)) {
-                    $route->applyPostInterceptors($request, $response);
-                }
+            if ($resource->applyPreInterceptors($request, $response)) {
+                $response->write($resource->data($request, $response));
+                $resource->applyPostInterceptors($request, $response);
             }
         } catch (\Exception $e) {
             $this->injector->getInstance(
                     'stubbles\lang\errorhandler\ExceptionLogger'
             )->log($e);
-            $response->internalServerError($e->getMessage());
+            $response->write($response->internalServerError($e->getMessage()));
         }
 
         return $response;
@@ -127,12 +126,12 @@ abstract class WebApp extends App
     /**
      * checks whether a switch to https must be made
      *
-     * @param   \stubbles\webapp\routing\ProcessableRoute  $route
+     * @param   \stubbles\webapp\routing\Resource  $resource
      * @return  bool
      */
-    protected function switchToHttps(ProcessableRoute $route)
+    protected function switchToHttps(Resource $resource)
     {
-        return $route->requiresHttps();
+        return $resource->requiresHttps();
     }
 
     /**

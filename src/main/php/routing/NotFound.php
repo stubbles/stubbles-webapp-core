@@ -11,11 +11,11 @@ namespace stubbles\webapp\routing;
 use stubbles\webapp\Request;
 use stubbles\webapp\Response;
 /**
- * Processable route which denotes a 404 Not Found.
+ * Represents a missing resource.
  *
  * @since  2.2.0
  */
-class MissingRoute extends AbstractProcessableRoute
+class NotFound extends AbstractResource
 {
     /**
      * checks whether switch to https is required
@@ -32,11 +32,10 @@ class MissingRoute extends AbstractProcessableRoute
      *
      * @param   \stubbles\webapp\Request   $request   current request
      * @param   \stubbles\webapp\Response  $response  response to send
-     * @return  bool
+     * @return  \stubbles\webapp\response\Error
      */
-    public function process(Request $request, Response $response)
+    public function data(Request $request, Response $response)
     {
-        $response->notFound();
-        return true;
+        return $response->notFound();
     }
 }

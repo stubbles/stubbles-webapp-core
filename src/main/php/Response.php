@@ -113,7 +113,6 @@ interface Response extends SendableResponse
      *
      * @param   string|\stubbles\peer\http\HttpUri  $uri         http uri to redirect to
      * @param   int                                 $statusCode  HTTP status code to redirect with (301, 302, ...)
-     * @return  \stubbles\webapp\Response
      * @since   1.3.0
      */
     public function redirect($uri, $statusCode = 302);
@@ -121,7 +120,7 @@ interface Response extends SendableResponse
     /**
      * creates a 403 Forbidden message
      *
-     * @return  \stubbles\webapp\Response
+     * @return  \stubbles\webapp\response\Error
      * @since   2.0.0
      */
     public function forbidden();
@@ -129,7 +128,7 @@ interface Response extends SendableResponse
     /**
      * creates a 404 Not Found message into
      *
-     * @return  \stubbles\webapp\Response
+     * @return  \stubbles\webapp\response\Error
      * @since   2.0.0
      */
     public function notFound();
@@ -139,7 +138,7 @@ interface Response extends SendableResponse
      *
      * @param   string    $requestMethod
      * @param   string[]  $allowedMethods
-     * @return  \stubbles\webapp\Response
+     * @return  \stubbles\webapp\response\Error
      * @since   2.0.0
      */
     public function methodNotAllowed($requestMethod, array $allowedMethods);
@@ -148,7 +147,6 @@ interface Response extends SendableResponse
      * creates a 406 Not Acceptable message
      *
      * @param   string[]  $supportedMimeTypes  list of supported mime types
-     * @return  \stubbles\webapp\Response
      * @since   2.0.0
      */
     public function notAcceptable(array $supportedMimeTypes = []);
@@ -156,16 +154,15 @@ interface Response extends SendableResponse
     /**
      * creates a 500 Internal Server Error message
      *
-     * @param   string  $errorMessage
-     * @return  \stubbles\webapp\Response
+     * @param   string|\Exception  $error
+     * @return  \stubbles\webapp\response\Error
      * @since   2.0.0
      */
-    public function internalServerError($errorMessage);
+    public function internalServerError($error);
 
     /**
      * creates a 505 HTTP Version Not Supported message
      *
-     * @return  \stubbles\webapp\Response
      * @since   2.0.0
      */
     public function httpVersionNotSupported();

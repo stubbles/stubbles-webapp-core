@@ -291,39 +291,35 @@ class WebResponse implements Response
      *
      * @param   string|\stubbles\peer\http\HttpUri  $uri         http uri to redirect to
      * @param   int                                 $statusCode  HTTP status code to redirect with (301, 302, ...)
-     * @return  \stubbles\webapp\Response
      * @since   1.3.0
      */
     public function redirect($uri, $statusCode = 302)
     {
         $this->status->redirect($uri, $statusCode);
-        return $this;
     }
 
     /**
      * creates a 403 Forbidden message
      *
-     * @return  \stubbles\webapp\Response
+     * @return  \stubbles\webapp\response\Error
      * @since   2.0.0
      */
     public function forbidden()
     {
         $this->status->forbidden();
-        $this->resource = ['error' => 'You are not allowed to access this resource.'];
-        return $this;
+        return Error::forbidden();
     }
 
     /**
      * creates a 404 Not Found message
      *
-     * @return  \stubbles\webapp\Response
+     * @return  \stubbles\webapp\response\Error
      * @since   2.0.0
      */
     public function notFound()
     {
         $this->status->notFound();
-        $this->resource = ['error' => 'Given resource could not be found.'];
-        return $this;
+        return Error::notFound();
     }
 
     /**
@@ -331,59 +327,48 @@ class WebResponse implements Response
      *
      * @param   string    $requestMethod
      * @param   string[]  $allowedMethods
-     * @return  \stubbles\webapp\Response
+     * @return  \stubbles\webapp\response\Error
      * @since   2.0.0
      */
     public function methodNotAllowed($requestMethod, array $allowedMethods)
     {
         $this->status->methodNotAllowed($allowedMethods);
-        $this->resource = [
-            'error' => 'The given request method '
-                        . strtoupper($requestMethod)
-                        . ' is not valid. Please use one of '
-                        . join(', ', $allowedMethods) . '.'
-        ];
-        return $this;
+        return Error::methodNotAllowed($requestMethod, $allowedMethods);
     }
 
     /**
      * creates a 406 Not Acceptable message
      *
      * @param   string[]  $supportedMimeTypes  list of supported mime types
-     * @return  \stubbles\webapp\Response
      * @since   2.0.0
      */
     public function notAcceptable(array $supportedMimeTypes = [])
     {
         $this->status->notAcceptable($supportedMimeTypes);
-        return $this;
     }
 
     /**
      * creates a 500 Internal Server Error message
      *
-     * @param   string  $errorMessage
-     * @return  \stubbles\webapp\Response
+     * @param   string|\Exception  $error
+     * @return  \stubbles\webapp\response\Error
      * @since   2.0.0
      */
-    public function internalServerError($errorMessage)
+    public function internalServerError($error)
     {
         $this->status->internalServerError();
-        $this->resource = ['error' => 'Internal Server Error: ' . $errorMessage];
-        return $this;
+        return Error::internalServerError($error);
     }
 
     /**
      * creates a 505 HTTP Version Not Supported message
      *
-     * @return  \stubbles\webapp\Response
      * @since   2.0.0
      */
     public function httpVersionNotSupported()
     {
         $this->status->httpVersionNotSupported();
-        $this->resource = 'Unsupported HTTP protocol version, expected HTTP/1.0 or HTTP/1.1';
-        return $this;
+        $this->resource = new Error('Unsupported HTTP protocol version, expected HTTP/1.0 or HTTP/1.1');
     }
 
     /**

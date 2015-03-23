@@ -13,12 +13,11 @@ use stubbles\webapp\Request;
 use stubbles\webapp\Response;
 use stubbles\webapp\interceptor\Interceptors;
 /**
- * Processable route which denotes an answer to an OPTIONS request when
- * no specific route for such requests was configured.
+ * Represents a resource which was accessed with a not suitable method.
  *
  * @since  2.2.0
  */
-class OptionsRoute extends AbstractProcessableRoute
+class MethodNotAllowed extends AbstractResource
 {
     /**
      * list of actually allowed request methods
@@ -65,13 +64,14 @@ class OptionsRoute extends AbstractProcessableRoute
      *
      * @param   \stubbles\webapp\Request   $request   current request
      * @param   \stubbles\webapp\Response  $response  response to send
-     * @return  bool
+     * @return  \stubbles\webapp\response\Error
      */
-    public function process(Request $request, Response $response)
+    public function data(Request $request, Response $response)
     {
-        $response->addHeader('Allow', join(', ', $this->allowedMethods))
-                 ->addHeader('Access-Control-Allow-Methods', join(', ', $this->allowedMethods));
-        return true;
+        return $response->methodNotAllowed(
+                $request->method(),
+                $this->allowedMethods
+        );
     }
 
 }

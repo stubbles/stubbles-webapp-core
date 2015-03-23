@@ -8,20 +8,21 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\routing;
+use stubbles\webapp\response\Error;
 /**
- * Tests for stubbles\webapp\routing\MissingRoute.
+ * Tests for stubbles\webapp\routing\NotFound.
  *
  * @since  2.2.0
  * @group  routing
  */
-class MissingRouteTest extends \PHPUnit_Framework_TestCase
+class NotFoundTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * instance to test
      *
-     * @type  MissingRoute
+     * @type  \stubbles\webapp\routing\NotFound
      */
-    private $missingRoute;
+    private $notFound;
     /**
      * mocked request instance
      *
@@ -40,7 +41,7 @@ class MissingRouteTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->missingRoute = new MissingRoute(
+        $this->notFound = new NotFound(
                 $this->getMockBuilder('stubbles\ioc\Injector')
                         ->disableOriginalConstructor()
                         ->getMock(),
@@ -59,18 +60,21 @@ class MissingRouteTest extends \PHPUnit_Framework_TestCase
      */
     public function doesNotRequireSwitchToHttps()
     {
-        $this->assertFalse($this->missingRoute->requiresHttps());
+        $this->assertFalse($this->notFound->requiresHttps());
     }
 
     /**
      * @test
      */
-    public function processTriggers404NotFoundResponse()
+    public function triggers404NotFoundResponse()
     {
+        $error = Error::notFound();
         $this->mockResponse->expects($this->once())
-                           ->method('notFound');
-        $this->assertTrue(
-                $this->missingRoute->process(
+                ->method('notFound')
+                ->will($this->returnValue($error));
+        $this->assertSame(
+                $error,
+                $this->notFound->data(
                         $this->mockRequest,
                         $this->mockResponse
                 )

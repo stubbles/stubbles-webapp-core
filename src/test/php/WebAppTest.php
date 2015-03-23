@@ -131,18 +131,18 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
     /**
      * @return  \PHPUnit_Framework_MockObject_MockObject
      */
-    private function createMockRoute()
+    private function createMockResource()
     {
-        $mockRoute = $this->getMockBuilder('stubbles\webapp\routing\ProcessableRoute')
+        $mockResource = $this->getMockBuilder('stubbles\webapp\routing\Resource')
                           ->disableOriginalConstructor()
                           ->getMock();
-        $mockRoute->expects($this->any())
+        $mockResource->expects($this->any())
                   ->method('negotiateMimeType')
                   ->will($this->returnValue(new PassThrough()));
         $this->routing->expects($this->once())
-                      ->method('findRoute')
-                      ->will($this->returnValue($mockRoute));
-        return $mockRoute;
+                      ->method('findResource')
+                      ->will($this->returnValue($mockResource));
+        return $mockResource;
     }
 
     /**
@@ -150,11 +150,11 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
       */
     public function respondsWithRedirectHttpsUriIfRequiresHttps()
     {
-        $mockRoute = $this->createMockRoute();
-        $mockRoute->expects($this->once())
+        $mockResource = $this->createMockResource();
+        $mockResource->expects($this->once())
                   ->method('requiresHttps')
                   ->will($this->returnValue(true));
-        $mockRoute->expects($this->once())
+        $mockResource->expects($this->once())
                   ->method('httpsUri')
                   ->will($this->returnValue('https://example.net/admin'));
         $response = $this->webApp->run();
@@ -172,23 +172,23 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
      */
     public function doesNotExecuteInterceptorsAndResourceIfMimeTypeNegotiationFails  ()
     {
-        $mockRoute = $this->getMockBuilder('stubbles\webapp\routing\ProcessableRoute')
+        $mockResource = $this->getMockBuilder('stubbles\webapp\routing\Resource')
                           ->disableOriginalConstructor()
                           ->getMock();
         $this->routing->expects($this->once())
-                      ->method('findRoute')
-                      ->will($this->returnValue($mockRoute));
-        $mockRoute->expects($this->once())
+                      ->method('findResource')
+                      ->will($this->returnValue($mockResource));
+        $mockResource->expects($this->once())
                   ->method('requiresHttps')
                   ->will($this->returnValue(false));
-        $mockRoute->expects($this->once())
+        $mockResource->expects($this->once())
                   ->method('negotiateMimeType')
                   ->will($this->returnValue(false));
-        $mockRoute->expects($this->never())
+        $mockResource->expects($this->never())
                   ->method('applyPreInterceptors');
-        $mockRoute->expects($this->never())
+        $mockResource->expects($this->never())
                   ->method('process');
-        $mockRoute->expects($this->never())
+        $mockResource->expects($this->never())
                   ->method('applyPostInterceptors');
         $this->webApp->run();
 
@@ -201,8 +201,8 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
     public function enablesSessionScopeWhenSessionIsAvailable()
     {
         TestWebApp::$session = $this->getMock('stubbles\webapp\session\Session');
-        $mockRoute = $this->createMockRoute();
-        $mockRoute->expects($this->once())
+        $mockResource = $this->createMockResource();
+        $mockResource->expects($this->once())
                   ->method('requiresHttps')
                   ->will($this->returnValue(false));
         $this->mockInjector->expects($this->once())
@@ -217,8 +217,8 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
      */
     public function doesNotEnableSessionScopeWhenSessionNotAvailable()
     {
-        $mockRoute = $this->createMockRoute();
-        $mockRoute->expects($this->once())
+        $mockResource = $this->createMockResource();
+        $mockResource->expects($this->once())
                   ->method('requiresHttps')
                   ->will($this->returnValue(false));
         $this->mockInjector->expects($this->never())
@@ -231,16 +231,16 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
      */
     public function doesNotExecuteRouteAndPostInterceptorsIfPreInterceptorCancelsRequest()
     {
-        $mockRoute = $this->createMockRoute();
-        $mockRoute->expects($this->once())
+        $mockResource = $this->createMockResource();
+        $mockResource->expects($this->once())
                   ->method('requiresHttps')
                   ->will($this->returnValue(false));
-        $mockRoute->expects($this->once())
+        $mockResource->expects($this->once())
                   ->method('applyPreInterceptors')
                   ->will($this->returnValue(false));
-        $mockRoute->expects($this->never())
+        $mockResource->expects($this->never())
                   ->method('process');
-        $mockRoute->expects($this->never())
+        $mockResource->expects($this->never())
                   ->method('applyPostInterceptors');
         $this->webApp->run();
     }
@@ -266,17 +266,17 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
      */
     public function sendsInternalServerErrorIfExceptionThrownFromPreInterceptors()
     {
-        $mockRoute = $this->createMockRoute();
-        $mockRoute->expects($this->once())
+        $mockResource = $this->createMockResource();
+        $mockResource->expects($this->once())
                   ->method('requiresHttps')
                   ->will($this->returnValue(false));
         $exception = new \Exception('some error');
-        $mockRoute->expects($this->once())
+        $mockResource->expects($this->once())
                   ->method('applyPreInterceptors')
                   ->will($this->throwException($exception));
-        $mockRoute->expects($this->never())
+        $mockResource->expects($this->never())
                   ->method('process');
-        $mockRoute->expects($this->never())
+        $mockResource->expects($this->never())
                   ->method('applyPostInterceptors');
         $this->setUpExceptionLogger($exception);
         $response = $this->webApp->run();
@@ -286,40 +286,20 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function doesNotExecutePostInterceptorsIfRouteCancelsRequest()
-    {
-        $mockRoute = $this->createMockRoute();
-        $mockRoute->expects($this->once())
-                  ->method('requiresHttps')
-                  ->will($this->returnValue(false));
-        $mockRoute->expects($this->once())
-                  ->method('applyPreInterceptors')
-                  ->will($this->returnValue(true));
-        $mockRoute->expects($this->once())
-                  ->method('process')
-                  ->will($this->returnValue(false));
-        $mockRoute->expects($this->never())
-                  ->method('applyPostInterceptors');
-        $this->webApp->run();
-    }
-
-    /**
-     * @test
-     */
     public function sendsInternalServerErrorIfExceptionThrownFromRoute()
     {
-        $mockRoute = $this->createMockRoute();
-        $mockRoute->expects($this->once())
+        $mockResource = $this->createMockResource();
+        $mockResource->expects($this->once())
                   ->method('requiresHttps')
                   ->will($this->returnValue(false));
-        $mockRoute->expects($this->once())
+        $mockResource->expects($this->once())
                   ->method('applyPreInterceptors')
                   ->will($this->returnValue(true));
         $exception = new \Exception('some error');
-        $mockRoute->expects($this->once())
-                  ->method('process')
+        $mockResource->expects($this->once())
+                  ->method('data')
                   ->will($this->throwException($exception));
-        $mockRoute->expects($this->never())
+        $mockResource->expects($this->never())
                   ->method('applyPostInterceptors');
         $this->setUpExceptionLogger($exception);
         $response = $this->webApp->run();
@@ -331,17 +311,17 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
      */
     public function doesExecuteEverythingIfRequestNotCancelled()
     {
-        $mockRoute = $this->createMockRoute();
-        $mockRoute->expects($this->once())
+        $mockResource = $this->createMockResource();
+        $mockResource->expects($this->once())
                   ->method('requiresHttps')
                   ->will($this->returnValue(false));
-        $mockRoute->expects($this->once())
+        $mockResource->expects($this->once())
                   ->method('applyPreInterceptors')
                   ->will($this->returnValue(true));
-        $mockRoute->expects($this->once())
-                  ->method('process')
+        $mockResource->expects($this->once())
+                  ->method('data')
                   ->will($this->returnValue(true));
-        $mockRoute->expects($this->once())
+        $mockResource->expects($this->once())
                   ->method('applyPostInterceptors');
         $this->webApp->run();
     }
@@ -351,18 +331,18 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
      */
     public function sendsInternalServerErrorIfExceptionThrownFromPostInterceptors()
     {
-        $mockRoute = $this->createMockRoute();
-        $mockRoute->expects($this->once())
+        $mockResource = $this->createMockResource();
+        $mockResource->expects($this->once())
                   ->method('requiresHttps')
                   ->will($this->returnValue(false));
-        $mockRoute->expects($this->once())
+        $mockResource->expects($this->once())
                   ->method('applyPreInterceptors')
                   ->will($this->returnValue(true));
-        $mockRoute->expects($this->once())
-                  ->method('process')
+        $mockResource->expects($this->once())
+                  ->method('data')
                   ->will($this->returnValue(true));
         $exception = new \Exception('some error');
-        $mockRoute->expects($this->once())
+        $mockResource->expects($this->once())
                   ->method('applyPostInterceptors')
                   ->will($this->throwException($exception));
         $this->setUpExceptionLogger($exception);

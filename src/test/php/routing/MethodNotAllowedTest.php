@@ -8,20 +8,21 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\routing;
+use stubbles\webapp\response\Error;
 /**
- * Tests for stubbles\webapp\routing\MethodNotAllowedRoute.
+ * Tests for stubbles\webapp\routing\MethodNotAllowed.
  *
  * @since  2.2.0
  * @group  routing
  */
-class MethodNotAllowedRouteTest extends \PHPUnit_Framework_TestCase
+class MethodNotAllowedTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * instance to test
      *
-     * @type  MethodNotAllowedRoute
+     * @type  \stubbles\webapp\routing\MethodNotAllowed
      */
-    private $methodNotAllowedRoute;
+    private $methodNotAllowed;
     /**
      * mocked request instance
      *
@@ -40,7 +41,7 @@ class MethodNotAllowedRouteTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->methodNotAllowedRoute = new MethodNotAllowedRoute(
+        $this->methodNotAllowed = new MethodNotAllowed(
                 $this->getMockBuilder('stubbles\ioc\Injector')
                         ->disableOriginalConstructor()
                         ->getMock(),
@@ -60,25 +61,31 @@ class MethodNotAllowedRouteTest extends \PHPUnit_Framework_TestCase
      */
     public function doesNotRequireSwitchToHttps()
     {
-        $this->assertFalse($this->methodNotAllowedRoute->requiresHttps());
+        $this->assertFalse($this->methodNotAllowed->requiresHttps());
     }
 
     /**
      * @test
      */
-    public function processTriggers405MethodNotAllowedResponse()
+    public function triggers405MethodNotAllowedResponse()
     {
+        $error = Error::methodNotAllowed(
+                'DELETE',
+                ['GET', 'POST', 'HEAD', 'OPTIONS']
+        );
         $this->mockRequest->expects($this->once())
-                          ->method('method')
-                          ->will($this->returnValue('DELETE'));
+                ->method('method')
+                ->will($this->returnValue('DELETE'));
         $this->mockResponse->expects($this->once())
-                           ->method('methodNotAllowed')
-                           ->with(
-                                   $this->equalTo('DELETE'),
-                                   $this->equalTo(['GET', 'POST', 'HEAD', 'OPTIONS'])
-                            );
-        $this->assertTrue(
-                $this->methodNotAllowedRoute->process(
+                ->method('methodNotAllowed')
+                ->with(
+                        $this->equalTo('DELETE'),
+                        $this->equalTo(['GET', 'POST', 'HEAD', 'OPTIONS'])
+                 )
+                 ->will($this->returnValue($error));
+        $this->assertSame(
+                $error,
+                $this->methodNotAllowed->data(
                         $this->mockRequest,
                         $this->mockResponse
                 )

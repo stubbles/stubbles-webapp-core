@@ -14,11 +14,11 @@ use stubbles\webapp\Request;
 use stubbles\webapp\Response;
 use stubbles\webapp\interceptor\Interceptors;
 /**
- * Contains logic to process the route.
+ * Resource which can resolve the request using a target.
  *
  * @since  2.0.0
  */
-class MatchingRoute extends AbstractProcessableRoute
+class ResolvingResource extends AbstractResource
 {
     /**
      * route configuration
@@ -68,44 +68,25 @@ class MatchingRoute extends AbstractProcessableRoute
      *
      * @param   \stubbles\webapp\Request   $request   current request
      * @param   \stubbles\webapp\Response  $response  response to send
-     * @return  bool
+     * @return  mixed
      */
-    public function process(Request $request, Response $response)
+    public function data(Request $request, Response $response)
     {
         $uriPath  = $this->calledUri->path($this->route->configuredPath());
         $callback = $this->route->callback();
         if (is_callable($callback)) {
-            return $this->result(call_user_func_array($callback, [$request, $response, $uriPath]));
+            return call_user_func_array($callback, [$request, $response, $uriPath]);
         }
 
         if ($callback instanceof Processor) {
-            return $this->result($callback->process($request, $response, $uriPath));
+            return $callback->process($request, $response, $uriPath);
         }
 
         $processor = $this->injector->getInstance($callback);
         if (!($processor instanceof Processor)) {
-            $response->internalServerError('Configured callback class ' . $callback . ' for route ' . $uriPath . ' is not an instance of stubbles\webapp\Processor');
-            return false;
+            return $response->internalServerError('Configured callback class ' . $callback . ' for route ' . $uriPath . ' is not an instance of stubbles\webapp\Processor');
         }
 
-        return $this->result($processor->process($request, $response, $uriPath));
-    }
-
-    /**
-     * calculates result from return value
-     *
-     * Result will be false if return value from callback is false. If callback
-     * returns any other value result will be true.
-     *
-     * @param   bool  $returnValue
-     * @return  bool
-     */
-    private function result($returnValue)
-    {
-        if (false === $returnValue) {
-            return false;
-        }
-
-        return true;
+        return $processor->process($request, $response, $uriPath);
     }
 }

@@ -9,19 +9,19 @@
  */
 namespace stubbles\webapp\routing;
 /**
- * Tests for stubbles\webapp\routing\OptionsRoute.
+ * Tests for stubbles\webapp\routing\ResourceOptions.
  *
  * @since  2.2.0
  * @group  routing
  */
-class OptionsRouteTest extends \PHPUnit_Framework_TestCase
+class ResourceOptionsTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * instance to test
      *
-     * @type  OptionsRoute
+     * @type  \stubbles\webapp\routing\ResourceOptions
      */
-    private $optionsRoute;
+    private $resourceOptions;
     /**
      * mocked request instance
      *
@@ -40,7 +40,7 @@ class OptionsRouteTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->optionsRoute = new OptionsRoute(
+        $this->resourceOptions = new ResourceOptions(
                 $this->getMockBuilder('stubbles\ioc\Injector')
                         ->disableOriginalConstructor()
                         ->getMock(),
@@ -60,13 +60,13 @@ class OptionsRouteTest extends \PHPUnit_Framework_TestCase
      */
     public function doesNotRequireSwitchToHttps()
     {
-        $this->assertFalse($this->optionsRoute->requiresHttps());
+        $this->assertFalse($this->resourceOptions->requiresHttps());
     }
 
     /**
      * @test
      */
-    public function processAddsAllowHeadersWhenRequestMethodIsOptions()
+    public function addsAllowHeadersWhenRequestMethodIsOptions()
     {
         $this->mockResponse->expects($this->at(0))
                            ->method('addHeader')
@@ -79,11 +79,9 @@ class OptionsRouteTest extends \PHPUnit_Framework_TestCase
                                    $this->equalTo('GET, POST, HEAD, OPTIONS')
                             )
                            ->will($this->returnSelf());
-        $this->assertTrue(
-                $this->optionsRoute->process(
-                        $this->mockRequest,
-                        $this->mockResponse
-                )
+        $this->resourceOptions->data(
+                $this->mockRequest,
+                $this->mockResponse
         );
     }
 }

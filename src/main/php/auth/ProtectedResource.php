@@ -13,13 +13,14 @@ use stubbles\webapp\Request;
 use stubbles\webapp\Response;
 use stubbles\webapp\auth\ioc\RolesProvider;
 use stubbles\webapp\auth\ioc\UserProvider;
-use stubbles\webapp\routing\ProcessableRoute;
+use stubbles\webapp\response\Error;
+use stubbles\webapp\routing\Resource;
 /**
  * Description of AuthorizingRoute
  *
  * @since  3.0.0
  */
-class AuthorizingRoute implements ProcessableRoute
+class ProtectedResource implements Resource
 {
     /**
      * route configuration
@@ -45,17 +46,22 @@ class AuthorizingRoute implements ProcessableRoute
      * @type  bool
      */
     private $authorized  = false;
+    /**
+     *
+     * @type  \stubbles\webapp\response\Error
+     */
+    private $model;
 
     /**
      * constructor
      *
      * @param  \stubbles\webapp\auth\AuthConstraint       $authConstraint
-     * @param  \stubbles\webapp\routing\ProcessableRoute  $actualRoute
+     * @param  \stubbles\webapp\routing\Resource  $actualRoute
      * @param  \stubbles\ioc\Injector                     $injector
      */
     public function __construct(
             AuthConstraint $authConstraint,
-            ProcessableRoute $actualRoute,
+            Resource $actualRoute,
             Injector $injector)
     {
         $this->authConstraint = $authConstraint;
@@ -134,12 +140,12 @@ class AuthorizingRoute implements ProcessableRoute
         $this->authorized = false;
         $user = $this->authenticate($request, $response);
         if (null !== $user && $this->authConstraint->requiresRoles()) {
-            if ($this->authConstraint->satisfiedByRoles(
-                    RolesProvider::store($this->roles($response, $user)))
-                ) {
+            $roles = $this->roles($response, $user);
+            if (null !== $roles && $this->authConstraint->satisfiedByRoles(
+                    RolesProvider::store($roles))) {
                 $this->authorized = true;
-            } else {
-                $response->forbidden();
+            } elseif (null !== $roles) {
+                $this->model = $response->forbidden();
             }
         } elseif (null !== $user) {
              $this->authorized = true;
@@ -163,7 +169,7 @@ class AuthorizingRoute implements ProcessableRoute
             if (null == $user && $this->authConstraint->loginAllowed()) {
                 $response->redirect($authenticationProvider->loginUri($request));
             } elseif (null == $user) {
-                $response->forbidden();
+                $this->model = $response->forbidden();
                 return null;
             }
 
@@ -201,10 +207,10 @@ class AuthorizingRoute implements ProcessableRoute
     private function handleAuthProviderException(AuthProviderException $ahe, Response $response)
     {
         if ($ahe->isInternal()) {
-            $response->internalServerError($ahe->getMessage());
+            $this->model = $response->internalServerError($ahe);
         } else {
-            $response->setStatusCode($ahe->getCode())
-                     ->write($ahe->getMessage());
+            $response->setStatusCode($ahe->getCode());
+            $this->model = new Error($ahe->getMessage());
         }
     }
 
@@ -213,15 +219,15 @@ class AuthorizingRoute implements ProcessableRoute
      *
      * @param   \stubbles\webapp\Request   $request   current request
      * @param   \stubbles\webapp\Response  $response  response to send
-     * @return  bool
+     * @return  mixed
      */
-    public function process(Request $request, Response $response)
+    public function data(Request $request, Response $response)
     {
         if ($this->authorized) {
-            return $this->actualRoute->process($request, $response);
+            return $this->actualRoute->data($request, $response);
         }
 
-        return false;
+        return $this->model;
     }
 
     /**

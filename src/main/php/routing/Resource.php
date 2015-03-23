@@ -15,7 +15,7 @@ use stubbles\webapp\Response;
  *
  * @since  2.0.0
  */
-interface ProcessableRoute
+interface Resource
 {
     /**
      * checks whether switch to https is required
@@ -60,13 +60,13 @@ interface ProcessableRoute
     public function applyPreInterceptors(Request $request, Response $response);
 
     /**
-     * creates processor instance
+     * returns the resource data model
      *
      * @param   \stubbles\webapp\Request   $request   current request
      * @param   \stubbles\webapp\Response  $response  response to send
-     * @return  bool
+     * @return  mixed
      */
-    public function process(Request $request, Response $response);
+    public function data(Request $request, Response $response);
 
     /**
      * apply post interceptors
