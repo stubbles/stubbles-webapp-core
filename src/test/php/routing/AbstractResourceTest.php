@@ -10,6 +10,7 @@
 namespace stubbles\webapp\routing;
 use stubbles\input\ValueReader;
 use stubbles\peer\http\HttpVersion;
+use stubbles\streams\memory\MemoryOutputStream;
 use stubbles\webapp\Request;
 use stubbles\webapp\Response;
 use stubbles\webapp\auth\AuthHandler;
@@ -97,7 +98,11 @@ class AbstractResourceTest extends \PHPUnit_Framework_TestCase
         $this->mockRequest->expects($this->once())
                           ->method('protocolVersion')
                           ->will($this->returnValue(new HttpVersion(1, 1)));
-        $this->response = new WebResponse($this->mockRequest);
+        $this->response = $this->getMock(
+                'stubbles\webapp\response\WebResponse',
+                ['header'],
+                [$this->mockRequest]
+        );
         $this->mockInjector = $this->getMockBuilder('stubbles\ioc\Injector')
                         ->disableOriginalConstructor()
                         ->getMock();
@@ -201,6 +206,10 @@ class AbstractResourceTest extends \PHPUnit_Framework_TestCase
                 )->negotiateMimeType($mockRequest, $this->response)
         );
         $this->assertEquals(500, $this->response->statusCode());
+        $this->assertEquals(
+                'Error: No mime type class defined for negotiated content type application/foo',
+                $this->response->send(new MemoryOutputStream())->buffer()
+        );
     }
 
     /**

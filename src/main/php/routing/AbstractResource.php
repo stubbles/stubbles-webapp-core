@@ -96,14 +96,16 @@ abstract class AbstractResource implements Resource
                         ->withFilter(new AcceptFilter())
         );
         if (null === $mimeType) {
-            $response->status()->notAcceptable(
-                    $this->supportedMimeTypes->asArray()
-            );
+            $response->notAcceptable($this->supportedMimeTypes->asArray());
             return false;
         }
 
         if (!$this->supportedMimeTypes->provideClass($mimeType)) {
-            $response->internalServerError('No mime type class defined for negotiated content type ' . $mimeType);
+            $response->write(
+                    $response->internalServerError(
+                            'No mime type class defined for negotiated content type ' . $mimeType
+                    )
+            );
             return false;
         }
 
