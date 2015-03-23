@@ -181,7 +181,7 @@ class Routing implements RoutingConfigurator
      * returns route which is applicable for given request
      *
      * @param   string|\stubbles\webapp\CalledUri  $uri            actually called uri
-     * @param   string                             $requestMethod  optional when $calledUri is an instance of UriRequest
+     * @param   string                             $requestMethod  optional when $calledUri is an instance of stubbles\webapp\CalledUri
      * @return  \stubbles\webapp\routing\ProcessableRoute
      */
     public function findRoute($uri, $requestMethod = null)
