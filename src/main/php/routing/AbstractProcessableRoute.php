@@ -14,7 +14,6 @@ use stubbles\ioc\Injector;
 use stubbles\webapp\Request;
 use stubbles\webapp\Response;
 use stubbles\webapp\interceptor\Interceptors;
-use stubbles\webapp\response\mimetypes\PassThrough;
 /**
  * Contains logic to process the route.
  *
@@ -80,14 +79,15 @@ abstract class AbstractProcessableRoute implements ProcessableRoute
     /**
      * negotiates proper mime type for given request
      *
-     * @param   \stubbles\webapp\Request  $request
-     * @return  \stubbles\webapp\response\mimetypes\MimeType
+     * @param   \stubbles\webapp\Request   $request
+     * @param   \stubbles\webapp\Response  $response  response to send
+     * @return  bool
      * @since   6.0.0
      */
-    public function negotiateMimeType(Request $request)
+    public function negotiateMimeType(Request $request, Response $response)
     {
         if ($this->supportedMimeTypes->isContentNegotationDisabled()) {
-            return new PassThrough();
+            return true;
         }
 
         $mimeType = $this->supportedMimeTypes->findMatch(
@@ -96,16 +96,23 @@ abstract class AbstractProcessableRoute implements ProcessableRoute
                         ->withFilter(new AcceptFilter())
         );
         if (null === $mimeType) {
-            return null;
+            $response->status()->notAcceptable(
+                    $this->supportedMimeTypes->asArray()
+            );
+            return false;
         }
 
         if (!$this->supportedMimeTypes->provideClass($mimeType)) {
-            throw new \RuntimeException('No mime type class defined for negotiated content type ' . $mimeType);
+            $response->internalServerError('No mime type class defined for negotiated content type ' . $mimeType);
+            return false;
         }
 
-        return $this->injector->getInstance(
-                $this->supportedMimeTypes->classFor($mimeType)
-        )->specialise($mimeType);
+        $response->adjustMimeType(
+                $this->injector->getInstance(
+                    $this->supportedMimeTypes->classFor($mimeType)
+                )->specialise($mimeType)
+        );
+        return true;
     }
 
     /**

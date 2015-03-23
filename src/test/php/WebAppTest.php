@@ -170,7 +170,7 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function respondsWithNotAcceptableIfContentNegotiationFails  ()
+    public function doesNotExecuteInterceptorsAndResourceIfMimeTypeNegotiationFails  ()
     {
         $mockRoute = $this->getMockBuilder('stubbles\webapp\routing\ProcessableRoute')
                           ->disableOriginalConstructor()
@@ -183,18 +183,14 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
                   ->will($this->returnValue(false));
         $mockRoute->expects($this->once())
                   ->method('negotiateMimeType')
-                  ->will($this->returnValue(null));
-        $mockRoute->expects($this->once())
-                  ->method('supportedMimeTypes')
-                  ->will($this->returnValue([]));
+                  ->will($this->returnValue(false));
         $mockRoute->expects($this->never())
                   ->method('applyPreInterceptors');
         $mockRoute->expects($this->never())
                   ->method('process');
         $mockRoute->expects($this->never())
                   ->method('applyPostInterceptors');
-        $response = $this->webApp->run();
-        $this->assertEquals(406, $response->statusCode());
+        $this->webApp->run();
 
     }
 

@@ -73,8 +73,8 @@ class AuthorizingRouteTest extends \PHPUnit_Framework_TestCase
                 $this->mockActualRoute,
                 $this->mockInjector
         );
-        $this->mockRequest      = $this->getMock('stubbles\webapp\Request');
-        $this->mockResponse     = $this->getMock('stubbles\webapp\Response');
+        $this->mockRequest  = $this->getMock('stubbles\webapp\Request');
+        $this->mockResponse = $this->getMock('stubbles\webapp\Response');
     }
 
     /**
@@ -113,15 +113,16 @@ class AuthorizingRouteTest extends \PHPUnit_Framework_TestCase
      * @test
      * @since  6.0.0
      */
-    public function negotiatesMimeTypesOfActualRoute()
+    public function delegatesMimeTypeNegotiationToActualRoute()
     {
-        $mockMimeType = $this->getMock('stubbles\response\mimetypes\MimeType');
         $this->mockActualRoute->expects($this->once())
                               ->method('negotiateMimeType')
-                              ->will($this->returnValue($mockMimeType));
-        $this->assertSame(
-                $mockMimeType,
-                $this->authorizingRoute->negotiateMimeType($this->mockRequest)
+                              ->will($this->returnValue(true));
+        $this->assertTrue(
+                $this->authorizingRoute->negotiateMimeType(
+                        $this->mockRequest,
+                        $this->mockResponse
+                )
         );
     }
 

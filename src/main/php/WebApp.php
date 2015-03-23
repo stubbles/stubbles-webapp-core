@@ -59,37 +59,26 @@ abstract class WebApp extends App
             return $response; // http version of request not supported
         }
 
-        $this->configureRouting($this->routing);
         try {
-            $route = $this->routing->findRoute($request->uri(), $request->method());
+            $requestUri = $request->uri();
         } catch (MalformedUriException $mue) {
             $response->status()->badRequest();
             return $response;
         }
 
+        $this->configureRouting($this->routing);
+        $route = $this->routing->findRoute($requestUri, $request->method());
         if ($this->switchToHttps($route)) {
             $response->status()->redirect($route->httpsUri());
             return $response;
         }
 
         try {
-            $mimeType = $route->negotiateMimeType($request);
-            if (null === $mimeType) {
-                $response->status()->notAcceptable($route->supportedMimeTypes());
+            if (!$route->negotiateMimeType($request, $response)) {
                 return $response;
             }
 
-            $response->adjustMimeType($mimeType);
-            $session = $request->attachSession(
-                    $this->createSession($request, $response)
-            );
-            if (null !== $session) {
-                $this->injector->setSession(
-                        $session,
-                        'stubbles\webapp\session\Session'
-                );
-            }
-
+            $this->sessionHandshake($request, $response);
             if ($route->applyPreInterceptors($request, $response)) {
                 if ($route->process($request, $response)) {
                     $route->applyPostInterceptors($request, $response);
@@ -103,6 +92,23 @@ abstract class WebApp extends App
         }
 
         return $response;
+    }
+
+    /**
+     * ensures session is present when created
+     *
+     * @param  \stubbles\webapp\Request   $request
+     * @param  \stubbles\webapp\Response  $response
+     */
+    private function sessionHandshake(Request $request, Response $response)
+    {
+        $session = $this->createSession($request, $response);
+        if (null !== $session) {
+            $this->injector->setSession(
+                    $request->attachSession($session),
+                    'stubbles\webapp\session\Session'
+            );
+        }
     }
 
     /**

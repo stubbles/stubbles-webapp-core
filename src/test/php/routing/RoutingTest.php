@@ -471,10 +471,15 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
         $this->routing->onGet('/hello', function() {})
                       ->supportsMimeType('application/json');
         $this->routing->supportsMimeType('application/foo', 'example\Special');
-        $this->assertSame(
-                $mockMimeType,
+        $mockResponse = $this->getMockBuilder('stubbles\webapp\response\WebResponse')
+                ->disableOriginalConstructor()
+                ->getMock();
+        $mockResponse->expects($this->once())
+                ->method('adjustMimeType')
+                ->with($this->equalTo($mockMimeType));
+        $this->assertTrue(
                 $this->routing->findRoute($this->calledUri)
-                              ->negotiateMimeType($mockRequest)
+                              ->negotiateMimeType($mockRequest, $mockResponse)
         );
     }
 
@@ -517,11 +522,18 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
     public function contentNegotationCanBeDisabled()
     {
         $this->routing->onGet('/hello', function() {});
-       $this->assertInstanceOf(
-                'stubbles\webapp\response\mimetypes\PassThrough',
+        $mockResponse = $this->getMockBuilder('stubbles\webapp\response\WebResponse')
+                ->disableOriginalConstructor()
+                ->getMock();
+        $mockResponse->expects($this->never())
+                ->method('adjustMimeType');
+       $this->assertTrue(
                 $this->routing->disableContentNegotiation()
                               ->findRoute($this->calledUri)
-                              ->negotiateMimeType($this->getMock('stubbles\webapp\Request'))
+                              ->negotiateMimeType(
+                                      $this->getMock('stubbles\webapp\Request'),
+                                      $mockResponse
+                                )
         );
     }
 
@@ -533,11 +545,18 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
     {
         $this->routing->onGet('/hello', function() {})
                       ->disableContentNegotiation();
-        $this->assertInstanceOf(
-                'stubbles\webapp\response\mimetypes\PassThrough',
+        $mockResponse = $this->getMockBuilder('stubbles\webapp\response\WebResponse')
+                ->disableOriginalConstructor()
+                ->getMock();
+        $mockResponse->expects($this->never())
+                ->method('adjustMimeType');
+        $this->assertTrue(
                 $this->routing->disableContentNegotiation()
                               ->findRoute($this->calledUri)
-                              ->negotiateMimeType($this->getMock('stubbles\webapp\Request'))
+                              ->negotiateMimeType(
+                                      $this->getMock('stubbles\webapp\Request'),
+                                      $mockResponse
+                                )
         );
     }
 

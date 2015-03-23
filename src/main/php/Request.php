@@ -242,11 +242,11 @@ interface Request extends \stubbles\input\Request
      * attaches session to request
      *
      * @internal
-     * @param   \stubbles\webapp\session\Session  $session  optional
+     * @param   \stubbles\webapp\session\Session  $session
      * @return  \stubbles\webapp\session\Session
      * @since   6.0.0
      */
-    public function attachSession(Session $session = null);
+    public function attachSession(Session $session);
 
     /**
      * checks if a session is attached to the request

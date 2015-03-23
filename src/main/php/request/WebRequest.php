@@ -442,7 +442,7 @@ class WebRequest extends AbstractRequest implements Request
      * @return  \stubbles\webapp\session\Session
      * @since   6.0.0
      */
-    public function attachSession(Session $session = null)
+    public function attachSession(Session $session)
     {
         $this->session = $session;
         return $session;

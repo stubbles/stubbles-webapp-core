@@ -86,13 +86,14 @@ class AuthorizingRoute implements ProcessableRoute
     /**
      * negotiates proper mime type for given request
      *
-     * @param   \stubbles\webapp\response\Request  $request
-     * @return  \stubbles\webapp\response\mimetypes\MimeType
+     * @param   \stubbles\webapp\Request   $request
+     * @param   \stubbles\webapp\Response  $response  response to send
+     * @return  bool
      * @since   6.0.0
      */
-    public function negotiateMimeType(Request $request)
+    public function negotiateMimeType(Request $request, Response $response)
     {
-        return $this->actualRoute->negotiateMimeType($request);
+        return $this->actualRoute->negotiateMimeType($request, $response);
     }
 
     /**
