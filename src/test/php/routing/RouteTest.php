@@ -12,7 +12,6 @@ use stubbles\webapp\Processor;
 use stubbles\webapp\Request;
 use stubbles\webapp\Response;
 use stubbles\webapp\UriPath;
-use stubbles\webapp\UriRequest;
 use stubbles\webapp\auth\Roles;
 /**
  * Class with annotations for tests.
@@ -166,7 +165,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertFalse(
                 $this->createRoute()->matches(
-                        new UriRequest('http://example.com/hello/world', 'DELETE')
+                        new CalledUri('http://example.com/hello/world', 'DELETE')
                 )
         );
     }
@@ -178,7 +177,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertFalse(
                 $this->createRoute()->matches(
-                        new UriRequest('http://example.com/other', 'GET')
+                        new CalledUri('http://example.com/other', 'GET')
                 )
         );
     }
@@ -190,7 +189,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertTrue(
                 $this->createRoute()->matches(
-                        new UriRequest('http://example.com/hello/world', 'GET')
+                        new CalledUri('http://example.com/hello/world', 'GET')
                 )
         );
     }
@@ -202,7 +201,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertFalse(
                 $this->createRoute()->matchesPath(
-                        new UriRequest('http://example.com/other', 'GET')
+                        new CalledUri('http://example.com/other', 'GET')
                 )
         );
     }
@@ -214,7 +213,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertTrue(
                 $this->createRoute()->matchesPath(
-                        new UriRequest('http://example.com/hello/world', 'GET')
+                        new CalledUri('http://example.com/hello/world', 'GET')
                 )
         );
     }
@@ -226,7 +225,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertTrue(
                 $this->createRoute()->matches(
-                        new UriRequest('http://example.com/hello/world', 'HEAD')
+                        new CalledUri('http://example.com/hello/world', 'HEAD')
                 )
         );
     }

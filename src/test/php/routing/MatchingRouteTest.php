@@ -11,7 +11,6 @@ namespace stubbles\webapp\routing;
 use stubbles\webapp\Request;
 use stubbles\webapp\Response;
 use stubbles\webapp\UriPath;
-use stubbles\webapp\UriRequest;
 /**
  * Tests for stubbles\webapp\routing\MatchingRoute.
  *
@@ -61,7 +60,7 @@ class MatchingRouteTest extends \PHPUnit_Framework_TestCase
     {
         return new MatchingRoute(
                 $this->mockInjector,
-                new UriRequest($uri, 'GET'),
+                new CalledUri($uri, 'GET'),
                 $this->getMockBuilder('stubbles\webapp\interceptor\Interceptors')
                         ->disableOriginalConstructor()
                         ->getMock(),

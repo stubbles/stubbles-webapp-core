@@ -7,14 +7,15 @@
  *
  * @package  stubbles\webapp
  */
-namespace stubbles\webapp;
+namespace stubbles\webapp\routing;
 use stubbles\peer\http\HttpUri;
+use stubbles\webapp\UriPath;
 /**
  * Utility methods to handle operations based on the uri called in the current request.
  *
  * @since  1.7.0
  */
-class UriRequest
+class CalledUri
 {
     /**
      * current uri
@@ -49,9 +50,9 @@ class UriRequest
     /**
      * casts given values to an instance of UriRequest
      *
-     * @param   string|\stubbles\webapp\UriRequest  $requestUri
-     * @param   string                              $requestMethod
-     * @return  \stubbles\webapp\UriRequest
+     * @param   string|\stubbles\webapp\routing\CalledUri  $requestUri
+     * @param   string                                     $requestMethod
+     * @return  \stubbles\webapp\routing\CalledUri
      * @since   4.0.0
      */
     public static function castFrom($requestUri, $requestMethod)

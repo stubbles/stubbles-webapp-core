@@ -10,7 +10,6 @@
 namespace stubbles\webapp\routing;
 use stubbles\input\ValueReader;
 use stubbles\lang\reflect;
-use stubbles\webapp\UriRequest;
 use stubbles\webapp\interceptor\Interceptors;
 /**
  * Tests for stubbles\webapp\routing\Routing.
@@ -47,7 +46,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
                         ->disableOriginalConstructor()
                         ->getMock();
         $this->routing   = new Routing($this->mockInjector);
-        $this->calledUri = new UriRequest('http://example.net/hello', 'GET');
+        $this->calledUri = new CalledUri('http://example.net/hello', 'GET');
     }
 
     /**
@@ -192,7 +191,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
                              ->getMock();
         return new MatchingRoute(
                 $mockInjector,
-                new UriRequest('http://example.net/' . $path, 'GET'),
+                new CalledUri('http://example.net/' . $path, 'GET'),
                 new Interceptors($mockInjector, $preInterceptors, $postInterceptors),
                 new SupportedMimeTypes([]),
                 $route

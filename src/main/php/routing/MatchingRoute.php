@@ -12,7 +12,6 @@ use stubbles\ioc\Injector;
 use stubbles\webapp\Processor;
 use stubbles\webapp\Request;
 use stubbles\webapp\Response;
-use stubbles\webapp\UriRequest;
 use stubbles\webapp\interceptor\Interceptors;
 /**
  * Contains logic to process the route.
@@ -32,14 +31,14 @@ class MatchingRoute extends AbstractProcessableRoute
      * constructor
      *
      * @param  \stubbles\ioc\Injector                       $injector
-     * @param  \stubbles\webapp\UriRequest                  $calledUri           actual called uri
+     * @param  \stubbles\webapp\routing\CalledUri           $calledUri           actual called uri
      * @param  \stubbles\webapp\interceptor\Interceptors    $interceptors
      * @param  \stubbles\webapp\routing\SupportedMimeTypes  $supportedMimeTypes
      * @param  \stubbles\webapp\Route                       $route               route configuration
      */
     public function __construct(
             Injector $injector,
-            UriRequest $calledUri,
+            CalledUri $calledUri,
             Interceptors $interceptors,
             SupportedMimeTypes $supportedMimeTypes,
             Route $route)

@@ -10,7 +10,6 @@
 namespace stubbles\webapp\routing;
 use stubbles\lang;
 use stubbles\webapp\Processor;
-use stubbles\webapp\UriRequest;
 use stubbles\webapp\auth\AuthConstraint;
 use stubbles\webapp\interceptor\PreInterceptor;
 use stubbles\webapp\interceptor\PostInterceptor;
@@ -147,10 +146,10 @@ class Route implements ConfigurableRoute
     /**
      * checks if this route is applicable for given request
      *
-     * @param   \stubbles\webapp\UriRequest  $calledUri  current request uri
+     * @param   \stubbles\webapp\CalledUri  $calledUri  current request uri
      * @return  bool
      */
-    public function matches(UriRequest $calledUri)
+    public function matches(CalledUri $calledUri)
     {
         if (!$this->matchesPath($calledUri)) {
             return false;
@@ -170,10 +169,10 @@ class Route implements ConfigurableRoute
     /**
      * checks if this route is applicable for given request path
      *
-     * @param   \stubbles\webapp\UriRequest  $calledUri  current request uri
+     * @param   \stubbles\webapp\CalledUri  $calledUri  current request uri
      * @return  bool
      */
-    public function matchesPath(UriRequest $calledUri)
+    public function matchesPath(CalledUri $calledUri)
     {
         return $calledUri->satisfiesPath($this->path);
     }

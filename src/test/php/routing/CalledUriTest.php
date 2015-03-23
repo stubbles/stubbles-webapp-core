@@ -7,21 +7,21 @@
  *
  * @package  stubbles\webapp
  */
-namespace stubbles\webapp;
+namespace stubbles\webapp\routing;
 /**
- * Tests for stubbles\webapp\UriRequest.
+ * Tests for stubbles\webapp\CalledUri.
  *
  * @since  1.7.0
  * @group  core
  */
-class UriRequestTest extends \PHPUnit_Framework_TestCase
+class CalledUriTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * instance to test
      *
-     * @type  UriRequest
+     * @type  \stubbles\webapp\CalledUri
      */
-    private $uriRequest;
+    private $calledUri;
     /**
      * mocked http uri
      *
@@ -35,7 +35,7 @@ class UriRequestTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->mockHttpUri = $this->getMock('stubbles\peer\http\HttpUri');
-        $this->uriRequest  = new UriRequest($this->mockHttpUri, 'GET');
+        $this->calledUri   = new CalledUri($this->mockHttpUri, 'GET');
     }
 
     /**
@@ -56,7 +56,7 @@ class UriRequestTest extends \PHPUnit_Framework_TestCase
      */
     public function createInstanceWithEmptyRequestMethodThrowsIllegalArgumentException($empty)
     {
-        new UriRequest($this->mockHttpUri, $empty);
+        new CalledUri($this->mockHttpUri, $empty);
     }
 
     /**
@@ -65,7 +65,10 @@ class UriRequestTest extends \PHPUnit_Framework_TestCase
      */
     public function castFromOtherInstanceReturnsInstance()
     {
-        $this->assertSame($this->uriRequest, UriRequest::castFrom($this->uriRequest, null));
+        $this->assertSame(
+                $this->calledUri,
+                CalledUri::castFrom($this->calledUri, null)
+        );
     }
 
     /**
@@ -74,7 +77,10 @@ class UriRequestTest extends \PHPUnit_Framework_TestCase
      */
     public function castFromHttpUriInstanceReturnsInstance()
     {
-        $this->assertEquals($this->uriRequest, UriRequest::castFrom($this->mockHttpUri, 'GET'));
+        $this->assertEquals(
+                $this->calledUri,
+                CalledUri::castFrom($this->mockHttpUri, 'GET')
+        );
     }
 
     /**
@@ -85,7 +91,7 @@ class UriRequestTest extends \PHPUnit_Framework_TestCase
      */
     public function castFromHttpUriInstanceWithoutRequestMethodThrowsIllegalArgumentException($empty)
     {
-        UriRequest::castFrom($this->mockHttpUri, $empty);
+        CalledUri::castFrom($this->mockHttpUri, $empty);
     }
 
     /**
@@ -95,7 +101,10 @@ class UriRequestTest extends \PHPUnit_Framework_TestCase
     public function castFromHttpUriStringReturnsInstance()
     {
 
-        $this->assertEquals(new UriRequest('http://example.net/', 'GET'), UriRequest::castFrom('http://example.net/', 'GET'));
+        $this->assertEquals(
+                new CalledUri('http://example.net/', 'GET'),
+                CalledUri::castFrom('http://example.net/', 'GET')
+        );
     }
 
     /**
@@ -106,7 +115,7 @@ class UriRequestTest extends \PHPUnit_Framework_TestCase
      */
     public function castFromHttpUriStringWithoutRequestMethodThrowsIllegalArgumentException($empty)
     {
-        UriRequest::castFrom('http://example.net/', $empty);
+        CalledUri::castFrom('http://example.net/', $empty);
     }
 
     /**
@@ -127,7 +136,7 @@ class UriRequestTest extends \PHPUnit_Framework_TestCase
      */
     public function methodAlwaysEqualsNullMethod()
     {
-        $this->assertTrue($this->uriRequest->methodEquals(null));
+        $this->assertTrue($this->calledUri->methodEquals(null));
     }
 
     /**
@@ -136,7 +145,7 @@ class UriRequestTest extends \PHPUnit_Framework_TestCase
      */
     public function methodAlwaysEqualsEmptyMethod()
     {
-        $this->assertTrue($this->uriRequest->methodEquals(''));
+        $this->assertTrue($this->calledUri->methodEquals(''));
     }
 
     /**
@@ -145,7 +154,7 @@ class UriRequestTest extends \PHPUnit_Framework_TestCase
      */
     public function methodEqualsGivenMethod()
     {
-        $this->assertTrue($this->uriRequest->methodEquals('GET'));
+        $this->assertTrue($this->calledUri->methodEquals('GET'));
     }
 
     /**
@@ -154,7 +163,7 @@ class UriRequestTest extends \PHPUnit_Framework_TestCase
      */
     public function methodDoesNotEqualsGivenMethod()
     {
-        $this->assertFalse($this->uriRequest->methodEquals('POST'));
+        $this->assertFalse($this->calledUri->methodEquals('POST'));
     }
 
     /**
@@ -182,7 +191,7 @@ class UriRequestTest extends \PHPUnit_Framework_TestCase
     public function returnsTrueForSatisfiedPathPattern($mockPath, $path)
     {
         $this->mockUriPath($mockPath);
-        $this->assertTrue($this->uriRequest->satisfiesPath($path));
+        $this->assertTrue($this->calledUri->satisfiesPath($path));
     }
 
     /**
@@ -207,7 +216,7 @@ class UriRequestTest extends \PHPUnit_Framework_TestCase
     public function returnsFalseForNonSatisfiedCondition($mockPath, $pathPattern)
     {
         $this->mockUriPath($mockPath);
-        $this->assertFalse($this->uriRequest->satisfiesPath($pathPattern));
+        $this->assertFalse($this->calledUri->satisfiesPath($pathPattern));
     }
 
     /**
@@ -219,7 +228,7 @@ class UriRequestTest extends \PHPUnit_Framework_TestCase
         $this->mockHttpUri->expects($this->once())
                           ->method('isHttps')
                           ->will($this->returnValue(true));
-        $this->assertTrue($this->uriRequest->isHttps());
+        $this->assertTrue($this->calledUri->isHttps());
     }
 
     /**
@@ -232,7 +241,7 @@ class UriRequestTest extends \PHPUnit_Framework_TestCase
         $this->mockHttpUri->expects($this->once())
                           ->method('toHttp')
                           ->will($this->returnValue($mockHttpUri));
-        $this->assertSame($mockHttpUri, $this->uriRequest->toHttp());
+        $this->assertSame($mockHttpUri, $this->calledUri->toHttp());
     }
 
     /**
@@ -245,7 +254,7 @@ class UriRequestTest extends \PHPUnit_Framework_TestCase
         $this->mockHttpUri->expects($this->once())
                           ->method('toHttps')
                           ->will($this->returnValue($mockHttpUri));
-        $this->assertSame($mockHttpUri, $this->uriRequest->toHttps());
+        $this->assertSame($mockHttpUri, $this->calledUri->toHttps());
     }
 
     /**
@@ -257,6 +266,9 @@ class UriRequestTest extends \PHPUnit_Framework_TestCase
         $this->mockHttpUri->expects($this->once())
                           ->method('__toString')
                           ->will($this->returnValue('http://example.net/foo/bar'));
-        $this->assertEquals('http://example.net/foo/bar', (string) $this->uriRequest);
+        $this->assertEquals(
+                'http://example.net/foo/bar',
+                (string) $this->calledUri
+        );
     }
 }

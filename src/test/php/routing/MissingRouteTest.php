@@ -8,7 +8,6 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\routing;
-use stubbles\webapp\UriRequest;
 /**
  * Tests for stubbles\webapp\routing\MissingRoute.
  *
@@ -45,7 +44,7 @@ class MissingRouteTest extends \PHPUnit_Framework_TestCase
                 $this->getMockBuilder('stubbles\ioc\Injector')
                         ->disableOriginalConstructor()
                         ->getMock(),
-                new UriRequest('http://example.com/hello/world', 'GET'),
+                new CalledUri('http://example.com/hello/world', 'GET'),
                 $this->getMockBuilder('stubbles\webapp\interceptor\Interceptors')
                         ->disableOriginalConstructor()
                         ->getMock(),

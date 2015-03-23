@@ -11,7 +11,6 @@ namespace stubbles\webapp\routing;
 use stubbles\input\ValueReader;
 use stubbles\webapp\Request;
 use stubbles\webapp\Response;
-use stubbles\webapp\UriRequest;
 use stubbles\webapp\auth\AuthHandler;
 use stubbles\webapp\response\mimetypes\Json;
 /**
@@ -113,7 +112,7 @@ class AbstractProcessableRouteTest extends \PHPUnit_Framework_TestCase
     {
         return new TestAbstractProcessableRoute(
                 $this->mockInjector,
-                new UriRequest('http://example.com/hello/world', 'GET'),
+                new CalledUri('http://example.com/hello/world', 'GET'),
                 $this->mockInterceptors,
                 null === $mimeTypes ? new SupportedMimeTypes([]) : $mimeTypes
 
