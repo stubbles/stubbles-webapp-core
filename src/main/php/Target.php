@@ -9,7 +9,7 @@
  */
 namespace stubbles\webapp;
 /**
- * Interface for processors.
+ * Interface for resolving resource targets.
  *
  * @api
  */

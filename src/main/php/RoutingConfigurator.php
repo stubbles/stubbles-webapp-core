@@ -34,7 +34,7 @@ interface RoutingConfigurator
      * @return  \stubbles\webapp\routing\ConfigurableRoute
      * @since   4.0.0
      */
-    public function passThroughOnGet($path = '/*\.html$', $target = 'stubbles\webapp\processor\HtmlFilePassThrough');
+    public function passThroughOnGet($path = '/*\.html$', $target = 'stubbles\webapp\htmlpassthrough\HtmlFilePassThrough');
 
     /**
      * reply with given class or callable for HEAD request on given path

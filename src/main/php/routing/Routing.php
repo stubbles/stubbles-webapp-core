@@ -95,7 +95,7 @@ class Routing implements RoutingConfigurator
      * @return  \stubbles\webapp\routing\ConfigurableRoute
      * @since   4.0.0
      */
-    public function passThroughOnGet($path = '/[a-zA-Z0-9-_]+.html$', $target = 'stubbles\webapp\processor\HtmlFilePassThrough')
+    public function passThroughOnGet($path = '/[a-zA-Z0-9-_]+.html$', $target = 'stubbles\webapp\htmlpassthrough\HtmlFilePassThrough')
     {
         return $this->onGet($path, $target);
     }

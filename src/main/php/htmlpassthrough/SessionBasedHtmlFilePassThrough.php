@@ -7,10 +7,9 @@
  *
  * @package  stubbles\webapp
  */
-namespace stubbles\webapp\processor;
+namespace stubbles\webapp\htmlpassthrough;
 use stubbles\webapp\Request;
 use stubbles\webapp\Response;
-use stubbles\webapp\processor\HtmlFilePassThrough;
 /**
  * Processor to pass through hole HTML pages to ensure session ids are passed in links.
  *

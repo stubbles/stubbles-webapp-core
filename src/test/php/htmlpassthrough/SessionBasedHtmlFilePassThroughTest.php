@@ -7,13 +7,13 @@
  *
  * @package  stubbles\webapp
  */
-namespace stubbles\webapp\processor;
+namespace stubbles\webapp\htmlpassthrough;
 use org\bovigo\vfs\vfsStream;
 use stubbles\webapp\UriPath;
 use stubbles\webapp\request\UserAgent;
 use stubbles\webapp\response\Error;
 /**
- * Test for stubbles\webapp\processor\SessionBasedHtmlFilePassThrough.
+ * Test for stubbles\webapp\htmlpassthrough\SessionBasedHtmlFilePassThrough.
  *
  * @group  processor
  */
@@ -22,7 +22,7 @@ class SessionBasedHtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
     /**
      * instance to test
      *
-     * @type  \stubbles\webapp\processor\SessionBasedHtmlFilePassThrough
+     * @type  \stubbles\webapp\htmlpassthrough\SessionBasedHtmlFilePassThrough
      */
     private $sessionBasedHtmlFilePassThrough;
     /**

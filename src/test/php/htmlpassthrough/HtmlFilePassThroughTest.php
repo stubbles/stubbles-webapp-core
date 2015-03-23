@@ -7,13 +7,13 @@
  *
  * @package  stubbles\webapp
  */
-namespace stubbles\webapp\processor;
+namespace stubbles\webapp\htmlpassthrough;
 use org\bovigo\vfs\vfsStream;
 use stubbles\lang\reflect;
 use stubbles\webapp\UriPath;
 use stubbles\webapp\response\Error;
 /**
- * Test for stubbles\webapp\processor\HtmlFilePassThrough.
+ * Test for stubbles\webapp\htmlpassthrough\HtmlFilePassThrough.
  *
  * @group  processor
  * @since  4.0.0
@@ -23,7 +23,7 @@ class HtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
     /**
      * instance to test
      *
-     * @type  HtmlFilePassThrough
+     * @type  \stubbles\webapp\htmlpassthrough\HtmlFilePassThrough
      */
     private $htmlFilePassThrough;
     /**

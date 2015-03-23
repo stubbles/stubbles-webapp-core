@@ -16,7 +16,7 @@ namespace stubbles\webapp {
      */
     function htmlPassThrough()
     {
-        return 'stubbles\webapp\processor\HtmlFilePassThrough';
+        return 'stubbles\webapp\htmlpassthrough\HtmlFilePassThrough';
     }
 
     /**
@@ -27,7 +27,7 @@ namespace stubbles\webapp {
      */
     function sessionBasedHtmlPassThrough()
     {
-        return 'stubbles\webapp\processor\SessionBasedHtmlFilePassThrough';
+        return 'stubbles\webapp\htmlpassthrough\SessionBasedHtmlFilePassThrough';
     }
 
 }
