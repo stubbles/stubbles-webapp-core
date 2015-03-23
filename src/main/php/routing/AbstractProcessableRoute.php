@@ -100,7 +100,7 @@ abstract class AbstractProcessableRoute implements ProcessableRoute
         }
 
         if (!$this->supportedMimeTypes->provideClass($mimeType)) {
-            throw new \RuntimeException('No formatter defined for negotiated content type ' . $mimeType);
+            throw new \RuntimeException('No mime type class defined for negotiated content type ' . $mimeType);
         }
 
         return $this->injector->getInstance(

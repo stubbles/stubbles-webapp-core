@@ -53,22 +53,33 @@ abstract class WebApp extends App
      */
     public function run()
     {
-        $request = WebRequest::fromRawSource();
+        $request  = WebRequest::fromRawSource();
+        $response = new WebResponse($request);
+        if ($response->isFixed()) {
+            return $response; // http version of request not supported
+        }
+
         $this->configureRouting($this->routing);
         try {
             $route = $this->routing->findRoute($request->uri(), $request->method());
-            if ($this->switchToHttps($route)) {
-                $response = new WebResponse($request);
-                return $response->redirect($route->httpsUri());
-            }
+        } catch (MalformedUriException $mue) {
+            $response->status()->badRequest();
+            return $response;
+        }
 
+        if ($this->switchToHttps($route)) {
+            $response->status()->redirect($route->httpsUri());
+            return $response;
+        }
+
+        try {
             $mimeType = $route->negotiateMimeType($request);
             if (null === $mimeType) {
-                $response = new WebResponse($request);
-                return $response->notAcceptable($route->supportedMimeTypes());
+                $response->status()->notAcceptable($route->supportedMimeTypes());
+                return $response;
             }
 
-            $response = new WebResponse($request, $mimeType);
+            $response->adjustMimeType($mimeType);
             $session = $request->attachSession(
                     $this->createSession($request, $response)
             );
@@ -84,9 +95,6 @@ abstract class WebApp extends App
                     $route->applyPostInterceptors($request, $response);
                 }
             }
-        } catch (MalformedUriException $mue) {
-            $response = new WebResponse($request);
-            $response->setStatusCode(400);
         } catch (\Exception $e) {
             $this->injector->getInstance(
                     'stubbles\lang\errorhandler\ExceptionLogger'

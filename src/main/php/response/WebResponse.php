@@ -101,6 +101,18 @@ class WebResponse implements Response
     }
 
     /**
+     * adjusts mime type of response to given mime type
+     *
+     * @param   \stubbles\webapp\response\mimetypes\MimeType  $mimeType
+     * @return  \stubbles\webapp\response\WebResponse
+     */
+    public function adjustMimeType(MimeType $mimeType)
+    {
+        $this->mimeType = $mimeType;
+        return $this;
+    }
+
+    /**
      * returns mime type for response body
      *
      * @return  \stubbles\webapp\response\mimetypes\MimeType
