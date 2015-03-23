@@ -9,7 +9,7 @@
  */
 namespace stubbles\webapp\routing;
 use stubbles\ioc\Injector;
-use stubbles\webapp\Processor;
+use stubbles\webapp\Target;
 use stubbles\webapp\Request;
 use stubbles\webapp\Response;
 use stubbles\webapp\interceptor\Interceptors;
@@ -58,7 +58,7 @@ class ResolvingResource extends AbstractResource
     }
 
     /**
-     * triggers actual logic on this route
+     * triggers actual logic on this resource
      *
      * The logic might be capsuled in a closure, a callback, or a processor
      * class. The return value from this logic will be used to evaluate whether
@@ -72,21 +72,21 @@ class ResolvingResource extends AbstractResource
      */
     public function data(Request $request, Response $response)
     {
-        $uriPath  = $this->calledUri->path($this->route->configuredPath());
-        $callback = $this->route->callback();
-        if (is_callable($callback)) {
-            return call_user_func_array($callback, [$request, $response, $uriPath]);
+        $uriPath = $this->calledUri->path($this->route->configuredPath());
+        $target  = $this->route->target();
+        if (is_callable($target)) {
+            return call_user_func_array($target, [$request, $response, $uriPath]);
         }
 
-        if ($callback instanceof Processor) {
-            return $callback->process($request, $response, $uriPath);
+        if ($target instanceof Target) {
+            return $target->resolve($request, $response, $uriPath);
         }
 
-        $processor = $this->injector->getInstance($callback);
-        if (!($processor instanceof Processor)) {
-            return $response->internalServerError('Configured callback class ' . $callback . ' for route ' . $uriPath . ' is not an instance of stubbles\webapp\Processor');
+        $targetInstance = $this->injector->getInstance($target);
+        if (!($targetInstance instanceof Target)) {
+            return $response->internalServerError('Configured target class ' . $target . ' for route ' . $uriPath . ' is not an instance of stubbles\webapp\Target');
         }
 
-        return $processor->process($request, $response, $uriPath);
+        return $targetInstance->resolve($request, $response, $uriPath);
     }
 }

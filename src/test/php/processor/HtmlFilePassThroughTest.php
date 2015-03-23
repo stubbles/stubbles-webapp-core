@@ -11,6 +11,7 @@ namespace stubbles\webapp\processor;
 use org\bovigo\vfs\vfsStream;
 use stubbles\lang\reflect;
 use stubbles\webapp\UriPath;
+use stubbles\webapp\response\Error;
 /**
  * Test for stubbles\webapp\processor\HtmlFilePassThrough.
  *
@@ -81,13 +82,17 @@ class HtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
      */
     public function requestForNonExistingFileWritesNotFoundResponse()
     {
+        $error = Error::notFound();
         $this->mockResponse->expects($this->once())
-                           ->method('notFound');
-        $this->mockResponse->expects($this->never())
-                           ->method('write');
-        $this->htmlFilePassThrough->process($this->mockRequest,
-                                            $this->mockResponse,
-                                            new UriPath('/', '/doesNotExist.html')
+                           ->method('notFound')
+                           ->will($this->returnValue($error));
+        $this->assertSame(
+                $error,
+                $this->htmlFilePassThrough->resolve(
+                        $this->mockRequest,
+                        $this->mockResponse,
+                        new UriPath('/', '/doesNotExist.html')
+                )
         );
     }
 
@@ -96,12 +101,13 @@ class HtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
      */
     public function selectsAvailableRoute()
     {
-        $this->mockResponse->expects($this->once())
-                           ->method('write')
-                           ->with($this->equalTo('this is foo.html'));
-        $this->htmlFilePassThrough->process($this->mockRequest,
-                                            $this->mockResponse,
-                                            new UriPath('/', '/foo.html')
+        $this->assertEquals(
+                'this is foo.html',
+                $this->htmlFilePassThrough->resolve(
+                        $this->mockRequest,
+                        $this->mockResponse,
+                        new UriPath('/', '/foo.html')
+                )
         );
     }
 
@@ -110,12 +116,13 @@ class HtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
      */
     public function fallsBackToIndexFileIfRequestForSlashOnly()
     {
-        $this->mockResponse->expects($this->once())
-                           ->method('write')
-                           ->with($this->equalTo('this is index.html'));
-        $this->htmlFilePassThrough->process($this->mockRequest,
-                                            $this->mockResponse,
-                                            new UriPath('/', '/')
+        $this->assertEquals(
+                'this is index.html',
+                $this->htmlFilePassThrough->resolve(
+                        $this->mockRequest,
+                        $this->mockResponse,
+                        new UriPath('/', '/')
+                )
         );
     }
 }

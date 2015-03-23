@@ -8,7 +8,7 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\routing;
-use stubbles\webapp\Processor;
+use stubbles\webapp\Target;
 use stubbles\webapp\Request;
 use stubbles\webapp\Response;
 use stubbles\webapp\UriPath;
@@ -22,7 +22,7 @@ use stubbles\webapp\auth\Roles;
  * @SupportsMimeType(mimeType="application/bar", class="example\\Bar")
  * @SupportsMimeType(mimeType="application/baz", class=stubbles\webapp\routing\Baz.class)
  */
-class AnnotatedProcessor implements Processor
+class AnnotatedProcessor implements Target
 {
     /**
      * processes the request
@@ -31,7 +31,7 @@ class AnnotatedProcessor implements Processor
      * @param  \stubbles\webapp\Response  $response  response to send
      * @param  \stubbles\webapp\UriPath   $uriPath   information about called uri path
      */
-    public function process(Request $request, Response $response, UriPath $uriPath)
+    public function resolve(Request $request, Response $response, UriPath $uriPath)
     {
         // intentionally empty
     }
@@ -46,7 +46,7 @@ class Baz
  * @RequiresRole('superadmin')
  * @DisableContentNegotiation
  */
-class OtherAnnotatedProcessor implements Processor
+class OtherAnnotatedProcessor implements Target
 {
     /**
      * processes the request
@@ -55,7 +55,7 @@ class OtherAnnotatedProcessor implements Processor
      * @param  \stubbles\webapp\respone\Response  $response  response to send
      * @param  \stubbles\webapp\UriPath           $uriPath   information about called uri path
      */
-    public function process(Request $request, Response $response, UriPath $uriPath)
+    public function resolve(Request $request, Response $response, UriPath $uriPath)
     {
         // intentionally empty
     }
@@ -66,7 +66,7 @@ class OtherAnnotatedProcessor implements Processor
  * @RolesAware
  * @since  5.0.0
  */
-class RoleAwareAnnotatedProcessor implements Processor
+class RoleAwareAnnotatedProcessor implements Target
 {
     /**
      * processes the request
@@ -75,7 +75,7 @@ class RoleAwareAnnotatedProcessor implements Processor
      * @param  \stubbles\webapp\respone\Response  $response  response to send
      * @param  \stubbles\webapp\UriPath           $uriPath   information about called uri path
      */
-    public function process(Request $request, Response $response, UriPath $uriPath)
+    public function resolve(Request $request, Response $response, UriPath $uriPath)
     {
         // intentionally empty
     }
@@ -247,7 +247,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     public function returnsGivenCallback()
     {
         $route = new Route('/hello/{name}', __CLASS__);
-        $this->assertEquals(__CLASS__, $route->callback());
+        $this->assertEquals(__CLASS__, $route->target());
     }
 
     /**

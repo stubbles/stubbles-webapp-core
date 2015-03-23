@@ -20,57 +20,57 @@ interface RoutingConfigurator
     /**
      * reply with given class or callable for GET request on given path
      *
-     * @param   string                                      $path      path this route is applicable for
-     * @param   string|callable|\stubbles\webapp\Processor  $callback  code to be executed when the route is active
+     * @param   string                                    $path   path this route is applicable for
+     * @param   string|callable|\stubbles\webapp\Target  $target  code to be executed when the route is active
      * @return  \stubbles\webapp\routing\ConfigurableRoute
      */
-    public function onGet($path, $callback);
+    public function onGet($path, $target);
 
     /**
      * reply with HTML file stored in pages path
      *
-     * @param   string                                      $path      optional  path this route is applicable for
-     * @param   string|callable|\stubbles\webapp\Processor  $callback  optional  code to be executed when the route is active
+     * @param   string                                   $path    optional  path this route is applicable for
+     * @param   string|callable|\stubbles\webapp\Target  $target  optional  code to be executed when the route is active
      * @return  \stubbles\webapp\routing\ConfigurableRoute
      * @since   4.0.0
      */
-    public function passThroughOnGet($path = '/*\.html$', $callback = 'stubbles\webapp\processor\HtmlFilePassThrough');
+    public function passThroughOnGet($path = '/*\.html$', $target = 'stubbles\webapp\processor\HtmlFilePassThrough');
 
     /**
      * reply with given class or callable for HEAD request on given path
      *
-     * @param   string                                      $path      path this route is applicable for
-     * @param   string|callable|\stubbles\webapp\Processor  $callback  code to be executed when the route is active
+     * @param   string                                   $path    path this route is applicable for
+     * @param   string|callable|\stubbles\webapp\Target  $target  code to be executed when the route is active
      * @return  \stubbles\webapp\routing\ConfigurableRoute
      */
-    public function onHead($path, $callback);
+    public function onHead($path, $target);
 
     /**
      * reply with given class or callable for POST request on given path
      *
-     * @param   string                                      $path      path this route is applicable for
-     * @param   string|callable|\stubbles\webapp\Processor  $callback  code to be executed when the route is active
+     * @param   string                                   $path    path this route is applicable for
+     * @param   string|callable|\stubbles\webapp\Target  $target  code to be executed when the route is active
      * @return  \stubbles\webapp\routing\ConfigurableRoute
      */
-    public function onPost($path, $callback);
+    public function onPost($path, $target);
 
     /**
      * reply with given class or callable for PUT request on given path
      *
-     * @param   string                                      $path      path this route is applicable for
-     * @param   string|callable|\stubbles\webapp\Processor  $callback  code to be executed when the route is active
+     * @param   string                                   $path    path this route is applicable for
+     * @param   string|callable|\stubbles\webapp\Target  $target  code to be executed when the route is active
      * @return  \stubbles\webapp\routing\ConfigurableRoute
      */
-    public function onPut($path, $callback);
+    public function onPut($path, $target);
 
     /**
      * reply with given class or callable for DELETE request on given path
      *
-     * @param   string                                      $path      path this route is applicable for
-     * @param   string|callable|\stubbles\webapp\Processor  $callback  code to be executed when the route is active
+     * @param   string                                   $path    path this route is applicable for
+     * @param   string|callable|\stubbles\webapp\Target  $target  code to be executed when the route is active
      * @return  \stubbles\webapp\routing\ConfigurableRoute
      */
-    public function onDelete($path, $callback);
+    public function onDelete($path, $target);
 
     /**
      * reply with given class or callable for given request method(s) on given path
@@ -78,13 +78,13 @@ interface RoutingConfigurator
      * If no request method(s) specified it replies to request methods GET, HEAD,
      * POST, PUT and DELETE.
      *
-     * @param   string                                      $path           path this route is applicable for
-     * @param   string|callable|\stubbles\webapp\Processor  $callback       code to be executed when the route is active
-     * @param   string|string[]                             $requestMethod  optional  request method(s) this route is applicable for
+     * @param   string                                   $path           path this route is applicable for
+     * @param   string|callable|\stubbles\webapp\Target  $target         code to be executed when the route is active
+     * @param   string|string[]                          $requestMethod  optional  request method(s) this route is applicable for
      * @return  \stubbles\webapp\ConfigurableRoute
      * @since   4.0.0
      */
-    public function onAll($path, $callback, $requestMethod = null);
+    public function onAll($path, $target, $requestMethod = null);
 
     /**
      * add a route definition

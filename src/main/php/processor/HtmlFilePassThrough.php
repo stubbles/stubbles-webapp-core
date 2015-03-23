@@ -8,7 +8,7 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\processor;
-use stubbles\webapp\Processor;
+use stubbles\webapp\Target;
 use stubbles\webapp\Request;
 use stubbles\webapp\Response;
 use stubbles\webapp\UriPath;
@@ -17,7 +17,7 @@ use stubbles\webapp\UriPath;
  *
  * @since  4.0.0
  */
-class HtmlFilePassThrough implements Processor
+class HtmlFilePassThrough implements Target
 {
     /**
      * path to html files
@@ -41,25 +41,23 @@ class HtmlFilePassThrough implements Processor
     /**
      * processes the request
      *
-     * @param  \stubbles\webapp\Request   $request   current request
-     * @param  \stubbles\webapp\Response  $response  response to send
-     * @param  \stubbles\webapp\UriPath   $uriPath   information about called uri path
+     * @param   \stubbles\webapp\Request   $request   current request
+     * @param   \stubbles\webapp\Response  $response  response to send
+     * @param   \stubbles\webapp\UriPath   $uriPath   information about called uri path
+     * @return  string|\stubbles\webapp\response\Error
      */
-    public function process(Request $request, Response $response, UriPath $uriPath)
+    public function resolve(Request $request, Response $response, UriPath $uriPath)
     {
         $routeName = $uriPath->remaining('index.html');
         if (!file_exists($this->routePath . $routeName)) {
-            $response->notFound();
-            return;
+            return $response->notFound();
         }
 
-        $response->write(
-                $this->modifyContent(
-                        $request,
-                        $response,
-                        file_get_contents($this->routePath . $routeName),
-                        $routeName
-                )
+        return $this->modifyContent(
+                $request,
+                $response,
+                file_get_contents($this->routePath . $routeName),
+                $routeName
         );
     }
 

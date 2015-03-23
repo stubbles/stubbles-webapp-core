@@ -54,10 +54,10 @@ class ResolvingResourceTest extends \PHPUnit_Framework_TestCase
     /**
      * creates instance to test
      *
-     * @param   \stubbles\webapp\routing\Route  $routeConfig
+     * @param   \stubbles\webapp\routing\Route  $route
      * @return  \stubbles\webapp\routing\ResolvingResource
      */
-    private function createMatchingRoute(Route $routeConfig, $uri = 'http://example.com/hello/world')
+    private function createResolvingResource(Route $route, $uri = 'http://example.com/hello/world')
     {
         return new ResolvingResource(
                 $this->mockInjector,
@@ -66,7 +66,7 @@ class ResolvingResourceTest extends \PHPUnit_Framework_TestCase
                         ->disableOriginalConstructor()
                         ->getMock(),
                 new SupportedMimeTypes([]),
-                $routeConfig
+                $route
         );
     }
 
@@ -79,7 +79,7 @@ class ResolvingResourceTest extends \PHPUnit_Framework_TestCase
                            function() {},
                            'GET'
                  );
-        $processableRoute = $this->createMatchingRoute($route->httpsOnly());
+        $processableRoute = $this->createResolvingResource($route->httpsOnly());
         $this->assertTrue($processableRoute->requiresHttps());
     }
 
@@ -88,7 +88,7 @@ class ResolvingResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function doesNotrequireSwitchToHttpsIfCalledUriIsNotHttpsAndRouteDoesNotRequireHttps()
     {
-        $this->assertFalse($this->createMatchingRouteWithCallback(function() {})->requiresHttps());
+        $this->assertFalse($this->createResolvingResourceWithTarget(function() {})->requiresHttps());
     }
 
     /**
@@ -100,7 +100,7 @@ class ResolvingResourceTest extends \PHPUnit_Framework_TestCase
                            function() {},
                            'GET'
                  );
-        $processableRoute = $this->createMatchingRoute($route->httpsOnly(), 'https://example.com/hello/world');
+        $processableRoute = $this->createResolvingResource($route->httpsOnly(), 'https://example.com/hello/world');
         $this->assertFalse($processableRoute->requiresHttps());
     }
 
@@ -110,20 +110,20 @@ class ResolvingResourceTest extends \PHPUnit_Framework_TestCase
     public function returnsHttpsUriFromCalledUri()
     {
         $this->assertEquals('https://example.com/hello/world',
-                            (string) $this->createMatchingRouteWithCallback(function() {})->httpsUri()
+                            (string) $this->createResolvingResourceWithTarget(function() {})->httpsUri()
         );
     }
 
     /**
      * creates instance to test
      *
-     * @param   callable  $callback
-     * @return  Resource
+     * @param   callable  $target
+     * @return  \stubbles\webapp\routing\ResolvingResource
      */
-    private function createMatchingRouteWithCallback($callback)
+    private function createResolvingResourceWithTarget($target)
     {
-        return $this->createMatchingRoute(
-                new Route('/hello/{name}', $callback, 'GET')
+        return $this->createResolvingResource(
+                new Route('/hello/{name}', $target, 'GET')
         );
     }
 
@@ -138,7 +138,7 @@ class ResolvingResourceTest extends \PHPUnit_Framework_TestCase
                            ->will($this->returnSelf());
         $this->assertEquals(
                 'Hello world',
-                $this->createMatchingRouteWithCallback(
+                $this->createResolvingResourceWithTarget(
                         function(Request $request, Response $response, UriPath $uriPath)
                         {
                             $response->setStatusCode(418);
@@ -171,7 +171,7 @@ class ResolvingResourceTest extends \PHPUnit_Framework_TestCase
                            ->will($this->returnSelf());
         $this->assertEquals(
                 'Hello world',
-                $this->createMatchingRouteWithCallback([$this, 'theCallable'])
+                $this->createResolvingResourceWithTarget([$this, 'theCallable'])
                         ->data($this->mockRequest, $this->mockResponse)
         );
     }
@@ -193,9 +193,9 @@ class ResolvingResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function processCallsGivenProcessorInstance()
     {
-        $mockProcessor = $this->getMock('stubbles\webapp\Processor');
+        $mockProcessor = $this->getMock('stubbles\webapp\Target');
         $mockProcessor->expects($this->once())
-                ->method('process')
+                ->method('resolve')
                 ->with($this->equalTo($this->mockRequest),
                        $this->equalTo($this->mockResponse),
                        $this->equalTo(new UriPath('/hello/{name}', '/hello/world'))
@@ -203,7 +203,7 @@ class ResolvingResourceTest extends \PHPUnit_Framework_TestCase
                 ->will($this->returnValue('Hello world'));
         $this->assertEquals(
                 'Hello world',
-                $this->createMatchingRouteWithCallback($mockProcessor)
+                $this->createResolvingResourceWithTarget($mockProcessor)
                         ->data($this->mockRequest, $this->mockResponse)
         );
     }
@@ -223,7 +223,7 @@ class ResolvingResourceTest extends \PHPUnit_Framework_TestCase
                 ->will($this->returnValue($error));
         $this->assertSame(
                 $error,
-                $this->createMatchingRouteWithCallback('\stdClass')
+                $this->createResolvingResourceWithTarget('\stdClass')
                         ->data($this->mockRequest, $this->mockResponse)
         );
     }
@@ -233,9 +233,9 @@ class ResolvingResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function processCreatesAndCallsGivenProcessorClass()
     {
-        $mockProcessor = $this->getMock('stubbles\webapp\Processor');
+        $mockProcessor = $this->getMock('stubbles\webapp\Target');
         $mockProcessor->expects($this->once())
-                ->method('process')
+                ->method('resolve')
                 ->with($this->equalTo($this->mockRequest),
                        $this->equalTo($this->mockResponse),
                        $this->equalTo(new UriPath('/hello/{name}', '/hello/world'))
@@ -247,7 +247,7 @@ class ResolvingResourceTest extends \PHPUnit_Framework_TestCase
                            ->will($this->returnValue($mockProcessor));
         $this->assertEquals(
                 'Hello world',
-                $this->createMatchingRouteWithCallback(get_class($mockProcessor))
+                $this->createResolvingResourceWithTarget(get_class($mockProcessor))
                         ->data($this->mockRequest, $this->mockResponse)
         );
     }

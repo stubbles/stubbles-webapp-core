@@ -9,7 +9,7 @@
  */
 namespace stubbles\webapp\routing;
 use stubbles\lang;
-use stubbles\webapp\Processor;
+use stubbles\webapp\Target;
 use stubbles\webapp\auth\AuthConstraint;
 use stubbles\webapp\interceptor\PreInterceptor;
 use stubbles\webapp\interceptor\PostInterceptor;
@@ -31,7 +31,7 @@ class Route implements ConfigurableRoute
      *
      * @type  string|callable|\stubbles\webapp\Processor
      */
-    private $callback;
+    private $target;
     /**
      * list of annotations on callback
      *
@@ -93,19 +93,23 @@ class Route implements ConfigurableRoute
      * If no request method(s) specified it matches request methods GET, HEAD,
      * POST, PUT and DELETE.
      *
-     * @param   string                                      $path           path this route is applicable for
-     * @param   string|callable|\stubbles\webapp\Processor  $callback       code to be executed when the route is active
-     * @param   string|string[]                             $requestMethod  optional  request method(s) this route is applicable for
+     * @param   string                                   $path           path this route is applicable for
+     * @param   string|callable|\stubbles\webapp\Target  $target         code to be executed when the route is active
+     * @param   string|string[]                          $requestMethod  optional  request method(s) this route is applicable for
      * @throws  \InvalidArgumentException
      */
-    public function __construct($path, $callback, $requestMethod = null)
+    public function __construct($path, $target, $requestMethod = null)
     {
-        if (!is_callable($callback) && !($callback instanceof Processor) && !class_exists($callback)) {
-            throw new \InvalidArgumentException('Given callback for path "' . $path . '" must be a callable, an instance of stubbles\webapp\Processor or a class name of an existing processor class');
+        if (!is_callable($target) && !($target instanceof Target) && !class_exists($target)) {
+            throw new \InvalidArgumentException(
+                    'Given target for path "' . $path . '" must be a callable,'
+                    . ' an instance of stubbles\webapp\Target or a class name of'
+                    . ' an existing stubbles\webapp\Target implementation'
+            );
         }
 
         $this->path                  = $path;
-        $this->callback              = $callback;
+        $this->target                = $target;
         $this->allowedRequestMethods = $this->arrayFrom($requestMethod);
     }
 
@@ -190,11 +194,11 @@ class Route implements ConfigurableRoute
     /**
      * returns callback for this route
      *
-     * @return  string|callable|\stubbles\webapp\Processor
+     * @return  string|callable|\stubbles\webapp\Target
      */
-    public function callback()
+    public function target()
     {
-        return $this->callback;
+        return $this->target;
     }
 
     /**
@@ -412,7 +416,7 @@ class Route implements ConfigurableRoute
     private function routingAnnotations()
     {
         if (null === $this->routingAnnotations) {
-            $this->routingAnnotations = new RoutingAnnotations($this->callback);
+            $this->routingAnnotations = new RoutingAnnotations($this->target);
         }
 
         return $this->routingAnnotations;

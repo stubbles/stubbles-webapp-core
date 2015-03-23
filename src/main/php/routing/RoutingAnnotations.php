@@ -27,7 +27,7 @@ class RoutingAnnotations
     /**
      * constructor
      *
-     * @param  string|callable|\stubbles\webapp\Processor  $callback
+     * @param  string|callable|\stubbles\webapp\Target  $callback
      */
     public function __construct($callback)
     {

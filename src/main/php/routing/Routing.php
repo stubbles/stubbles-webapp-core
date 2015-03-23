@@ -78,74 +78,74 @@ class Routing implements RoutingConfigurator
     /**
      * reply with given class or callable for GET request on given path
      *
-     * @param   string                                      $path      path this route is applicable for
-     * @param   string|callable|\stubbles\webapp\Processor  $callback  code to be executed when the route is active
+     * @param   string                                   $path    path this route is applicable for
+     * @param   string|callable|\stubbles\webapp\Target  $target  code to be executed when the route is active
      * @return  \stubbles\webapp\routing\ConfigurableRoute
      */
-    public function onGet($path, $callback)
+    public function onGet($path, $target)
     {
-        return $this->addRoute(new Route($path, $callback, 'GET'));
+        return $this->addRoute(new Route($path, $target, 'GET'));
     }
 
     /**
      * reply with HTML file stored in pages path
      *
-     * @param   string                                      $path      optional  path this route is applicable for
-     * @param   string|callable|\stubbles\webapp\Processor  $callback  optional  code to be executed when the route is active
+     * @param   string                                   $path    optional  path this route is applicable for
+     * @param   string|callable|\stubbles\webapp\Target  $target  optional  code to be executed when the route is active
      * @return  \stubbles\webapp\routing\ConfigurableRoute
      * @since   4.0.0
      */
-    public function passThroughOnGet($path = '/[a-zA-Z0-9-_]+.html$', $callback = 'stubbles\webapp\processor\HtmlFilePassThrough')
+    public function passThroughOnGet($path = '/[a-zA-Z0-9-_]+.html$', $target = 'stubbles\webapp\processor\HtmlFilePassThrough')
     {
-        return $this->onGet($path, $callback);
+        return $this->onGet($path, $target);
     }
 
     /**
      * reply with given class or callable for HEAD request on given path
      *
-     * @param   string                                      $path      path this route is applicable for
-     * @param   string|callable|\stubbles\webapp\Processor  $callback  code to be executed when the route is active
+     * @param   string                                   $path    path this route is applicable for
+     * @param   string|callable|\stubbles\webapp\Target  $target  code to be executed when the route is active
      * @return  \stubbles\webapp\routing\ConfigurableRoute
      */
-    public function onHead($path, $callback)
+    public function onHead($path, $target)
     {
-        return $this->addRoute(new Route($path, $callback, 'HEAD'));
+        return $this->addRoute(new Route($path, $target, 'HEAD'));
     }
 
     /**
      * reply with given class or callable for POST request on given path
      *
-     * @param   string                                      $path      path this route is applicable for
-     * @param   string|callable|\stubbles\webapp\Processor  $callback  code to be executed when the route is active
+     * @param   string                                   $path    path this route is applicable for
+     * @param   string|callable|\stubbles\webapp\Target  $target  code to be executed when the route is active
      * @return  \stubbles\webapp\routing\ConfigurableRoute
      */
-    public function onPost($path, $callback)
+    public function onPost($path, $target)
     {
-        return $this->addRoute(new Route($path, $callback, 'POST'));
+        return $this->addRoute(new Route($path, $target, 'POST'));
     }
 
     /**
      * reply with given class or callable for PUT request on given path
      *
-     * @param   string                                      $path      path this route is applicable for
-     * @param   string|callable|\stubbles\webapp\Processor  $callback  code to be executed when the route is active
+     * @param   string                                   $path    path this route is applicable for
+     * @param   string|callable|\stubbles\webapp\Target  $target  code to be executed when the route is active
      * @return  \stubbles\webapp\routing\ConfigurableRoute
      */
-    public function onPut($path, $callback)
+    public function onPut($path, $target)
     {
-        return $this->addRoute(new Route($path, $callback, 'PUT'));
+        return $this->addRoute(new Route($path, $target, 'PUT'));
     }
 
     /**
      * reply with given class or callable for DELETE request on given path
      *
-     * @param   string                                      $path      path this route is applicable for
-     * @param   string|callable|\stubbles\webapp\Processor  $callback  code to be executed when the route is active
+     * @param   string                                   $path    path this route is applicable for
+     * @param   string|callable|\stubbles\webapp\Target  $target  code to be executed when the route is active
      * @return  \stubbles\webapp\routing\ConfigurableRoute
      */
-    public function onDelete($path, $callback)
+    public function onDelete($path, $target)
     {
-        return $this->addRoute(new Route($path, $callback, 'DELETE'));
+        return $this->addRoute(new Route($path, $target, 'DELETE'));
     }
 
     /**
@@ -154,15 +154,15 @@ class Routing implements RoutingConfigurator
      * If no request method(s) specified it replies to request methods GET, HEAD,
      * POST, PUT and DELETE.
      *
-     * @param   string                                      $path           path this route is applicable for
-     * @param   string|callable|\stubbles\webapp\Processor  $callback       code to be executed when the route is active
-     * @param   string|string[]                             $requestMethod  optional  request method(s) this route is applicable for
+     * @param   string                                   $path           path this route is applicable for
+     * @param   string|callable|\stubbles\webapp\Target  $target         code to be executed when the route is active
+     * @param   string|string[]                          $requestMethod  optional  request method(s) this route is applicable for
      * @return  \stubbles\webapp\routing\ConfigurableRoute
      * @since   4.0.0
      */
-    public function onAll($path, $callback, $requestMethod = null)
+    public function onAll($path, $target, $requestMethod = null)
     {
-        return $this->addRoute(new Route($path, $callback, $requestMethod));
+        return $this->addRoute(new Route($path, $target, $requestMethod));
     }
 
     /**

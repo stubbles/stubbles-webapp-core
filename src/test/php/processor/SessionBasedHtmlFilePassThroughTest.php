@@ -11,6 +11,7 @@ namespace stubbles\webapp\processor;
 use org\bovigo\vfs\vfsStream;
 use stubbles\webapp\UriPath;
 use stubbles\webapp\request\UserAgent;
+use stubbles\webapp\response\Error;
 /**
  * Test for stubbles\webapp\processor\SessionBasedHtmlFilePassThrough.
  *
@@ -24,12 +25,6 @@ class SessionBasedHtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
      * @type  \stubbles\webapp\processor\SessionBasedHtmlFilePassThrough
      */
     private $sessionBasedHtmlFilePassThrough;
-    /**
-     * mocked request instance
-     *
-     * @type  \PHPUnit_Framework_MockObject_MockObject
-     */
-    private $mockuserAgent;
     /**
      * mocked session to use
      *
@@ -91,14 +86,17 @@ class SessionBasedHtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
      */
     public function requestForNonExistingFileWritesNotFoundResponse()
     {
+        $error = Error::notFound();
         $this->mockResponse->expects($this->once())
-                           ->method('notFound');
-        $this->mockResponse->expects($this->never())
-                           ->method('write');
-        $this->sessionBasedHtmlFilePassThrough->process(
-                $this->mockRequest,
-                $this->mockResponse,
-                new UriPath('/', '/doesNotExist.html')
+                           ->method('notFound')
+                           ->will($this->returnValue($error));
+        $this->assertSame(
+                $error,
+                $this->sessionBasedHtmlFilePassThrough->resolve(
+                        $this->mockRequest,
+                        $this->mockResponse,
+                        new UriPath('/', '/doesNotExist.html')
+                )
         );
     }
 
@@ -108,13 +106,13 @@ class SessionBasedHtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
     public function selectsAvailableRoute()
     {
         $this->userAgentAcceptsCookies(true);
-        $this->mockResponse->expects($this->once())
-                           ->method('write')
-                           ->with($this->equalTo('this is foo.html'));
-        $this->sessionBasedHtmlFilePassThrough->process(
-                $this->mockRequest,
-                $this->mockResponse,
-                new UriPath('/', '/foo.html')
+        $this->assertEquals(
+                'this is foo.html',
+                $this->sessionBasedHtmlFilePassThrough->resolve(
+                        $this->mockRequest,
+                        $this->mockResponse,
+                        new UriPath('/', '/foo.html')
+                )
         );
     }
 
@@ -138,16 +136,16 @@ class SessionBasedHtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
     {
         $this->userAgentAcceptsCookies(true);
         $this->attachMockSession();
-        $this->mockResponse->expects($this->once())
-                           ->method('write')
-                           ->with($this->equalTo('this is index.html'));
         $this->mockSession->expects($this->once())
                           ->method('putValue')
                           ->with($this->equalTo('stubbles.webapp.lastPage'), $this->equalTo('index.html'));
-        $this->sessionBasedHtmlFilePassThrough->process(
-                $this->mockRequest,
-                $this->mockResponse,
-                new UriPath('/', '/')
+        $this->assertEquals(
+                'this is index.html',
+                $this->sessionBasedHtmlFilePassThrough->resolve(
+                        $this->mockRequest,
+                        $this->mockResponse,
+                        new UriPath('/', '/')
+                )
         );
     }
 
@@ -162,13 +160,13 @@ class SessionBasedHtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
                           ->method('name');
         $this->mockSession->expects($this->never())
                           ->method('id');
-        $this->mockResponse->expects($this->once())
-                           ->method('write')
-                           ->with($this->equalTo('this is foo.html'));
-        $this->sessionBasedHtmlFilePassThrough->process(
-                $this->mockRequest,
-                $this->mockResponse,
-                new UriPath('/', '/foo.html')
+        $this->assertEquals(
+                'this is foo.html',
+                $this->sessionBasedHtmlFilePassThrough->resolve(
+                        $this->mockRequest,
+                        $this->mockResponse,
+                        new UriPath('/', '/foo.html')
+                )
         );
     }
 
@@ -183,13 +181,13 @@ class SessionBasedHtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
                           ->method('name');
         $this->mockSession->expects($this->once())
                           ->method('id');
-        $this->mockResponse->expects($this->once())
-                           ->method('write')
-                           ->with($this->equalTo('this is foo.html'));
-        $this->sessionBasedHtmlFilePassThrough->process(
-                $this->mockRequest,
-                $this->mockResponse,
-                new UriPath('/', '/foo.html')
+        $this->assertEquals(
+                'this is foo.html',
+                $this->sessionBasedHtmlFilePassThrough->resolve(
+                        $this->mockRequest,
+                        $this->mockResponse,
+                        new UriPath('/', '/foo.html')
+                )
         );
     }
 }
