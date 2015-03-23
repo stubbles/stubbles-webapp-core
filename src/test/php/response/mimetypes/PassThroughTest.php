@@ -9,6 +9,7 @@
  */
 namespace stubbles\webapp\response\mimetypes;
 use stubbles\streams\memory\MemoryOutputStream;
+use stubbles\webapp\response\Error;
 /**
  * Tests for stubbles\webapp\response\mimetypes\PassThrough.
  *
@@ -73,9 +74,9 @@ class PassThroughTest extends \PHPUnit_Framework_TestCase
     public function serializesHandlesErrorAsString()
     {
         $this->assertEquals(
-                'some error message',
+                'Error: some error message',
                 $this->passThrough->serialize(
-                        ['error' => 'some error message'],
+                        new Error('some error message'),
                         new MemoryOutputStream()
                 )->buffer()
         );
