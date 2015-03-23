@@ -47,10 +47,9 @@ class ProtectedResource implements Resource
      */
     private $authorized  = false;
     /**
-     *
      * @type  \stubbles\webapp\response\Error
      */
-    private $model;
+    private $error;
 
     /**
      * constructor
@@ -145,7 +144,7 @@ class ProtectedResource implements Resource
                     RolesProvider::store($roles))) {
                 $this->authorized = true;
             } elseif (null !== $roles) {
-                $this->model = $response->forbidden();
+                $this->error = $response->forbidden();
             }
         } elseif (null !== $user) {
              $this->authorized = true;
@@ -169,7 +168,7 @@ class ProtectedResource implements Resource
             if (null == $user && $this->authConstraint->loginAllowed()) {
                 $response->redirect($authenticationProvider->loginUri($request));
             } elseif (null == $user) {
-                $this->model = $response->forbidden();
+                $this->error = $response->forbidden();
                 return null;
             }
 
@@ -207,10 +206,10 @@ class ProtectedResource implements Resource
     private function handleAuthProviderException(AuthProviderException $ahe, Response $response)
     {
         if ($ahe->isInternal()) {
-            $this->model = $response->internalServerError($ahe);
+            $this->error = $response->internalServerError($ahe);
         } else {
             $response->setStatusCode($ahe->getCode());
-            $this->model = new Error($ahe->getMessage());
+            $this->error = new Error($ahe->getMessage());
         }
     }
 
@@ -227,7 +226,7 @@ class ProtectedResource implements Resource
             return $this->actualRoute->data($request, $response);
         }
 
-        return $this->model;
+        return $this->error;
     }
 
     /**
