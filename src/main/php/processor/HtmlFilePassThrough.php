@@ -35,7 +35,7 @@ class HtmlFilePassThrough implements Processor
      */
     public function __construct($routePath)
     {
-        $this->routePath = $routePath;
+        $this->routePath = $routePath . DIRECTORY_SEPARATOR;
     }
 
     /**
@@ -48,22 +48,31 @@ class HtmlFilePassThrough implements Processor
     public function process(Request $request, Response $response, UriPath $uriPath)
     {
         $routeName = $uriPath->remaining('index.html');
-        if (!file_exists($this->routePath . DIRECTORY_SEPARATOR . $routeName)) {
+        if (!file_exists($this->routePath . $routeName)) {
             $response->notFound();
             return;
         }
 
-        $response->write($this->modifyContent(file_get_contents($this->routePath . DIRECTORY_SEPARATOR . $routeName), $routeName));
+        $response->write(
+                $this->modifyContent(
+                        $request,
+                        $response,
+                        file_get_contents($this->routePath . $routeName),
+                        $routeName
+                )
+        );
     }
 
     /**
      * hook to modify the content before passing it to the response
      *
-     * @param   string  $content    actual content for response
-     * @param   string  $routeName  name of the route
+     * @param  \stubbles\webapp\Request   $request   current request
+     * @param  \stubbles\webapp\Response  $response  response to send
+     * @param   string                    $content    actual content for response
+     * @param   string                    $routeName  name of the route
      * @return  string
      */
-    protected function modifyContent($content, $routeName)
+    protected function modifyContent(Request $request, Response $response, $content, $routeName)
     {
         return $content;
     }

@@ -9,8 +9,8 @@
  */
 namespace stubbles\webapp\processor;
 use org\bovigo\vfs\vfsStream;
-use stubbles\lang\reflect;
 use stubbles\webapp\UriPath;
+use stubbles\webapp\request\UserAgent;
 /**
  * Test for stubbles\webapp\processor\SessionBasedHtmlFilePassThrough.
  *
@@ -21,7 +21,7 @@ class SessionBasedHtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
     /**
      * instance to test
      *
-     * @type  SessionBasedHtmlFilePassThrough
+     * @type  \stubbles\webapp\processor\SessionBasedHtmlFilePassThrough
      */
     private $sessionBasedHtmlFilePassThrough;
     /**
@@ -57,16 +57,11 @@ class SessionBasedHtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
         $root = vfsStream::setup();
         vfsStream::newFile('index.html')->withContent('this is index.html')->at($root);
         vfsStream::newFile('foo.html')->withContent('this is foo.html')->at($root);
-        $this->mockuserAgent           = $this->getMockBuilder('stubbles\input\web\useragent\UserAgent')
-                                              ->disableOriginalConstructor()
-                                              ->getMock();
         $this->mockSession             = $this->getMock('stubbles\webapp\session\Session');
         $this->mockRequest             = $this->getMock('stubbles\webapp\Request');
         $this->mockResponse            = $this->getMock('stubbles\webapp\Response');
         $this->sessionBasedHtmlFilePassThrough = new SessionBasedHtmlFilePassThrough(
-                vfsStream::url('root'),
-                $this->mockuserAgent,
-                $this->mockSession
+                vfsStream::url('root')
         );
     }
 
@@ -82,24 +77,13 @@ class SessionBasedHtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @test
+     * @param  bool  $acceptsCookies
      */
-    public function annotationsPresentOnConstructor()
+    private function userAgentAcceptsCookies($acceptsCookies)
     {
-        $this->assertTrue(
-                reflect\annotationsOfConstructor($this->sessionBasedHtmlFilePassThrough)
-                        ->contain('Inject')
-        );
-
-        $routePathParamAnnotations = reflect\annotationsOfConstructorParameter(
-                'routePath',
-                $this->sessionBasedHtmlFilePassThrough
-        );
-        $this->assertTrue($routePathParamAnnotations->contain('Named'));
-        $this->assertEquals(
-                'stubbles.pages.path',
-                $routePathParamAnnotations->firstNamed('Named')->getName()
-        );
+        $this->mockRequest->expects($this->once())
+                ->method('userAgent')
+                ->will($this->returnValue(new UserAgent('foo', $acceptsCookies)));
     }
 
     /**
@@ -111,8 +95,6 @@ class SessionBasedHtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
                            ->method('notFound');
         $this->mockResponse->expects($this->never())
                            ->method('write');
-        $this->mockSession->expects($this->never())
-                          ->method('putValue');
         $this->sessionBasedHtmlFilePassThrough->process(
                 $this->mockRequest,
                 $this->mockResponse,
@@ -125,6 +107,7 @@ class SessionBasedHtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
      */
     public function selectsAvailableRoute()
     {
+        $this->userAgentAcceptsCookies(true);
         $this->mockResponse->expects($this->once())
                            ->method('write')
                            ->with($this->equalTo('this is foo.html'));
@@ -136,10 +119,25 @@ class SessionBasedHtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * attaches mock session to mock request
+     */
+    private function attachMockSession()
+    {
+        $this->mockRequest->expects($this->any())
+                ->method('hasSessionAttached')
+                ->will($this->returnValue(true));
+        $this->mockRequest->expects($this->any())
+                ->method('attachedSession')
+                ->will($this->returnValue($this->mockSession));
+    }
+
+    /**
      * @test
      */
     public function fallsBackToIndexFileIfRequestForSlashOnly()
     {
+        $this->userAgentAcceptsCookies(true);
+        $this->attachMockSession();
         $this->mockResponse->expects($this->once())
                            ->method('write')
                            ->with($this->equalTo('this is index.html'));
@@ -158,9 +156,8 @@ class SessionBasedHtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
      */
     public function writesNoSessionDataToOutputIfCookiesEnabled()
     {
-        $this->mockuserAgent->expects($this->once())
-                            ->method('acceptsCookies')
-                            ->will($this->returnValue(true));
+        $this->userAgentAcceptsCookies(true);
+        $this->attachMockSession();
         $this->mockSession->expects($this->never())
                           ->method('name');
         $this->mockSession->expects($this->never())
@@ -180,9 +177,8 @@ class SessionBasedHtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
      */
     public function writesSessionDataToOutputIfCookiesDisabled()
     {
-        $this->mockuserAgent->expects($this->once())
-                            ->method('acceptsCookies')
-                            ->will($this->returnValue(false));
+        $this->userAgentAcceptsCookies(false);
+        $this->attachMockSession();
         $this->mockSession->expects($this->once())
                           ->method('name');
         $this->mockSession->expects($this->once())
