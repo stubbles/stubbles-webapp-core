@@ -19,16 +19,22 @@ class Error implements \JsonSerializable
     /**
      * @type  string
      */
+    private $type;
+    /**
+     * @type  string
+     */
     private $message;
 
     /**
      * constructor
      *
      * @param  string  $message  error message
+     * @param  string  $type     error type     optional
      */
-    public function __construct($message)
+    public function __construct($message, $type = 'Error')
     {
         $this->message = $message;
+        $this->type    = $type;
     }
 
     /**
@@ -38,7 +44,10 @@ class Error implements \JsonSerializable
      */
     public static function forbidden()
     {
-        return new self('You are not allowed to access this resource.');
+        return new self(
+                'You are not allowed to access this resource.',
+                'Forbidden'
+        );
     }
 
     /**
@@ -48,7 +57,7 @@ class Error implements \JsonSerializable
      */
     public static function notFound()
     {
-        return new self('Requested resource could not be found.');
+        return new self('Requested resource could not be found.', 'Not Found');
     }
 
     /**
@@ -64,7 +73,8 @@ class Error implements \JsonSerializable
                 'The given request method '
                 . strtoupper($requestMethod)
                 . ' is not valid. Please use one of '
-                . join(', ', $allowedMethods) . '.'
+                . join(', ', $allowedMethods) . '.',
+                'Method Not Allowed'
         );
     }
 
@@ -77,7 +87,8 @@ class Error implements \JsonSerializable
     public static function internalServerError($error)
     {
         return new self(
-                $error instanceof \Exception ? $error->getMessage() : $error
+                $error instanceof \Exception ? $error->getMessage() : $error,
+                'Internal Server Error'
         );
     }
 
@@ -91,6 +102,17 @@ class Error implements \JsonSerializable
         return new self(
                 'Unsupported HTTP protocol version, expected HTTP/1.0 or HTTP/1.1.'
         );
+    }
+
+    /**
+     * returns error type
+     *
+     * @return  string
+     * @XmlAttribute(attributeName='type')
+     */
+    public function type()
+    {
+        return $this->type;
     }
 
     /**
@@ -112,7 +134,7 @@ class Error implements \JsonSerializable
      */
     public function __toString()
     {
-        return 'Error: ' . $this->message;
+        return $this->type . ': ' . $this->message;
     }
 
     /**

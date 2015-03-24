@@ -207,7 +207,7 @@ class AbstractResourceTest extends \PHPUnit_Framework_TestCase
         );
         $this->assertEquals(500, $this->response->statusCode());
         $this->assertEquals(
-                'Error: No mime type class defined for negotiated content type application/foo',
+                'Internal Server Error: No mime type class defined for negotiated content type application/foo',
                 $this->response->send(new MemoryOutputStream())->buffer()
         );
     }
