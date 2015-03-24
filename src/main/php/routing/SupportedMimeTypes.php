@@ -35,8 +35,9 @@ class SupportedMimeTypes
      */
     private static $supported = ['application/json' => 'stubbles\webapp\response\mimetypes\Json',
                                  'text/json'        => 'stubbles\webapp\response\mimetypes\Json',
-                                 'text/plain'       => 'stubbles\webapp\response\mimetypes\TextPlain'
-                                 ];
+                                 'text/plain'       => 'stubbles\webapp\response\mimetypes\TextPlain',
+                                 'text/html'        => 'stubbles\webapp\response\mimetypes\PassThrough'
+                                ];
     /**
      * map of xml mime type classes
      *
