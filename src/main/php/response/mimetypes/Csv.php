@@ -13,7 +13,7 @@ use stubbles\lang\Sequence;
 use stubbles\streams\OutputStream;
 use stubbles\webapp\response\Error;
 /**
- * Can transform any traversable into csv format.
+ * Can transform any iterable resource into csv format.
  */
 class Csv extends MimeType
 {
@@ -36,21 +36,12 @@ class Csv extends MimeType
      */
     public function serialize($resource, OutputStream $out)
     {
-        if (is_scalar($resource) || ($resource instanceof Error)) {
+        if (is_scalar($resource) || $resource instanceof Error) {
             $out->writeLine((string) $resource);
+        } elseif (is_object($resource)) {
+            $this->serializeIterable($this->castToArray($resource), $out);
         } elseif (is_array($resource) || $resource instanceof \Traversable) {
-            $head   = true;
-            $memory = fopen('php://memory', 'wb');
-            foreach (Sequence::of($resource)->map([$this, 'castToArray']) as $elements) {
-                if ($head && !is_numeric(key($elements))) {
-                    $out->writeLine($this->toCsvLine($elements, $memory));
-                }
-
-                $head = false;
-                $out->writeLine($this->toCsvLine($elements, $memory));
-            }
-
-            fclose($memory);
+            $this->serializeIterable($resource, $out);
         } else {
             trigger_error(
                     'Resource of type ' . lang\getType($resource)
@@ -62,23 +53,53 @@ class Csv extends MimeType
         return $out;
     }
 
-    function castToArray($elements)
+    /**
+     * serializes iterable to csv
+     *
+     * @param   iterable  $resource
+     * @param   \stubbles\streams\OutputStream  $out
+     */
+    private function serializeIterable($resource, OutputStream $out)
     {
-        if (is_object($elements)) {
-            if (method_exists($elements, 'asArray')) {
-                return $elements->asArray();
-            } elseif (method_exists($elements, 'toArray')) {
-                return $elements->toArray();
+        $memory = fopen('php://memory', 'wb');
+        if (is_array($resource) && is_scalar(current($resource))) {
+            if (!is_numeric(key($resource))) {
+                $out->write($this->toCsvLine(array_keys($resource), $memory));
             }
 
-            return lang\extractObjectProperties($elements);
-        } elseif ($elements instanceof \Traversable) {
-            return iterator_to_array($elements);
-        } elseif (is_array($elements)) {
-            return $elements;
+            $out->write($this->toCsvLine($resource, $memory));
+        } else {
+            $head = true;
+            foreach (Sequence::of($resource)->map([$this, 'castToArray']) as $elements) {
+                if ($head && !is_numeric(key($elements))) {
+                    $out->write($this->toCsvLine(array_keys($elements), $memory));
+                }
+
+                $head = false;
+                $out->write($this->toCsvLine($elements, $memory));
+            }
         }
 
-        return [$elements];
+        fclose($memory);
+    }
+
+    function castToArray($value)
+    {
+        if (is_object($value)) {
+            if (method_exists($value, 'asArray')) {
+                return $value->asArray();
+            } elseif (method_exists($value, 'toArray')) {
+                return $value->toArray();
+            }
+
+            return lang\extractObjectProperties($value);
+        } elseif ($value instanceof \Traversable) {
+            return iterator_to_array($value);
+        } elseif (is_array($value)) {
+            return $value;
+        }
+
+        return [$value];
     }
 
     /**
@@ -90,7 +111,7 @@ class Csv extends MimeType
      */
     private function toCsvLine(array $elements, $memory)
     {
-        ftruncate($memory);
+        ftruncate($memory, 0);
         rewind($memory);
         fputcsv($memory, $elements);
         rewind($memory);
