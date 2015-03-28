@@ -49,7 +49,7 @@ class ResourceOptionsTest extends \PHPUnit_Framework_TestCase
                         ->disableOriginalConstructor()
                         ->getMock(),
                 new SupportedMimeTypes([]),
-                ['GET', 'POST', 'HEAD']
+                new MatchingRoutes([], ['GET', 'POST', 'HEAD'])
         );
         $this->mockRequest  = $this->getMock('stubbles\webapp\Request');
         $this->mockResponse = $this->getMock('stubbles\webapp\Response');

@@ -262,7 +262,7 @@ class Routing implements RoutingConfigurator
                     $calledUri,
                     $this->collectInterceptors($calledUri),
                     $this->supportedMimeTypes(),
-                    $matchingRoutes->allowedMethods()
+                    $matchingRoutes
 
             );
         }

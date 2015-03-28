@@ -9,6 +9,7 @@
  */
 namespace stubbles\webapp\routing;
 use stubbles\ioc\Injector;
+use stubbles\peer\http\Http;
 use stubbles\webapp\Request;
 use stubbles\webapp\Response;
 /**
@@ -22,9 +23,9 @@ class ResourceOptions extends AbstractResource
     /**
      * list of actually allowed request methods
      *
-     * @type  string[]
+     * @type  \stubbles\webapp\routing\MatchingRoutes
      */
-    private $allowedMethods;
+    private $matchingRoutes;
 
     /**
      * constructor
@@ -33,20 +34,17 @@ class ResourceOptions extends AbstractResource
      * @param  \stubbles\webapp\routing\CalledUri           $calledUri           actual called uri
      * @param  \stubbles\webapp\interceptor\Interceptors    $interceptors
      * @param  \stubbles\webapp\routing\SupportedMimeTypes  $supportedMimeTypes
-     * @param  string[]                                     $allowedMethods
+     * @param  \stubbles\webapp\routing\MatchingRoutes      $matchingRoutes
      */
     public function __construct(
             Injector $injector,
             CalledUri $calledUri,
             Interceptors $interceptors,
             SupportedMimeTypes $supportedMimeTypes,
-            array $allowedMethods)
+            MatchingRoutes $matchingRoutes)
     {
         parent::__construct($injector, $calledUri, $interceptors, $supportedMimeTypes);
-        $this->allowedMethods = $allowedMethods;
-        if (!in_array('OPTIONS', $this->allowedMethods)) {
-            $this->allowedMethods[] = 'OPTIONS';
-        }
+        $this->matchingRoutes = $matchingRoutes;
     }
 
     /**
@@ -68,10 +66,15 @@ class ResourceOptions extends AbstractResource
      */
     public function resolve(Request $request, Response $response)
     {
-        $response->addHeader('Allow', join(', ', $this->allowedMethods))
+        $allowedMethods = $this->matchingRoutes->allowedMethods();
+        if (!in_array(Http::OPTIONS, $allowedMethods)) {
+            $allowedMethods[] = Http::OPTIONS;
+        }
+
+        $response->addHeader('Allow', join(', ', $allowedMethods))
                 ->addHeader(
                         'Access-Control-Allow-Methods',
-                        join(', ', $this->allowedMethods)
+                        join(', ', $allowedMethods)
                 );
     }
 
