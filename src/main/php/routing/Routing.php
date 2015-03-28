@@ -24,9 +24,9 @@ class Routing implements RoutingConfigurator
     /**
      * list of routes for the web app
      *
-     * @type  \stubbles\webapp\routing\Route[]
+     * @type  \stubbles\webapp\routing\Routes
      */
-    private $routes                   = [];
+    private $routes;
     /**
      * list of global pre interceptors and to which request method they respond
      *
@@ -73,6 +73,7 @@ class Routing implements RoutingConfigurator
     public function __construct(Injector $injector)
     {
         $this->injector  = $injector;
+        $this->routes    = new Routes();
     }
 
     /**
@@ -173,27 +174,32 @@ class Routing implements RoutingConfigurator
      */
     public function addRoute(Route $route)
     {
-        $this->routes[] = $route;
-        return $route;
+        return $this->routes->add($route);
     }
 
     /**
      * returns resource which is applicable for given request
      *
-     * @param   string|\stubbles\webapp\CalledUri  $uri            actually called uri
-     * @param   string                             $requestMethod  optional when $calledUri is an instance of stubbles\webapp\CalledUri
+     * @param   string|\stubbles\webapp\routing\CalledUri  $uri            actually called uri
+     * @param   string                                     $requestMethod  optional when $calledUri is an instance of stubbles\webapp\routing\CalledUri
      * @return  \stubbles\webapp\routing\UriResource
      */
     public function findResource($uri, $requestMethod = null)
     {
-        $calledUri = CalledUri::castFrom($uri, $requestMethod);
-        $route     = $this->findRoute($calledUri);
-        if (null !== $route) {
-            return $this->handleMatchingResource($calledUri, $route);
+        $calledUri      = CalledUri::castFrom($uri, $requestMethod);
+        $matchingRoutes = $this->routes->match($calledUri);
+        if ($matchingRoutes->hasExactMatch()) {
+            return $this->handleMatchingRoute(
+                    $calledUri,
+                    $matchingRoutes->exactMatch()
+            );
         }
 
-        if ($this->canFindRouteWithAnyMethod($calledUri)) {
-            return $this->handleNonMethodMatchingResource($calledUri);
+        if ($matchingRoutes->exist()) {
+            return $this->handleNonMethodMatchingRoutes(
+                    $calledUri,
+                    $matchingRoutes
+            );
         }
 
         return new NotFound(
@@ -207,11 +213,11 @@ class Routing implements RoutingConfigurator
     /**
      * creates a processable route for given route
      *
-     * @param   \stubbles\webapp\CalledUri      $calledUri
-     * @param   \stubbles\webapp\routing\Route  $route
+     * @param   \stubbles\webapp\routing\CalledUri  $calledUri
+     * @param   \stubbles\webapp\routing\Route      $route
      * @return  \stubbles\webapp\routing\UriResource
      */
-    private function handleMatchingResource(CalledUri $calledUri, Route $route)
+    private function handleMatchingRoute(CalledUri $calledUri, Route $route)
     {
         if ($route->requiresAuth()) {
             return new ProtectedResource(
@@ -227,8 +233,8 @@ class Routing implements RoutingConfigurator
     /**
      * creates matching route
      *
-     * @param   \stubbles\webapp\CalledUri      $calledUri
-     * @param   \stubbles\webapp\routing\Route  $route
+     * @param   \stubbles\webapp\routing\CalledUri  $calledUri
+     * @param   \stubbles\webapp\routing\Route      $route
      * @return  \stubbles\webapp\routing\ResolvingResource
      */
     private function resolveResource(CalledUri $calledUri, Route $route)
@@ -245,10 +251,11 @@ class Routing implements RoutingConfigurator
     /**
      * creates a processable route when a route can be found regardless of request method
      *
-     * @param   \stubbles\webapp\CalledUri  $calledUri
+     * @param   \stubbles\webapp\routing\CalledUri       $calledUri
+     * @param   \stubbles\webapp\routing\MatchingRoutes  $matchingRoutes
      * @return  \stubbles\webapp\routing\UriResource
      */
-    private function handleNonMethodMatchingResource(CalledUri $calledUri)
+    private function handleNonMethodMatchingRoutes(CalledUri $calledUri, MatchingRoutes $matchingRoutes)
     {
         if ($calledUri->methodEquals('OPTIONS')) {
             return new ResourceOptions(
@@ -256,7 +263,7 @@ class Routing implements RoutingConfigurator
                     $calledUri,
                     $this->collectInterceptors($calledUri),
                     $this->supportedMimeTypes(),
-                    $this->allowedMethodsFor($calledUri)
+                    $matchingRoutes->allowedMethods()
 
             );
         }
@@ -266,61 +273,8 @@ class Routing implements RoutingConfigurator
                 $calledUri,
                 $this->collectInterceptors($calledUri),
                 $this->supportedMimeTypes(),
-                $this->allowedMethodsFor($calledUri)
+                $matchingRoutes->allowedMethods()
         );
-    }
-
-    /**
-     * finds route based on called uri
-     *
-     * @param   \stubbles\webapp\CalledUri  $calledUri
-     * @return  \stubbles\webapp\routing\Route
-     */
-    private function findRoute(CalledUri $calledUri)
-    {
-        foreach ($this->routes as $route) {
-            if ($route->matches($calledUri)) {
-                return $route;
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * returns list of allowed method for called uri
-     *
-     * @param   \stubbles\webapp\CalledUri  $calledUri
-     * @return  string[]
-     */
-    private function allowedMethodsFor(CalledUri $calledUri)
-    {
-        $allowedMethods = [];
-        foreach ($this->routes as $route) {
-            if ($route->matchesPath($calledUri)) {
-                $allowedMethods = array_merge(
-                        $allowedMethods,
-                        $route->allowedRequestMethods()
-                );
-            }
-        }
-
-        if (in_array('GET', $allowedMethods) && !in_array('HEAD', $allowedMethods)) {
-            $allowedMethods[] = 'HEAD';
-        }
-
-        return $allowedMethods;
-    }
-
-    /**
-     * checks whether there is a route at all
-     *
-     * @param   \stubbles\webapp\CalledUri  $calledUri
-     * @return  bool
-     */
-    private function canFindRouteWithAnyMethod(CalledUri $calledUri)
-    {
-        return count($this->allowedMethodsFor($calledUri)) > 0;
     }
 
     /**
@@ -490,8 +444,8 @@ class Routing implements RoutingConfigurator
     /**
      * collects interceptors
      *
-     * @param   \stubbles\webapp\CalledUri      $calledUri
-     * @param   \stubbles\webapp\routing\Route  $route
+     * @param   \stubbles\webapp\routing\CalledUri  $calledUri
+     * @param   \stubbles\webapp\routing\Route      $route
      * @return  \stubbles\webapp\interceptor\Interceptors
      */
     private function collectInterceptors(CalledUri $calledUri, Route $route = null)
@@ -506,8 +460,8 @@ class Routing implements RoutingConfigurator
     /**
      * returns list of applicable pre interceptors for this request
      *
-     * @param   \stubbles\webapp\CalledUri      $calledUri
-     * @param   \stubbles\webapp\routing\Route  $route
+     * @param   \stubbles\webapp\routing\CalledUri  $calledUri
+     * @param   \stubbles\webapp\routing\Route      $route
      * @return  array
      */
     private function getPreInterceptors(CalledUri $calledUri, Route $route = null)
@@ -523,8 +477,8 @@ class Routing implements RoutingConfigurator
     /**
      * returns list of applicable post interceptors for this request
      *
-     * @param   \stubbles\webapp\CalledUri      $calledUri
-     * @param   \stubbles\webapp\routing\Route  $route
+     * @param   \stubbles\webapp\routing\CalledUri  $calledUri
+     * @param   \stubbles\webapp\routing\Route      $route
      * @return  array
      */
     private function getPostInterceptors(CalledUri $calledUri, Route $route = null)
@@ -540,8 +494,8 @@ class Routing implements RoutingConfigurator
     /**
      * calculates which interceptors are applicable for given request method
      *
-     * @param   \stubbles\webapp\CalledUri  $calledUri
-     * @param   array[]                      $interceptors   list of interceptors to check
+     * @param   \stubbles\webapp\routing\CalledUri  $calledUri
+     * @param   array[]                             $interceptors   list of interceptors to check
      * @return  array
      */
     private function getApplicable(CalledUri $calledUri, array $interceptors)
