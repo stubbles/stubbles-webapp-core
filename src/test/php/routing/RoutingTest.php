@@ -9,8 +9,7 @@
  */
 namespace stubbles\webapp\routing;
 use stubbles\input\ValueReader;
-use stubbles\lang\reflect;
-use stubbles\webapp\interceptor\Interceptors;
+use stubbles\lang\reflect;;
 /**
  * Tests for stubbles\webapp\routing\Routing.
  *

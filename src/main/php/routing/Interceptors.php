@@ -7,10 +7,12 @@
  *
  * @package  stubbles\webapp
  */
-namespace stubbles\webapp\interceptor;
+namespace stubbles\webapp\routing;
 use stubbles\ioc\Injector;
 use stubbles\webapp\Request;
 use stubbles\webapp\Response;
+use stubbles\webapp\interceptor\PreInterceptor;
+use stubbles\webapp\interceptor\PostInterceptor;
 /**
  * Interceptor handler.
  */

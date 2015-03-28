@@ -7,14 +7,14 @@
  *
  * @package  stubbles\webapp
  */
-namespace stubbles\webapp\interceptor;
+namespace stubbles\webapp\routing;
 use stubbles\webapp\Request;
 use stubbles\webapp\Response;
 /**
- * Tests for stubbles\webapp\interceptor\Interceptors.
+ * Tests for stubbles\webapp\routing\Interceptors.
  *
  * @since  2.2.0
- * @group  interceptor
+ * @group  routing
  */
 class InterceptorsTest extends \PHPUnit_Framework_TestCase
 {

@@ -62,7 +62,7 @@ class ResolvingResourceTest extends \PHPUnit_Framework_TestCase
         return new ResolvingResource(
                 $this->mockInjector,
                 new CalledUri($uri, 'GET'),
-                $this->getMockBuilder('stubbles\webapp\interceptor\Interceptors')
+                $this->getMockBuilder('stubbles\webapp\routing\Interceptors')
                         ->disableOriginalConstructor()
                         ->getMock(),
                 new SupportedMimeTypes([]),

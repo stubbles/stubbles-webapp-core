@@ -106,7 +106,7 @@ class AbstractResourceTest extends \PHPUnit_Framework_TestCase
         $this->mockInjector = $this->getMockBuilder('stubbles\ioc\Injector')
                         ->disableOriginalConstructor()
                         ->getMock();
-        $this->mockInterceptors = $this->getMockBuilder('stubbles\webapp\interceptor\Interceptors')
+        $this->mockInterceptors = $this->getMockBuilder('stubbles\webapp\routing\Interceptors')
                                    ->disableOriginalConstructor()
                                    ->getMock();
     }

@@ -45,7 +45,7 @@ class ResourceOptionsTest extends \PHPUnit_Framework_TestCase
                         ->disableOriginalConstructor()
                         ->getMock(),
                 new CalledUri('http://example.com/hello/world', 'GET'),
-                $this->getMockBuilder('stubbles\webapp\interceptor\Interceptors')
+                $this->getMockBuilder('stubbles\webapp\routing\Interceptors')
                         ->disableOriginalConstructor()
                         ->getMock(),
                 new SupportedMimeTypes([]),

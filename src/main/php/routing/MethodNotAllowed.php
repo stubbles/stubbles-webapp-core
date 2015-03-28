@@ -11,7 +11,6 @@ namespace stubbles\webapp\routing;
 use stubbles\ioc\Injector;
 use stubbles\webapp\Request;
 use stubbles\webapp\Response;
-use stubbles\webapp\interceptor\Interceptors;
 /**
  * Represents a resource which was accessed with a not suitable method.
  *

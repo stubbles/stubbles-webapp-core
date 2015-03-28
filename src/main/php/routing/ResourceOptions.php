@@ -11,7 +11,6 @@ namespace stubbles\webapp\routing;
 use stubbles\ioc\Injector;
 use stubbles\webapp\Request;
 use stubbles\webapp\Response;
-use stubbles\webapp\interceptor\Interceptors;
 /**
  * Denotes an answer to an OPTIONS request when no specific route for such
  * requests was configured.

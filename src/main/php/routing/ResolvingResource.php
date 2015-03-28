@@ -12,7 +12,6 @@ use stubbles\ioc\Injector;
 use stubbles\webapp\Target;
 use stubbles\webapp\Request;
 use stubbles\webapp\Response;
-use stubbles\webapp\interceptor\Interceptors;
 /**
  * Resource which can resolve the request using a target.
  *

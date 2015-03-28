@@ -11,7 +11,6 @@ namespace stubbles\webapp\routing;
 use stubbles\ioc\Injector;
 use stubbles\webapp\RoutingConfigurator;
 use stubbles\webapp\auth\ProtectedResource;
-use stubbles\webapp\interceptor\Interceptors;
 use stubbles\webapp\interceptor\PreInterceptor;
 use stubbles\webapp\interceptor\PostInterceptor;
 /**

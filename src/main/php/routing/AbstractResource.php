@@ -13,7 +13,6 @@ use stubbles\peer\http;
 use stubbles\ioc\Injector;
 use stubbles\webapp\Request;
 use stubbles\webapp\Response;
-use stubbles\webapp\interceptor\Interceptors;
 /**
  * Contains logic to process the route.
  *
