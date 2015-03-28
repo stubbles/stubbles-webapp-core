@@ -78,11 +78,13 @@ class InterceptorsTest extends \PHPUnit_Framework_TestCase
     public function respondsWithInternalServerErrorIfPreInterceptorDoesNotImplementInterface()
     {
         $this->mockInjector->expects($this->once())
-                           ->method('getInstance')
-                           ->with($this->equalTo('some\PreInterceptor'))
-                           ->will($this->returnValue(new \stdClass()));
+                ->method('getInstance')
+                ->with($this->equalTo('some\PreInterceptor'))
+                ->will($this->returnValue(new \stdClass()));
         $this->mockResponse->expects($this->once())
-                           ->method('internalServerError');
+                ->method('internalServerError');
+        $this->mockResponse->expects($this->once())
+                ->method('write');
         $this->assertFalse(
                 $this->createInterceptors(
                         ['some\PreInterceptor',
@@ -157,11 +159,13 @@ class InterceptorsTest extends \PHPUnit_Framework_TestCase
     public function respondsWithInternalServerErrorIfPostInterceptorDoesNotImplementInterface()
     {
         $this->mockInjector->expects($this->once())
-                           ->method('getInstance')
-                           ->with($this->equalTo('some\PostInterceptor'))
-                           ->will($this->returnValue(new \stdClass()));
+                ->method('getInstance')
+                ->with($this->equalTo('some\PostInterceptor'))
+                ->will($this->returnValue(new \stdClass()));
         $this->mockResponse->expects($this->once())
-                           ->method('internalServerError');
+                ->method('internalServerError');
+        $this->mockResponse->expects($this->once())
+                ->method('write');
         $this->assertFalse(
                 $this->createInterceptors(
                         [],

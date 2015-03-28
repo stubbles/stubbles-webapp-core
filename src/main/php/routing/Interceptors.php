@@ -91,7 +91,12 @@ class Interceptors
 
         $instance = $this->injector->getInstance($preInterceptor);
         if (!($instance instanceof PreInterceptor)) {
-            $response->internalServerError('Configured pre interceptor ' . $preInterceptor . ' is not an instance of stubbles\webapp\interceptor\PreInterceptor');
+            $response->write(
+                    $response->internalServerError(
+                            'Configured pre interceptor ' . $preInterceptor
+                            . ' is not an instance of stubbles\webapp\interceptor\PreInterceptor'
+                    )
+            );
             return false;
         }
 
@@ -136,7 +141,12 @@ class Interceptors
 
         $instance = $this->injector->getInstance($postInterceptor);
         if (!($instance instanceof PostInterceptor)) {
-            $response->internalServerError('Configured post interceptor ' . $postInterceptor . ' is not an instance of stubbles\webapp\interceptor\PostInterceptor');
+            $response->write(
+                    $response->internalServerError(
+                            'Configured post interceptor ' . $postInterceptor
+                            . ' is not an instance of stubbles\webapp\interceptor\PostInterceptor'
+                    )
+            );
             return false;
         }
 
