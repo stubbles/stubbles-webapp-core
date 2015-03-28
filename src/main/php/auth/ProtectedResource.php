@@ -11,8 +11,6 @@ namespace stubbles\webapp\auth;
 use stubbles\ioc\Injector;
 use stubbles\webapp\Request;
 use stubbles\webapp\Response;
-use stubbles\webapp\auth\ioc\RolesProvider;
-use stubbles\webapp\auth\ioc\UserProvider;
 use stubbles\webapp\response\Error;
 use stubbles\webapp\routing\UriResource;
 /**
@@ -140,14 +138,18 @@ class ProtectedResource implements UriResource
         $user = $this->authenticate($request, $response);
         if (null !== $user && $this->authConstraint->requiresRoles()) {
             $roles = $this->roles($response, $user);
-            if (null !== $roles && $this->authConstraint->satisfiedByRoles(
-                    RolesProvider::store($roles))) {
+            if (null !== $roles && $this->authConstraint->satisfiedByRoles($roles)) {
+                $request->associate(new Identity($user, $roles));
                 $this->authorized = true;
             } elseif (null !== $roles) {
+                $request->associate(new Identity($user, $roles));
                 $this->error = $response->forbidden();
+            } else {
+                # error? roles required, but no roles found for user?
             }
         } elseif (null !== $user) {
-             $this->authorized = true;
+            $request->associate(new Identity($user, Roles::none()));
+            $this->authorized = true;
         }
 
         return $this->authorized;
@@ -168,11 +170,13 @@ class ProtectedResource implements UriResource
             if (null == $user && $this->authConstraint->loginAllowed()) {
                 $response->redirect($authenticationProvider->loginUri($request));
             } elseif (null == $user) {
+                // TODO should become 401 Unauthorized
+                // see https://github.com/stubbles/stubbles-webapp-core/issues/73
                 $this->error = $response->forbidden();
                 return null;
             }
 
-            return UserProvider::store($user);
+            return $user;
         } catch (AuthProviderException $ahe) {
             $this->handleAuthProviderException($ahe, $response);
             return null;

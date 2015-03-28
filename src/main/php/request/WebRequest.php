@@ -18,6 +18,7 @@ use stubbles\peer\http\HttpUri;
 use stubbles\peer\http\HttpVersion;
 use stubbles\webapp\Request;
 use stubbles\streams\StandardInputStream;
+use stubbles\webapp\auth\Identity;
 use stubbles\webapp\session\Session;
 /**
  * Request implementation for web applications.
@@ -48,6 +49,12 @@ class WebRequest extends AbstractRequest implements Request
      * @type  \stubbles\webapp\session\Session
      */
     private $session;
+    /**
+     * identity associated with this request
+     *
+     * @type  \stubbles\webapp\auth\Identity
+     */
+    private $identity;
 
     /**
      * constructor
@@ -468,5 +475,40 @@ class WebRequest extends AbstractRequest implements Request
     public function attachedSession()
     {
         return $this->session;
+    }
+
+    /**
+     * associates identity with this request
+     *
+     * @param   \stubbles\webapp\auth\Identity  $identity
+     * @return  \stubbles\webapp\Request
+     * @since   6.0.0
+     */
+    public function associate(Identity $identity)
+    {
+        $this->identity = $identity;
+        return $this;
+    }
+
+    /**
+     * checks whether request was issued by a confirmed identity
+     *
+     * @return  bool
+     * @since   6.0.0
+     */
+    public function hasAssociatedIdentity()
+    {
+        return null !== $this->identity;
+    }
+
+    /**
+     * returns the identity associated with this request
+     *
+     * @return  \stubbles\webapp\auth\Identity
+     * @since   6.0.0
+     */
+    public function identity()
+    {
+        return $this->identity;
     }
 }

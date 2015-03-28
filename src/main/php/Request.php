@@ -8,6 +8,7 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp;
+use stubbles\webapp\auth\Identity;
 use stubbles\webapp\session\Session;
 /**
  * Interface for web applications requests.
@@ -263,4 +264,29 @@ interface Request extends \stubbles\input\Request
      * @since   6.0.0
      */
     public function attachedSession();
+
+    /**
+     * associates identity with this request
+     *
+     * @param   \stubbles\webapp\auth\Identity  $identity
+     * @return  \stubbles\webapp\Request
+     * @since   6.0.0
+     */
+    public function associate(Identity $identity);
+
+    /**
+     * checks whether request was issued by a confirmed identity
+     *
+     * @return  bool
+     * @since   6.0.0
+     */
+    public function hasAssociatedIdentity();
+
+    /**
+     * returns the identity associated with this request
+     *
+     * @return  \stubbles\webapp\auth\Identity
+     * @since   6.0.0
+     */
+    public function identity();
 }

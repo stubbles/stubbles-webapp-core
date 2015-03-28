@@ -9,8 +9,7 @@
  */
 namespace stubbles\webapp\auth;
 use stubbles\peer\http\HttpUri;
-use stubbles\webapp\auth\ioc\RolesProvider;
-use stubbles\webapp\auth\ioc\UserProvider;
+use stubbles\webapp\request\WebRequest;
 use stubbles\webapp\response\Error;
 use stubbles\webapp\routing\RoutingAnnotations;
 /**
@@ -75,15 +74,6 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
         );
         $this->mockRequest  = $this->getMock('stubbles\webapp\Request');
         $this->mockResponse = $this->getMock('stubbles\webapp\Response');
-    }
-
-    /**
-     * clean up test environment
-     */
-    public function tearDown()
-    {
-        RolesProvider::store(null);
-        UserProvider::store(null);
     }
 
     /**
@@ -304,7 +294,7 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function storesUserInUserProviderWhenAuthenticated()
+    public function storesUserInRequestIdentityWhenAuthenticated()
     {
         $user = $this->getMock('stubbles\webapp\auth\User');
         $this->authConstraint->requireLogin();
@@ -312,9 +302,9 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
         $mockAuthenticationProvider->expects($this->once())
                 ->method('authenticate')
                 ->will($this->returnValue($user));
-        $this->protectedResource->applyPreInterceptors($this->mockRequest, $this->mockResponse);
-        $userProvider = new UserProvider();
-        $this->assertSame($user, $userProvider->get());
+        $request = WebRequest::fromRawSource();
+        $this->protectedResource->applyPreInterceptors($request, $this->mockResponse);
+        $this->assertSame($user, $request->identity()->user());
     }
 
     /**
@@ -458,7 +448,7 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function storesUserInUserProviderWhenAuthenticatedAndAuthorized()
+    public function storesUserInRequestIdentityWhenAuthenticatedAndAuthorized()
     {
         $user = $this->getMock('stubbles\webapp\auth\User');
         $this->authConstraint->requireRole('admin');
@@ -466,18 +456,18 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
         $mockAuthorizationProvider->expects($this->once())
                 ->method('roles')
                 ->will($this->returnValue(new Roles(['admin'])));
+        $request = WebRequest::fromRawSource();
         $this->protectedResource->applyPreInterceptors(
-                $this->mockRequest,
+                $request,
                 $this->mockResponse
         );
-        $userProvider = new UserProvider();
-        $this->assertSame($user, $userProvider->get());
+        $this->assertSame($user, $request->identity()->user());
     }
 
     /**
      * @test
      */
-    public function storesRolesInRolesProviderWhenAuthenticatedAndAuthorized()
+    public function storesRolesInRequestIdentityWhenAuthenticatedAndAuthorized()
     {
         $this->authConstraint->requireRole('admin');
         $mockAuthorizationProvider = $this->mockAuthorizationProvider();
@@ -485,12 +475,12 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
         $mockAuthorizationProvider->expects($this->once())
                 ->method('roles')
                 ->will($this->returnValue($roles));
+        $request = WebRequest::fromRawSource();
         $this->protectedResource->applyPreInterceptors(
-                $this->mockRequest,
+                $request,
                 $this->mockResponse
         );
-        $rolesProvider = new RolesProvider();
-        $this->assertSame($roles, $rolesProvider->get());
+        $this->assertSame($roles, $request->identity()->roles());
     }
 
     /**

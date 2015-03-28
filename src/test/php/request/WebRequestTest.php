@@ -9,6 +9,8 @@
  */
 namespace stubbles\webapp\request;
 use stubbles\peer\http\HttpVersion;
+use stubbles\webapp\auth\Identity;
+use stubbles\webapp\auth\Roles;
 /**
  * Tests for stubbles\webapp\request\WebRequest.
  *
@@ -1005,6 +1007,57 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(
                 $request->attachSession($mockSession),
                 $request->attachedSession()
+        );
+    }
+
+    /**
+     * @test
+     * @since  6.0.0
+     */
+    public function hasNoIdentityAssociatedByDefault()
+    {
+        $this->assertFalse($this->createBaseWebRequest()->hasAssociatedIdentity());
+    }
+
+    /**
+     * @test
+     * @since  6.0.0
+     */
+    public function defaultIdentityIsNull()
+    {
+        $this->assertNull($this->createBaseWebRequest()->identity());
+    }
+
+    /**
+     * @test
+     * @since  6.0.0
+     */
+    public function hasIdentityWhenAssociated()
+    {
+        $identity = new Identity(
+                $this->getMock('stubbles\webapp\auth\User'), Roles::none()
+        );
+        $this->assertTrue(
+                $this->createBaseWebRequest()
+                        ->associate($identity)
+                        ->hasAssociatedIdentity()
+        );
+    }
+
+    /**
+     * @test
+     * @since  6.0.0
+     */
+    public function returnsAssociatedIdentity()
+    {
+        $identity = new Identity(
+                $this->getMock('stubbles\webapp\auth\User'), Roles::none()
+        );
+        $this->assertSame(
+                $identity,
+                $this->createBaseWebRequest()
+                        ->associate($identity)
+                        ->identity()
         );
     }
 }

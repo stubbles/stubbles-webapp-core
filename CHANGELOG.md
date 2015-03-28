@@ -19,6 +19,7 @@
      * `stubbles\webapp\Response::redirect()`
      * `stubbles\webapp\Response::notAcceptable()`
      * `stubbles\webapp\Response::httpVersionNotSupported()`
+   * both `stubbles\webapp\auth\User` and `stubbles\webapp\auth\Roles` are not available via injection any more, use `stubbles\webapp\Request::identity()` instead
 
 ### Other changes
 
