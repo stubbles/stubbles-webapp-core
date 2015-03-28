@@ -67,7 +67,7 @@ class ResourceOptions extends AbstractResource
      * @param   \stubbles\webapp\Response  $response  response to send
      * @return  void
      */
-    public function data(Request $request, Response $response)
+    public function resolve(Request $request, Response $response)
     {
         $response->addHeader('Allow', join(', ', $this->allowedMethods))
                 ->addHeader(

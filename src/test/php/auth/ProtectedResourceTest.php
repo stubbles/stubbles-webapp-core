@@ -64,7 +64,7 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->authConstraint   = new AuthConstraint(new RoutingAnnotations(function() {}));
-        $this->mockActualRoute  = $this->getMock('stubbles\webapp\routing\Resource');
+        $this->mockActualRoute  = $this->getMock('stubbles\webapp\routing\UriResource');
         $this->mockInjector     = $this->getMockBuilder('stubbles\ioc\Injector')
                                        ->disableOriginalConstructor()
                                        ->getMock();
@@ -177,7 +177,7 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
         );
         $this->assertEquals(
                 Error::internalServerError($e),
-                $this->protectedResource->data(
+                $this->protectedResource->resolve(
                         $this->mockRequest,
                         $this->mockResponse
                 )
@@ -209,7 +209,7 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
         );
         $this->assertEquals(
                 new Error('error'),
-                $this->protectedResource->data(
+                $this->protectedResource->resolve(
                         $this->mockRequest,
                         $this->mockResponse
                 )
@@ -240,7 +240,7 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
                 )
         );
         $this->assertNull(
-                $this->protectedResource->data(
+                $this->protectedResource->resolve(
                         $this->mockRequest,
                         $this->mockResponse
                 )
@@ -272,7 +272,7 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
         );
         $this->assertEquals(
                 Error::forbidden(),
-                $this->protectedResource->data(
+                $this->protectedResource->resolve(
                         $this->mockRequest,
                         $this->mockResponse
                 )
@@ -363,7 +363,7 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
         );
         $this->assertEquals(
                 Error::internalServerError($e),
-                $this->protectedResource->data(
+                $this->protectedResource->resolve(
                         $this->mockRequest,
                         $this->mockResponse
                 )
@@ -396,7 +396,7 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
         );
         $this->assertEquals(
                 new Error('error'),
-                $this->protectedResource->data(
+                $this->protectedResource->resolve(
                         $this->mockRequest,
                         $this->mockResponse
                 )
@@ -426,7 +426,7 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
         );
         $this->assertEquals(
                 Error::forbidden(),
-                $this->protectedResource->data(
+                $this->protectedResource->resolve(
                         $this->mockRequest,
                         $this->mockResponse
                 )
@@ -501,7 +501,7 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
         $this->mockActualRoute->expects($this->never())
                               ->method('process');
         $this->assertNull(
-                $this->protectedResource->data(
+                $this->protectedResource->resolve(
                         $this->mockRequest,
                         $this->mockResponse
                 )
@@ -523,7 +523,7 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
                 ->with($this->equalTo($this->mockRequest), $this->equalTo($this->mockResponse))
                 ->will($this->returnValue(true));
         $this->mockActualRoute->expects($this->once())
-                ->method('data')
+                ->method('resolve')
                 ->with($this->equalTo($this->mockRequest), $this->equalTo($this->mockResponse))
                 ->will($this->returnValue('foo'));
         $this->assertTrue(
@@ -534,7 +534,7 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
         );
         $this->assertEquals(
                 'foo',
-                $this->protectedResource->data(
+                $this->protectedResource->resolve(
                         $this->mockRequest,
                         $this->mockResponse
                 )

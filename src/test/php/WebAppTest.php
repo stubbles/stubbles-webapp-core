@@ -133,7 +133,7 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
      */
     private function createMockResource()
     {
-        $mockResource = $this->getMockBuilder('stubbles\webapp\routing\Resource')
+        $mockResource = $this->getMockBuilder('stubbles\webapp\routing\UriResource')
                           ->disableOriginalConstructor()
                           ->getMock();
         $mockResource->expects($this->any())
@@ -172,7 +172,7 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
      */
     public function doesNotExecuteInterceptorsAndResourceIfMimeTypeNegotiationFails  ()
     {
-        $mockResource = $this->getMockBuilder('stubbles\webapp\routing\Resource')
+        $mockResource = $this->getMockBuilder('stubbles\webapp\routing\UriResource')
                           ->disableOriginalConstructor()
                           ->getMock();
         $this->routing->expects($this->once())
@@ -297,7 +297,7 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
                   ->will($this->returnValue(true));
         $exception = new \Exception('some error');
         $mockResource->expects($this->once())
-                  ->method('data')
+                  ->method('resolve')
                   ->will($this->throwException($exception));
         $mockResource->expects($this->never())
                   ->method('applyPostInterceptors');
@@ -319,7 +319,7 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
                   ->method('applyPreInterceptors')
                   ->will($this->returnValue(true));
         $mockResource->expects($this->once())
-                  ->method('data')
+                  ->method('resolve')
                   ->will($this->returnValue(true));
         $mockResource->expects($this->once())
                   ->method('applyPostInterceptors');
@@ -339,7 +339,7 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
                   ->method('applyPreInterceptors')
                   ->will($this->returnValue(true));
         $mockResource->expects($this->once())
-                  ->method('data')
+                  ->method('resolve')
                   ->will($this->returnValue(true));
         $exception = new \Exception('some error');
         $mockResource->expects($this->once())

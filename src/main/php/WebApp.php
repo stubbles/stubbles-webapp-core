@@ -13,7 +13,7 @@ use stubbles\ioc\Injector;
 use stubbles\peer\MalformedUriException;
 use stubbles\webapp\request\WebRequest;
 use stubbles\webapp\response\WebResponse;
-use stubbles\webapp\routing\Resource;
+use stubbles\webapp\routing\UriResource;
 use stubbles\webapp\routing\Routing;
 /**
  * Abstract base class for web applications.
@@ -67,21 +67,21 @@ abstract class WebApp extends App
         }
 
         $this->configureRouting($this->routing);
-        $resource = $this->routing->findResource($requestUri, $request->method());
-        if ($this->switchToHttps($resource)) {
-            $response->redirect($resource->httpsUri());
+        $uriResource = $this->routing->findResource($requestUri, $request->method());
+        if ($this->switchToHttps($uriResource)) {
+            $response->redirect($uriResource->httpsUri());
             return $response;
         }
 
         try {
-            if (!$resource->negotiateMimeType($request, $response)) {
+            if (!$uriResource->negotiateMimeType($request, $response)) {
                 return $response;
             }
 
             $this->sessionHandshake($request, $response);
-            if ($resource->applyPreInterceptors($request, $response)) {
-                $response->write($resource->data($request, $response));
-                $resource->applyPostInterceptors($request, $response);
+            if ($uriResource->applyPreInterceptors($request, $response)) {
+                $response->write($uriResource->resolve($request, $response));
+                $uriResource->applyPostInterceptors($request, $response);
             }
         } catch (\Exception $e) {
             $this->injector->getInstance(
@@ -126,12 +126,12 @@ abstract class WebApp extends App
     /**
      * checks whether a switch to https must be made
      *
-     * @param   \stubbles\webapp\routing\Resource  $resource
+     * @param   \stubbles\webapp\routing\UriResource  $uriResource
      * @return  bool
      */
-    protected function switchToHttps(Resource $resource)
+    protected function switchToHttps(UriResource $uriResource)
     {
-        return $resource->requiresHttps();
+        return $uriResource->requiresHttps();
     }
 
     /**

@@ -172,7 +172,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
                      ->with($this->equalTo('Allow'), $this->equalTo('GET, HEAD, POST, PUT, DELETE, OPTIONS'))
                      ->will($this->returnSelf());
         $this->routing->findResource('http://example.net/hello', 'OPTIONS')
-                      ->data($this->getMock('stubbles\webapp\Request'), $mockResponse);
+                      ->resolve($this->getMock('stubbles\webapp\Request'), $mockResponse);
     }
 
     /**

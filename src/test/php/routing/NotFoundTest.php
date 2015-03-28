@@ -74,7 +74,7 @@ class NotFoundTest extends \PHPUnit_Framework_TestCase
                 ->will($this->returnValue($error));
         $this->assertSame(
                 $error,
-                $this->notFound->data(
+                $this->notFound->resolve(
                         $this->mockRequest,
                         $this->mockResponse
                 )

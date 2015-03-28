@@ -79,7 +79,7 @@ class ResourceOptionsTest extends \PHPUnit_Framework_TestCase
                                    $this->equalTo('GET, POST, HEAD, OPTIONS')
                             )
                            ->will($this->returnSelf());
-        $this->resourceOptions->data(
+        $this->resourceOptions->resolve(
                 $this->mockRequest,
                 $this->mockResponse
         );

@@ -34,7 +34,7 @@ class NotFound extends AbstractResource
      * @param   \stubbles\webapp\Response  $response  response to send
      * @return  \stubbles\webapp\response\Error
      */
-    public function data(Request $request, Response $response)
+    public function resolve(Request $request, Response $response)
     {
         return $response->notFound();
     }

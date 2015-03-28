@@ -85,7 +85,7 @@ class MethodNotAllowedTest extends \PHPUnit_Framework_TestCase
                  ->will($this->returnValue($error));
         $this->assertSame(
                 $error,
-                $this->methodNotAllowed->data(
+                $this->methodNotAllowed->resolve(
                         $this->mockRequest,
                         $this->mockResponse
                 )

@@ -144,7 +144,7 @@ class ResolvingResourceTest extends \PHPUnit_Framework_TestCase
                             $response->setStatusCode(418);
                             return 'Hello world';
                         }
-                )->data($this->mockRequest, $this->mockResponse)
+                )->resolve($this->mockRequest, $this->mockResponse)
         );
     }
 
@@ -172,7 +172,7 @@ class ResolvingResourceTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(
                 'Hello world',
                 $this->createResolvingResourceWithTarget([$this, 'theCallable'])
-                        ->data($this->mockRequest, $this->mockResponse)
+                        ->resolve($this->mockRequest, $this->mockResponse)
         );
     }
 
@@ -204,7 +204,7 @@ class ResolvingResourceTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(
                 'Hello world',
                 $this->createResolvingResourceWithTarget($mockProcessor)
-                        ->data($this->mockRequest, $this->mockResponse)
+                        ->resolve($this->mockRequest, $this->mockResponse)
         );
     }
 
@@ -224,7 +224,7 @@ class ResolvingResourceTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(
                 $error,
                 $this->createResolvingResourceWithTarget('\stdClass')
-                        ->data($this->mockRequest, $this->mockResponse)
+                        ->resolve($this->mockRequest, $this->mockResponse)
         );
     }
 
@@ -248,7 +248,7 @@ class ResolvingResourceTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(
                 'Hello world',
                 $this->createResolvingResourceWithTarget(get_class($mockProcessor))
-                        ->data($this->mockRequest, $this->mockResponse)
+                        ->resolve($this->mockRequest, $this->mockResponse)
         );
     }
 }

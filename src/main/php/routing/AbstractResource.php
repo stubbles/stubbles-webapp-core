@@ -19,7 +19,7 @@ use stubbles\webapp\interceptor\Interceptors;
  *
  * @since  2.2.0
  */
-abstract class AbstractResource implements Resource
+abstract class AbstractResource implements UriResource
 {
     /**
      * injector instance

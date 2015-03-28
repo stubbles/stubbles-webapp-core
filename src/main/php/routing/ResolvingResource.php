@@ -70,7 +70,7 @@ class ResolvingResource extends AbstractResource
      * @param   \stubbles\webapp\Response  $response  response to send
      * @return  mixed
      */
-    public function data(Request $request, Response $response)
+    public function resolve(Request $request, Response $response)
     {
         $uriPath = $this->calledUri->path($this->route->configuredPath());
         $target  = $this->route->target();

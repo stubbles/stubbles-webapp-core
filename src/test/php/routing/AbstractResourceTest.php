@@ -58,7 +58,7 @@ class TestAbstractResource extends AbstractResource
      * @param   \stubbles\webapp\Response  $response   response to send
      * @return  bool
      */
-    public function data(Request $request, Response $response) {}
+    public function resolve(Request $request, Response $response) {}
 }
 /**
  * Tests for stubbles\webapp\routing\AbstractResource.

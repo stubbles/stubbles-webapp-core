@@ -15,7 +15,7 @@ use stubbles\webapp\Response;
  *
  * @since  2.0.0
  */
-interface Resource
+interface UriResource
 {
     /**
      * checks whether switch to https is required
@@ -66,7 +66,7 @@ interface Resource
      * @param   \stubbles\webapp\Response  $response  response to send
      * @return  mixed
      */
-    public function data(Request $request, Response $response);
+    public function resolve(Request $request, Response $response);
 
     /**
      * apply post interceptors

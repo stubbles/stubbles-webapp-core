@@ -14,13 +14,13 @@ use stubbles\webapp\Response;
 use stubbles\webapp\auth\ioc\RolesProvider;
 use stubbles\webapp\auth\ioc\UserProvider;
 use stubbles\webapp\response\Error;
-use stubbles\webapp\routing\Resource;
+use stubbles\webapp\routing\UriResource;
 /**
  * Description of AuthorizingRoute
  *
  * @since  3.0.0
  */
-class ProtectedResource implements Resource
+class ProtectedResource implements UriResource
 {
     /**
      * route configuration
@@ -55,12 +55,12 @@ class ProtectedResource implements Resource
      * constructor
      *
      * @param  \stubbles\webapp\auth\AuthConstraint       $authConstraint
-     * @param  \stubbles\webapp\routing\Resource  $actualRoute
+     * @param  \stubbles\webapp\routing\UriResource  $actualRoute
      * @param  \stubbles\ioc\Injector                     $injector
      */
     public function __construct(
             AuthConstraint $authConstraint,
-            Resource $actualRoute,
+            UriResource $actualRoute,
             Injector $injector)
     {
         $this->authConstraint = $authConstraint;
@@ -220,10 +220,10 @@ class ProtectedResource implements Resource
      * @param   \stubbles\webapp\Response  $response  response to send
      * @return  mixed
      */
-    public function data(Request $request, Response $response)
+    public function resolve(Request $request, Response $response)
     {
         if ($this->authorized) {
-            return $this->actualRoute->data($request, $response);
+            return $this->actualRoute->resolve($request, $response);
         }
 
         return $this->error;

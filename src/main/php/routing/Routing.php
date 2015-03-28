@@ -182,7 +182,7 @@ class Routing implements RoutingConfigurator
      *
      * @param   string|\stubbles\webapp\CalledUri  $uri            actually called uri
      * @param   string                             $requestMethod  optional when $calledUri is an instance of stubbles\webapp\CalledUri
-     * @return  \stubbles\webapp\routing\Resource
+     * @return  \stubbles\webapp\routing\UriResource
      */
     public function findResource($uri, $requestMethod = null)
     {
@@ -209,7 +209,7 @@ class Routing implements RoutingConfigurator
      *
      * @param   \stubbles\webapp\CalledUri      $calledUri
      * @param   \stubbles\webapp\routing\Route  $route
-     * @return  \stubbles\webapp\routing\Resource
+     * @return  \stubbles\webapp\routing\UriResource
      */
     private function handleMatchingResource(CalledUri $calledUri, Route $route)
     {
@@ -246,7 +246,7 @@ class Routing implements RoutingConfigurator
      * creates a processable route when a route can be found regardless of request method
      *
      * @param   \stubbles\webapp\CalledUri  $calledUri
-     * @return  \stubbles\webapp\routing\Resource
+     * @return  \stubbles\webapp\routing\UriResource
      */
     private function handleNonMethodMatchingResource(CalledUri $calledUri)
     {
@@ -256,7 +256,7 @@ class Routing implements RoutingConfigurator
                     $calledUri,
                     $this->collectInterceptors($calledUri),
                     $this->supportedMimeTypes(),
-                    $this->getAllowedMethods($calledUri)
+                    $this->allowedMethodsFor($calledUri)
 
             );
         }
@@ -266,7 +266,7 @@ class Routing implements RoutingConfigurator
                 $calledUri,
                 $this->collectInterceptors($calledUri),
                 $this->supportedMimeTypes(),
-                $this->getAllowedMethods($calledUri)
+                $this->allowedMethodsFor($calledUri)
         );
     }
 
@@ -293,7 +293,7 @@ class Routing implements RoutingConfigurator
      * @param   \stubbles\webapp\CalledUri  $calledUri
      * @return  string[]
      */
-    private function getAllowedMethods(CalledUri $calledUri)
+    private function allowedMethodsFor(CalledUri $calledUri)
     {
         $allowedMethods = [];
         foreach ($this->routes as $route) {
@@ -320,7 +320,7 @@ class Routing implements RoutingConfigurator
      */
     private function canFindRouteWithAnyMethod(CalledUri $calledUri)
     {
-        return count($this->getAllowedMethods($calledUri)) > 0;
+        return count($this->allowedMethodsFor($calledUri)) > 0;
     }
 
     /**
