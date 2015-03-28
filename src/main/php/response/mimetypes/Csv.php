@@ -38,10 +38,10 @@ class Csv extends MimeType
     {
         if (is_scalar($resource) || $resource instanceof Error) {
             $out->writeLine((string) $resource);
-        } elseif (is_object($resource)) {
-            $this->serializeIterable($this->castToArray($resource), $out);
         } elseif (is_array($resource) || $resource instanceof \Traversable) {
             $this->serializeIterable($resource, $out);
+        } elseif (is_object($resource)) {
+            $this->serializeIterable(lang\castToArray($resource), $out);
         } else {
             trigger_error(
                     'Resource of type ' . lang\getType($resource)
@@ -70,7 +70,7 @@ class Csv extends MimeType
             $out->write($this->toCsvLine($resource, $memory));
         } else {
             $head = true;
-            foreach (Sequence::of($resource)->map([$this, 'castToArray']) as $elements) {
+            foreach (Sequence::of($resource)->map('stubbles\lang\castToArray') as $elements) {
                 if ($head && !is_numeric(key($elements))) {
                     $out->write($this->toCsvLine(array_keys($elements), $memory));
                 }
@@ -81,25 +81,6 @@ class Csv extends MimeType
         }
 
         fclose($memory);
-    }
-
-    function castToArray($value)
-    {
-        if (is_object($value)) {
-            if (method_exists($value, 'asArray')) {
-                return $value->asArray();
-            } elseif (method_exists($value, 'toArray')) {
-                return $value->toArray();
-            }
-
-            return lang\extractObjectProperties($value);
-        } elseif ($value instanceof \Traversable) {
-            return iterator_to_array($value);
-        } elseif (is_array($value)) {
-            return $value;
-        }
-
-        return [$value];
     }
 
     /**

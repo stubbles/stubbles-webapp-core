@@ -161,11 +161,15 @@ class CsvTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
+     *
+     * This behaviour is different then the one for array because for a
+     * \Traversable we can not inspect the first element to check if it is
+     * something iterable or just a scalar value as we can with arrays.
      */
-    public function serializeSimpleTravsersaleListWritesOneLine()
+    public function serializeSimpleTravsersableListWritesOneLineForEachEntry()
     {
         $this->assertEquals(
-                "bar,baz\n",
+                "bar\nbaz\n",
                 $this->csv->serialize(
                         new \ArrayIterator(['bar', 'baz']),
                         $this->memory
