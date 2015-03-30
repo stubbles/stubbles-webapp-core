@@ -68,7 +68,7 @@ abstract class WebApp extends App
 
         $this->configureRouting($this->routing);
         $uriResource = $this->routing->findResource($requestUri, $request->method());
-        if ($this->switchToHttps($uriResource)) {
+        if ($this->switchToHttps($request, $uriResource)) {
             $response->redirect($uriResource->httpsUri());
             return $response;
         }
@@ -126,12 +126,13 @@ abstract class WebApp extends App
     /**
      * checks whether a switch to https must be made
      *
+     * @param   \stubbles\webapp\Request              $request
      * @param   \stubbles\webapp\routing\UriResource  $uriResource
      * @return  bool
      */
-    protected function switchToHttps(UriResource $uriResource)
+    protected function switchToHttps(Request $request, UriResource $uriResource)
     {
-        return $uriResource->requiresHttps();
+        return !$request->isSsl() && $uriResource->requiresHttps();
     }
 
     /**
