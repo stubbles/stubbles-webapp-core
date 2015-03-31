@@ -29,6 +29,18 @@ abstract class MimeType
     protected abstract function defaultName();
 
     /**
+     * whether mime type supports sending a content type header
+     *
+     * Normally this should be true, but there are exceptions.
+     *
+     * @return  bool
+     */
+    public function supportsContentTypeHeader()
+    {
+        return true;
+    }
+
+    /**
      * specialises to specific mime type
      *
      * @param   string  $mimeType

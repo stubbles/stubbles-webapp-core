@@ -57,6 +57,19 @@ class Image extends MimeType
     }
 
     /**
+     * whether mime type supports sending a content type header
+     *
+     * Sending a Content-type header before the image in the response body
+     * renders the image unusable for the client.
+     *
+     * @return  bool
+     */
+    public function supportsContentTypeHeader()
+    {
+        return false;
+    }
+
+    /**
      * serializes resource to output stream
      *
      * @param   mixed  $resource

@@ -426,7 +426,10 @@ class WebResponse implements Response
             $cookie->send();
         }
 
-        $this->header('Content-type: ' . $this->mimeType);
+        if ($this->mimeType->supportsContentTypeHeader()) {
+            $this->header('Content-type: ' . $this->mimeType);
+        }
+
         if (!$this->headers->contain('X-Request-ID')) {
             $this->header('X-Request-ID: ' . $this->request->id());
         }

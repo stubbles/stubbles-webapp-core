@@ -85,6 +85,14 @@ class ImageTest extends \PHPUnit_Framework_TestCase
                 (string) $this->image->specialise('image/png')
         );
     }
+
+    /**
+     * @test
+     */
+    public function doesNotAllowContentTypeHeader()
+    {
+        $this->assertFalse($this->image->supportsContentTypeHeader());
+    }
     
     /**
      * @return  array
