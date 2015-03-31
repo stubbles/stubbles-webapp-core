@@ -366,4 +366,30 @@ class CsvTest extends \PHPUnit_Framework_TestCase
                 )->buffer()
         );
     }
+
+    /**
+     * @test
+     */
+    public function serializeWithChangedDelimiter()
+    {
+        $this->assertEquals(
+                "bar;baz\n",
+                $this->csv->changeDelimiterTo(';')
+                        ->serialize(['bar', 'baz'], $this->memory)
+                        ->buffer()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function serializeWithChangedEnclosure()
+    {
+        $this->assertEquals(
+                "bar,/b//az/\n",
+                $this->csv->changeEnclosureTo('/')
+                        ->serialize(['bar', 'b/az'], $this->memory)
+                        ->buffer()
+        );
+    }
 }

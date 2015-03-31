@@ -18,6 +18,43 @@ use stubbles\webapp\response\Error;
 class Csv extends MimeType
 {
     /**
+     * delimiter to be used for csv
+     *
+     * @type  char
+     */
+    private $delimiter = ',';
+    /**
+     * character to enclose single fields with in csv
+     *
+     * @type  char
+     */
+    private $enclosure = '"';
+
+    /**
+     * allows to change the delimiter character
+     *
+     * @param   char  $delimiter
+     * @return  \stubbles\webapp\response\mimetypes\Csv
+     */
+    public function changeDelimiterTo($delimiter)
+    {
+        $this->delimiter = $delimiter;
+        return $this;
+    }
+
+    /**
+     * allows to change the enclosure character
+     *
+     * @param   char  $enclosure
+     * @return  \stubbles\webapp\response\mimetypes\Csv
+     */
+    public function changeEnclosureTo($enclosure)
+    {
+        $this->enclosure = $enclosure;
+        return $this;
+    }
+
+    /**
      * returns default mime type name
      *
      * @return  string
@@ -94,7 +131,7 @@ class Csv extends MimeType
     {
         ftruncate($memory, 0);
         rewind($memory);
-        fputcsv($memory, $elements);
+        fputcsv($memory, $elements, $this->delimiter, $this->enclosure);
         rewind($memory);
         return stream_get_contents($memory);
     }
