@@ -27,11 +27,11 @@ class ProtectedResource implements UriResource
      */
     private $authConstraint;
     /**
-     * actual route which requires auth
+     * actual resource which requires auth
      *
      * @type  \stubbles\webapp\routing\ProcessableRoute
      */
-    private $actualRoute;
+    private $actualResource;
     /**
      * provider which delivers authentication
      *
@@ -52,17 +52,17 @@ class ProtectedResource implements UriResource
     /**
      * constructor
      *
-     * @param  \stubbles\webapp\auth\AuthConstraint       $authConstraint
-     * @param  \stubbles\webapp\routing\UriResource  $actualRoute
-     * @param  \stubbles\ioc\Injector                     $injector
+     * @param  \stubbles\webapp\auth\AuthConstraint  $authConstraint
+     * @param  \stubbles\webapp\routing\UriResource  $actualResource
+     * @param  \stubbles\ioc\Injector                $injector
      */
     public function __construct(
             AuthConstraint $authConstraint,
-            UriResource $actualRoute,
+            UriResource $actualResource,
             Injector $injector)
     {
         $this->authConstraint = $authConstraint;
-        $this->actualRoute    = $actualRoute;
+        $this->actualResource = $actualResource;
         $this->injector       = $injector;
     }
 
@@ -73,7 +73,7 @@ class ProtectedResource implements UriResource
      */
     public function requiresHttps()
     {
-        return $this->actualRoute->requiresHttps();
+        return $this->actualResource->requiresHttps();
     }
 
     /**
@@ -83,7 +83,7 @@ class ProtectedResource implements UriResource
      */
     public function httpsUri()
     {
-        return $this->actualRoute->httpsUri();
+        return $this->actualResource->httpsUri();
     }
 
     /**
@@ -96,7 +96,7 @@ class ProtectedResource implements UriResource
      */
     public function negotiateMimeType(Request $request, Response $response)
     {
-        return $this->actualRoute->negotiateMimeType($request, $response);
+        return $this->actualResource->negotiateMimeType($request, $response);
     }
 
     /**
@@ -106,7 +106,7 @@ class ProtectedResource implements UriResource
      */
     public function supportedMimeTypes()
     {
-        return $this->actualRoute->supportedMimeTypes();
+        return $this->actualResource->supportedMimeTypes();
     }
 
     /**
@@ -119,10 +119,10 @@ class ProtectedResource implements UriResource
     public function applyPreInterceptors(Request $request, Response $response)
     {
         if ($this->isAuthorized($request, $response)) {
-            return $this->actualRoute->applyPreInterceptors($request, $response);
+            return $this->actualResource->applyPreInterceptors($request, $response);
         }
 
-        return false;
+        return true;
     }
 
     /**
@@ -224,7 +224,7 @@ class ProtectedResource implements UriResource
     public function resolve(Request $request, Response $response)
     {
         if ($this->authorized) {
-            return $this->actualRoute->resolve($request, $response);
+            return $this->actualResource->resolve($request, $response);
         }
 
         return $this->error;
@@ -240,7 +240,7 @@ class ProtectedResource implements UriResource
     public function applyPostInterceptors(Request $request, Response $response)
     {
         if ($this->authorized) {
-            return $this->actualRoute->applyPostInterceptors($request, $response);
+            return $this->actualResource->applyPostInterceptors($request, $response);
         }
 
         return false;

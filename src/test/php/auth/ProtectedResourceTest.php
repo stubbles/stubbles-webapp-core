@@ -37,7 +37,7 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
      *
      * @type  \PHPUnit_Framework_MockObject_MockObject
      */
-    private $mockActualRoute;
+    private $mockActualResource;
     /**
      * mocked injector
      *
@@ -62,14 +62,14 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->authConstraint   = new AuthConstraint(new RoutingAnnotations(function() {}));
-        $this->mockActualRoute  = $this->getMock('stubbles\webapp\routing\UriResource');
-        $this->mockInjector     = $this->getMockBuilder('stubbles\ioc\Injector')
-                                       ->disableOriginalConstructor()
-                                       ->getMock();
+        $this->authConstraint      = new AuthConstraint(new RoutingAnnotations(function() {}));
+        $this->mockActualResource  = $this->getMock('stubbles\webapp\routing\UriResource');
+        $this->mockInjector        = $this->getMockBuilder('stubbles\ioc\Injector')
+                ->disableOriginalConstructor()
+                ->getMock();
         $this->protectedResource = new ProtectedResource(
                 $this->authConstraint,
-                $this->mockActualRoute,
+                $this->mockActualResource,
                 $this->mockInjector
         );
         $this->mockRequest  = $this->getMock('stubbles\webapp\Request');
@@ -81,9 +81,9 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function requiresSwitchToHttpsWhenActualRouteDoes()
     {
-        $this->mockActualRoute->expects($this->once())
-                              ->method('requiresHttps')
-                              ->will($this->returnValue(true));
+        $this->mockActualResource->expects($this->once())
+                ->method('requiresHttps')
+                ->will($this->returnValue(true));
         $this->assertTrue($this->protectedResource->requiresHttps());
     }
 
@@ -93,9 +93,9 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
     public function returnsHttpsUriOfActualRoute()
     {
         $httpsUri = HttpUri::fromString('https://example.com/hello');
-        $this->mockActualRoute->expects($this->once())
-                              ->method('httpsUri')
-                              ->will($this->returnValue($httpsUri));
+        $this->mockActualResource->expects($this->once())
+                ->method('httpsUri')
+                ->will($this->returnValue($httpsUri));
         $this->assertSame($httpsUri, $this->protectedResource->httpsUri());
     }
 
@@ -105,9 +105,9 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function delegatesMimeTypeNegotiationToActualRoute()
     {
-        $this->mockActualRoute->expects($this->once())
-                              ->method('negotiateMimeType')
-                              ->will($this->returnValue(true));
+        $this->mockActualResource->expects($this->once())
+                ->method('negotiateMimeType')
+                ->will($this->returnValue(true));
         $this->assertTrue(
                 $this->protectedResource->negotiateMimeType(
                         $this->mockRequest,
@@ -121,9 +121,9 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsSupportedMimeTypesOfActualRoute()
     {
-        $this->mockActualRoute->expects($this->once())
-                              ->method('supportedMimeTypes')
-                              ->will($this->returnValue(['application/foo']));
+        $this->mockActualResource->expects($this->once())
+                ->method('supportedMimeTypes')
+                ->will($this->returnValue(['application/foo']));
         $this->assertEquals(
                 ['application/foo'],
                 $this->protectedResource->supportedMimeTypes()
@@ -137,8 +137,8 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
     {
         $mockAuthenticationProvider = $this->getMock('stubbles\webapp\auth\AuthenticationProvider');
         $this->mockInjector->expects($this->once())
-                           ->method('getInstance')
-                           ->will($this->returnValue($mockAuthenticationProvider));
+                ->method('getInstance')
+                ->will($this->returnValue($mockAuthenticationProvider));
         return $mockAuthenticationProvider;
     }
 
@@ -154,12 +154,12 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
                 ->method('authenticate')
                 ->will($this->throwException($e));
         $this->mockResponse->expects($this->once())
-                           ->method('internalServerError')
-                           ->with($this->equalTo($e))
-                           ->will($this->returnValue(Error::internalServerError($e)));
-        $this->mockActualRoute->expects($this->never())
-                              ->method('applyPreInterceptors');
-        $this->assertFalse(
+                ->method('internalServerError')
+                ->with($this->equalTo($e))
+                ->will($this->returnValue(Error::internalServerError($e)));
+        $this->mockActualResource->expects($this->never())
+                ->method('applyPreInterceptors');
+        $this->assertTrue(
                 $this->protectedResource->applyPreInterceptors(
                         $this->mockRequest,
                         $this->mockResponse
@@ -186,12 +186,12 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
                 ->method('authenticate')
                 ->will($this->throwException(new ExternalAuthProviderException('error')));
         $this->mockResponse->expects($this->once())
-                           ->method('setStatusCode')
-                           ->with($this->equalTo(504))
-                           ->will($this->returnSelf());
-        $this->mockActualRoute->expects($this->never())
-                              ->method('applyPreInterceptors');
-        $this->assertFalse(
+                ->method('setStatusCode')
+                ->with($this->equalTo(504))
+                ->will($this->returnSelf());
+        $this->mockActualResource->expects($this->never())
+                ->method('applyPreInterceptors');
+        $this->assertTrue(
                 $this->protectedResource->applyPreInterceptors(
                         $this->mockRequest,
                         $this->mockResponse
@@ -221,9 +221,9 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
         $this->mockResponse->expects($this->once())
                 ->method('redirect')
                 ->with($this->equalTo('https://login.example.com/'));
-        $this->mockActualRoute->expects($this->never())
+        $this->mockActualResource->expects($this->never())
                 ->method('applyPreInterceptors');
-        $this->assertFalse(
+        $this->assertTrue(
                 $this->protectedResource->applyPreInterceptors(
                         $this->mockRequest,
                         $this->mockResponse
@@ -252,9 +252,9 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
         $this->mockResponse->expects($this->once())
                 ->method('forbidden')
                 ->will($this->returnValue(Error::forbidden()));
-        $this->mockActualRoute->expects($this->never())
+        $this->mockActualResource->expects($this->never())
                 ->method('applyPreInterceptors');
-        $this->assertFalse(
+        $this->assertTrue(
                 $this->protectedResource->applyPreInterceptors(
                         $this->mockRequest,
                         $this->mockResponse
@@ -279,7 +279,7 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
         $mockAuthenticationProvider->expects($this->once())
                 ->method('authenticate')
                 ->will($this->returnValue($this->getMock('stubbles\webapp\auth\User')));
-        $this->mockActualRoute->expects($this->once())
+        $this->mockActualResource->expects($this->once())
                 ->method('applyPreInterceptors')
                 ->with($this->equalTo($this->mockRequest), $this->equalTo($this->mockResponse))
                 ->will($this->returnValue(true));
@@ -340,12 +340,12 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
                 ->method('roles')
                 ->will($this->throwException($e));
         $this->mockResponse->expects($this->once())
-                           ->method('internalServerError')
-                           ->with($this->equalTo($e))
-                           ->will($this->returnValue(Error::internalServerError($e)));
-        $this->mockActualRoute->expects($this->never())
-                              ->method('applyPreInterceptors');
-        $this->assertFalse(
+                ->method('internalServerError')
+                ->with($this->equalTo($e))
+                ->will($this->returnValue(Error::internalServerError($e)));
+        $this->mockActualResource->expects($this->never())
+                ->method('applyPreInterceptors');
+        $this->assertTrue(
                 $this->protectedResource->applyPreInterceptors(
                         $this->mockRequest,
                         $this->mockResponse
@@ -376,9 +376,9 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
                 ->method('setStatusCode')
                 ->with($this->equalTo(504))
                 ->will($this->returnSelf());
-        $this->mockActualRoute->expects($this->never())
+        $this->mockActualResource->expects($this->never())
                 ->method('applyPreInterceptors');
-        $this->assertFalse(
+        $this->assertTrue(
                 $this->protectedResource->applyPreInterceptors(
                         $this->mockRequest,
                         $this->mockResponse
@@ -406,9 +406,9 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
         $this->mockResponse->expects($this->once())
                 ->method('forbidden')
                 ->will($this->returnValue(Error::forbidden()));
-        $this->mockActualRoute->expects($this->never())
+        $this->mockActualResource->expects($this->never())
                 ->method('applyPreInterceptors');
-        $this->assertFalse(
+        $this->assertTrue(
                 $this->protectedResource->applyPreInterceptors(
                         $this->mockRequest,
                         $this->mockResponse
@@ -433,7 +433,7 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
         $mockAuthorizationProvider->expects($this->once())
                 ->method('roles')
                 ->will($this->returnValue(new Roles(['admin'])));
-        $this->mockActualRoute->expects($this->once())
+        $this->mockActualResource->expects($this->once())
                 ->method('applyPreInterceptors')
                 ->with($this->equalTo($this->mockRequest), $this->equalTo($this->mockResponse))
                 ->will($this->returnValue(true));
@@ -488,8 +488,8 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function doesNotCallsProcessOfActualRouteWhenNotAuthorized()
     {
-        $this->mockActualRoute->expects($this->never())
-                              ->method('process');
+        $this->mockActualResource->expects($this->never())
+                ->method('process');
         $this->assertNull(
                 $this->protectedResource->resolve(
                         $this->mockRequest,
@@ -508,11 +508,11 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
         $mockAuthorizationProvider->expects($this->once())
                 ->method('roles')
                 ->will($this->returnValue(new Roles(['admin'])));
-        $this->mockActualRoute->expects($this->once())
+        $this->mockActualResource->expects($this->once())
                 ->method('applyPreInterceptors')
                 ->with($this->equalTo($this->mockRequest), $this->equalTo($this->mockResponse))
                 ->will($this->returnValue(true));
-        $this->mockActualRoute->expects($this->once())
+        $this->mockActualResource->expects($this->once())
                 ->method('resolve')
                 ->with($this->equalTo($this->mockRequest), $this->equalTo($this->mockResponse))
                 ->will($this->returnValue('foo'));
@@ -536,8 +536,8 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function applyPostInterceptorsDoesNotCallActualRouteWhenNotAuthorized()
     {
-        $this->mockActualRoute->expects($this->never())
-                              ->method('applyPostInterceptors');
+        $this->mockActualResource->expects($this->never())
+                ->method('applyPostInterceptors');
         $this->assertFalse(
                 $this->protectedResource->applyPostInterceptors(
                         $this->mockRequest,
@@ -556,11 +556,11 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
         $mockAuthorizationProvider->expects($this->once())
                 ->method('roles')
                 ->will($this->returnValue(new Roles(['admin'])));
-        $this->mockActualRoute->expects($this->once())
+        $this->mockActualResource->expects($this->once())
                 ->method('applyPreInterceptors')
                 ->with($this->equalTo($this->mockRequest), $this->equalTo($this->mockResponse))
                 ->will($this->returnValue(true));
-        $this->mockActualRoute->expects($this->once())
+        $this->mockActualResource->expects($this->once())
                 ->method('applyPostInterceptors')
                 ->with($this->equalTo($this->mockRequest), $this->equalTo($this->mockResponse))
                 ->will($this->returnValue(true));
