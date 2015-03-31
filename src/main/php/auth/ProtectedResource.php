@@ -142,10 +142,7 @@ class ProtectedResource implements UriResource
                 $request->associate(new Identity($user, $roles));
                 $this->authorized = true;
             } elseif (null !== $roles) {
-                $request->associate(new Identity($user, $roles));
                 $this->error = $response->forbidden();
-            } else {
-                # error? roles required, but no roles found for user?
             }
         } elseif (null !== $user) {
             $request->associate(new Identity($user, Roles::none()));
