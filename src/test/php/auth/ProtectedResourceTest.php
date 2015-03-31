@@ -534,11 +534,26 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function applyPostInterceptorsDoesNotCallActualRouteWhenNotAuthorized()
+    public function appliesPostInterceptorsWhenNotAuthorized()
     {
+        $this->authConstraint->requireRole('admin');
+        $mockAuthorizationProvider = $this->mockAuthorizationProvider();
+        $mockAuthorizationProvider->expects($this->once())
+                ->method('roles')
+                ->will($this->returnValue(new Roles([])));
         $this->mockActualResource->expects($this->never())
-                ->method('applyPostInterceptors');
-        $this->assertFalse(
+                ->method('applyPreInterceptors');
+        $this->mockActualResource->expects($this->once())
+                ->method('applyPostInterceptors')
+                ->with($this->equalTo($this->mockRequest), $this->equalTo($this->mockResponse))
+                ->will($this->returnValue(true));
+        $this->assertTrue(
+                $this->protectedResource->applyPreInterceptors(
+                        $this->mockRequest,
+                        $this->mockResponse
+                )
+        );
+        $this->assertTrue(
                 $this->protectedResource->applyPostInterceptors(
                         $this->mockRequest,
                         $this->mockResponse
@@ -549,7 +564,7 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function applyPostInterceptorsCallsActualRouteWhenAuthorized()
+    public function appliesPostInterceptorsWhenAuthorized()
     {
         $this->authConstraint->requireRole('admin');
         $mockAuthorizationProvider = $this->mockAuthorizationProvider();

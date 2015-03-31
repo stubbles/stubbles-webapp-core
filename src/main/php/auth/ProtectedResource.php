@@ -112,6 +112,9 @@ class ProtectedResource implements UriResource
     /**
      * apply pre interceptors
      *
+     * Pre interceptors for actual resource are only applied when request is
+     * authorized.
+     *
      * @param   \stubbles\webapp\Request   $request   current request
      * @param   \stubbles\webapp\Response  $response  response to send
      * @return  bool
@@ -217,6 +220,8 @@ class ProtectedResource implements UriResource
     /**
      * creates processor instance
      *
+     * Resolving of actual resource is only done when request is authorized.
+     *
      * @param   \stubbles\webapp\Request   $request   current request
      * @param   \stubbles\webapp\Response  $response  response to send
      * @return  mixed
@@ -233,16 +238,15 @@ class ProtectedResource implements UriResource
     /**
      * apply post interceptors
      *
+     * Post interceptors of actual resource are applied independent of whether
+     * request was authorized or not.
+     *
      * @param   \stubbles\webapp\Request   $request   current request
      * @param   \stubbles\webapp\Response  $response  response to send
      * @return  bool
      */
     public function applyPostInterceptors(Request $request, Response $response)
     {
-        if ($this->authorized) {
-            return $this->actualResource->applyPostInterceptors($request, $response);
-        }
-
-        return false;
+        return $this->actualResource->applyPostInterceptors($request, $response);
     }
 }
