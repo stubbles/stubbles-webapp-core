@@ -71,6 +71,13 @@ class SupportedMimeTypes
     {
         $this->mimeTypes       = $mimeTypes;
         $this->mimeTypeClasses = array_merge(self::$supported, $mimeTypeClasses);
+        if (class_exists('stubbles\xml\serializer\XmlSerializerFacade')) {
+            $this->mimeTypeClasses = array_merge(self::$xml, $this->mimeTypeClasses);
+        }
+
+        if (class_exists('stubbles\img\Image')) {
+            $this->mimeTypeClasses = array_merge(self::$image, $this->mimeTypeClasses);
+        }
     }
 
     /**
@@ -173,19 +180,7 @@ class SupportedMimeTypes
      */
     public function provideClass($mimeType)
     {
-        if (isset($this->mimeTypeClasses[$mimeType])) {
-            return true;
-        }
-
-        if (class_exists('stubbles\xml\serializer\XmlSerializerFacade')) {
-            return isset(self::$xml[$mimeType]);
-        }
-
-        if (class_exists('stubbles\img\Image')) {
-            return isset(self::$image[$mimeType]);
-        }
-
-        return false;
+        return isset($this->mimeTypeClasses[$mimeType]);
     }
 
     /**
