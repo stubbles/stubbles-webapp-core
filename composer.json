@@ -17,7 +17,7 @@
         "stubbles/xml": "~4.2",
         "stubbles/image": "~4.0",
         "phpunit/phpunit": "~4.5",
-        "mikey179/vfsStream": "~1.4"
+        "mikey179/vfsStream": "~1.5"
     },
     "autoload": {
         "psr-4": {
