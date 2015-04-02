@@ -87,14 +87,6 @@ class ImageTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @test
-     */
-    public function doesNotAllowContentTypeHeader()
-    {
-        $this->assertFalse($this->image->supportsContentTypeHeader());
-    }
-    
-    /**
      * @return  array
      */
     public function emptyValues()

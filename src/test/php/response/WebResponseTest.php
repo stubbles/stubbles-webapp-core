@@ -630,23 +630,4 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
                        ->with($this->equalTo('X-Request-ID: another-request-id-bar'));
         $this->response->send($this->memoryOutputStream);
     }
-
-    /**
-     * @test
-     * @since  6.0.0
-     */
-    public function doesNotSendContentTypeHeaderWhenMimeTypeDoesNotSupportIt()
-    {
-        $mockMimeType = $this->getMockBuilder('stubbles\webapp\response\mimetypes\MimeType')
-                ->setMethods(['defaultName', 'supportsContentTypeHeader', 'serialize'])
-                ->getMock();
-        $mockMimeType->specialise('image/png');
-        $mockMimeType->expects($this->once())
-                ->method('supportsContentTypeHeader')
-                ->will($this->returnValue(false));
-        $this->response->adjustMimeType($mockMimeType);
-        $this->response->expects($this->exactly(2))
-                    ->method('header');
-        $this->response->send($this->memoryOutputStream);
-    }
 }

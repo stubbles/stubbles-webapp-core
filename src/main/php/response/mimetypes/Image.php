@@ -57,19 +57,6 @@ class Image extends MimeType
     }
 
     /**
-     * whether mime type supports sending a content type header
-     *
-     * Sending a Content-type header before the image in the response body
-     * renders the image unusable for the client.
-     *
-     * @return  bool
-     */
-    public function supportsContentTypeHeader()
-    {
-        return false;
-    }
-
-    /**
      * serializes resource to output stream
      *
      * @param   mixed  $resource
@@ -89,9 +76,13 @@ class Image extends MimeType
         if (!empty($image)) {
             // must use output buffering
             // PHP's image*() functions write directly to stdout
-            ob_start([$out, 'write']);
+            ob_start();
             $image->display();
+            $result = ob_get_contents();
+            // end output buffering first before writing to output stream
+            // because it might be captured by output buffering as well
             ob_end_clean();
+            $out->write($result);
         }
         
         return $out;

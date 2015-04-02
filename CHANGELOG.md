@@ -1,3 +1,9 @@
+6.0.1 (2015-04-02)
+------------------
+
+   * fixed output buffering in `stubbles\webapp\response\mimetypes\Image` which prevented proper image display in browser
+
+
 6.0.0 (2015-04-01)
 ------------------
 
