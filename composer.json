@@ -16,7 +16,7 @@
     "require-dev": {
         "stubbles/xml": "~4.2",
         "stubbles/image": "~4.0",
-        "phpunit/phpunit": "~4.5",
+        "phpunit/phpunit": "~4.6",
         "mikey179/vfsStream": "~1.5"
     },
     "autoload": {

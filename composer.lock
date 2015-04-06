@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "47fa59accf468aa7753cae98f7fc6df8",
+    "hash": "3dadc7b2a5d68169179fc2a12dfb4bf6",
     "packages": [
         {
             "name": "stubbles/core",
