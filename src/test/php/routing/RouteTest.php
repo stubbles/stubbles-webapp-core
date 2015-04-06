@@ -132,7 +132,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
      */
     public function allowedRequestMethodsContainAllIfNoneGiven()
     {
-        $this->assertEquals(
+        assertEquals(
                 ['GET', 'HEAD', 'POST', 'PUT', 'DELETE'],
                 $this->createRoute(null)->allowedRequestMethods()
         );
@@ -143,7 +143,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
      */
     public function allowedRequestMethodsContainGivenSingleMethodOnly()
     {
-        $this->assertEquals(['GET'], $this->createRoute()->allowedRequestMethods());
+        assertEquals(['GET'], $this->createRoute()->allowedRequestMethods());
     }
 
     /**
@@ -152,7 +152,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
      */
     public function allowedRequestMethodsContainGivenListOfMethodOnly()
     {
-        $this->assertEquals(
+        assertEquals(
                 ['POST', 'PUT'],
                 $this->createRoute(['POST', 'PUT']
         )->allowedRequestMethods());
@@ -163,7 +163,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
      */
     public function doesNotMatchUriRequestIfRequestMethodsDiffer()
     {
-        $this->assertFalse(
+        assertFalse(
                 $this->createRoute()->matches(
                         new CalledUri('http://example.com/hello/world', 'DELETE')
                 )
@@ -175,7 +175,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
      */
     public function doesNotMatchUriRequestIfRequestPathsDiffers()
     {
-        $this->assertFalse(
+        assertFalse(
                 $this->createRoute()->matches(
                         new CalledUri('http://example.com/other', 'GET')
                 )
@@ -187,7 +187,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
      */
     public function matchesIfPathAndMethodAreOk()
     {
-        $this->assertTrue(
+        assertTrue(
                 $this->createRoute()->matches(
                         new CalledUri('http://example.com/hello/world', 'GET')
                 )
@@ -199,7 +199,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
      */
     public function doesNotMatchPathIfDiffers()
     {
-        $this->assertFalse(
+        assertFalse(
                 $this->createRoute()->matchesPath(
                         new CalledUri('http://example.com/other', 'GET')
                 )
@@ -211,7 +211,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
      */
     public function matchesPathIfPathOk()
     {
-        $this->assertTrue(
+        assertTrue(
                 $this->createRoute()->matchesPath(
                         new CalledUri('http://example.com/hello/world', 'GET')
                 )
@@ -223,7 +223,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
      */
     public function matchesForHeadIfPathOkAndAllowedMethodIsGet()
     {
-        $this->assertTrue(
+        assertTrue(
                 $this->createRoute()->matches(
                         new CalledUri('http://example.com/hello/world', 'HEAD')
                 )
@@ -235,7 +235,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsGivenPath()
     {
-        $this->assertEquals(
+        assertEquals(
                 '/hello/{name}',
                 $this->createRoute()->configuredPath()
         );
@@ -247,7 +247,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     public function returnsGivenCallback()
     {
         $route = new Route('/hello/{name}', __CLASS__);
-        $this->assertEquals(__CLASS__, $route->target());
+        assertEquals(__CLASS__, $route->target());
     }
 
     /**
@@ -255,7 +255,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
      */
     public function hasNoPreInterceptorsByDefault()
     {
-        $this->assertEquals([], $this->createRoute()->preInterceptors());
+        assertEquals([], $this->createRoute()->preInterceptors());
     }
 
     /**
@@ -275,7 +275,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         $preInterceptor     = function() {};
         $mockPreInterceptor = $this->getMock('stubbles\webapp\interceptor\PreInterceptor');
         $mockPreFunction    = 'array_map';
-        $this->assertEquals(
+        assertEquals(
                 [get_class($mockPreInterceptor),
                  $preInterceptor,
                  $mockPreInterceptor,
@@ -294,7 +294,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
      */
     public function hasNoPostInterceptorsByDefault()
     {
-        $this->assertEquals([], $this->createRoute()->postInterceptors());
+        assertEquals([], $this->createRoute()->postInterceptors());
     }
 
     /**
@@ -314,7 +314,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         $postInterceptor     = function() {};
         $mockPostInterceptor = $this->getMock('stubbles\webapp\interceptor\PostInterceptor');
         $mockPostFunction    = 'array_map';
-        $this->assertEquals(
+        assertEquals(
                 [get_class($mockPostInterceptor),
                  $postInterceptor,
                  $mockPostInterceptor,
@@ -333,7 +333,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
      */
     public function doesNotRequireHttpsByDefault()
     {
-        $this->assertFalse($this->createRoute()->requiresHttps());
+        assertFalse($this->createRoute()->requiresHttps());
     }
 
     /**
@@ -341,7 +341,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
      */
     public function requiresHttpsWhenWhenRestrictedToHttps()
     {
-        $this->assertTrue($this->createRoute()->httpsOnly()->requiresHttps());
+        assertTrue($this->createRoute()->httpsOnly()->requiresHttps());
     }
 
     /**
@@ -351,7 +351,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     public function requiresHttpsWhenCallbackInstanceAnnotatedWithRequiresHttps()
     {
         $route = new Route('/hello/{name}', new AnnotatedProcessor(), 'GET');
-        $this->assertTrue($route->requiresHttps());
+        assertTrue($route->requiresHttps());
     }
 
     /**
@@ -365,7 +365,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 'stubbles\webapp\routing\AnnotatedProcessor',
                 'GET'
         );
-        $this->assertTrue($route->requiresHttps());
+        assertTrue($route->requiresHttps());
     }
 
     /**
@@ -374,7 +374,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
      */
     public function doesNotRequireAuthByDefault()
     {
-        $this->assertFalse($this->createRoute()->requiresAuth());
+        assertFalse($this->createRoute()->requiresAuth());
     }
 
     /**
@@ -383,7 +383,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
      */
     public function requiresAuthWhenLoginIsRequired()
     {
-        $this->assertTrue($this->createRoute()->withLoginOnly()->requiresAuth());
+        assertTrue($this->createRoute()->withLoginOnly()->requiresAuth());
     }
 
     /**
@@ -393,7 +393,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     public function requiresAuthWhenCallbackInstanceAnnotatedWithRequiresLogin()
     {
         $route = new Route('/hello/{name}', new AnnotatedProcessor(), 'GET');
-        $this->assertTrue($route->requiresAuth());
+        assertTrue($route->requiresAuth());
     }
 
     /**
@@ -406,7 +406,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                            'stubbles\webapp\routing\AnnotatedProcessor',
                            'GET'
                  );
-        $this->assertTrue($route->requiresAuth());
+        assertTrue($route->requiresAuth());
     }
 
     /**
@@ -415,7 +415,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
      */
     public function requiresAuthWhenRoleIsRequired()
     {
-        $this->assertTrue($this->createRoute()->withRoleOnly('admin')->requiresAuth());
+        assertTrue($this->createRoute()->withRoleOnly('admin')->requiresAuth());
     }
 
     /**
@@ -425,7 +425,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     public function requiresAuthWhenCallbackInstanceAnnotatedWithRequiresRole()
     {
         $route = new Route('/hello/{name}', new OtherAnnotatedProcessor(), 'GET');
-        $this->assertTrue($route->requiresAuth());
+        assertTrue($route->requiresAuth());
     }
 
     /**
@@ -439,7 +439,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 'stubbles\webapp\routing\OtherAnnotatedProcessor',
                 'GET'
         );
-        $this->assertTrue($route->requiresAuth());
+        assertTrue($route->requiresAuth());
     }
 
     /**
@@ -454,7 +454,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 new RoleAwareAnnotatedProcessor(),
                 'GET'
         );
-        $this->assertTrue($route->requiresAuth());
+        assertTrue($route->requiresAuth());
     }
 
     /**
@@ -469,7 +469,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 'stubbles\webapp\routing\RoleAwareAnnotatedProcessor',
                 'GET'
         );
-        $this->assertTrue($route->requiresAuth());
+        assertTrue($route->requiresAuth());
     }
 
     /**
@@ -478,7 +478,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
      */
     public function requiresAuthWhenLoginAndRoleIsRequired()
     {
-        $this->assertTrue(
+        assertTrue(
                 $this->createRoute()
                         ->withLoginOnly()
                         ->withRoleOnly('admin')
@@ -491,7 +491,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
      */
     public function doesNotRequireRolesByDefault()
     {
-        $this->assertFalse($this->createRoute()->authConstraint()->requiresRoles());
+        assertFalse($this->createRoute()->authConstraint()->requiresRoles());
     }
 
     /**
@@ -499,7 +499,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
      */
     public function requiresRolesWhenRoleIsSet()
     {
-        $this->assertTrue(
+        assertTrue(
                 $this->createRoute()
                         ->withRoleOnly('admin')
                         ->authConstraint()
@@ -518,7 +518,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 new OtherAnnotatedProcessor(),
                 'GET'
         );
-        $this->assertTrue($route->authConstraint()->requiresRoles());
+        assertTrue($route->authConstraint()->requiresRoles());
     }
 
     /**
@@ -532,7 +532,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 'stubbles\webapp\routing\OtherAnnotatedProcessor',
                 'GET'
         );
-        $this->assertTrue($route->authConstraint()->requiresRoles());
+        assertTrue($route->authConstraint()->requiresRoles());
     }
 
     /**
@@ -547,7 +547,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 new RoleAwareAnnotatedProcessor(),
                 'GET'
         );
-        $this->assertTrue($route->authConstraint()->requiresRoles());
+        assertTrue($route->authConstraint()->requiresRoles());
     }
 
     /**
@@ -562,7 +562,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 'stubbles\webapp\routing\RoleAwareAnnotatedProcessor',
                 'GET'
         );
-        $this->assertTrue($route->authConstraint()->requiresRoles());
+        assertTrue($route->authConstraint()->requiresRoles());
     }
 
     /**
@@ -572,7 +572,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
      */
     public function isNotSatisfiedByRolesWhenRolesAreNull()
     {
-        $this->assertFalse($this->createRoute()->authConstraint()->satisfiedByRoles());
+        assertFalse($this->createRoute()->authConstraint()->satisfiedByRoles());
     }
 
     /**
@@ -587,7 +587,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 'stubbles\webapp\routing\RoleAwareAnnotatedProcessor',
                 'GET'
         );
-        $this->assertFalse($route->authConstraint()->satisfiedByRoles());
+        assertFalse($route->authConstraint()->satisfiedByRoles());
     }
 
     /**
@@ -602,7 +602,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 new RoleAwareAnnotatedProcessor(),
                 'GET'
         );
-        $this->assertTrue($route->authConstraint()->satisfiedByRoles(new Roles([])));
+        assertTrue($route->authConstraint()->satisfiedByRoles(new Roles([])));
     }
 
     /**
@@ -617,7 +617,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 new OtherAnnotatedProcessor(),
                 'GET'
         );
-        $this->assertTrue($route->authConstraint()->satisfiedByRoles(new Roles(['admin', 'superadmin'])));
+        assertTrue($route->authConstraint()->satisfiedByRoles(new Roles(['admin', 'superadmin'])));
     }
 
     /**
@@ -632,7 +632,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 new OtherAnnotatedProcessor(),
                 'GET'
         );
-        $this->assertFalse($route->authConstraint()->satisfiedByRoles(new Roles(['user'])));
+        assertFalse($route->authConstraint()->satisfiedByRoles(new Roles(['user'])));
     }
 
     /**
@@ -647,7 +647,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 'stubbles\webapp\routing\OtherAnnotatedProcessor',
                 'GET'
         );
-        $this->assertTrue($route->authConstraint()->satisfiedByRoles(new Roles(['admin', 'superadmin'])));
+        assertTrue($route->authConstraint()->satisfiedByRoles(new Roles(['admin', 'superadmin'])));
     }
 
     /**
@@ -662,7 +662,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 'stubbles\webapp\routing\OtherAnnotatedProcessor',
                 'GET'
         );
-        $this->assertFalse($route->authConstraint()->satisfiedByRoles(new Roles(['user'])));
+        assertFalse($route->authConstraint()->satisfiedByRoles(new Roles(['user'])));
     }
 
     /**
@@ -677,7 +677,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 'stubbles\webapp\routing\OtherAnnotatedProcessor',
                 'GET'
         );
-        $this->assertFalse($route->forbiddenWhenNotAlreadyLoggedIn()->authConstraint()->loginAllowed());
+        assertFalse($route->forbiddenWhenNotAlreadyLoggedIn()->authConstraint()->loginAllowed());
     }
 
     /**
@@ -685,7 +685,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
      */
     public function supportNoMimeTypeByDefault()
     {
-        $this->assertEquals(
+        assertEquals(
                 [],
                 $this->createRoute()->supportedMimeTypes()->asArray()
         );
@@ -706,7 +706,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsListOfAddedSupportedMimeTypes()
     {
-        $this->assertEquals(
+        assertEquals(
                 ['application/json', 'application/xml'],
                 $this->createRoute()
                         ->supportsMimeType('application/json')
@@ -722,7 +722,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
      */
     public function supportedMimeTypesContainSpecialClass()
     {
-        $this->assertTrue(
+        assertTrue(
                 $this->createRoute()
                         ->supportsMimeType('foo/bar', 'example\FooBar')
                         ->supportedMimeTypes()
@@ -736,7 +736,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
      */
     public function supportedMimeTypesReturnSpecialClass()
     {
-        $this->assertEquals(
+        assertEquals(
                 'example\FooBar',
                 $this->createRoute()
                         ->supportsMimeType('foo/bar', 'example\FooBar')
@@ -751,7 +751,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
      */
     public function contentNegotationIsEnabledByDefault()
     {
-        $this->assertFalse(
+        assertFalse(
                 $this->createRoute()
                         ->supportedMimeTypes()
                         ->isContentNegotationDisabled()
@@ -764,7 +764,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
      */
     public function contentNegotationCanBeDisabled()
     {
-        $this->assertTrue(
+        assertTrue(
                 $this->createRoute()
                         ->disableContentNegotiation()
                         ->supportedMimeTypes()
@@ -784,7 +784,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 'stubbles\webapp\routing\OtherAnnotatedProcessor',
                 'GET'
         );
-        $this->assertTrue(
+        assertTrue(
                 $route->supportedMimeTypes()->isContentNegotationDisabled()
         );
     }
@@ -801,7 +801,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 'stubbles\webapp\routing\AnnotatedProcessor',
                 'GET'
         );
-        $this->assertEquals(
+        assertEquals(
                 ['text/plain', 'application/bar', 'application/baz'],
                 $route->supportedMimeTypes()->asArray()
         );
@@ -831,7 +831,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 'stubbles\webapp\routing\AnnotatedProcessor',
                 'GET'
         );
-        $this->assertEquals(
+        assertEquals(
                 $expectedMimeTypeClass,
                 $route->supportedMimeTypes()->classFor($mimeType)
         );
@@ -849,7 +849,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 'stubbles\webapp\routing\AnnotatedProcessor',
                 'GET'
         );
-        $this->assertEquals(
+        assertEquals(
                 'example\OtherBar',
                 $route->supportsMimeType('application/bar', 'example\OtherBar')
                       ->supportedMimeTypes()

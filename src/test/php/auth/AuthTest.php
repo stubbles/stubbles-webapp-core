@@ -57,7 +57,7 @@ class AuthTest extends \PHPUnit_Framework_TestCase
         Auth::with($this->mockAuthenticationProviderClass)
             ->configure($this->binder);
         $injector = $this->binder->getInjector();
-        $this->assertInstanceOf(
+        assertInstanceOf(
                 $this->mockAuthenticationProviderClass,
                 $injector->getInstance('stubbles\webapp\auth\AuthenticationProvider')
         );
@@ -71,7 +71,7 @@ class AuthTest extends \PHPUnit_Framework_TestCase
         Auth::with($this->mockAuthenticationProviderClass)
             ->configure($this->binder);
         $injector = $this->binder->getInjector();
-        $this->assertFalse($injector->hasBinding('stubbles\webapp\auth\AuthorizationProvider'));
+        assertFalse($injector->hasBinding('stubbles\webapp\auth\AuthorizationProvider'));
     }
 
     /**
@@ -82,7 +82,7 @@ class AuthTest extends \PHPUnit_Framework_TestCase
         Auth::with($this->mockAuthenticationProviderClass, $this->mockAuthorizationProviderClass)
             ->configure($this->binder);
         $injector = $this->binder->getInjector();
-        $this->assertInstanceOf(
+        assertInstanceOf(
                 $this->mockAuthorizationProviderClass,
                 $injector->getInstance('stubbles\webapp\auth\AuthorizationProvider')
         );
@@ -97,11 +97,11 @@ class AuthTest extends \PHPUnit_Framework_TestCase
             ->enableSessionCaching()
             ->configure($this->binder);
         $injector = $this->binder->getInjector();
-        $this->assertInstanceOf(
+        assertInstanceOf(
                 $this->mockAuthenticationProviderClass,
                 $injector->getInstance('stubbles\webapp\auth\AuthenticationProvider', 'original')
         );
-        $this->assertInstanceOf(
+        assertInstanceOf(
                 'stubbles\webapp\auth\session\CachingAuthenticationProvider',
                 $injector->getInstance('stubbles\webapp\auth\AuthenticationProvider')
         );
@@ -116,11 +116,11 @@ class AuthTest extends \PHPUnit_Framework_TestCase
             ->enableSessionCaching()
             ->configure($this->binder);
         $injector = $this->binder->getInjector();
-        $this->assertInstanceOf(
+        assertInstanceOf(
                 $this->mockAuthorizationProviderClass,
                 $injector->getInstance('stubbles\webapp\auth\AuthorizationProvider', 'original')
         );
-        $this->assertInstanceOf(
+        assertInstanceOf(
                 'stubbles\webapp\auth\session\CachingAuthorizationProvider',
                 $injector->getInstance('stubbles\webapp\auth\AuthorizationProvider')
         );
@@ -135,7 +135,7 @@ class AuthTest extends \PHPUnit_Framework_TestCase
         Auth::usingTokens($mockTokenStoreClass, $this->mockAuthenticationProviderClass)
             ->configure($this->binder);
         $injector = $this->binder->getInjector();
-        $this->assertInstanceOf(
+        assertInstanceOf(
                 $mockTokenStoreClass,
                 $injector->getInstance('stubbles\webapp\auth\token\TokenStore')
         );
@@ -150,11 +150,11 @@ class AuthTest extends \PHPUnit_Framework_TestCase
         Auth::usingTokens($mockTokenStoreClass, $this->mockAuthenticationProviderClass)
             ->configure($this->binder);
         $injector = $this->binder->getInjector();
-        $this->assertInstanceOf(
+        assertInstanceOf(
                 'stubbles\webapp\auth\token\TokenAuthenticator',
                 $injector->getInstance('stubbles\webapp\auth\AuthenticationProvider')
         );
-        $this->assertInstanceOf(
+        assertInstanceOf(
                 $this->mockAuthenticationProviderClass,
                 $injector->getInstance(
                         'stubbles\webapp\auth\AuthenticationProvider',
@@ -173,15 +173,15 @@ class AuthTest extends \PHPUnit_Framework_TestCase
             ->enableSessionCaching()
             ->configure($this->binder);
         $injector = $this->binder->getInjector();
-        $this->assertInstanceOf(
+        assertInstanceOf(
                 'stubbles\webapp\auth\session\CachingAuthenticationProvider',
                 $injector->getInstance('stubbles\webapp\auth\AuthenticationProvider')
         );
-        $this->assertInstanceOf(
+        assertInstanceOf(
                 'stubbles\webapp\auth\token\TokenAuthenticator',
                 $injector->getInstance('stubbles\webapp\auth\AuthenticationProvider', 'original')
         );
-        $this->assertInstanceOf(
+        assertInstanceOf(
                 $this->mockAuthenticationProviderClass,
                 $injector->getInstance(
                         'stubbles\webapp\auth\AuthenticationProvider',

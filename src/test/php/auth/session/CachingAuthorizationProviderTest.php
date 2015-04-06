@@ -54,7 +54,7 @@ class CachingAuthorizationProviderTest extends \PHPUnit_Framework_TestCase
      */
     public function annotationsPresentOnConstructor()
     {
-        $this->assertTrue(
+        assertTrue(
                 reflect\annotationsOfConstructor($this->cachingAuthorizationProvider)
                         ->contain('Inject')
         );
@@ -63,8 +63,8 @@ class CachingAuthorizationProviderTest extends \PHPUnit_Framework_TestCase
                 'authorizationProvider',
                 $this->cachingAuthorizationProvider
         );
-        $this->assertTrue($annotations->contain('Named'));
-        $this->assertEquals(
+        assertTrue($annotations->contain('Named'));
+        assertEquals(
                 'original',
                 $annotations->firstNamed('Named')->getName()
         );
@@ -76,15 +76,10 @@ class CachingAuthorizationProviderTest extends \PHPUnit_Framework_TestCase
     public function usesSessionValueIfRolesStoredInSession()
     {
         $roles = new Roles(['admin']);
-        $this->mockSession->expects($this->once())
-                          ->method('hasValue')
-                          ->will($this->returnValue(true));
-        $this->mockSession->expects($this->once())
-                          ->method('value')
-                          ->will($this->returnValue($roles));
-        $this->mockAuthorizationProvider->expects($this->never())
-                                        ->method('roles');
-        $this->assertSame(
+        $this->mockSession->method('hasValue')->will(returnValue(true));
+        $this->mockSession->method('value')->will(returnValue($roles));
+        $this->mockAuthorizationProvider->expects(never())->method('roles');
+        assertSame(
                 $roles,
                 $this->cachingAuthorizationProvider->roles(
                         $this->getMock('stubbles\webapp\auth\User')
@@ -98,16 +93,13 @@ class CachingAuthorizationProviderTest extends \PHPUnit_Framework_TestCase
     public function storeReturnValueInSessionWhenOriginalAuthenticationProviderReturnsRoles()
     {
         $roles = new Roles(['admin']);
-        $this->mockSession->expects($this->once())
-                          ->method('hasValue')
-                          ->will($this->returnValue(false));
-        $this->mockAuthorizationProvider->expects($this->once())
-                                         ->method('roles')
-                                         ->will($this->returnValue($roles));
-        $this->mockSession->expects($this->once())
-                          ->method('putValue')
-                          ->with($this->equalTo(Roles::SESSION_KEY), $this->equalTo($roles));
-        $this->assertSame(
+        $this->mockSession->method('hasValue')->will(returnValue(false));
+        $this->mockAuthorizationProvider->method('roles')
+                ->will(returnValue($roles));
+        $this->mockSession->expects(once())
+                ->method('putValue')
+                ->with(equalTo(Roles::SESSION_KEY), equalTo($roles));
+        assertSame(
                 $roles,
                 $this->cachingAuthorizationProvider->roles(
                         $this->getMock('stubbles\webapp\auth\User')

@@ -21,7 +21,7 @@ class TokenTest extends \PHPUnit_Framework_TestCase
      */
     public function canCreateTokenFromUser()
     {
-        $this->assertInstanceOf(
+        assertInstanceOf(
                 'stubbles\webapp\auth\Token',
                 Token::create($this->getMock('stubbles\webapp\auth\User'), 'some caramel salt')
         );
@@ -45,7 +45,7 @@ class TokenTest extends \PHPUnit_Framework_TestCase
     public function tokenCanBeCastedToString($tokenValue)
     {
         $token = new Token($tokenValue);
-        $this->assertEquals($tokenValue, (string) $token);
+        assertEquals($tokenValue, (string) $token);
     }
 
     /**
@@ -64,7 +64,7 @@ class TokenTest extends \PHPUnit_Framework_TestCase
     public function tokenIsEmptyWhenValueIsEmpty($emptyValue)
     {
         $token = new Token($emptyValue);
-        $this->assertTrue($token->isEmpty());
+        assertTrue($token->isEmpty());
     }
 
     /**
@@ -73,6 +73,6 @@ class TokenTest extends \PHPUnit_Framework_TestCase
     public function tokenIsNotEmptyWhenValueNotEmpty()
     {
         $token = new Token('someTokenValue');
-        $this->assertFalse($token->isEmpty());
+        assertFalse($token->isEmpty());
     }
 }

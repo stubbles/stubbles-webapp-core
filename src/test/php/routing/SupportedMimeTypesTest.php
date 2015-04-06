@@ -22,7 +22,7 @@ class SupportedMimeTypesTest extends \PHPUnit_Framework_TestCase
      */
     public function contentNegotiationIsDisabledWhenFactoryMethodUsed()
     {
-        $this->assertTrue(
+        assertTrue(
                 SupportedMimeTypes::createWithDisabledContentNegotation()
                         ->isContentNegotationDisabled()
         );
@@ -33,7 +33,7 @@ class SupportedMimeTypesTest extends \PHPUnit_Framework_TestCase
      */
     public function matchForDisabledContentNegotationIsAlwaysTextHtml()
     {
-        $this->assertEquals(
+        assertEquals(
                 'text/html',
                 SupportedMimeTypes::createWithDisabledContentNegotation()
                         ->findMatch(new AcceptHeader())
@@ -45,7 +45,7 @@ class SupportedMimeTypesTest extends \PHPUnit_Framework_TestCase
      */
     public function listOfSupportedMimeTypedWithDisabledContentNegotationIsEmpty()
     {
-        $this->assertEquals(
+        assertEquals(
                 [],
                 SupportedMimeTypes::createWithDisabledContentNegotation()
                         ->asArray()
@@ -68,7 +68,7 @@ class SupportedMimeTypesTest extends \PHPUnit_Framework_TestCase
      */
     public function contentNegotationIsEnabledWhenCreatedWithListOfMimeTypes()
     {
-        $this->assertFalse($this->createInstance()->isContentNegotationDisabled());
+        assertFalse($this->createInstance()->isContentNegotationDisabled());
     }
 
     /**
@@ -77,7 +77,7 @@ class SupportedMimeTypesTest extends \PHPUnit_Framework_TestCase
     public function returnsFirstMimeTypeFromGivenListWhenAcceptHeaderIsEmpty()
     {
 
-        $this->assertEquals(
+        assertEquals(
                 'application/xml',
                 $this->createInstance()->findMatch(new AcceptHeader())
         );
@@ -88,7 +88,7 @@ class SupportedMimeTypesTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsMimeTypeWithGreatesPriorityAccordingToAcceptHeader()
     {
-        $this->assertEquals(
+        assertEquals(
                 'application/json',
                 $this->createInstance()->findMatch(
                         AcceptHeader::parse('text/*;q=0.3, text/html;q=0.7, application/json;q=0.4, */*;q=0.5')
@@ -101,7 +101,7 @@ class SupportedMimeTypesTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsNoMimeTypeWhenNoMatchWithAcceptHeaderFound()
     {
-        $this->assertNull(
+        assertNull(
                 $this->createInstance()->findMatch(
                         AcceptHeader::parse('text/*;q=0.3, text/html;q=0.7')
                 )
@@ -113,7 +113,7 @@ class SupportedMimeTypesTest extends \PHPUnit_Framework_TestCase
      */
     public function listOfSupportedMimeTypedContainsListFromCreation()
     {
-        $this->assertEquals(
+        assertEquals(
                 ['application/xml', 'application/json', 'application/foo'],
                 $this->createInstance()->asArray()
         );
@@ -141,7 +141,7 @@ class SupportedMimeTypesTest extends \PHPUnit_Framework_TestCase
      */
     public function hasClassForAllPredefinedMimeTypes($mimeType)
     {
-        $this->assertTrue($this->createInstance()->provideClass($mimeType));
+        assertTrue($this->createInstance()->provideClass($mimeType));
     }
 
     /**
@@ -150,7 +150,7 @@ class SupportedMimeTypesTest extends \PHPUnit_Framework_TestCase
      */
     public function hasNoClassWhenNotDefinedForMimeType()
     {
-        $this->assertFalse($this->createInstance()->provideClass('application/foo'));
+        assertFalse($this->createInstance()->provideClass('application/foo'));
     }
 
     /**
@@ -159,7 +159,7 @@ class SupportedMimeTypesTest extends \PHPUnit_Framework_TestCase
      */
     public function hasNoClassForUnknownMimeType()
     {
-        $this->assertFalse($this->createInstance()->provideClass('application/bar'));
+        assertFalse($this->createInstance()->provideClass('application/bar'));
     }
 
     /**
@@ -168,7 +168,7 @@ class SupportedMimeTypesTest extends \PHPUnit_Framework_TestCase
      */
     public function classIsNullWhenNotDefinedForMimeType()
     {
-        $this->assertNull($this->createInstance()->classFor('application/foo'));
+        assertNull($this->createInstance()->classFor('application/foo'));
     }
 
     /**
@@ -177,7 +177,7 @@ class SupportedMimeTypesTest extends \PHPUnit_Framework_TestCase
      */
     public function classIsNullForUnknownMimeType()
     {
-        $this->assertNull($this->createInstance()->classFor('application/bar'));
+        assertNull($this->createInstance()->classFor('application/bar'));
     }
 
     /**
@@ -186,7 +186,7 @@ class SupportedMimeTypesTest extends \PHPUnit_Framework_TestCase
      */
     public function hasClassWhenDefinedForMimeType()
     {
-        $this->assertTrue($this->createInstance()->provideClass('application/xml'));
+        assertTrue($this->createInstance()->provideClass('application/xml'));
     }
 
     /**
@@ -195,7 +195,7 @@ class SupportedMimeTypesTest extends \PHPUnit_Framework_TestCase
      */
     public function defaultClassCanBeOverriden()
     {
-        $this->assertEquals(
+        assertEquals(
                 'example\SpecialMimeType',
                 $this->createInstance()->classFor('application/xml')
         );

@@ -14,7 +14,6 @@ use stubbles\streams\memory\MemoryOutputStream;
 use stubbles\webapp\Request;
 use stubbles\webapp\Response;
 use stubbles\webapp\auth\AuthHandler;
-use stubbles\webapp\response\WebResponse;
 use stubbles\webapp\response\mimetypes\Json;
 /**
  * Helper class for the test.
@@ -134,7 +133,7 @@ class AbstractResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsHttpsUriFromCalledUri()
     {
-        $this->assertEquals(
+        assertEquals(
                 'https://example.com/hello/world',
                 (string) $this->createRoute()->httpsUri()
         );
@@ -146,7 +145,7 @@ class AbstractResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function negotiatesPassThroughIfContentNegotiationDisabled()
     {
-        $this->assertTrue(
+        assertTrue(
                 $this->createRoute(
                         SupportedMimeTypes::createWithDisabledContentNegotation()
                 )->negotiateMimeType(
@@ -154,7 +153,7 @@ class AbstractResourceTest extends \PHPUnit_Framework_TestCase
                         $this->response
                 )
         );
-        $this->assertInstanceOf(
+        assertInstanceOf(
                 'stubbles\webapp\response\mimetypes\PassThrough',
                 $this->response->mimeType()
         );
@@ -171,15 +170,15 @@ class AbstractResourceTest extends \PHPUnit_Framework_TestCase
                 ->method('readHeader')
                 ->with($this->equalTo('HTTP_ACCEPT'))
                 ->will($this->returnValue(ValueReader::forValue('text/html')));
-        $this->assertFalse(
+        assertFalse(
                 $this->createRoute(
                         new SupportedMimeTypes(
                                 ['application/json', 'application/xml']
                         )
                 )->negotiateMimeType($mockRequest, $this->response)
         );
-        $this->assertEquals(406, $this->response->statusCode());
-        $this->assertTrue(
+        assertEquals(406, $this->response->statusCode());
+        assertTrue(
                 $this->response->containsHeader(
                         'X-Acceptable',
                         'application/json, application/xml'
@@ -198,15 +197,15 @@ class AbstractResourceTest extends \PHPUnit_Framework_TestCase
                 ->method('readHeader')
                 ->with($this->equalTo('HTTP_ACCEPT'))
                 ->will($this->returnValue(ValueReader::forValue('application/foo')));
-        $this->assertFalse(
+        assertFalse(
                 $this->createRoute(
                         new SupportedMimeTypes(
                                 ['application/foo', 'application/xml']
                         )
                 )->negotiateMimeType($mockRequest, $this->response)
         );
-        $this->assertEquals(500, $this->response->statusCode());
-        $this->assertEquals(
+        assertEquals(500, $this->response->statusCode());
+        assertEquals(
                 'Internal Server Error: No mime type class defined for negotiated content type application/foo',
                 $this->response->send(new MemoryOutputStream())->buffer()
         );
@@ -227,14 +226,14 @@ class AbstractResourceTest extends \PHPUnit_Framework_TestCase
         $this->mockInjector->expects($this->once())
                            ->method('getInstance')
                            ->will($this->returnValue($mimeType));
-        $this->assertTrue(
+        assertTrue(
                 $this->createRoute(
                         new SupportedMimeTypes(
                                 ['application/json', 'application/xml']
                         )
                 )->negotiateMimeType($mockRequest, $this->response)
         );
-        $this->assertSame(
+        assertSame(
                 $mimeType,
                 $this->response->mimeType()
         );
@@ -246,7 +245,7 @@ class AbstractResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsGivenListOfSupportedMimeTypes()
     {
-        $this->assertEquals(
+        assertEquals(
                 [],
                 $this->createRoute()->supportedMimeTypes()
         );
@@ -261,7 +260,7 @@ class AbstractResourceTest extends \PHPUnit_Framework_TestCase
                 ->method('preProcess')
                 ->with($this->equalTo($this->mockRequest), $this->equalTo($this->response))
                 ->will($this->returnValue(true));
-        $this->assertTrue(
+        assertTrue(
                 $this->createRoute()
                         ->applyPreInterceptors(
                                 $this->mockRequest,
@@ -279,7 +278,7 @@ class AbstractResourceTest extends \PHPUnit_Framework_TestCase
                 ->method('postProcess')
                 ->with($this->equalTo($this->mockRequest), $this->equalTo($this->response))
                 ->will($this->returnValue(true));
-        $this->assertTrue(
+        assertTrue(
                 $this->createRoute()
                         ->applyPostInterceptors(
                                 $this->mockRequest,

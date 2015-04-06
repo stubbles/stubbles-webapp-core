@@ -37,7 +37,7 @@ class HeadersTest extends \PHPUnit_Framework_TestCase
      */
     public function doesNotContainHeaderWhenNotAdded()
     {
-        $this->assertFalse($this->headers->contain('X-Foo'));
+        assertFalse($this->headers->contain('X-Foo'));
     }
 
     /**
@@ -45,7 +45,7 @@ class HeadersTest extends \PHPUnit_Framework_TestCase
      */
     public function doesNotContainHeaderWhenNotAddedWithArrayAccess()
     {
-        $this->assertFalse(isset($this->headers['X-Foo']));
+        assertFalse(isset($this->headers['X-Foo']));
     }
 
     /**
@@ -53,7 +53,7 @@ class HeadersTest extends \PHPUnit_Framework_TestCase
      */
     public function containsHeaderWhenAdded()
     {
-        $this->assertTrue(
+        assertTrue(
                 $this->headers->add('X-Foo', 'bar')
                               ->contain('X-Foo')
         );
@@ -65,7 +65,7 @@ class HeadersTest extends \PHPUnit_Framework_TestCase
     public function containsHeaderWhenAddedWithArrayAccess()
     {
         $this->headers->add('X-Foo', 'bar');
-        $this->assertTrue(isset($this->headers['X-Foo']));
+        assertTrue(isset($this->headers['X-Foo']));
     }
 
     /**
@@ -74,7 +74,7 @@ class HeadersTest extends \PHPUnit_Framework_TestCase
     public function containsHeaderWhenAddedWithArrayAccess2()
     {
         $this->headers['X-Foo'] = 'bar';
-        $this->assertTrue(isset($this->headers['X-Foo']));
+        assertTrue(isset($this->headers['X-Foo']));
     }
 
     /**
@@ -83,8 +83,8 @@ class HeadersTest extends \PHPUnit_Framework_TestCase
     public function locationHeaderAcceptsUriAsString()
     {
         $this->headers->location('http://example.com/');
-        $this->assertTrue(isset($this->headers['Location']));
-        $this->assertEquals('http://example.com/', $this->headers['Location']);
+        assertTrue(isset($this->headers['Location']));
+        assertEquals('http://example.com/', $this->headers['Location']);
     }
 
     /**
@@ -93,8 +93,8 @@ class HeadersTest extends \PHPUnit_Framework_TestCase
     public function locationHeaderAcceptsUriAsHttpUri()
     {
         $this->headers->location(HttpUri::fromString('http://example.com/'));
-        $this->assertTrue(isset($this->headers['Location']));
-        $this->assertEquals('http://example.com/', $this->headers['Location']);
+        assertTrue(isset($this->headers['Location']));
+        assertEquals('http://example.com/', $this->headers['Location']);
     }
 
     /**
@@ -103,8 +103,8 @@ class HeadersTest extends \PHPUnit_Framework_TestCase
     public function allowAddsListOfAllowedMethods()
     {
         $this->headers->allow(['POST', 'PUT']);
-        $this->assertTrue(isset($this->headers['Allow']));
-        $this->assertEquals('POST, PUT', $this->headers['Allow']);
+        assertTrue(isset($this->headers['Allow']));
+        assertEquals('POST, PUT', $this->headers['Allow']);
     }
 
     /**
@@ -112,7 +112,7 @@ class HeadersTest extends \PHPUnit_Framework_TestCase
      */
     public function acceptableDoesNotAddListOfSupportedMimeTypesWhenListEmpty()
     {
-        $this->assertFalse(
+        assertFalse(
                 $this->headers->acceptable([])
                               ->contain('X-Acceptable')
         );
@@ -124,8 +124,8 @@ class HeadersTest extends \PHPUnit_Framework_TestCase
     public function acceptableAddsListOfSupportedMimeTypesWhenListNotEmpty()
     {
         $this->headers->acceptable(['text/csv', 'application/json']);
-        $this->assertTrue(isset($this->headers['X-Acceptable']));
-        $this->assertEquals('text/csv, application/json', $this->headers['X-Acceptable']);
+        assertTrue(isset($this->headers['X-Acceptable']));
+        assertEquals('text/csv, application/json', $this->headers['X-Acceptable']);
     }
 
     /**
@@ -134,8 +134,8 @@ class HeadersTest extends \PHPUnit_Framework_TestCase
     public function forceDownloadAddesContentDispositionHeaderWithGivenFilename()
     {
         $this->headers->forceDownload('example.csv');
-        $this->assertTrue(isset($this->headers['Content-Disposition']));
-        $this->assertEquals('attachment; filename=example.csv', $this->headers['Content-Disposition']);
+        assertTrue(isset($this->headers['Content-Disposition']));
+        assertEquals('attachment; filename=example.csv', $this->headers['Content-Disposition']);
     }
 
     /**
@@ -145,8 +145,8 @@ class HeadersTest extends \PHPUnit_Framework_TestCase
     {
         $this->headers->add('X-Foo', 'bar');
         foreach ($this->headers as $name => $value) {
-            $this->assertEquals('X-Foo', $name);
-            $this->assertEquals('bar', $value);
+            assertEquals('X-Foo', $name);
+            assertEquals('bar', $value);
         }
     }
 
@@ -168,7 +168,7 @@ class HeadersTest extends \PHPUnit_Framework_TestCase
     public function cacheControlAddsCacheControlHeaderWithDefaultValue()
     {
         $this->headers->cacheControl();
-        $this->assertEquals('private', $this->headers[CacheControl::HEADER_NAME]);
+        assertEquals('private', $this->headers[CacheControl::HEADER_NAME]);
     }
 
     /**
@@ -178,7 +178,7 @@ class HeadersTest extends \PHPUnit_Framework_TestCase
      */
     public function cacheControlReturnsCacheControlInstance()
     {
-        $this->assertInstanceOf(
+        assertInstanceOf(
                 'stubbles\webapp\response\CacheControl',
                 $this->headers->cacheControl()
         );
@@ -192,8 +192,8 @@ class HeadersTest extends \PHPUnit_Framework_TestCase
     public function requestIdAddsRequestIdHeader()
     {
         $this->headers->requestId('example-request-id-foo');
-        $this->assertTrue(isset($this->headers['X-Request-ID']));
-        $this->assertEquals('example-request-id-foo', $this->headers['X-Request-ID']);
+        assertTrue(isset($this->headers['X-Request-ID']));
+        assertEquals('example-request-id-foo', $this->headers['X-Request-ID']);
     }
 
     /**
@@ -203,7 +203,7 @@ class HeadersTest extends \PHPUnit_Framework_TestCase
     public function ageAddsAgeHeader()
     {
         $this->headers->age(12);
-        $this->assertTrue(isset($this->headers['Age']));
-        $this->assertEquals(12, $this->headers['Age']);
+        assertTrue(isset($this->headers['Age']));
+        assertEquals(12, $this->headers['Age']);
     }
 }

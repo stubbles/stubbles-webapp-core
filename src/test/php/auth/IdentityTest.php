@@ -40,7 +40,7 @@ class IdentityTest extends \PHPUnit_Framework_TestCase
     public function isAssociatedWithGivenUser()
     {
         $mockUser = $this->mockUser();
-        $this->assertSame(
+        assertSame(
                 $mockUser,
                 $this->createIdentity($mockUser)->user()
         );
@@ -51,7 +51,7 @@ class IdentityTest extends \PHPUnit_Framework_TestCase
      */
     public function identityHasRoleWhenGivenRolesContainRole()
     {
-        $this->assertTrue($this->createIdentity()->hasRole('admin'));
+        assertTrue($this->createIdentity()->hasRole('admin'));
     }
 
     /**
@@ -59,7 +59,7 @@ class IdentityTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsGivenRoles()
     {
-        $this->assertEquals(
+        assertEquals(
                 new Roles(['admin']),
                 $this->createIdentity()->roles()
         );

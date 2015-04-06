@@ -60,7 +60,7 @@ class NotFoundTest extends \PHPUnit_Framework_TestCase
      */
     public function doesNotRequireSwitchToHttps()
     {
-        $this->assertFalse($this->notFound->requiresHttps());
+        assertFalse($this->notFound->requiresHttps());
     }
 
     /**
@@ -72,7 +72,7 @@ class NotFoundTest extends \PHPUnit_Framework_TestCase
         $this->mockResponse->expects($this->once())
                 ->method('notFound')
                 ->will($this->returnValue($error));
-        $this->assertSame(
+        assertSame(
                 $error,
                 $this->notFound->resolve(
                         $this->mockRequest,

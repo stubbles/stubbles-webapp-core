@@ -57,7 +57,7 @@ class HtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
      */
     public function functionReturnsClassName()
     {
-        $this->assertEquals(
+        assertEquals(
                 get_class($this->htmlFilePassThrough),
                 \stubbles\webapp\htmlPassThrough()
         );
@@ -69,9 +69,9 @@ class HtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
     public function annotationsPresentOnConstructor()
     {
         $annotations = reflect\annotationsOfConstructor($this->htmlFilePassThrough);
-        $this->assertTrue($annotations->contain('Inject'));
-        $this->assertTrue($annotations->contain('Named'));
-        $this->assertEquals(
+        assertTrue($annotations->contain('Inject'));
+        assertTrue($annotations->contain('Named'));
+        assertEquals(
                 'stubbles.pages.path',
                 $annotations->firstNamed('Named')->getName()
         );
@@ -86,7 +86,7 @@ class HtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
         $this->mockResponse->expects($this->once())
                            ->method('notFound')
                            ->will($this->returnValue($error));
-        $this->assertSame(
+        assertSame(
                 $error,
                 $this->htmlFilePassThrough->resolve(
                         $this->mockRequest,
@@ -101,7 +101,7 @@ class HtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
      */
     public function selectsAvailableRoute()
     {
-        $this->assertEquals(
+        assertEquals(
                 'this is foo.html',
                 $this->htmlFilePassThrough->resolve(
                         $this->mockRequest,
@@ -116,7 +116,7 @@ class HtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
      */
     public function fallsBackToIndexFileIfRequestForSlashOnly()
     {
-        $this->assertEquals(
+        assertEquals(
                 'this is index.html',
                 $this->htmlFilePassThrough->resolve(
                         $this->mockRequest,

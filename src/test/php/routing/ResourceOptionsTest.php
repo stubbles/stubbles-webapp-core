@@ -60,7 +60,7 @@ class ResourceOptionsTest extends \PHPUnit_Framework_TestCase
      */
     public function doesNotRequireSwitchToHttps()
     {
-        $this->assertFalse($this->resourceOptions->requiresHttps());
+        assertFalse($this->resourceOptions->requiresHttps());
     }
 
     /**

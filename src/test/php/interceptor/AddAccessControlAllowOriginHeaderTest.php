@@ -48,9 +48,9 @@ class AddAccessControlAllowOriginHeaderTest extends \PHPUnit_Framework_TestCase
         $annotations = reflect\annotationsOfConstructor(
                 'stubbles\webapp\interceptor\AddAccessControlAllowOriginHeader'
         );
-        $this->assertTrue($annotations->contain('Inject'));
-        $this->assertTrue($annotations->contain('Property'));
-        $this->assertEquals(
+        assertTrue($annotations->contain('Inject'));
+        assertTrue($annotations->contain('Property'));
+        assertEquals(
                 'stubbles.webapp.origin.hosts',
                 $annotations->firstNamed('Property')->getValue()
         );

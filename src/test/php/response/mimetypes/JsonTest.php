@@ -36,7 +36,7 @@ class JsonTest extends \PHPUnit_Framework_TestCase
      */
     public function defaultMimeType()
     {
-        $this->assertEquals(
+        assertEquals(
                 'application/json',
                 (string) $this->json
         );
@@ -47,7 +47,7 @@ class JsonTest extends \PHPUnit_Framework_TestCase
      */
     public function mimeTypeCanBeSpecialised()
     {
-        $this->assertEquals(
+        assertEquals(
                 'text/json',
                 (string) $this->json->specialise('text/json')
         );
@@ -58,7 +58,7 @@ class JsonTest extends \PHPUnit_Framework_TestCase
      */
     public function serializesResourceToJson()
     {
-        $this->assertEquals(
+        assertEquals(
                 json_encode(['foo', 'bar' => 313]),
                 $this->json->serialize(
                         ['foo', 'bar' => 313],

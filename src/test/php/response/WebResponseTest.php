@@ -95,7 +95,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function statusCodeIs200ByDefault()
     {
-        $this->assertEquals(200, $this->response->statusCode());
+        assertEquals(200, $this->response->statusCode());
     }
 
     /**
@@ -104,7 +104,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function statusCodeCanBeChanged()
     {
-        $this->assertEquals(
+        assertEquals(
                 404,
                 $this->response->setStatusCode(404)->statusCode()
         );
@@ -142,7 +142,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
         $this->response->addHeader('name', 'value1')
                        ->addHeader('name', 'value2')
                        ->send();
-        $this->assertEquals('value2', $this->response->headers()['name']);
+        assertEquals('value2', $this->response->headers()['name']);
     }
 
     /**
@@ -151,7 +151,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function doesNotContainsNonAddedHeader()
     {
-        $this->assertFalse($this->response->containsHeader('X-Foo'));
+        assertFalse($this->response->containsHeader('X-Foo'));
     }
 
     /**
@@ -160,7 +160,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function doesNotContainsAddedHeaderWithDifferentValue()
     {
-        $this->assertFalse(
+        assertFalse(
                 $this->response->addHeader('X-Foo', 'bar')
                                ->containsHeader('X-Foo', 'baz')
         );
@@ -172,7 +172,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function containsAddedHeader()
     {
-        $this->assertTrue(
+        assertTrue(
                 $this->response->addHeader('X-Foo', 'bar')
                                ->containsHeader('X-Foo')
         );
@@ -184,7 +184,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function containsAddedHeaderWithValue()
     {
-        $this->assertTrue(
+        assertTrue(
                 $this->response->addHeader('X-Foo', 'bar')
                                ->containsHeader('X-Foo', 'bar')
         );
@@ -241,7 +241,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function doesNotContainsNonAddedCookie()
     {
-        $this->assertFalse($this->response->containsCookie('foo'));
+        assertFalse($this->response->containsCookie('foo'));
     }
 
     /**
@@ -250,7 +250,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function doesNotContainsAddedCookieWithDifferentValue()
     {
-        $this->assertFalse(
+        assertFalse(
                 $this->response->addCookie($this->createMockCookie('bar'))
                                ->containsCookie('foo', 'baz')
         );
@@ -262,7 +262,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function containsAddedCookie()
     {
-        $this->assertTrue(
+        assertTrue(
                 $this->response->addCookie($this->createMockCookie('bar'))
                                ->containsCookie('foo')
         );
@@ -274,7 +274,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function containsAddedCookieWithValue()
     {
-        $this->assertTrue(
+        assertTrue(
                 $this->response->addCookie($this->createMockCookie('bar'))
                                ->containsCookie('foo', 'bar')
         );
@@ -295,7 +295,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function doesNotReturnOutputStreamWhenNonePassedAndNoResourceGiven()
     {
-        $this->assertNull($this->response->send());
+        assertNull($this->response->send());
     }
 
     /**
@@ -303,7 +303,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function bodyIsSend()
     {
-        $this->assertEquals(
+        assertEquals(
                 'foo',
                 $this->response->write('foo')
                         ->send($this->memoryOutputStream)
@@ -330,7 +330,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function isNotFixedByDefault()
     {
-        $this->assertFalse($this->response->isFixed());
+        assertFalse($this->response->isFixed());
     }
 
     /**
@@ -385,7 +385,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function forbiddenReturnsErrorInstance()
     {
-        $this->assertEquals(Error::forbidden(), $this->response->forbidden());
+        assertEquals(Error::forbidden(), $this->response->forbidden());
     }
 
     /**
@@ -396,7 +396,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     public function forbiddenFixatesResponse()
     {
         $this->response->forbidden();
-        $this->assertTrue($this->response->isFixed());
+        assertTrue($this->response->isFixed());
     }
 
     /**
@@ -418,7 +418,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function notFoundReturnsErrorInstance()
     {
-        $this->assertEquals(Error::notFound(), $this->response->notFound());
+        assertEquals(Error::notFound(), $this->response->notFound());
     }
 
     /**
@@ -429,7 +429,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     public function notFoundFixatesResponse()
     {
         $this->response->notFound();
-        $this->assertTrue($this->response->isFixed());
+        assertTrue($this->response->isFixed());
     }
 
     /**
@@ -454,7 +454,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function methodNotAllowedReturnsErrorInstance()
     {
-        $this->assertEquals(
+        assertEquals(
                 Error::methodNotAllowed('POST', ['GET', 'HEAD']),
                 $this->response->methodNotAllowed('POST', ['GET', 'HEAD'])
         );
@@ -468,7 +468,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     public function methodNotAllowedFixatesResponse()
     {
         $this->response->methodNotAllowed('POST', ['GET', 'HEAD']);
-        $this->assertTrue($this->response->isFixed());
+        assertTrue($this->response->isFixed());
     }
 
     /**
@@ -492,7 +492,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     public function notAcceptableFixatesResponse()
     {
         $this->response->notAcceptable();
-        $this->assertTrue($this->response->isFixed());
+        assertTrue($this->response->isFixed());
     }
 
     /**
@@ -530,7 +530,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function internalServerErrorReturnsErrorInstance()
     {
-        $this->assertEquals(
+        assertEquals(
                 Error::internalServerError('ups!'),
                 $this->response->internalServerError('ups!')
         );
@@ -544,7 +544,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     public function internalServerErrorFixatesResponse()
     {
         $this->response->internalServerError('ups');
-        $this->assertTrue($this->response->isFixed());
+        assertTrue($this->response->isFixed());
     }
 
     /**
@@ -557,7 +557,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
                        ->method('header')
                        ->with($this->equalTo('HTTP/1.1 505 HTTP Version Not Supported'));
         $this->response->httpVersionNotSupported();
-        $this->assertEquals(
+        assertEquals(
                 'Error: Unsupported HTTP protocol version, expected HTTP/1.0 or HTTP/1.1',
                 $this->response->send($this->memoryOutputStream)->buffer()
         );
@@ -571,7 +571,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     public function httpVersionNotSupportedFixatesResponse()
     {
         $this->response->httpVersionNotSupported();
-        $this->assertTrue($this->response->isFixed());
+        assertTrue($this->response->isFixed());
     }
 
     /**
@@ -594,11 +594,11 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     public function createInstanceWithHttpMajorVersionOtherThanOneFixatesResponseToHttpVersionNotSupported(HttpVersion $unsupportedHttpVersion)
     {
         $response = $this->createResponse($unsupportedHttpVersion);
-        $this->assertTrue($response->isFixed());
+        assertTrue($response->isFixed());
         $response->expects($this->at(0))
                  ->method('header')
                  ->with($this->equalTo('HTTP/1.1 505 HTTP Version Not Supported'));
-        $this->assertEquals(
+        assertEquals(
                 'Error: Unsupported HTTP protocol version, expected HTTP/1.0 or HTTP/1.1',
                 $response->send($this->memoryOutputStream)->buffer()
         );

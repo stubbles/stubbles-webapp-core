@@ -37,7 +37,7 @@ class ArraySessionStorageTest extends \PHPUnit_Framework_TestCase
      */
     public function hasFingerprintByDefault()
     {
-        $this->assertTrue(
+        assertTrue(
                 $this->arraySessionStorage->hasValue(Session::FINGERPRINT)
         );
     }
@@ -47,7 +47,7 @@ class ArraySessionStorageTest extends \PHPUnit_Framework_TestCase
      */
     public function fingerprintIsEmptyByDefault()
     {
-        $this->assertEquals(
+        assertEquals(
                 '',
                 $this->arraySessionStorage->value(Session::FINGERPRINT)
         );
@@ -58,7 +58,7 @@ class ArraySessionStorageTest extends \PHPUnit_Framework_TestCase
      */
     public function isEmptyAfterClear()
     {
-        $this->assertEquals(
+        assertEquals(
                 [],
                 $this->arraySessionStorage->putValue('foo', 'bar')
                         ->clear()
@@ -71,7 +71,7 @@ class ArraySessionStorageTest extends \PHPUnit_Framework_TestCase
      */
     public function hasNoOtherValueByDefault()
     {
-        $this->assertFalse($this->arraySessionStorage->hasValue('foo'));
+        assertFalse($this->arraySessionStorage->hasValue('foo'));
     }
 
     /**
@@ -79,7 +79,7 @@ class ArraySessionStorageTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsNullForNonExistingValue()
     {
-        $this->assertNull($this->arraySessionStorage->value('foo'));
+        assertNull($this->arraySessionStorage->value('foo'));
     }
 
     /**
@@ -87,7 +87,7 @@ class ArraySessionStorageTest extends \PHPUnit_Framework_TestCase
      */
     public function doesNothingWenRemovingNonExistingValue()
     {
-        $this->assertSame(
+        assertSame(
                 $this->arraySessionStorage,
                 $this->arraySessionStorage->removeValue('foo')
         );
@@ -98,7 +98,7 @@ class ArraySessionStorageTest extends \PHPUnit_Framework_TestCase
      */
     public function hasValueWhichWasSet()
     {
-        $this->assertTrue(
+        assertTrue(
                 $this->arraySessionStorage->putValue('foo', 'bar')
                         ->hasValue('foo')
         );
@@ -109,7 +109,7 @@ class ArraySessionStorageTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsValueWhichWasSet()
     {
-        $this->assertEquals(
+        assertEquals(
                 'bar',
                 $this->arraySessionStorage->putValue('foo', 'bar')
                         ->value('foo')
@@ -121,7 +121,7 @@ class ArraySessionStorageTest extends \PHPUnit_Framework_TestCase
      */
     public function removesExistingValue()
     {
-        $this->assertFalse(
+        assertFalse(
                 $this->arraySessionStorage->putValue('foo', 'bar')
                         ->removeValue('foo')
                         ->hasValue('foo')
@@ -133,7 +133,7 @@ class ArraySessionStorageTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsDefaultValueKeysAfterCreation()
     {
-        $this->assertEquals(
+        assertEquals(
                 [Session::FINGERPRINT],
                 $this->arraySessionStorage->valueKeys()
         );
@@ -144,7 +144,7 @@ class ArraySessionStorageTest extends \PHPUnit_Framework_TestCase
      */
     public function valueKeysIncludeKeysOfAddedValues()
     {
-        $this->assertEquals(
+        assertEquals(
                 [Session::FINGERPRINT, 'foo'],
                 $this->arraySessionStorage->putValue('foo', 'bar')
                         ->valueKeys()

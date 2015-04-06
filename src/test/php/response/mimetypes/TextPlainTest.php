@@ -36,7 +36,7 @@ class TextPlainTest extends \PHPUnit_Framework_TestCase
      */
     public function defaultMimeType()
     {
-        $this->assertEquals(
+        assertEquals(
                 'text/plain',
                 (string) $this->textPlain
         );
@@ -47,7 +47,7 @@ class TextPlainTest extends \PHPUnit_Framework_TestCase
      */
     public function mimeTypeCanBeSpecialised()
     {
-        $this->assertEquals(
+        assertEquals(
                 'text/foo',
                 (string) $this->textPlain->specialise('text/foo')
         );
@@ -77,7 +77,7 @@ class TextPlainTest extends \PHPUnit_Framework_TestCase
      */
     public function serializesResourceToText($resource, $expected)
     {
-        $this->assertEquals(
+        assertEquals(
                 $expected,
                 $this->textPlain->serialize(
                         $resource,

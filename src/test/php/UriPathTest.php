@@ -36,7 +36,7 @@ class UriPathTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsGivenConfiguredPath()
     {
-        $this->assertEquals('/hello/{name}', $this->uriPath->configured());
+        assertEquals('/hello/{name}', $this->uriPath->configured());
     }
 
     /**
@@ -45,7 +45,7 @@ class UriPathTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsGivenActualPath()
     {
-        $this->assertEquals('/hello/world/foo', $this->uriPath->actual());
+        assertEquals('/hello/world/foo', $this->uriPath->actual());
     }
 
     /**
@@ -54,7 +54,7 @@ class UriPathTest extends \PHPUnit_Framework_TestCase
      */
     public function castingToStringReturnsActualPath()
     {
-        $this->assertEquals('/hello/world/foo', (string) $this->uriPath);
+        assertEquals('/hello/world/foo', (string) $this->uriPath);
     }
 
     /**
@@ -77,8 +77,8 @@ class UriPathTest extends \PHPUnit_Framework_TestCase
     {
         $uriPath = new UriPath($configuredPath, $calledPath);
         foreach ($expectedArguments as $name => $value) {
-            $this->assertTrue($uriPath->hasArgument($name));
-            $this->assertEquals($value, $uriPath->readArgument($name)->unsecure());
+            assertTrue($uriPath->hasArgument($name));
+            assertEquals($value, $uriPath->readArgument($name)->unsecure());
         }
     }
 
@@ -87,7 +87,7 @@ class UriPathTest extends \PHPUnit_Framework_TestCase
      */
     public function doesNotHaveNonGivenArgument()
     {
-        $this->assertFalse($this->uriPath->hasArgument('id'));
+        assertFalse($this->uriPath->hasArgument('id'));
     }
 
     /**
@@ -95,7 +95,7 @@ class UriPathTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsNullForNonGivenArgument()
     {
-        $this->assertNull($this->uriPath->readArgument('id')->unsecure());
+        assertNull($this->uriPath->readArgument('id')->unsecure());
     }
 
     /**
@@ -122,7 +122,7 @@ class UriPathTest extends \PHPUnit_Framework_TestCase
     public function returnsRemainingPath($calledPath, $configuredPath, $expected)
     {
         $uriPath = new UriPath($configuredPath, $calledPath);
-        $this->assertEquals(
+        assertEquals(
                 $expected,
                 $uriPath->remaining()
         );
@@ -134,6 +134,6 @@ class UriPathTest extends \PHPUnit_Framework_TestCase
     public function returnsDefaultIfRemainingPathIsNull()
     {
         $this->uriPath = new UriPath('/hello/{name}', '/hello/world');
-        $this->assertEquals('index.html', $this->uriPath->remaining('index.html'));
+        assertEquals('index.html', $this->uriPath->remaining('index.html'));
     }
 }

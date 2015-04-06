@@ -43,7 +43,7 @@ class NullSessionTest extends \PHPUnit_Framework_TestCase
      */
     public function isAlwaysNew()
     {
-        $this->assertTrue($this->nullSession->isNew());
+        assertTrue($this->nullSession->isNew());
     }
 
     /**
@@ -54,7 +54,7 @@ class NullSessionTest extends \PHPUnit_Framework_TestCase
         $this->mockSessionId->expects($this->once())
                             ->method('__toString')
                             ->will($this->returnValue('303'));
-        $this->assertEquals('303', $this->nullSession->id());
+        assertEquals('303', $this->nullSession->id());
     }
 
     /**
@@ -64,7 +64,7 @@ class NullSessionTest extends \PHPUnit_Framework_TestCase
     {
         $this->mockSessionId->expects($this->once())
                             ->method('regenerate');
-        $this->assertEquals(
+        assertEquals(
                 $this->nullSession,
                 $this->nullSession->regenerateId()
         );
@@ -78,7 +78,7 @@ class NullSessionTest extends \PHPUnit_Framework_TestCase
         $this->mockSessionId->expects($this->once())
                             ->method('name')
                             ->will($this->returnValue('foo'));
-        $this->assertEquals('foo', $this->nullSession->name());
+        assertEquals('foo', $this->nullSession->name());
     }
 
     /**
@@ -86,7 +86,7 @@ class NullSessionTest extends \PHPUnit_Framework_TestCase
      */
     public function isAlwaysValid()
     {
-        $this->assertTrue($this->nullSession->isValid());
+        assertTrue($this->nullSession->isValid());
     }
 
     /**
@@ -96,7 +96,7 @@ class NullSessionTest extends \PHPUnit_Framework_TestCase
     {
         $this->mockSessionId->expects($this->once())
                             ->method('invalidate');
-        $this->assertEquals(
+        assertEquals(
                 $this->nullSession,
                 $this->nullSession->invalidate()
         );
@@ -107,7 +107,7 @@ class NullSessionTest extends \PHPUnit_Framework_TestCase
      */
     public function hasNeverAnyValue()
     {
-        $this->assertFalse($this->nullSession->hasValue('foo'));
+        assertFalse($this->nullSession->hasValue('foo'));
     }
 
     /**
@@ -115,7 +115,7 @@ class NullSessionTest extends \PHPUnit_Framework_TestCase
      */
     public function neverReturnsValue()
     {
-        $this->assertNull($this->nullSession->value('foo'));
+        assertNull($this->nullSession->value('foo'));
     }
 
     /**
@@ -123,7 +123,7 @@ class NullSessionTest extends \PHPUnit_Framework_TestCase
      */
     public function alwaysReturnsDefaultValue()
     {
-        $this->assertEquals('bar', $this->nullSession->value('foo', 'bar'));
+        assertEquals('bar', $this->nullSession->value('foo', 'bar'));
     }
 
     /**
@@ -131,7 +131,7 @@ class NullSessionTest extends \PHPUnit_Framework_TestCase
      */
     public function putValueDoesNothing()
     {
-        $this->assertEquals(
+        assertEquals(
                 $this->nullSession,
                 $this->nullSession->putValue('foo', 'bar')
         );
@@ -142,7 +142,7 @@ class NullSessionTest extends \PHPUnit_Framework_TestCase
      */
     public function removeAlwaysTellsValueWasNotPresent()
     {
-        $this->assertFalse($this->nullSession->removeValue('foo'));
+        assertFalse($this->nullSession->removeValue('foo'));
     }
 
     /**
@@ -150,6 +150,6 @@ class NullSessionTest extends \PHPUnit_Framework_TestCase
      */
     public function hasNoValueKeys()
     {
-        $this->assertEquals([], $this->nullSession->valueKeys());
+        assertEquals([], $this->nullSession->valueKeys());
     }
 }

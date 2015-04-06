@@ -61,7 +61,7 @@ class MethodNotAllowedTest extends \PHPUnit_Framework_TestCase
      */
     public function doesNotRequireSwitchToHttps()
     {
-        $this->assertFalse($this->methodNotAllowed->requiresHttps());
+        assertFalse($this->methodNotAllowed->requiresHttps());
     }
 
     /**
@@ -83,7 +83,7 @@ class MethodNotAllowedTest extends \PHPUnit_Framework_TestCase
                         $this->equalTo(['GET', 'POST', 'HEAD', 'OPTIONS'])
                  )
                  ->will($this->returnValue($error));
-        $this->assertSame(
+        assertSame(
                 $error,
                 $this->methodNotAllowed->resolve(
                         $this->mockRequest,

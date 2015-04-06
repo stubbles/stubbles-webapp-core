@@ -65,7 +65,7 @@ class SessionBasedHtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
      */
     public function functionReturnsClassName()
     {
-        $this->assertEquals(
+        assertEquals(
                 get_class($this->sessionBasedHtmlFilePassThrough),
                 \stubbles\webapp\sessionBasedHtmlPassThrough()
         );
@@ -90,7 +90,7 @@ class SessionBasedHtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
         $this->mockResponse->expects($this->once())
                            ->method('notFound')
                            ->will($this->returnValue($error));
-        $this->assertSame(
+        assertSame(
                 $error,
                 $this->sessionBasedHtmlFilePassThrough->resolve(
                         $this->mockRequest,
@@ -106,7 +106,7 @@ class SessionBasedHtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
     public function selectsAvailableRoute()
     {
         $this->userAgentAcceptsCookies(true);
-        $this->assertEquals(
+        assertEquals(
                 'this is foo.html',
                 $this->sessionBasedHtmlFilePassThrough->resolve(
                         $this->mockRequest,
@@ -139,7 +139,7 @@ class SessionBasedHtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
         $this->mockSession->expects($this->once())
                           ->method('putValue')
                           ->with($this->equalTo('stubbles.webapp.lastPage'), $this->equalTo('index.html'));
-        $this->assertEquals(
+        assertEquals(
                 'this is index.html',
                 $this->sessionBasedHtmlFilePassThrough->resolve(
                         $this->mockRequest,
@@ -160,7 +160,7 @@ class SessionBasedHtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
                           ->method('name');
         $this->mockSession->expects($this->never())
                           ->method('id');
-        $this->assertEquals(
+        assertEquals(
                 'this is foo.html',
                 $this->sessionBasedHtmlFilePassThrough->resolve(
                         $this->mockRequest,
@@ -181,7 +181,7 @@ class SessionBasedHtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
                           ->method('name');
         $this->mockSession->expects($this->once())
                           ->method('id');
-        $this->assertEquals(
+        assertEquals(
                 'this is foo.html',
                 $this->sessionBasedHtmlFilePassThrough->resolve(
                         $this->mockRequest,

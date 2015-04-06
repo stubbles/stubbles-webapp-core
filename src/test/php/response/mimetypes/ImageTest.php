@@ -48,7 +48,7 @@ class ImageTest extends \PHPUnit_Framework_TestCase
      */
     public function annotationsPresent()
     {
-        $this->assertTrue(
+        assertTrue(
                 reflect\annotationsOfConstructor($this->image)
                         ->contain('Inject')
         );
@@ -57,8 +57,8 @@ class ImageTest extends \PHPUnit_Framework_TestCase
                 'errorImgResource',
                 $this->image
         );
-        $this->assertTrue($annotations->contain('Property'));
-        $this->assertEquals(
+        assertTrue($annotations->contain('Property'));
+        assertEquals(
                 'stubbles.img.error',
                 $annotations->firstNamed('Property')->getName()
         );
@@ -69,7 +69,7 @@ class ImageTest extends \PHPUnit_Framework_TestCase
      */
     public function defaultMimeType()
     {
-        $this->assertEquals(
+        assertEquals(
                 'image/*',
                 (string) $this->image
         );
@@ -80,7 +80,7 @@ class ImageTest extends \PHPUnit_Framework_TestCase
      */
     public function mimeTypeCanBeSpecialised()
     {
-        $this->assertEquals(
+        assertEquals(
                 'image/png',
                 (string) $this->image->specialise('image/png')
         );
@@ -126,7 +126,7 @@ class ImageTest extends \PHPUnit_Framework_TestCase
                 new Error('ups'),
                 new MemoryOutputStream()
         );
-        $this->assertEquals('fake', $dummyDriver->lastDisplayedHandle());
+        assertEquals('fake', $dummyDriver->lastDisplayedHandle());
     }
 
     /**
@@ -149,7 +149,7 @@ class ImageTest extends \PHPUnit_Framework_TestCase
                 'pixel.png',
                 new MemoryOutputStream()
         );
-        $this->assertEquals('fake', $dummyDriver->lastDisplayedHandle());
+        assertEquals('fake', $dummyDriver->lastDisplayedHandle());
     }
 
     /**
@@ -166,7 +166,7 @@ class ImageTest extends \PHPUnit_Framework_TestCase
                 ),
                 new MemoryOutputStream()
         );
-        $this->assertEquals('fake', $dummyDriver->lastDisplayedHandle());
+        assertEquals('fake', $dummyDriver->lastDisplayedHandle());
     }
 
     /**

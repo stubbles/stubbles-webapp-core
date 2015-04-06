@@ -57,7 +57,7 @@ class NativeSessionStorageTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsGivenSessionName()
     {
-        $this->assertEquals('foo', $this->nativeSessionStorage->name());
+        assertEquals('foo', $this->nativeSessionStorage->name());
     }
 
     /**
@@ -65,7 +65,7 @@ class NativeSessionStorageTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsIdOfStartedSession()
     {
-        $this->assertNotEmpty((string) $this->nativeSessionStorage);
+        assertNotEmpty((string) $this->nativeSessionStorage);
     }
 
     /**
@@ -82,7 +82,7 @@ class NativeSessionStorageTest extends \PHPUnit_Framework_TestCase
             );
         }
 
-        $this->assertNotEquals(
+        assertNotEquals(
                 (string) $this->nativeSessionStorage,
                 (string) $this->nativeSessionStorage->regenerate()
         );
@@ -93,7 +93,7 @@ class NativeSessionStorageTest extends \PHPUnit_Framework_TestCase
      */
     public function invalidateCreatesNewSessionId()
     {
-        $this->assertNotEquals(
+        assertNotEquals(
                 (string) $this->nativeSessionStorage,
                 (string) $this->nativeSessionStorage->invalidate()
         );
@@ -104,7 +104,7 @@ class NativeSessionStorageTest extends \PHPUnit_Framework_TestCase
      */
     public function isEmptyAfterClear()
     {
-        $this->assertEquals(
+        assertEquals(
                 [],
                 $this->nativeSessionStorage->putValue('foo', 'bar')
                         ->clear()
@@ -117,7 +117,7 @@ class NativeSessionStorageTest extends \PHPUnit_Framework_TestCase
      */
     public function hasNoValueByDefault()
     {
-        $this->assertFalse($this->nativeSessionStorage->hasValue('foo'));
+        assertFalse($this->nativeSessionStorage->hasValue('foo'));
     }
 
     /**
@@ -125,7 +125,7 @@ class NativeSessionStorageTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsNullForNonExistingValue()
     {
-        $this->assertNull($this->nativeSessionStorage->value('foo'));
+        assertNull($this->nativeSessionStorage->value('foo'));
     }
 
     /**
@@ -133,7 +133,7 @@ class NativeSessionStorageTest extends \PHPUnit_Framework_TestCase
      */
     public function doesNothingWenRemovingNonExistingValue()
     {
-        $this->assertSame(
+        assertSame(
                 $this->nativeSessionStorage,
                 $this->nativeSessionStorage->removeValue('foo')
         );
@@ -144,7 +144,7 @@ class NativeSessionStorageTest extends \PHPUnit_Framework_TestCase
      */
     public function hasValueWhichWasSet()
     {
-        $this->assertTrue(
+        assertTrue(
                 $this->nativeSessionStorage->putValue('foo', 'bar')
                         ->hasValue('foo')
         );
@@ -155,7 +155,7 @@ class NativeSessionStorageTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsValueWhichWasSet()
     {
-        $this->assertEquals(
+        assertEquals(
                 'bar',
                 $this->nativeSessionStorage->putValue('foo', 'bar')
                         ->value('foo')
@@ -167,7 +167,7 @@ class NativeSessionStorageTest extends \PHPUnit_Framework_TestCase
      */
     public function removesExistingValue()
     {
-        $this->assertFalse(
+        assertFalse(
                 $this->nativeSessionStorage->putValue('foo', 'bar')
                         ->removeValue('foo')
                         ->hasValue('foo')
@@ -179,7 +179,7 @@ class NativeSessionStorageTest extends \PHPUnit_Framework_TestCase
      */
     public function hasNoValueKeysByDefault()
     {
-        $this->assertEquals(
+        assertEquals(
                 [],
                 $this->nativeSessionStorage->valueKeys()
         );
@@ -190,7 +190,7 @@ class NativeSessionStorageTest extends \PHPUnit_Framework_TestCase
      */
     public function valueKeysIncludeKeysOfAddedValues()
     {
-        $this->assertEquals(
+        assertEquals(
                 ['foo'],
                 $this->nativeSessionStorage->putValue('foo', 'bar')
                         ->valueKeys()

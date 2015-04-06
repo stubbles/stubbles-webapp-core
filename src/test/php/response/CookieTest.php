@@ -20,7 +20,7 @@ class CookieTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsGivenName()
     {
-        $this->assertEquals('foo', Cookie::create('foo', 'bar')->name());
+        assertEquals('foo', Cookie::create('foo', 'bar')->name());
     }
 
     /**
@@ -28,7 +28,7 @@ class CookieTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsGivenValue()
     {
-        $this->assertEquals('bar', Cookie::create('foo', 'bar')->value());
+        assertEquals('bar', Cookie::create('foo', 'bar')->value());
     }
 
     /**
@@ -36,7 +36,7 @@ class CookieTest extends \PHPUnit_Framework_TestCase
      */
     public function hasNoExpirationDateByDefault()
     {
-        $this->assertEquals(0, Cookie::create('foo', 'bar')->expiration());
+        assertEquals(0, Cookie::create('foo', 'bar')->expiration());
     }
 
     /**
@@ -44,7 +44,7 @@ class CookieTest extends \PHPUnit_Framework_TestCase
      */
     public function hasNoPathByDefault()
     {
-        $this->assertNull(Cookie::create('foo', 'bar')->path());
+        assertNull(Cookie::create('foo', 'bar')->path());
     }
 
     /**
@@ -52,7 +52,7 @@ class CookieTest extends \PHPUnit_Framework_TestCase
      */
     public function hasNoDomainByDefault()
     {
-        $this->assertNull(Cookie::create('foo', 'bar')->domain());
+        assertNull(Cookie::create('foo', 'bar')->domain());
     }
 
     /**
@@ -60,7 +60,7 @@ class CookieTest extends \PHPUnit_Framework_TestCase
      */
     public function isNotRestrictedToSslByDefault()
     {
-        $this->assertFalse(Cookie::create('foo', 'bar')->isRestrictedToSsl());
+        assertFalse(Cookie::create('foo', 'bar')->isRestrictedToSsl());
     }
 
     /**
@@ -68,7 +68,7 @@ class CookieTest extends \PHPUnit_Framework_TestCase
      */
     public function isHttpOnlyByDefault()
     {
-        $this->assertTrue(Cookie::create('foo', 'bar')->isHttpOnly());
+        assertTrue(Cookie::create('foo', 'bar')->isHttpOnly());
     }
 
     /**
@@ -77,7 +77,7 @@ class CookieTest extends \PHPUnit_Framework_TestCase
     public function expiresAtUsesGivenTimestamp()
     {
         $expires = time() + 100; // expire after 100 seconds
-        $this->assertEquals($expires,
+        assertEquals($expires,
                             Cookie::create('foo', 'bar')
                                   ->expiringAt($expires)
                                   ->expiration()
@@ -90,7 +90,7 @@ class CookieTest extends \PHPUnit_Framework_TestCase
      */
     public function expiresInAddsCurrentTime()
     {
-        $this->assertGreaterThanOrEqual(time() + 100,
+        assertGreaterThanOrEqual(time() + 100,
                                         Cookie::create('foo', 'bar')
                                               ->expiringIn(100)
                                               ->expiration()
@@ -102,7 +102,7 @@ class CookieTest extends \PHPUnit_Framework_TestCase
      */
     public function usesGivenPath()
     {
-        $this->assertEquals('bar',
+        assertEquals('bar',
                             Cookie::create('foo', 'bar')
                                   ->forPath('bar')
                                   ->path()
@@ -114,7 +114,7 @@ class CookieTest extends \PHPUnit_Framework_TestCase
      */
     public function usesGivenDomain()
     {
-        $this->assertEquals('.example.org',
+        assertEquals('.example.org',
                             Cookie::create('foo', 'bar')
                                   ->forDomain('.example.org')
                                   ->domain()
@@ -126,7 +126,7 @@ class CookieTest extends \PHPUnit_Framework_TestCase
      */
     public function isRestrictedToSslIfEnabled()
     {
-        $this->assertTrue(Cookie::create('foo', 'bar')
+        assertTrue(Cookie::create('foo', 'bar')
                                 ->restrictToSsl()
                                 ->isRestrictedToSsl()
 
@@ -138,7 +138,7 @@ class CookieTest extends \PHPUnit_Framework_TestCase
      */
     public function httpOnlyCanBeDisabled()
     {
-        $this->assertFalse(Cookie::create('foo', 'bar')
+        assertFalse(Cookie::create('foo', 'bar')
                                  ->disableHttpOnly()
                                  ->isHttpOnly()
 

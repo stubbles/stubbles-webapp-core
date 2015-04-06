@@ -37,7 +37,7 @@ class PassThroughTest extends \PHPUnit_Framework_TestCase
      */
     public function defaultMimeType()
     {
-        $this->assertEquals(
+        assertEquals(
                 'text/html',
                 (string) $this->passThrough
         );
@@ -48,7 +48,7 @@ class PassThroughTest extends \PHPUnit_Framework_TestCase
      */
     public function mimeTypeCanBeSpecialised()
     {
-        $this->assertEquals(
+        assertEquals(
                 'text/plain',
                 (string) $this->passThrough->specialise('text/plain')
         );
@@ -59,7 +59,7 @@ class PassThroughTest extends \PHPUnit_Framework_TestCase
      */
     public function serializesPassesThroughString()
     {
-        $this->assertEquals(
+        assertEquals(
                 'some string',
                 $this->passThrough->serialize(
                         'some string',
@@ -73,7 +73,7 @@ class PassThroughTest extends \PHPUnit_Framework_TestCase
      */
     public function serializesHandlesErrorAsString()
     {
-        $this->assertEquals(
+        assertEquals(
                 'Error: some error message',
                 $this->passThrough->serialize(
                         new Error('some error message'),

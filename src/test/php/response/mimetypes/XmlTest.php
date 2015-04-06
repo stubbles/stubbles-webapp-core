@@ -45,7 +45,7 @@ class XmlTest extends \PHPUnit_Framework_TestCase
      */
     public function annotationsPresent()
     {
-        $this->assertTrue(
+        assertTrue(
                 reflect\annotationsOfConstructor($this->xml)
                         ->contain('Inject')
         );
@@ -56,7 +56,7 @@ class XmlTest extends \PHPUnit_Framework_TestCase
      */
     public function defaultMimeType()
     {
-        $this->assertEquals(
+        assertEquals(
                 'application/xml',
                 (string) $this->xml
         );
@@ -67,7 +67,7 @@ class XmlTest extends \PHPUnit_Framework_TestCase
      */
     public function mimeTypeCanBeSpecialised()
     {
-        $this->assertEquals(
+        assertEquals(
                 'text/xml',
                 (string) $this->xml->specialise('text/xml')
         );
@@ -82,7 +82,7 @@ class XmlTest extends \PHPUnit_Framework_TestCase
                                       ->method('serializeToXml')
                                       ->with($this->equalTo('value'))
                                       ->will($this->returnValue('<xml/>'));
-        $this->assertEquals(
+        assertEquals(
                 '<xml/>',
                 $this->xml->serialize(
                         'value',

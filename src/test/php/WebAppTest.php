@@ -122,7 +122,7 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
      */
     public function annotationPresentOnConstructor()
     {
-        $this->assertTrue(
+        assertTrue(
                 reflect\annotationsOfConstructor($this->webApp)
                         ->contain('Inject')
         );
@@ -134,15 +134,23 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
     private function createMockResource()
     {
         $mockResource = $this->getMockBuilder('stubbles\webapp\routing\UriResource')
-                          ->disableOriginalConstructor()
-                          ->getMock();
-        $mockResource->expects($this->any())
-                  ->method('negotiateMimeType')
-                  ->will($this->returnValue(new PassThrough()));
-        $this->routing->expects($this->once())
-                      ->method('findResource')
-                      ->will($this->returnValue($mockResource));
+                ->disableOriginalConstructor()
+                ->getMock();
+        $mockResource->method('negotiateMimeType')
+                ->will(returnValue(new PassThrough()));
+        $this->routing->method('findResource')
+                ->will(returnValue($mockResource));
         return $mockResource;
+    }
+
+    /**
+     * @return  \PHPUnit_Framework_MockObject_MockObject
+     */
+    private function createNonHttpsResource()
+    {
+        $resource = $this->createMockResource();
+        $resource->method('requiresHttps')->will(returnValue(false));
+        return $resource;
     }
 
     /**
@@ -151,15 +159,12 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
     public function respondsWithRedirectHttpsUriIfRequiresHttps()
     {
         $mockResource = $this->createMockResource();
-        $mockResource->expects($this->once())
-                  ->method('requiresHttps')
-                  ->will($this->returnValue(true));
-        $mockResource->expects($this->once())
-                  ->method('httpsUri')
-                  ->will($this->returnValue('https://example.net/admin'));
+        $mockResource->method('requiresHttps')->will(returnValue(true));
+        $mockResource->method('httpsUri')
+                ->will(returnValue('https://example.net/admin'));
         $response = $this->webApp->run();
-        $this->assertEquals(302, $response->statusCode());
-        $this->assertTrue(
+        assertEquals(302, $response->statusCode());
+        assertTrue(
                 $response->containsHeader(
                         'Location',
                         'https://example.net/admin'
@@ -175,21 +180,12 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
         $mockResource = $this->getMockBuilder('stubbles\webapp\routing\UriResource')
                           ->disableOriginalConstructor()
                           ->getMock();
-        $this->routing->expects($this->once())
-                      ->method('findResource')
-                      ->will($this->returnValue($mockResource));
-        $mockResource->expects($this->once())
-                  ->method('requiresHttps')
-                  ->will($this->returnValue(false));
-        $mockResource->expects($this->once())
-                  ->method('negotiateMimeType')
-                  ->will($this->returnValue(false));
-        $mockResource->expects($this->never())
-                  ->method('applyPreInterceptors');
-        $mockResource->expects($this->never())
-                  ->method('process');
-        $mockResource->expects($this->never())
-                  ->method('applyPostInterceptors');
+        $this->routing->method('findResource')->will(returnValue($mockResource));
+        $mockResource->method('requiresHttps')->will(returnValue(false));
+        $mockResource->method('negotiateMimeType')->will(returnValue(false));
+        $mockResource->expects(never())->method('applyPreInterceptors');
+        $mockResource->expects(never())->method('process');
+        $mockResource->expects(never())->method('applyPostInterceptors');
         $this->webApp->run();
 
     }
@@ -201,13 +197,10 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
     public function enablesSessionScopeWhenSessionIsAvailable()
     {
         TestWebApp::$session = $this->getMock('stubbles\webapp\session\Session');
-        $mockResource = $this->createMockResource();
-        $mockResource->expects($this->once())
-                  ->method('requiresHttps')
-                  ->will($this->returnValue(false));
+        $this->createNonHttpsResource();
         $this->mockInjector->expects($this->once())
-                           ->method('setSession')
-                           ->with($this->equalTo(TestWebApp::$session));
+                ->method('setSession')
+                ->with($this->equalTo(TestWebApp::$session));
         $this->webApp->run();
     }
 
@@ -217,12 +210,8 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
      */
     public function doesNotEnableSessionScopeWhenSessionNotAvailable()
     {
-        $mockResource = $this->createMockResource();
-        $mockResource->expects($this->once())
-                  ->method('requiresHttps')
-                  ->will($this->returnValue(false));
-        $this->mockInjector->expects($this->never())
-                           ->method('setSession');
+        $this->createNonHttpsResource();
+        $this->mockInjector->expects($this->never())->method('setSession');
         $this->webApp->run();
     }
 
@@ -231,17 +220,12 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
      */
     public function doesNotExecuteRouteAndPostInterceptorsIfPreInterceptorCancelsRequest()
     {
-        $mockResource = $this->createMockResource();
+        $mockResource = $this->createNonHttpsResource();
         $mockResource->expects($this->once())
-                  ->method('requiresHttps')
-                  ->will($this->returnValue(false));
-        $mockResource->expects($this->once())
-                  ->method('applyPreInterceptors')
-                  ->will($this->returnValue(false));
-        $mockResource->expects($this->never())
-                  ->method('process');
-        $mockResource->expects($this->never())
-                  ->method('applyPostInterceptors');
+                ->method('applyPreInterceptors')
+                ->will($this->returnValue(false));
+        $mockResource->expects(never())->method('process');
+        $mockResource->expects(never())->method('applyPostInterceptors');
         $this->webApp->run();
     }
 
@@ -253,12 +237,11 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
         $mockExceptionLogger = $this->getMockBuilder('stubbles\lang\errorhandler\ExceptionLogger')
                 ->disableOriginalConstructor()
                 ->getMock();
-        $mockExceptionLogger->expects($this->once())
+        $mockExceptionLogger->expects(once())
                 ->method('log')
-                ->with($this->equalTo($expected));
-        $this->mockInjector->expects($this->once())
-                ->method('getInstance')
-                ->will($this->returnValue($mockExceptionLogger));
+                ->with(equalTo($expected));
+        $this->mockInjector->method('getInstance')
+                ->will(returnValue($mockExceptionLogger));
     }
 
     /**
@@ -266,21 +249,15 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
      */
     public function sendsInternalServerErrorIfExceptionThrownFromPreInterceptors()
     {
-        $mockResource = $this->createMockResource();
-        $mockResource->expects($this->once())
-                  ->method('requiresHttps')
-                  ->will($this->returnValue(false));
+        $mockResource = $this->createNonHttpsResource();
         $exception = new \Exception('some error');
-        $mockResource->expects($this->once())
-                  ->method('applyPreInterceptors')
-                  ->will($this->throwException($exception));
-        $mockResource->expects($this->never())
-                  ->method('process');
-        $mockResource->expects($this->never())
-                  ->method('applyPostInterceptors');
+        $mockResource->method('applyPreInterceptors')
+                  ->will(throwException($exception));
+        $mockResource->expects(never())->method('process');
+        $mockResource->expects(never())->method('applyPostInterceptors');
         $this->setUpExceptionLogger($exception);
         $response = $this->webApp->run();
-        $this->assertEquals(500, $response->statusCode());
+        assertEquals(500, $response->statusCode());
     }
 
     /**
@@ -288,10 +265,7 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
      */
     public function sendsInternalServerErrorIfExceptionThrownFromRoute()
     {
-        $mockResource = $this->createMockResource();
-        $mockResource->expects($this->once())
-                  ->method('requiresHttps')
-                  ->will($this->returnValue(false));
+        $mockResource = $this->createNonHttpsResource();
         $mockResource->expects($this->once())
                   ->method('applyPreInterceptors')
                   ->will($this->returnValue(true));
@@ -303,7 +277,7 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
                   ->method('applyPostInterceptors');
         $this->setUpExceptionLogger($exception);
         $response = $this->webApp->run();
-        $this->assertEquals(500, $response->statusCode());
+        assertEquals(500, $response->statusCode());
     }
 
     /**
@@ -311,18 +285,10 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
      */
     public function doesExecuteEverythingIfRequestNotCancelled()
     {
-        $mockResource = $this->createMockResource();
-        $mockResource->expects($this->once())
-                  ->method('requiresHttps')
-                  ->will($this->returnValue(false));
-        $mockResource->expects($this->once())
-                  ->method('applyPreInterceptors')
-                  ->will($this->returnValue(true));
-        $mockResource->expects($this->once())
-                  ->method('resolve')
-                  ->will($this->returnValue(true));
-        $mockResource->expects($this->once())
-                  ->method('applyPostInterceptors');
+        $mockResource = $this->createNonHttpsResource();
+        $mockResource->method('applyPreInterceptors')->will(returnValue(true));
+        $mockResource->expects(once())->method('resolve');
+        $mockResource->expects(once())->method('applyPostInterceptors');
         $this->webApp->run();
     }
 
@@ -331,23 +297,15 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
      */
     public function sendsInternalServerErrorIfExceptionThrownFromPostInterceptors()
     {
-        $mockResource = $this->createMockResource();
-        $mockResource->expects($this->once())
-                  ->method('requiresHttps')
-                  ->will($this->returnValue(false));
-        $mockResource->expects($this->once())
-                  ->method('applyPreInterceptors')
-                  ->will($this->returnValue(true));
-        $mockResource->expects($this->once())
-                  ->method('resolve')
-                  ->will($this->returnValue(true));
+        $mockResource = $this->createNonHttpsResource();
+        $mockResource->method('applyPreInterceptors')->will(returnValue(true));
+        $mockResource->method('resolve')->will(returnValue(true));
         $exception = new \Exception('some error');
-        $mockResource->expects($this->once())
-                  ->method('applyPostInterceptors')
-                  ->will($this->throwException($exception));
+        $mockResource->method('applyPostInterceptors')
+                ->will(throwException($exception));
         $this->setUpExceptionLogger($exception);
         $response = $this->webApp->run();
-        $this->assertEquals(500, $response->statusCode());
+        assertEquals(500, $response->statusCode());
     }
 
     /**
@@ -356,7 +314,7 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
      */
     public function createCreatesInstance()
     {
-        $this->assertInstanceOf(
+        assertInstanceOf(
                 'stubbles\webapp\TestWebApp',
                 TestWebApp::create('projectPath')
         );
@@ -368,7 +326,7 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
      */
     public function createInstanceCreatesInstance()
     {
-        $this->assertInstanceOf(
+        assertInstanceOf(
                 'stubbles\webapp\TestWebApp',
                 TestWebApp::create('projectPath')
         );
@@ -384,7 +342,7 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
         $_SERVER['REQUEST_URI'] = '/hello';
         $_SERVER['HTTP_HOST']   = '%&$§!&$!§invalid';
         $webApp  = new TestWebApp($this->mockInjector, $this->routing);
-        $this->assertEquals(
+        assertEquals(
                 400,
                 $webApp->run()->statusCode()
         );

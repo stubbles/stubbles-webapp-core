@@ -21,7 +21,7 @@ class RolesTest extends \PHPUnit_Framework_TestCase
      */
     public function noneYieldsNoRoles()
     {
-        $this->assertEquals(0, count(Roles::none()));
+        assertEquals(0, count(Roles::none()));
     }
 
     /**
@@ -29,7 +29,7 @@ class RolesTest extends \PHPUnit_Framework_TestCase
      */
     public function hasAmountOfInitialRoles()
     {
-        $this->assertEquals(1, count(new Roles(['admin'])));
+        assertEquals(1, count(new Roles(['admin'])));
     }
 
     /**
@@ -38,7 +38,7 @@ class RolesTest extends \PHPUnit_Framework_TestCase
     public function doesNotContainNonAddedRole()
     {
         $roles = new Roles(['admin']);
-        $this->assertFalse($roles->contain('superadmin'));
+        assertFalse($roles->contain('superadmin'));
     }
 
     /**
@@ -47,7 +47,7 @@ class RolesTest extends \PHPUnit_Framework_TestCase
     public function containsAddedRole()
     {
         $roles = new Roles(['admin']);
-        $this->assertTrue($roles->contain('admin'));
+        assertTrue($roles->contain('admin'));
     }
 
     /**
@@ -61,6 +61,6 @@ class RolesTest extends \PHPUnit_Framework_TestCase
             $result[] = $role;
         }
 
-        $this->assertEquals($expected, $result);
+        assertEquals($expected, $result);
     }
 }

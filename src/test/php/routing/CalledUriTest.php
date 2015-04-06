@@ -65,7 +65,7 @@ class CalledUriTest extends \PHPUnit_Framework_TestCase
      */
     public function castFromOtherInstanceReturnsInstance()
     {
-        $this->assertSame(
+        assertSame(
                 $this->calledUri,
                 CalledUri::castFrom($this->calledUri, null)
         );
@@ -77,7 +77,7 @@ class CalledUriTest extends \PHPUnit_Framework_TestCase
      */
     public function castFromHttpUriInstanceReturnsInstance()
     {
-        $this->assertEquals(
+        assertEquals(
                 $this->calledUri,
                 CalledUri::castFrom($this->mockHttpUri, 'GET')
         );
@@ -101,7 +101,7 @@ class CalledUriTest extends \PHPUnit_Framework_TestCase
     public function castFromHttpUriStringReturnsInstance()
     {
 
-        $this->assertEquals(
+        assertEquals(
                 new CalledUri('http://example.net/', 'GET'),
                 CalledUri::castFrom('http://example.net/', 'GET')
         );
@@ -136,7 +136,7 @@ class CalledUriTest extends \PHPUnit_Framework_TestCase
      */
     public function methodAlwaysEqualsNullMethod()
     {
-        $this->assertTrue($this->calledUri->methodEquals(null));
+        assertTrue($this->calledUri->methodEquals(null));
     }
 
     /**
@@ -145,7 +145,7 @@ class CalledUriTest extends \PHPUnit_Framework_TestCase
      */
     public function methodAlwaysEqualsEmptyMethod()
     {
-        $this->assertTrue($this->calledUri->methodEquals(''));
+        assertTrue($this->calledUri->methodEquals(''));
     }
 
     /**
@@ -154,7 +154,7 @@ class CalledUriTest extends \PHPUnit_Framework_TestCase
      */
     public function methodEqualsGivenMethod()
     {
-        $this->assertTrue($this->calledUri->methodEquals('GET'));
+        assertTrue($this->calledUri->methodEquals('GET'));
     }
 
     /**
@@ -163,7 +163,7 @@ class CalledUriTest extends \PHPUnit_Framework_TestCase
      */
     public function methodDoesNotEqualsGivenMethod()
     {
-        $this->assertFalse($this->calledUri->methodEquals('POST'));
+        assertFalse($this->calledUri->methodEquals('POST'));
     }
 
     /**
@@ -191,7 +191,7 @@ class CalledUriTest extends \PHPUnit_Framework_TestCase
     public function returnsTrueForSatisfiedPathPattern($mockPath, $path)
     {
         $this->mockUriPath($mockPath);
-        $this->assertTrue($this->calledUri->satisfiesPath($path));
+        assertTrue($this->calledUri->satisfiesPath($path));
     }
 
     /**
@@ -216,7 +216,7 @@ class CalledUriTest extends \PHPUnit_Framework_TestCase
     public function returnsFalseForNonSatisfiedCondition($mockPath, $pathPattern)
     {
         $this->mockUriPath($mockPath);
-        $this->assertFalse($this->calledUri->satisfiesPath($pathPattern));
+        assertFalse($this->calledUri->satisfiesPath($pathPattern));
     }
 
     /**
@@ -228,7 +228,7 @@ class CalledUriTest extends \PHPUnit_Framework_TestCase
         $this->mockHttpUri->expects($this->once())
                           ->method('isHttps')
                           ->will($this->returnValue(true));
-        $this->assertTrue($this->calledUri->isHttps());
+        assertTrue($this->calledUri->isHttps());
     }
 
     /**
@@ -241,7 +241,7 @@ class CalledUriTest extends \PHPUnit_Framework_TestCase
         $this->mockHttpUri->expects($this->once())
                           ->method('toHttp')
                           ->will($this->returnValue($mockHttpUri));
-        $this->assertSame($mockHttpUri, $this->calledUri->toHttp());
+        assertSame($mockHttpUri, $this->calledUri->toHttp());
     }
 
     /**
@@ -254,7 +254,7 @@ class CalledUriTest extends \PHPUnit_Framework_TestCase
         $this->mockHttpUri->expects($this->once())
                           ->method('toHttps')
                           ->will($this->returnValue($mockHttpUri));
-        $this->assertSame($mockHttpUri, $this->calledUri->toHttps());
+        assertSame($mockHttpUri, $this->calledUri->toHttps());
     }
 
     /**
@@ -266,7 +266,7 @@ class CalledUriTest extends \PHPUnit_Framework_TestCase
         $this->mockHttpUri->expects($this->once())
                           ->method('__toString')
                           ->will($this->returnValue('http://example.net/foo/bar'));
-        $this->assertEquals(
+        assertEquals(
                 'http://example.net/foo/bar',
                 (string) $this->calledUri
         );

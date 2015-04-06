@@ -65,7 +65,7 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
      */
     public function isNewWhenSessionContainsNoFingerprint()
     {
-        $this->assertTrue($this->createWebSession('aFingerprint', null)->isNew());
+        assertTrue($this->createWebSession('aFingerprint', null)->isNew());
     }
 
     /**
@@ -132,7 +132,7 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
         $this->mockSessionId->expects($this->once())
                             ->method('__toString')
                             ->will($this->returnValue('303'));
-        $this->assertEquals('303', $this->createWebSession()->id());
+        assertEquals('303', $this->createWebSession()->id());
     }
 
     /**
@@ -143,7 +143,7 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
         $webSession = $this->createWebSession();
         $this->mockSessionId->expects($this->once())
                             ->method('regenerate');
-        $this->assertEquals($webSession, $webSession->regenerateId());
+        assertEquals($webSession, $webSession->regenerateId());
     }
 
     /**
@@ -154,7 +154,7 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
         $this->mockSessionId->expects($this->once())
                             ->method('name')
                             ->will($this->returnValue('foo'));
-        $this->assertEquals('foo', $this->createWebSession()->name());
+        assertEquals('foo', $this->createWebSession()->name());
     }
 
     /**
@@ -162,7 +162,7 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
      */
     public function isValidByDefault()
     {
-        $this->assertTrue($this->createWebSession()->isValid());
+        assertTrue($this->createWebSession()->isValid());
     }
 
     /**
@@ -193,7 +193,7 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
      */
     public function isNotValidWhenFingerprintIsRemoved()
     {
-        $this->assertFalse($this->createInvalidWebSession()->isValid());
+        assertFalse($this->createInvalidWebSession()->isValid());
     }
 
     /**
@@ -204,7 +204,7 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
         $webSession = $this->createWebSession();
         $this->mockSessionStorage->expects($this->once())
                                  ->method('clear');
-        $this->assertEquals($webSession, $webSession->invalidate());
+        assertEquals($webSession, $webSession->invalidate());
     }
 
     /**
@@ -215,7 +215,7 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
         $webSession = $this->createWebSession();
         $this->mockSessionId->expects($this->once())
                             ->method('invalidate');
-        $this->assertEquals($webSession, $webSession->invalidate());
+        assertEquals($webSession, $webSession->invalidate());
     }
 
     /**
@@ -223,7 +223,7 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
      */
     public function hasValueReturnsFalseOnInvalidSession()
     {
-        $this->assertFalse($this->createInvalidWebSession()->hasValue('foo'));
+        assertFalse($this->createInvalidWebSession()->hasValue('foo'));
     }
 
     /**
@@ -252,7 +252,7 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
      */
     public function hasNeverAnyValueByDefault()
     {
-        $this->assertFalse($this->createWebSessionWithValues()->hasValue('foo'));
+        assertFalse($this->createWebSessionWithValues()->hasValue('foo'));
     }
 
     /**
@@ -260,7 +260,7 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
      */
     public function hasValueIfStored()
     {
-        $this->assertTrue($this->createWebSessionWithValues('bar')->hasValue('foo'));
+        assertTrue($this->createWebSessionWithValues('bar')->hasValue('foo'));
     }
 
     /**
@@ -268,7 +268,7 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
      */
     public function getValueReturnsNullIfValueNotStored()
     {
-        $this->assertNull($this->createWebSessionWithValues()->value('foo'));
+        assertNull($this->createWebSessionWithValues()->value('foo'));
     }
 
     /**
@@ -276,7 +276,7 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
      */
     public function getValueReturnsDefaultIfValueNotStoredAndDefaultGiven()
     {
-        $this->assertEquals(
+        assertEquals(
                 'bar',
                 $this->createWebSessionWithValues()->value('foo', 'bar')
         );
@@ -287,7 +287,7 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
      */
     public function getValueReturnsStoredValue()
     {
-        $this->assertEquals(
+        assertEquals(
                 'baz',
                 $this->createWebSessionWithValues('baz')->value('foo', 'bar')
         );
@@ -311,7 +311,7 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
                                  ->method('putValue')
                                  ->with($this->equalTo('foo'), $this->equalTo('bar'));
         $webSession = $this->createWebSession();
-        $this->assertEquals($webSession, $webSession->putValue('foo', 'bar'));
+        assertEquals($webSession, $webSession->putValue('foo', 'bar'));
     }
 
     /**
@@ -328,7 +328,7 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
      */
     public function removeReturnsFalseIfValueWasNotStoredBefore()
     {
-        $this->assertFalse($this->createWebSessionWithValues()->removeValue('foo'));
+        assertFalse($this->createWebSessionWithValues()->removeValue('foo'));
     }
 
     /**
@@ -339,7 +339,7 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
         $this->mockSessionStorage->expects($this->once())
                                  ->method('removeValue')
                                  ->with($this->equalTo('foo'));
-        $this->assertTrue($this->createWebSessionWithValues('bar')->removeValue('foo'));
+        assertTrue($this->createWebSessionWithValues('bar')->removeValue('foo'));
     }
 
     /**
@@ -364,7 +364,7 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
 
                                         )
                                    );
-        $this->assertEquals(
+        assertEquals(
                 ['foo'],
                 $this->createWebSession()->valueKeys()
         );

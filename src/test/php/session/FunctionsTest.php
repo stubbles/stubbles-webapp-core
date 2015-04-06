@@ -21,7 +21,7 @@ class FunctionsTest extends \PHPUnit_Framework_TestCase
      */
     public function nativeCreatesWebSession()
     {
-        $this->assertInstanceOf(
+        assertInstanceOf(
                 'stubbles\webapp\session\WebSession',
                  native('example', md5('example user agent'))
         );
@@ -32,7 +32,7 @@ class FunctionsTest extends \PHPUnit_Framework_TestCase
      */
     public function noneDurableCreatesWebSession()
     {
-        $this->assertInstanceOf(
+        assertInstanceOf(
                 'stubbles\webapp\session\WebSession',
                  noneDurable()
         );
@@ -44,7 +44,7 @@ class FunctionsTest extends \PHPUnit_Framework_TestCase
      */
     public function nullSessionCreatesNullSession()
     {
-        $this->assertInstanceOf(
+        assertInstanceOf(
                 'stubbles\webapp\session\NullSession',
                 nullSession()
         );

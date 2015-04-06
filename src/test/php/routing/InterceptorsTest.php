@@ -85,7 +85,7 @@ class InterceptorsTest extends \PHPUnit_Framework_TestCase
                 ->method('internalServerError');
         $this->mockResponse->expects($this->once())
                 ->method('write');
-        $this->assertFalse(
+        assertFalse(
                 $this->createInterceptors(
                         ['some\PreInterceptor',
                          'other\PreInterceptor'
@@ -110,7 +110,7 @@ class InterceptorsTest extends \PHPUnit_Framework_TestCase
                            ->method('getInstance')
                            ->with($this->equalTo('some\PreInterceptor'))
                            ->will($this->returnValue($preInterceptor));
-        $this->assertFalse(
+        assertFalse(
                 $this->createInterceptors(
                         ['some\PreInterceptor',
                          'other\PreInterceptor'
@@ -139,7 +139,7 @@ class InterceptorsTest extends \PHPUnit_Framework_TestCase
                            ->method('setStatusCode');
         $this->mockResponse->expects($this->once())
                            ->method('addHeader');
-        $this->assertTrue(
+        assertTrue(
                 $this->createInterceptors(
                         ['some\PreInterceptor',
                          $mockPreInterceptor,
@@ -166,7 +166,7 @@ class InterceptorsTest extends \PHPUnit_Framework_TestCase
                 ->method('internalServerError');
         $this->mockResponse->expects($this->once())
                 ->method('write');
-        $this->assertFalse(
+        assertFalse(
                 $this->createInterceptors(
                         [],
                         ['some\PostInterceptor',  'other\PostInterceptor']
@@ -190,7 +190,7 @@ class InterceptorsTest extends \PHPUnit_Framework_TestCase
                            ->method('getInstance')
                            ->with($this->equalTo('some\PostInterceptor'))
                            ->will($this->returnValue($postInterceptor));
-        $this->assertFalse(
+        assertFalse(
                 $this->createInterceptors(
                         [],
                         ['some\PostInterceptor', 'other\PostInterceptor']
@@ -218,7 +218,7 @@ class InterceptorsTest extends \PHPUnit_Framework_TestCase
                            ->method('setStatusCode');
         $this->mockResponse->expects($this->once())
                            ->method('addHeader');
-        $this->assertTrue(
+        assertTrue(
                 $this->createInterceptors(
                         [],
                         ['some\PostInterceptor',

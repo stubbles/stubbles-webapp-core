@@ -44,7 +44,7 @@ class TokenTest extends \PHPUnit_Framework_TestCase
      */
     public function annotationsPresentOnClass()
     {
-        $this->assertTrue(
+        assertTrue(
                 reflect\annotationsOf($this->token)
                         ->contain('Singleton')
         );
@@ -55,7 +55,7 @@ class TokenTest extends \PHPUnit_Framework_TestCase
      */
     public function annotationsPresentOnConstructor()
     {
-        $this->assertTrue(
+        assertTrue(
                 reflect\annotationsOfConstructor($this->token)
                         ->contain('Inject')
         );
@@ -71,7 +71,7 @@ class TokenTest extends \PHPUnit_Framework_TestCase
                           ->will($this->returnValue('aToken'));
         $this->mockSession->expects($this->once())
                           ->method('putValue');
-        $this->assertFalse($this->token->isValid('otherToken'));
+        assertFalse($this->token->isValid('otherToken'));
     }
 
     /**
@@ -84,7 +84,7 @@ class TokenTest extends \PHPUnit_Framework_TestCase
                           ->will($this->returnValue('aToken'));
         $this->mockSession->expects($this->once())
                           ->method('putValue');
-        $this->assertTrue($this->token->isValid('aToken'));
+        assertTrue($this->token->isValid('aToken'));
     }
 
     /**
@@ -97,6 +97,6 @@ class TokenTest extends \PHPUnit_Framework_TestCase
                           ->will($this->onConsecutiveCalls('aToken', 'nextToken'));
         $this->mockSession->expects($this->once())
                           ->method('putValue');
-        $this->assertEquals('nextToken', $this->token->next());
+        assertEquals('nextToken', $this->token->next());
     }
 }

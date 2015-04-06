@@ -38,7 +38,7 @@ class NoneDurableSessionIdTest extends \PHPUnit_Framework_TestCase
      */
     public function sessionNameStaysSameForInstance()
     {
-        $this->assertEquals(
+        assertEquals(
                 $this->noneDurableSessionId->name(),
                 $this->noneDurableSessionId->name()
         );
@@ -51,7 +51,7 @@ class NoneDurableSessionIdTest extends \PHPUnit_Framework_TestCase
     public function sessionNameIsDifferentForDifferentInstances()
     {
         $other = new NoneDurableSessionId();
-        $this->assertNotEquals(
+        assertNotEquals(
                 $this->noneDurableSessionId->name(),
                 $other->name()
         );
@@ -62,7 +62,7 @@ class NoneDurableSessionIdTest extends \PHPUnit_Framework_TestCase
      */
     public function hasSessionId()
     {
-        $this->assertRegExp('/^([a-zA-Z0-9]{32})$/D',
+        assertRegExp('/^([a-zA-Z0-9]{32})$/D',
                             (string) $this->noneDurableSessionId
         );
     }
@@ -73,7 +73,7 @@ class NoneDurableSessionIdTest extends \PHPUnit_Framework_TestCase
     public function regenerateChangesSessionId()
     {
         $previous = (string) $this->noneDurableSessionId;
-        $this->assertNotEquals($previous,
+        assertNotEquals($previous,
                                (string) $this->noneDurableSessionId->regenerate()
         );
     }
@@ -83,7 +83,7 @@ class NoneDurableSessionIdTest extends \PHPUnit_Framework_TestCase
      */
     public function regeneratedSessionIdIsValid()
     {
-        $this->assertRegExp('/^([a-zA-Z0-9]{32})$/D',
+        assertRegExp('/^([a-zA-Z0-9]{32})$/D',
                             (string) $this->noneDurableSessionId->regenerate()
         );
     }
@@ -93,7 +93,7 @@ class NoneDurableSessionIdTest extends \PHPUnit_Framework_TestCase
      */
     public function invalidateDoesNothing()
     {
-        $this->assertSame($this->noneDurableSessionId,
+        assertSame($this->noneDurableSessionId,
                           $this->noneDurableSessionId->invalidate()
         );
     }
@@ -104,7 +104,7 @@ class NoneDurableSessionIdTest extends \PHPUnit_Framework_TestCase
      */
     public function hasGivenSessionNameWhenProvided()
     {
-        $this->assertEquals(
+        assertEquals(
                 'foo',
                 (new NoneDurableSessionId('foo'))->name()
         );
@@ -116,7 +116,7 @@ class NoneDurableSessionIdTest extends \PHPUnit_Framework_TestCase
      */
     public function hasGivenSessionIdWhenProvided()
     {
-        $this->assertEquals(
+        assertEquals(
                 '313',
                 (string) new NoneDurableSessionId('foo', '313')
         );
