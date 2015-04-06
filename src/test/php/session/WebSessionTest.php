@@ -20,21 +20,21 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
      *
      * @type  \PHPUnit_Framework_MockObject_MockObject
      */
-    private $mockSessionStorage;
+    private $sessionStorage;
     /**
      * mocked session id
      *
      * @type  \PHPUnit_Framework_MockObject_MockObject
      */
-    private $mockSessionId;
+    private $sessionId;
 
     /**
      * set up test enviroment
      */
     public function setUp()
     {
-        $this->mockSessionStorage = $this->getMock('stubbles\webapp\session\storage\SessionStorage');
-        $this->mockSessionId      = $this->getMock('stubbles\webapp\session\id\SessionId');
+        $this->sessionStorage = $this->getMock('stubbles\webapp\session\storage\SessionStorage');
+        $this->sessionId      = $this->getMock('stubbles\webapp\session\id\SessionId');
     }
 
     /**
@@ -47,15 +47,13 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
     private function createWebSession($givenFingerprint = 'aFingerprint',
                                       $storageFingerprint = 'aFingerprint')
     {
-        $this->mockSessionStorage->expects($this->any())
-                                 ->method('hasValue')
-                                 ->will($this->returnValue(null !== $storageFingerprint));
-        $this->mockSessionStorage->expects($this->any())
-                                 ->method('value')
-                                 ->will($this->returnValue($storageFingerprint));
+        $this->sessionStorage->method('hasValue')
+                ->will(returnValue(null !== $storageFingerprint));
+        $this->sessionStorage->method('value')
+                ->will(returnValue($storageFingerprint));
         return new WebSession(
-                $this->mockSessionStorage,
-                $this->mockSessionId,
+                $this->sessionStorage,
+                $this->sessionId,
                 $givenFingerprint
         );
     }
@@ -73,8 +71,7 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
      */
     public function regeneratesSessionIdWhenSessionIsNew()
     {
-        $this->mockSessionId->expects($this->once())
-                            ->method('regenerate');
+        $this->sessionId->expects(once())->method('regenerate');
         $this->createWebSession('aFingerprint', null);
     }
 
@@ -83,11 +80,9 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
      */
     public function storesFingerPrintWhenSessionIsNew()
     {
-        $this->mockSessionStorage->expects($this->once())
-                                 ->method('putValue')
-                                 ->with($this->equalTo(Session::FINGERPRINT),
-                                        $this->equalTo('aFingerprint')
-                                   );
+        $this->sessionStorage->expects(once())
+                ->method('putValue')
+                ->with(equalTo(Session::FINGERPRINT), equalTo('aFingerprint'));
         $this->createWebSession('aFingerprint', null);
     }
 
@@ -96,8 +91,7 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
      */
     public function regeneratesSessionIdWhenSessionIsHijacked()
     {
-        $this->mockSessionId->expects($this->once())
-                            ->method('regenerate');
+        $this->sessionId->expects(once())->method('regenerate');
         $this->createWebSession('otherFingerprint');
     }
 
@@ -106,8 +100,7 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
      */
     public function clearsSessionDataWhenSessionIsHijacked()
     {
-        $this->mockSessionStorage->expects($this->once())
-                                 ->method('clear');
+        $this->sessionStorage->expects(once())->method('clear');
         $this->createWebSession('otherFingerprint');
     }
 
@@ -116,11 +109,9 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
      */
     public function storesGivenFingerPrintWhenSessionIsHijacked()
     {
-        $this->mockSessionStorage->expects($this->once())
-                                 ->method('putValue')
-                                 ->with($this->equalTo(Session::FINGERPRINT),
-                                        $this->equalTo('otherFingerprint')
-                                   );
+        $this->sessionStorage->expects(once())
+                ->method('putValue')
+                ->with(equalTo(Session::FINGERPRINT), equalTo('otherFingerprint'));
         $this->createWebSession('otherFingerprint');
     }
 
@@ -129,9 +120,7 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
      */
     public function idIsSessionId()
     {
-        $this->mockSessionId->expects($this->once())
-                            ->method('__toString')
-                            ->will($this->returnValue('303'));
+        $this->sessionId->method('__toString')->will(returnValue('303'));
         assertEquals('303', $this->createWebSession()->id());
     }
 
@@ -141,8 +130,7 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
     public function regenerateCreatesNewSessionId()
     {
         $webSession = $this->createWebSession();
-        $this->mockSessionId->expects($this->once())
-                            ->method('regenerate');
+        $this->sessionId->expects(once())->method('regenerate');
         assertEquals($webSession, $webSession->regenerateId());
     }
 
@@ -151,9 +139,7 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
      */
     public function nameIsSessionIdName()
     {
-        $this->mockSessionId->expects($this->once())
-                            ->method('name')
-                            ->will($this->returnValue('foo'));
+        $this->sessionId->method('name')->will(returnValue('foo'));
         assertEquals('foo', $this->createWebSession()->name());
     }
 
@@ -176,15 +162,13 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
      */
     private function createInvalidWebSession()
     {
-        $this->mockSessionStorage->expects($this->exactly(2))
-                                 ->method('hasValue')
-                                 ->will($this->onConsecutiveCalls(true, false));
-        $this->mockSessionStorage->expects($this->any())
-                                 ->method('value')
-                                 ->will($this->returnValue('aFingerprint'));
+        $this->sessionStorage->method('hasValue')
+                ->will(onConsecutiveCalls(true, false));
+        $this->sessionStorage->method('value')
+                ->will(returnValue('aFingerprint'));
         return new WebSession(
-                $this->mockSessionStorage,
-                $this->mockSessionId,
+                $this->sessionStorage,
+                $this->sessionId,
                 'aFingerprint'
         );
     }
@@ -202,8 +186,7 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
     public function invalidateClearsSessionData()
     {
         $webSession = $this->createWebSession();
-        $this->mockSessionStorage->expects($this->once())
-                                 ->method('clear');
+        $this->sessionStorage->expects(once())->method('clear');
         assertEquals($webSession, $webSession->invalidate());
     }
 
@@ -213,8 +196,7 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
     public function invalidateInvalidatesSessionId()
     {
         $webSession = $this->createWebSession();
-        $this->mockSessionId->expects($this->once())
-                            ->method('invalidate');
+        $this->sessionId->expects(once())->method('invalidate');
         assertEquals($webSession, $webSession->invalidate());
     }
 
@@ -234,15 +216,13 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
      */
     private function createWebSessionWithValues($value = null)
     {
-        $this->mockSessionStorage->expects($this->any())
-                                 ->method('hasValue')
-                                 ->will($this->onConsecutiveCalls(true, true, null !== $value));
-        $this->mockSessionStorage->expects($this->any())
-                                 ->method('value')
-                                 ->will($this->onConsecutiveCalls('aFingerprint', $value));
+        $this->sessionStorage->method('hasValue')
+                ->will(onConsecutiveCalls(true, true, null !== $value));
+        $this->sessionStorage->method('value')
+                ->will(onConsecutiveCalls('aFingerprint', $value));
         return new WebSession(
-                $this->mockSessionStorage,
-                $this->mockSessionId,
+                $this->sessionStorage,
+                $this->sessionId,
                 'aFingerprint'
         );
     }
@@ -307,9 +287,9 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
      */
     public function putValueStoresValue()
     {
-        $this->mockSessionStorage->expects($this->once())
-                                 ->method('putValue')
-                                 ->with($this->equalTo('foo'), $this->equalTo('bar'));
+        $this->sessionStorage->expects(once())
+                ->method('putValue')
+                ->with(equalTo('foo'), equalTo('bar'));
         $webSession = $this->createWebSession();
         assertEquals($webSession, $webSession->putValue('foo', 'bar'));
     }
@@ -336,9 +316,9 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
      */
     public function removeReturnsTrueIfValueWasNotStoredBefore()
     {
-        $this->mockSessionStorage->expects($this->once())
-                                 ->method('removeValue')
-                                 ->with($this->equalTo('foo'));
+        $this->sessionStorage->expects(once())
+                ->method('removeValue')
+                ->with(equalTo('foo'));
         assertTrue($this->createWebSessionWithValues('bar')->removeValue('foo'));
     }
 
@@ -356,14 +336,8 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
      */
     public function getValueKeysReturnsAllKeysWithoutFingerprint()
     {
-        $this->mockSessionStorage->expects($this->once())
-                                 ->method('valueKeys')
-                                 ->will($this->returnValue([Session::FINGERPRINT,
-                                                            'foo'
-                                                           ]
-
-                                        )
-                                   );
+        $this->sessionStorage->method('valueKeys')
+                ->will(returnValue([Session::FINGERPRINT, 'foo']));
         assertEquals(
                 ['foo'],
                 $this->createWebSession()->valueKeys()

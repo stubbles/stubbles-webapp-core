@@ -77,10 +77,9 @@ class CookieTest extends \PHPUnit_Framework_TestCase
     public function expiresAtUsesGivenTimestamp()
     {
         $expires = time() + 100; // expire after 100 seconds
-        assertEquals($expires,
-                            Cookie::create('foo', 'bar')
-                                  ->expiringAt($expires)
-                                  ->expiration()
+        assertEquals(
+                $expires,
+                Cookie::create('foo', 'bar')->expiringAt($expires)->expiration()
         );
     }
 
@@ -90,10 +89,9 @@ class CookieTest extends \PHPUnit_Framework_TestCase
      */
     public function expiresInAddsCurrentTime()
     {
-        assertGreaterThanOrEqual(time() + 100,
-                                        Cookie::create('foo', 'bar')
-                                              ->expiringIn(100)
-                                              ->expiration()
+        assertGreaterThanOrEqual(
+                time() + 100,
+                Cookie::create('foo', 'bar')->expiringIn(100)->expiration()
         );
     }
 
@@ -102,10 +100,9 @@ class CookieTest extends \PHPUnit_Framework_TestCase
      */
     public function usesGivenPath()
     {
-        assertEquals('bar',
-                            Cookie::create('foo', 'bar')
-                                  ->forPath('bar')
-                                  ->path()
+        assertEquals(
+                'bar',
+                Cookie::create('foo', 'bar')->forPath('bar')->path()
         );
     }
 
@@ -114,10 +111,9 @@ class CookieTest extends \PHPUnit_Framework_TestCase
      */
     public function usesGivenDomain()
     {
-        assertEquals('.example.org',
-                            Cookie::create('foo', 'bar')
-                                  ->forDomain('.example.org')
-                                  ->domain()
+        assertEquals(
+                '.example.org',
+                Cookie::create('foo', 'bar')->forDomain('.example.org')->domain()
         );
     }
 
@@ -126,10 +122,8 @@ class CookieTest extends \PHPUnit_Framework_TestCase
      */
     public function isRestrictedToSslIfEnabled()
     {
-        assertTrue(Cookie::create('foo', 'bar')
-                                ->restrictToSsl()
-                                ->isRestrictedToSsl()
-
+        assertTrue(
+                Cookie::create('foo', 'bar')->restrictToSsl()->isRestrictedToSsl()
          );
     }
 
@@ -138,10 +132,8 @@ class CookieTest extends \PHPUnit_Framework_TestCase
      */
     public function httpOnlyCanBeDisabled()
     {
-        assertFalse(Cookie::create('foo', 'bar')
-                                 ->disableHttpOnly()
-                                 ->isHttpOnly()
-
+        assertFalse(
+                Cookie::create('foo', 'bar')->disableHttpOnly()->isHttpOnly()
          );
     }
 }

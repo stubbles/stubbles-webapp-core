@@ -29,7 +29,7 @@ class ImageTest extends \PHPUnit_Framework_TestCase
     /**
      * @type  \PHPUnit_Framework_MockObject_MockObject
      */
-    private $mockResourceLoader;
+    private $resourceLoader;
 
 
     /**
@@ -37,10 +37,10 @@ class ImageTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->mockResourceLoader = $this->getMockBuilder('stubbles\lang\ResourceLoader')
-                                         ->disableOriginalConstructor()
-                                         ->getMock();
-        $this->image = new Image($this->mockResourceLoader, 'error.png');
+        $this->resourceLoader = $this->getMockBuilder('stubbles\lang\ResourceLoader')
+                ->disableOriginalConstructor()
+                ->getMock();
+        $this->image = new Image($this->resourceLoader, 'error.png');
     }
 
     /**
@@ -112,10 +112,9 @@ class ImageTest extends \PHPUnit_Framework_TestCase
     public function usesErrorImgResourceWhenResourceIsError()
     {
         $dummyDriver = new DummyDriver('fake');
-        $this->mockResourceLoader->expects($this->once())
-                ->method('load')
-                ->with($this->equalTo('error.png'))
-                ->will($this->returnValue(
+        $this->resourceLoader->method('load')
+                ->with(equalTo('error.png'))
+                ->will(returnValue(
                        ImageSource::load(
                                'error.png',
                                $dummyDriver
@@ -135,10 +134,9 @@ class ImageTest extends \PHPUnit_Framework_TestCase
     public function displaysImageLoadedFromFilename()
     {
         $dummyDriver = new DummyDriver('fake');
-        $this->mockResourceLoader->expects($this->once())
-                ->method('load')
-                ->with($this->equalTo('pixel.png'))
-                ->will($this->returnValue(
+        $this->resourceLoader->method('load')
+                ->with(equalTo('pixel.png'))
+                ->will(returnValue(
                        ImageSource::load(
                                'pixel.png',
                                $dummyDriver
@@ -158,7 +156,7 @@ class ImageTest extends \PHPUnit_Framework_TestCase
     public function displaysImagePassedAsResource()
     {
         $dummyDriver = new DummyDriver('fake');
-        $this->mockResourceLoader->expects($this->never())->method('load');
+        $this->resourceLoader->expects(never())->method('load');
         $this->image->serialize(
                 ImageSource::load(
                         'pixel.png',
@@ -176,9 +174,8 @@ class ImageTest extends \PHPUnit_Framework_TestCase
      */
     public function triggersUserErrorWhenImageLoadingFails()
     {
-        $this->mockResourceLoader->expects($this->once())
-                ->method('load')
-                ->will($this->throwException(new \Exception('hm...')));
+        $this->resourceLoader->method('load')
+                ->will(throwException(new \Exception('hm...')));
         $this->image->serialize(
                 'pixel.png',
                 new MemoryOutputStream()

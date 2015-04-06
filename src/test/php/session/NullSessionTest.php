@@ -27,15 +27,15 @@ class NullSessionTest extends \PHPUnit_Framework_TestCase
      *
      * @type  \PHPUnit_Framework_MockObject_MockObject
      */
-    private $mockSessionId;
+    private $sessionId;
 
     /**
      * set up test enviroment
      */
     public function setUp()
     {
-        $this->mockSessionId = $this->getMock('stubbles\webapp\session\id\SessionId');
-        $this->nullSession   = new NullSession($this->mockSessionId);
+        $this->sessionId   = $this->getMock('stubbles\webapp\session\id\SessionId');
+        $this->nullSession = new NullSession($this->sessionId);
     }
 
     /**
@@ -51,9 +51,7 @@ class NullSessionTest extends \PHPUnit_Framework_TestCase
      */
     public function idIsSessionId()
     {
-        $this->mockSessionId->expects($this->once())
-                            ->method('__toString')
-                            ->will($this->returnValue('303'));
+        $this->sessionId->method('__toString')->will(returnValue('303'));
         assertEquals('303', $this->nullSession->id());
     }
 
@@ -62,8 +60,7 @@ class NullSessionTest extends \PHPUnit_Framework_TestCase
      */
     public function regenerateCreatesNewSessionId()
     {
-        $this->mockSessionId->expects($this->once())
-                            ->method('regenerate');
+        $this->sessionId->expects(once())->method('regenerate');
         assertEquals(
                 $this->nullSession,
                 $this->nullSession->regenerateId()
@@ -75,9 +72,7 @@ class NullSessionTest extends \PHPUnit_Framework_TestCase
      */
     public function nameIsSessionIdName()
     {
-        $this->mockSessionId->expects($this->once())
-                            ->method('name')
-                            ->will($this->returnValue('foo'));
+        $this->sessionId->method('name')->will(returnValue('foo'));
         assertEquals('foo', $this->nullSession->name());
     }
 
@@ -94,8 +89,7 @@ class NullSessionTest extends \PHPUnit_Framework_TestCase
      */
     public function invalidateInvalidatesSessionId()
     {
-        $this->mockSessionId->expects($this->once())
-                            ->method('invalidate');
+        $this->sessionId->expects(once())->method('invalidate');
         assertEquals(
                 $this->nullSession,
                 $this->nullSession->invalidate()

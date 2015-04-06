@@ -27,13 +27,13 @@ class ResourceOptionsTest extends \PHPUnit_Framework_TestCase
      *
      * @type  \PHPUnit_Framework_MockObject_MockObject
      */
-    private $mockRequest;
+    private $request;
     /**
      * mocked response instance
      *
      * @type  \PHPUnit_Framework_MockObject_MockObject
      */
-    private $mockResponse;
+    private $response;
 
     /**
      * set up test environment
@@ -51,8 +51,8 @@ class ResourceOptionsTest extends \PHPUnit_Framework_TestCase
                 new SupportedMimeTypes([]),
                 new MatchingRoutes([], ['GET', 'POST', 'HEAD'])
         );
-        $this->mockRequest  = $this->getMock('stubbles\webapp\Request');
-        $this->mockResponse = $this->getMock('stubbles\webapp\Response');
+        $this->request  = $this->getMock('stubbles\webapp\Request');
+        $this->response = $this->getMock('stubbles\webapp\Response');
     }
 
     /**
@@ -68,20 +68,20 @@ class ResourceOptionsTest extends \PHPUnit_Framework_TestCase
      */
     public function addsAllowHeadersWhenRequestMethodIsOptions()
     {
-        $this->mockResponse->expects($this->at(0))
-                           ->method('addHeader')
-                           ->with($this->equalTo('Allow'), $this->equalTo('GET, POST, HEAD, OPTIONS'))
-                           ->will($this->returnSelf());
-        $this->mockResponse->expects($this->at(1))
-                           ->method('addHeader')
-                           ->with(
-                                   $this->equalTo('Access-Control-Allow-Methods'),
-                                   $this->equalTo('GET, POST, HEAD, OPTIONS')
-                            )
-                           ->will($this->returnSelf());
+        $this->response->expects(at(0))
+                ->method('addHeader')
+                ->with(equalTo('Allow'), equalTo('GET, POST, HEAD, OPTIONS'))
+                ->will(returnSelf());
+        $this->response->expects(at(1))
+                ->method('addHeader')
+                ->with(
+                        equalTo('Access-Control-Allow-Methods'),
+                        equalTo('GET, POST, HEAD, OPTIONS')
+                 )
+                ->will($this->returnSelf());
         $this->resourceOptions->resolve(
-                $this->mockRequest,
-                $this->mockResponse
+                $this->request,
+                $this->response
         );
     }
 }

@@ -120,7 +120,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 function(Request $request, Response $response, UriPath $uriPath)
                 {
                     $response->setStatusCode(418)
-                             ->write('Hello ' . $uriPath->readArgument('name')->asString());
+                            ->write('Hello ' . $uriPath->readArgument('name')->asString());
                     return false;
                 },
                 $method
@@ -272,19 +272,19 @@ class RouteTest extends \PHPUnit_Framework_TestCase
      */
     public function hasGivenListOfPreInterceptors()
     {
-        $preInterceptor     = function() {};
-        $mockPreInterceptor = $this->getMock('stubbles\webapp\interceptor\PreInterceptor');
-        $mockPreFunction    = 'array_map';
+        $preInterceptorClosure  = function() {};
+        $preInterceptor         = $this->getMock('stubbles\webapp\interceptor\PreInterceptor');
+        $preInterceptorFunction = 'array_map';
         assertEquals(
-                [get_class($mockPreInterceptor),
+                [get_class($preInterceptor),
+                 $preInterceptorClosure,
                  $preInterceptor,
-                 $mockPreInterceptor,
-                 $mockPreFunction
+                 $preInterceptorFunction
                 ],
-                $this->createRoute()->preIntercept(get_class($mockPreInterceptor))
+                $this->createRoute()->preIntercept(get_class($preInterceptor))
+                        ->preIntercept($preInterceptorClosure)
                         ->preIntercept($preInterceptor)
-                        ->preIntercept($mockPreInterceptor)
-                        ->preIntercept($mockPreFunction)
+                        ->preIntercept($preInterceptorFunction)
                         ->preInterceptors()
         );
     }
@@ -311,19 +311,19 @@ class RouteTest extends \PHPUnit_Framework_TestCase
      */
     public function hasGivenListOfPostInterceptors()
     {
-        $postInterceptor     = function() {};
-        $mockPostInterceptor = $this->getMock('stubbles\webapp\interceptor\PostInterceptor');
-        $mockPostFunction    = 'array_map';
+        $postInterceptorClosure  = function() {};
+        $postInterceptor         = $this->getMock('stubbles\webapp\interceptor\PostInterceptor');
+        $postInterceptorFunction = 'array_map';
         assertEquals(
-                [get_class($mockPostInterceptor),
+                [get_class($postInterceptor),
+                 $postInterceptorClosure,
                  $postInterceptor,
-                 $mockPostInterceptor,
-                 $mockPostFunction
+                 $postInterceptorFunction
                 ],
-                $this->createRoute()->postIntercept(get_class($mockPostInterceptor))
+                $this->createRoute()->postIntercept(get_class($postInterceptor))
+                        ->postIntercept($postInterceptorClosure)
                         ->postIntercept($postInterceptor)
-                        ->postIntercept($mockPostInterceptor)
-                        ->postIntercept($mockPostFunction)
+                        ->postIntercept($postInterceptorFunction)
                         ->postInterceptors()
         );
     }

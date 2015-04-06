@@ -132,9 +132,7 @@ class CacheControlTest extends \PHPUnit_Framework_TestCase
     {
         assertEquals(
                 'must-revalidate, no-cache, no-store, private',
-                $this->cacheControl->mustRevalidate()
-                                   ->noCache()
-                                   ->noStore()
+                $this->cacheControl->mustRevalidate()->noCache()->noStore()
         );
     }
 }

@@ -28,13 +28,13 @@ class MethodNotAllowedTest extends \PHPUnit_Framework_TestCase
      *
      * @type  \PHPUnit_Framework_MockObject_MockObject
      */
-    private $mockRequest;
+    private $request;
     /**
      * mocked response instance
      *
      * @type  \PHPUnit_Framework_MockObject_MockObject
      */
-    private $mockResponse;
+    private $response;
 
     /**
      * set up test environment
@@ -52,8 +52,8 @@ class MethodNotAllowedTest extends \PHPUnit_Framework_TestCase
                 new SupportedMimeTypes([]),
                 ['GET', 'POST', 'HEAD']
         );
-        $this->mockRequest  = $this->getMock('stubbles\webapp\Request');
-        $this->mockResponse = $this->getMock('stubbles\webapp\Response');
+        $this->request  = $this->getMock('stubbles\webapp\Request');
+        $this->response = $this->getMock('stubbles\webapp\Response');
     }
 
     /**
@@ -73,21 +73,20 @@ class MethodNotAllowedTest extends \PHPUnit_Framework_TestCase
                 'DELETE',
                 ['GET', 'POST', 'HEAD', 'OPTIONS']
         );
-        $this->mockRequest->expects($this->once())
+        $this->request->expects(once())
                 ->method('method')
-                ->will($this->returnValue('DELETE'));
-        $this->mockResponse->expects($this->once())
-                ->method('methodNotAllowed')
+                ->will(returnValue('DELETE'));
+        $this->response->method('methodNotAllowed')
                 ->with(
-                        $this->equalTo('DELETE'),
-                        $this->equalTo(['GET', 'POST', 'HEAD', 'OPTIONS'])
+                        equalTo('DELETE'),
+                        equalTo(['GET', 'POST', 'HEAD', 'OPTIONS'])
                  )
-                 ->will($this->returnValue($error));
+                 ->will(returnValue($error));
         assertSame(
                 $error,
                 $this->methodNotAllowed->resolve(
-                        $this->mockRequest,
-                        $this->mockResponse
+                        $this->request,
+                        $this->response
                 )
         );
     }

@@ -62,8 +62,9 @@ class NoneDurableSessionIdTest extends \PHPUnit_Framework_TestCase
      */
     public function hasSessionId()
     {
-        assertRegExp('/^([a-zA-Z0-9]{32})$/D',
-                            (string) $this->noneDurableSessionId
+        assertRegExp(
+                '/^([a-zA-Z0-9]{32})$/D',
+                (string) $this->noneDurableSessionId
         );
     }
 
@@ -73,8 +74,9 @@ class NoneDurableSessionIdTest extends \PHPUnit_Framework_TestCase
     public function regenerateChangesSessionId()
     {
         $previous = (string) $this->noneDurableSessionId;
-        assertNotEquals($previous,
-                               (string) $this->noneDurableSessionId->regenerate()
+        assertNotEquals(
+                $previous,
+                (string) $this->noneDurableSessionId->regenerate()
         );
     }
 
@@ -83,8 +85,9 @@ class NoneDurableSessionIdTest extends \PHPUnit_Framework_TestCase
      */
     public function regeneratedSessionIdIsValid()
     {
-        assertRegExp('/^([a-zA-Z0-9]{32})$/D',
-                            (string) $this->noneDurableSessionId->regenerate()
+        assertRegExp(
+                '/^([a-zA-Z0-9]{32})$/D',
+                (string) $this->noneDurableSessionId->regenerate()
         );
     }
 
@@ -93,8 +96,9 @@ class NoneDurableSessionIdTest extends \PHPUnit_Framework_TestCase
      */
     public function invalidateDoesNothing()
     {
-        assertSame($this->noneDurableSessionId,
-                          $this->noneDurableSessionId->invalidate()
+        assertSame(
+                $this->noneDurableSessionId,
+                $this->noneDurableSessionId->invalidate()
         );
     }
 

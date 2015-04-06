@@ -23,21 +23,21 @@ class AddAccessControlAllowOriginHeaderTest extends \PHPUnit_Framework_TestCase
      *
      * @type  \PHPUnit_Framework_MockObject_MockObject
      */
-    private $mockRequest;
+    private $request;
     /**
      * mocked response instance
      *
      * @type  \PHPUnit_Framework_MockObject_MockObject
      */
-    private $mockResponse;
+    private $response;
 
     /**
      * set up test environment
      */
     public function setUp()
     {
-        $this->mockRequest  = $this->getMock('stubbles\webapp\Request');
-        $this->mockResponse = $this->getMock('stubbles\webapp\Response');
+        $this->request  = $this->getMock('stubbles\webapp\Request');
+        $this->response = $this->getMock('stubbles\webapp\Response');
     }
 
     /**
@@ -56,6 +56,18 @@ class AddAccessControlAllowOriginHeaderTest extends \PHPUnit_Framework_TestCase
         );
     }
 
+    /**
+     * creates instance for test
+     *
+     * @param   string  $config
+     * @return  \stubbles\webapp\interceptor\AddAccessControlAllowOriginHeader
+     */
+    private function apply($config)
+    {
+        $foo = new AddAccessControlAllowOriginHeader($config);
+        $foo->postProcess($this->request, $this->response);
+    }
+
     public function emptyConfigs()
     {
         return [[null], [''], [[]]];
@@ -67,10 +79,8 @@ class AddAccessControlAllowOriginHeaderTest extends \PHPUnit_Framework_TestCase
      */
     public function doesNotAddHeaderWhenNoAllowedOriginHostConfigured($emptyConfig)
     {
-        $this->mockResponse->expects($this->never())
-                           ->method('addHeader');
-        $addAccessControlAllowOriginHeader = new AddAccessControlAllowOriginHeader($emptyConfig);
-        $addAccessControlAllowOriginHeader->postProcess($this->mockRequest, $this->mockResponse);
+        $this->response->expects(never())->method('addHeader');
+        $this->apply($emptyConfig);
     }
 
     /**
@@ -78,13 +88,11 @@ class AddAccessControlAllowOriginHeaderTest extends \PHPUnit_Framework_TestCase
      */
     public function doesNotAddHeaderWhenRequestContainsNoOriginHeader()
     {
-        $this->mockRequest->expects($this->once())
-                          ->method('hasHeader')
-                          ->will($this->returnValue(false));
-        $this->mockResponse->expects($this->never())
-                           ->method('addHeader');
-        $addAccessControlAllowOriginHeader = new AddAccessControlAllowOriginHeader('^http://[a-zA-Z0-9-\.]+example\.com(:[0-9]{4})?$');
-        $addAccessControlAllowOriginHeader->postProcess($this->mockRequest, $this->mockResponse);
+        $this->request->expects(any())
+                ->method('hasHeader')
+                ->will(returnValue(false));
+        $this->response->expects(never())->method('addHeader');
+        $this->apply('^http://[a-zA-Z0-9-\.]+example\.com(:[0-9]{4})?$');
     }
 
     /**
@@ -92,16 +100,14 @@ class AddAccessControlAllowOriginHeaderTest extends \PHPUnit_Framework_TestCase
      */
     public function doesNotAddHeaderWhenOriginFromRequestDoesNotMatchAllowedOriginHosts()
     {
-        $this->mockRequest->expects($this->once())
-                          ->method('hasHeader')
-                          ->will($this->returnValue(true));
-        $this->mockRequest->expects($this->once())
-                          ->method('readHeader')
-                          ->will($this->returnValue(ValueReader::forValue('http://example.net')));
-        $this->mockResponse->expects($this->never())
-                           ->method('addHeader');
-        $addAccessControlAllowOriginHeader = new AddAccessControlAllowOriginHeader('^http://[a-zA-Z0-9-\.]+example\.com(:[0-9]{4})?$');
-        $addAccessControlAllowOriginHeader->postProcess($this->mockRequest, $this->mockResponse);
+        $this->request->expects(any())
+                ->method('hasHeader')
+                ->will(returnValue(true));
+        $this->request->expects(any())
+                ->method('readHeader')
+                ->will(returnValue(ValueReader::forValue('http://example.net')));
+        $this->response->expects(never())->method('addHeader');
+        $this->apply('^http://[a-zA-Z0-9-\.]+example\.com(:[0-9]{4})?$');
     }
 
     /**
@@ -109,19 +115,21 @@ class AddAccessControlAllowOriginHeaderTest extends \PHPUnit_Framework_TestCase
      */
     public function addsHeaderWhenOriginFromRequestIsAllowed()
     {
-        $this->mockRequest->expects($this->once())
-                          ->method('hasHeader')
-                          ->will($this->returnValue(true));
-        $this->mockRequest->expects($this->once())
-                          ->method('readHeader')
-                          ->will($this->returnValue(ValueReader::forValue('http://foo.example.com:9039')));
-        $this->mockResponse->expects($this->once())
-                           ->method('addHeader')
-                           ->with(
-                                $this->equalTo('Access-Control-Allow-Origin'),
-                                $this->equalTo('http://foo.example.com:9039')
-                             );
-        $addAccessControlAllowOriginHeader = new AddAccessControlAllowOriginHeader('^http://[a-zA-Z0-9-\.]+example\.net(:[0-9]{4})?$|^http://[a-zA-Z0-9-\.]+example\.com(:[0-9]{4})?$');
-        $addAccessControlAllowOriginHeader->postProcess($this->mockRequest, $this->mockResponse);
+        $this->request->expects(any())
+                ->method('hasHeader')
+                ->will(returnValue(true));
+        $this->request->expects(any())
+                ->method('readHeader')
+                ->will(returnValue(ValueReader::forValue('http://foo.example.com:9039')));
+        $this->response->expects(once())
+                ->method('addHeader')
+                ->with(
+                        equalTo('Access-Control-Allow-Origin'),
+                        equalTo('http://foo.example.com:9039')
+                );
+        $this->apply(
+                '^http://[a-zA-Z0-9-\.]+example\.net(:[0-9]{4})?$'
+                . '|^http://[a-zA-Z0-9-\.]+example\.com(:[0-9]{4})?$'
+        );
     }
 }

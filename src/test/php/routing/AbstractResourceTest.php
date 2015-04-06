@@ -72,7 +72,7 @@ class AbstractResourceTest extends \PHPUnit_Framework_TestCase
      *
      * @type  \PHPUnit_Framework_MockObject_MockObject
      */
-    private $mockRequest;
+    private $request;
     /**
      * mocked response instance
      *
@@ -82,32 +82,32 @@ class AbstractResourceTest extends \PHPUnit_Framework_TestCase
     /**
      * @type  \PHPUnit_Framework_MockObject_MockObject
      */
-    private $mockInjector;
+    private $injector;
     /**
      * @type  \PHPUnit_Framework_MockObject_MockObject
      */
-    private $mockInterceptors;
+    private $interceptors;
 
     /**
      * set up test environment
      */
     public function setUp()
     {
-        $this->mockRequest  = $this->getMock('stubbles\webapp\Request');
-        $this->mockRequest->expects($this->once())
-                          ->method('protocolVersion')
-                          ->will($this->returnValue(new HttpVersion(1, 1)));
+        $this->request = $this->getMock('stubbles\webapp\Request');
+        $this->request->expects(any())
+                ->method('protocolVersion')
+                ->will(returnValue(new HttpVersion(1, 1)));
         $this->response = $this->getMock(
                 'stubbles\webapp\response\WebResponse',
                 ['header'],
-                [$this->mockRequest]
+                [$this->request]
         );
-        $this->mockInjector = $this->getMockBuilder('stubbles\ioc\Injector')
-                        ->disableOriginalConstructor()
-                        ->getMock();
-        $this->mockInterceptors = $this->getMockBuilder('stubbles\webapp\routing\Interceptors')
-                                   ->disableOriginalConstructor()
-                                   ->getMock();
+        $this->injector = $this->getMockBuilder('stubbles\ioc\Injector')
+                ->disableOriginalConstructor()
+                ->getMock();
+        $this->interceptors = $this->getMockBuilder('stubbles\webapp\routing\Interceptors')
+                ->disableOriginalConstructor()
+                ->getMock();
     }
 
     /**
@@ -120,9 +120,9 @@ class AbstractResourceTest extends \PHPUnit_Framework_TestCase
     private function createRoute(SupportedMimeTypes $mimeTypes = null)
     {
         return new TestAbstractResource(
-                $this->mockInjector,
+                $this->injector,
                 new CalledUri('http://example.com/hello/world', 'GET'),
-                $this->mockInterceptors,
+                $this->interceptors,
                 null === $mimeTypes ? new SupportedMimeTypes([]) : $mimeTypes
 
         );
@@ -165,17 +165,17 @@ class AbstractResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function negotiatesNothingIfNoMatchCanBeFound()
     {
-        $mockRequest = $this->getMock('stubbles\webapp\Request');
-        $mockRequest->expects($this->once())
+        $request = $this->getMock('stubbles\webapp\Request');
+        $request->expects(once())
                 ->method('readHeader')
-                ->with($this->equalTo('HTTP_ACCEPT'))
-                ->will($this->returnValue(ValueReader::forValue('text/html')));
+                ->with(equalTo('HTTP_ACCEPT'))
+                ->will(returnValue(ValueReader::forValue('text/html')));
         assertFalse(
                 $this->createRoute(
                         new SupportedMimeTypes(
                                 ['application/json', 'application/xml']
                         )
-                )->negotiateMimeType($mockRequest, $this->response)
+                )->negotiateMimeType($request, $this->response)
         );
         assertEquals(406, $this->response->statusCode());
         assertTrue(
@@ -192,17 +192,17 @@ class AbstractResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function missingMimeTypeClassForNegotiatedMimeTypeTriggersInternalServerError()
     {
-        $mockRequest = $this->getMock('stubbles\webapp\Request');
-        $mockRequest->expects($this->once())
+        $request = $this->getMock('stubbles\webapp\Request');
+        $request->expects(once())
                 ->method('readHeader')
-                ->with($this->equalTo('HTTP_ACCEPT'))
-                ->will($this->returnValue(ValueReader::forValue('application/foo')));
+                ->with(equalTo('HTTP_ACCEPT'))
+                ->will(returnValue(ValueReader::forValue('application/foo')));
         assertFalse(
                 $this->createRoute(
                         new SupportedMimeTypes(
                                 ['application/foo', 'application/xml']
                         )
-                )->negotiateMimeType($mockRequest, $this->response)
+                )->negotiateMimeType($request, $this->response)
         );
         assertEquals(500, $this->response->statusCode());
         assertEquals(
@@ -217,21 +217,19 @@ class AbstractResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function createsNegotiatedMimeType()
     {
-        $mockRequest = $this->getMock('stubbles\webapp\Request');
-        $mockRequest->expects($this->once())
+        $request = $this->getMock('stubbles\webapp\Request');
+        $request->expects(once())
                 ->method('readHeader')
-                ->with($this->equalTo('HTTP_ACCEPT'))
-                ->will($this->returnValue(ValueReader::forValue('application/json')));
+                ->with(equalTo('HTTP_ACCEPT'))
+                ->will(returnValue(ValueReader::forValue('application/json')));
         $mimeType = new Json();
-        $this->mockInjector->expects($this->once())
-                           ->method('getInstance')
-                           ->will($this->returnValue($mimeType));
+        $this->injector->method('getInstance')->will(returnValue($mimeType));
         assertTrue(
                 $this->createRoute(
                         new SupportedMimeTypes(
                                 ['application/json', 'application/xml']
                         )
-                )->negotiateMimeType($mockRequest, $this->response)
+                )->negotiateMimeType($request, $this->response)
         );
         assertSame(
                 $mimeType,
@@ -256,14 +254,14 @@ class AbstractResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function delegatesPreInterceptingToInterceptors()
     {
-        $this->mockInterceptors->expects($this->once())
+        $this->interceptors->expects(once())
                 ->method('preProcess')
-                ->with($this->equalTo($this->mockRequest), $this->equalTo($this->response))
-                ->will($this->returnValue(true));
+                ->with(equalTo($this->request), equalTo($this->response))
+                ->will(returnValue(true));
         assertTrue(
                 $this->createRoute()
                         ->applyPreInterceptors(
-                                $this->mockRequest,
+                                $this->request,
                                 $this->response
                         )
         );
@@ -274,14 +272,14 @@ class AbstractResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function delegatesPostInterceptingToInterceptors()
     {
-        $this->mockInterceptors->expects($this->once())
+        $this->interceptors->expects(once())
                 ->method('postProcess')
-                ->with($this->equalTo($this->mockRequest), $this->equalTo($this->response))
-                ->will($this->returnValue(true));
+                ->with(equalTo($this->request), equalTo($this->response))
+                ->will(returnValue(true));
         assertTrue(
                 $this->createRoute()
                         ->applyPostInterceptors(
-                                $this->mockRequest,
+                                $this->request,
                                 $this->response
                         )
         );

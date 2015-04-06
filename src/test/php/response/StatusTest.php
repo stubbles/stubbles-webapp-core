@@ -100,7 +100,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
         assertEquals(
                 HttpVersion::HTTP_1_1 . ' 909 Sound Is Awesome',
                 $this->status->setCode(909, 'Sound Is Awesome')
-                             ->line(HttpVersion::HTTP_1_1)
+                        ->line(HttpVersion::HTTP_1_1)
         );
     }
 
@@ -157,10 +157,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function acceptedSetsStatusCodeTo202()
     {
-        assertEquals(
-                202,
-                $this->status->accepted()->code()
-        );
+        assertEquals(202, $this->status->accepted()->code());
     }
 
     /**
@@ -168,9 +165,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function acceptedFixatesStatusCode()
     {
-        assertTrue(
-                $this->status->accepted()->isFixed()
-        );
+        assertTrue($this->status->accepted()->isFixed());
     }
 
     /**
@@ -178,10 +173,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function noContentSetsStatusCodeTo204()
     {
-        assertEquals(
-                204,
-                $this->status->noContent()->code()
-        );
+        assertEquals(204, $this->status->noContent()->code());
     }
 
     /**
@@ -198,9 +190,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function noContentDisallowsPayload()
     {
-        assertFalse(
-                $this->status->noContent()->allowsPayload()
-        );
+        assertFalse($this->status->noContent()->allowsPayload());
     }
 
     /**
@@ -208,9 +198,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function noContentFixatesStatusCode()
     {
-        assertTrue(
-                $this->status->noContent()->isFixed()
-        );
+        assertTrue($this->status->noContent()->isFixed());
     }
 
     /**
@@ -218,10 +206,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function resetContentSetsStatusCodeTo205()
     {
-        assertEquals(
-                205,
-                $this->status->resetContent()->code()
-        );
+        assertEquals(205, $this->status->resetContent()->code());
     }
 
     /**
@@ -238,9 +223,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function resetContentDisallowsPayload()
     {
-        assertFalse(
-                $this->status->resetContent()->allowsPayload()
-        );
+        assertFalse($this->status->resetContent()->allowsPayload());
     }
 
     /**
@@ -248,9 +231,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function resetContentFixatesStatusCode()
     {
-        assertTrue(
-                $this->status->resetContent()->isFixed()
-        );
+        assertTrue($this->status->resetContent()->isFixed());
     }
 
     /**
@@ -258,10 +239,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function partialContentSetsStatusCodeTo206()
     {
-        assertEquals(
-                206,
-                $this->status->partialContent(0, 10)->code()
-        );
+        assertEquals(206, $this->status->partialContent(0, 10)->code());
     }
 
     /**
@@ -270,10 +248,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
     public function partialContentAddsContentRangeHeader()
     {
         $this->status->partialContent(0, 10);
-        assertEquals(
-                'bytes 0-10/*',
-                $this->headers['Content-Range']
-        );
+        assertEquals('bytes 0-10/*', $this->headers['Content-Range']);
     }
 
     /**
@@ -282,10 +257,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
     public function partialContentAddsContentRangeHeaderWithTotalSizeAndDifferentUnit()
     {
         $this->status->partialContent(0, 10, 25, 'elements');
-        assertEquals(
-                'elements 0-10/25',
-                $this->headers['Content-Range']
-        );
+        assertEquals('elements 0-10/25', $this->headers['Content-Range']);
     }
 
     /**
@@ -293,9 +265,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function partialContentFixatesStatusCode()
     {
-        assertTrue(
-                $this->status->partialContent(0, 10)->isFixed()
-        );
+        assertTrue($this->status->partialContent(0, 10)->isFixed());
     }
 
     /**
@@ -334,9 +304,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function redirectFixatesStatusCode()
     {
-        assertTrue(
-                $this->status->redirect('http://example.com/foo')->isFixed()
-        );
+        assertTrue($this->status->redirect('http://example.com/foo')->isFixed());
     }
 
     /**
@@ -344,10 +312,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function notModifiedSetsStatusCodeTo304()
     {
-        assertEquals(
-                304,
-                $this->status->notModified()->code()
-        );
+        assertEquals(304, $this->status->notModified()->code());
     }
 
     /**
@@ -355,9 +320,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function notModifiedFixatesStatusCode()
     {
-        assertTrue(
-                $this->status->notModified()->isFixed()
-        );
+        assertTrue($this->status->notModified()->isFixed());
     }
 
     /**
@@ -365,10 +328,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function badRequestSetsStatusCodeTo400()
     {
-        assertEquals(
-                400,
-                $this->status->badRequest()->code()
-        );
+        assertEquals(400, $this->status->badRequest()->code());
     }
 
     /**
@@ -376,9 +336,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function badRequestFixatesStatusCode()
     {
-        assertTrue(
-                $this->status->badRequest()->isFixed()
-        );
+        assertTrue($this->status->badRequest()->isFixed());
     }
 
     /**
@@ -406,7 +364,9 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function unauthorizedAddsWwwAuthenticateHeader()
     {
-        $this->status->unauthorized(['MyAuth realm="Yo"', 'Basic realm="RealmName"']);
+        $this->status->unauthorized(
+                ['MyAuth realm="Yo"', 'Basic realm="RealmName"']
+        );
         assertEquals(
                 'MyAuth realm="Yo", Basic realm="RealmName"',
                 $this->headers['WWW-Authenticate']
@@ -419,7 +379,8 @@ class StatusTest extends \PHPUnit_Framework_TestCase
     public function unauthorizedFixatesStatusCode()
     {
         assertTrue(
-                $this->status->unauthorized(['Basic realm="RealmName"'])->isFixed()
+                $this->status->unauthorized(['Basic realm="RealmName"'])
+                        ->isFixed()
         );
     }
 
@@ -428,10 +389,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function forbiddenSetsStatusCodeTo403()
     {
-        assertEquals(
-                403,
-                $this->status->forbidden()->code()
-        );
+        assertEquals(403, $this->status->forbidden()->code());
     }
 
     /**
@@ -439,9 +397,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function forbiddenFixatesStatusCode()
     {
-        assertTrue(
-                $this->status->forbidden()->isFixed()
-        );
+        assertTrue($this->status->forbidden()->isFixed());
     }
 
     /**
@@ -449,10 +405,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function notFoundSetsStatusCodeTo404()
     {
-        assertEquals(
-                404,
-                $this->status->notFound()->code()
-        );
+        assertEquals(404, $this->status->notFound()->code());
     }
 
     /**
@@ -460,9 +413,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function notFoundFixatesStatusCode()
     {
-        assertTrue(
-                $this->status->notFound()->isFixed()
-        );
+        assertTrue($this->status->notFound()->isFixed());
     }
 
     /**
@@ -482,10 +433,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
     public function methodNotAllowedAddsAllowHeader()
     {
         $this->status->methodNotAllowed(['GET', 'HEAD']);
-        assertEquals(
-                'GET, HEAD',
-                $this->headers['Allow']
-        );
+        assertEquals('GET, HEAD', $this->headers['Allow']);
     }
 
     /**
@@ -493,9 +441,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function methodNotAllowedFixatesStatusCode()
     {
-        assertTrue(
-                $this->status->methodNotAllowed(['GET', 'HEAD'])->isFixed()
-        );
+        assertTrue($this->status->methodNotAllowed(['GET', 'HEAD'])->isFixed());
     }
 
     /**
@@ -505,7 +451,8 @@ class StatusTest extends \PHPUnit_Framework_TestCase
     {
         assertEquals(
                 406,
-                $this->status->notAcceptable(['text/plain', 'application/foo'])->code()
+                $this->status->notAcceptable(['text/plain', 'application/foo'])
+                        ->code()
         );
     }
 
@@ -527,7 +474,8 @@ class StatusTest extends \PHPUnit_Framework_TestCase
     public function notAcceptableFixatesStatusCode()
     {
         assertTrue(
-                $this->status->notAcceptable(['text/plain', 'application/foo'])->isFixed()
+                $this->status->notAcceptable(['text/plain', 'application/foo'])
+                        ->isFixed()
         );
     }
 
@@ -536,10 +484,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function conflictSetsStatusCodeTo409()
     {
-        assertEquals(
-                409,
-                $this->status->conflict()->code()
-        );
+        assertEquals(409, $this->status->conflict()->code());
     }
 
     /**
@@ -547,9 +492,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function conflictFixatesStatusCode()
     {
-        assertTrue(
-                $this->status->conflict()->isFixed()
-        );
+        assertTrue($this->status->conflict()->isFixed());
     }
 
     /**
@@ -557,10 +500,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function goneSetsStatusCodeTo410()
     {
-        assertEquals(
-                410,
-                $this->status->gone()->code()
-        );
+        assertEquals(410, $this->status->gone()->code());
     }
 
     /**
@@ -568,9 +508,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function goneFixatesStatusCode()
     {
-        assertTrue(
-                $this->status->gone()->isFixed()
-        );
+        assertTrue($this->status->gone()->isFixed());
     }
 
     /**
@@ -578,10 +516,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function lengthRequiredSetsStatusCodeTo411()
     {
-        assertEquals(
-                411,
-                $this->status->lengthRequired()->code()
-        );
+        assertEquals(411, $this->status->lengthRequired()->code());
     }
 
     /**
@@ -589,9 +524,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function lengthRequiredFixatesStatusCode()
     {
-        assertTrue(
-                $this->status->lengthRequired()->isFixed()
-        );
+        assertTrue($this->status->lengthRequired()->isFixed());
     }
 
     /**
@@ -599,10 +532,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function preconditionFailedSetsStatusCodeTo412()
     {
-        assertEquals(
-                412,
-                $this->status->preconditionFailed()->code()
-        );
+        assertEquals(412, $this->status->preconditionFailed()->code());
     }
 
     /**
@@ -610,9 +540,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function preconditionFailedFixatesStatusCode()
     {
-        assertTrue(
-                $this->status->preconditionFailed()->isFixed()
-        );
+        assertTrue($this->status->preconditionFailed()->isFixed());
     }
 
     /**
@@ -620,10 +548,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function unsupportedMediaTypeSetsStatusCodeTo415()
     {
-        assertEquals(
-                415,
-                $this->status->unsupportedMediaType()->code()
-        );
+        assertEquals(415, $this->status->unsupportedMediaType()->code());
     }
 
     /**
@@ -631,9 +556,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function unsupportedMediaTypeFixatesStatusCode()
     {
-        assertTrue(
-                $this->status->unsupportedMediaType()->isFixed()
-        );
+        assertTrue($this->status->unsupportedMediaType()->isFixed());
     }
 
     /**
@@ -641,10 +564,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function rangeNotSatisfiableSetsStatusCodeTo416()
     {
-        assertEquals(
-                416,
-                $this->status->rangeNotSatisfiable(22)->code()
-        );
+        assertEquals(416, $this->status->rangeNotSatisfiable(22)->code());
     }
 
     /**
@@ -653,10 +573,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
     public function rangeNotSatisfiableAddsContentRangeHeader()
     {
         $this->status->rangeNotSatisfiable(22);
-        assertEquals(
-                'bytes */22',
-                $this->headers['Content-Range']
-        );
+        assertEquals('bytes */22', $this->headers['Content-Range']);
     }
 
     /**
@@ -665,10 +582,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
     public function rangeNotSatisfiableAddsContentRangeHeaderWithDifferentUnit()
     {
         $this->status->rangeNotSatisfiable(22, 'elements');
-        assertEquals(
-                'elements */22',
-                $this->headers['Content-Range']
-        );
+        assertEquals('elements */22', $this->headers['Content-Range']);
     }
 
     /**
@@ -676,9 +590,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function rangeNotSatisfiableFixatesStatusCode()
     {
-        assertTrue(
-                $this->status->rangeNotSatisfiable(22)->isFixed()
-        );
+        assertTrue($this->status->rangeNotSatisfiable(22)->isFixed());
     }
 
     /**
@@ -686,10 +598,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function internalServerErrorSetsStatusCodeTo500()
     {
-        assertEquals(
-                500,
-                $this->status->internalServerError()->code()
-        );
+        assertEquals(500, $this->status->internalServerError()->code());
     }
 
     /**
@@ -697,9 +606,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function internalServerErrorFixatesStatusCode()
     {
-        assertTrue(
-                $this->status->internalServerError()->isFixed()
-        );
+        assertTrue($this->status->internalServerError()->isFixed());
     }
 
     /**
@@ -707,10 +614,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function notImplementedSetsStatusCodeTo501()
     {
-        assertEquals(
-                501,
-                $this->status->notImplemented()->code()
-        );
+        assertEquals(501, $this->status->notImplemented()->code());
     }
 
     /**
@@ -718,9 +622,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function notImplementedFixatesStatusCode()
     {
-        assertTrue(
-                $this->status->notImplemented()->isFixed()
-        );
+        assertTrue($this->status->notImplemented()->isFixed());
     }
 
     /**
@@ -728,10 +630,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function serviceUnavailableSetsStatusCodeTo503()
     {
-        assertEquals(
-                503,
-                $this->status->serviceUnavailable()->code()
-        );
+        assertEquals(503, $this->status->serviceUnavailable()->code());
     }
 
     /**
@@ -739,9 +638,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function serviceUnavailableFixatesStatusCode()
     {
-        assertTrue(
-                $this->status->serviceUnavailable()->isFixed()
-        );
+        assertTrue($this->status->serviceUnavailable()->isFixed());
     }
 
     /**
@@ -749,10 +646,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function httpVersionNotSupportedSetsStatusCodeTo505()
     {
-        assertEquals(
-                505,
-                $this->status->httpVersionNotSupported()->code()
-        );
+        assertEquals(505, $this->status->httpVersionNotSupported()->code());
     }
 
     /**
@@ -760,8 +654,6 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function httpVersionNotSupportedFixatesStatusCode()
     {
-        assertTrue(
-                $this->status->httpVersionNotSupported()->isFixed()
-        );
+        assertTrue($this->status->httpVersionNotSupported()->isFixed());
     }
 }

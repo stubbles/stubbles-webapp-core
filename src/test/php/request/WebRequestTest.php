@@ -991,8 +991,8 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
     public function hasSessionWhenAttached()
     {
         $request = $this->createBaseWebRequest();
-        $mockSession = $this->getMock('stubbles\webapp\session\Session');
-        $request->attachSession($mockSession);
+        $session = $this->getMock('stubbles\webapp\session\Session');
+        $request->attachSession($session);
         assertTrue($request->hasSessionAttached());
     }
 
@@ -1003,9 +1003,9 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
     public function returnsAttachedSession()
     {
         $request = $this->createBaseWebRequest();
-        $mockSession = $this->getMock('stubbles\webapp\session\Session');
+        $session = $this->getMock('stubbles\webapp\session\Session');
         assertSame(
-                $request->attachSession($mockSession),
+                $request->attachSession($session),
                 $request->attachedSession()
         );
     }

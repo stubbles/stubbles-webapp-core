@@ -31,13 +31,13 @@ class HtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
      *
      * @type  \PHPUnit_Framework_MockObject_MockObject
      */
-    private $mockRequest;
+    private $request;
     /**
      * mocked response instance
      *
      * @type  \PHPUnit_Framework_MockObject_MockObject
      */
-    private $mockResponse;
+    private $response;
 
     /**
      * set up the test environment
@@ -47,8 +47,8 @@ class HtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
         $root = vfsStream::setup();
         vfsStream::newFile('index.html')->withContent('this is index.html')->at($root);
         vfsStream::newFile('foo.html')->withContent('this is foo.html')->at($root);
-        $this->mockRequest         = $this->getMock('stubbles\webapp\Request');
-        $this->mockResponse        = $this->getMock('stubbles\webapp\Response');
+        $this->request             = $this->getMock('stubbles\webapp\Request');
+        $this->response            = $this->getMock('stubbles\webapp\Response');
         $this->htmlFilePassThrough = new HtmlFilePassThrough(vfsStream::url('root'));
     }
 
@@ -83,14 +83,12 @@ class HtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
     public function requestForNonExistingFileWritesNotFoundResponse()
     {
         $error = Error::notFound();
-        $this->mockResponse->expects($this->once())
-                           ->method('notFound')
-                           ->will($this->returnValue($error));
+        $this->response->method('notFound')->will(returnValue($error));
         assertSame(
                 $error,
                 $this->htmlFilePassThrough->resolve(
-                        $this->mockRequest,
-                        $this->mockResponse,
+                        $this->request,
+                        $this->response,
                         new UriPath('/', '/doesNotExist.html')
                 )
         );
@@ -104,8 +102,8 @@ class HtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
         assertEquals(
                 'this is foo.html',
                 $this->htmlFilePassThrough->resolve(
-                        $this->mockRequest,
-                        $this->mockResponse,
+                        $this->request,
+                        $this->response,
                         new UriPath('/', '/foo.html')
                 )
         );
@@ -119,8 +117,8 @@ class HtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
         assertEquals(
                 'this is index.html',
                 $this->htmlFilePassThrough->resolve(
-                        $this->mockRequest,
-                        $this->mockResponse,
+                        $this->request,
+                        $this->response,
                         new UriPath('/', '/')
                 )
         );

@@ -27,15 +27,15 @@ class CalledUriTest extends \PHPUnit_Framework_TestCase
      *
      * @type  \PHPUnit_Framework_MockObject_MockObject
      */
-    private $mockHttpUri;
+    private $httpUri;
 
     /**
      * set up test environment
      */
     public function setUp()
     {
-        $this->mockHttpUri = $this->getMock('stubbles\peer\http\HttpUri');
-        $this->calledUri   = new CalledUri($this->mockHttpUri, 'GET');
+        $this->httpUri   = $this->getMock('stubbles\peer\http\HttpUri');
+        $this->calledUri = new CalledUri($this->httpUri, 'GET');
     }
 
     /**
@@ -56,7 +56,7 @@ class CalledUriTest extends \PHPUnit_Framework_TestCase
      */
     public function createInstanceWithEmptyRequestMethodThrowsIllegalArgumentException($empty)
     {
-        new CalledUri($this->mockHttpUri, $empty);
+        new CalledUri($this->httpUri, $empty);
     }
 
     /**
@@ -79,7 +79,7 @@ class CalledUriTest extends \PHPUnit_Framework_TestCase
     {
         assertEquals(
                 $this->calledUri,
-                CalledUri::castFrom($this->mockHttpUri, 'GET')
+                CalledUri::castFrom($this->httpUri, 'GET')
         );
     }
 
@@ -91,7 +91,7 @@ class CalledUriTest extends \PHPUnit_Framework_TestCase
      */
     public function castFromHttpUriInstanceWithoutRequestMethodThrowsIllegalArgumentException($empty)
     {
-        CalledUri::castFrom($this->mockHttpUri, $empty);
+        CalledUri::castFrom($this->httpUri, $empty);
     }
 
     /**
@@ -125,9 +125,7 @@ class CalledUriTest extends \PHPUnit_Framework_TestCase
      */
     private function mockUriPath($path)
     {
-        $this->mockHttpUri->expects($this->any())
-                          ->method('path')
-                          ->will($this->returnValue($path));
+        $this->httpUri->method('path')->will($this->returnValue($path));
     }
 
     /**
@@ -188,10 +186,10 @@ class CalledUriTest extends \PHPUnit_Framework_TestCase
      * @test
      * @dataProvider  provideSatisfiedPathPattern
      */
-    public function returnsTrueForSatisfiedPathPattern($mockPath, $path)
+    public function returnsTrueForSatisfiedPathPattern($path, $pathPattern)
     {
-        $this->mockUriPath($mockPath);
-        assertTrue($this->calledUri->satisfiesPath($path));
+        $this->mockUriPath($path);
+        assertTrue($this->calledUri->satisfiesPath($pathPattern));
     }
 
     /**
@@ -213,9 +211,9 @@ class CalledUriTest extends \PHPUnit_Framework_TestCase
      * @test
      * @dataProvider  provideNonSatisfiedPathPattern
      */
-    public function returnsFalseForNonSatisfiedCondition($mockPath, $pathPattern)
+    public function returnsFalseForNonSatisfiedCondition($path, $pathPattern)
     {
-        $this->mockUriPath($mockPath);
+        $this->mockUriPath($path);
         assertFalse($this->calledUri->satisfiesPath($pathPattern));
     }
 
@@ -225,9 +223,7 @@ class CalledUriTest extends \PHPUnit_Framework_TestCase
      */
     public function isHttpsWhenRequestUriHasHttps()
     {
-        $this->mockHttpUri->expects($this->once())
-                          ->method('isHttps')
-                          ->will($this->returnValue(true));
+        $this->httpUri->method('isHttps')->will(returnValue(true));
         assertTrue($this->calledUri->isHttps());
     }
 
@@ -237,11 +233,9 @@ class CalledUriTest extends \PHPUnit_Framework_TestCase
      */
     public function toHttpReturnsTransformedUri()
     {
-        $mockHttpUri = $this->getMock('stubbles\peer\http\HttpUri');
-        $this->mockHttpUri->expects($this->once())
-                          ->method('toHttp')
-                          ->will($this->returnValue($mockHttpUri));
-        assertSame($mockHttpUri, $this->calledUri->toHttp());
+        $httpUri = $this->getMock('stubbles\peer\http\HttpUri');
+        $this->httpUri->method('toHttp')->will(returnValue($httpUri));
+        assertSame($httpUri, $this->calledUri->toHttp());
     }
 
     /**
@@ -250,11 +244,9 @@ class CalledUriTest extends \PHPUnit_Framework_TestCase
      */
     public function toHttpsReturnsTransformedUri()
     {
-        $mockHttpUri = $this->getMock('stubbles\peer\http\HttpUri');
-        $this->mockHttpUri->expects($this->once())
-                          ->method('toHttps')
-                          ->will($this->returnValue($mockHttpUri));
-        assertSame($mockHttpUri, $this->calledUri->toHttps());
+        $httpUri = $this->getMock('stubbles\peer\http\HttpUri');
+        $this->httpUri->method('toHttps')->will(returnValue($httpUri));
+        assertSame($httpUri, $this->calledUri->toHttps());
     }
 
     /**
@@ -263,9 +255,8 @@ class CalledUriTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsStringRepresentationOfUri()
     {
-        $this->mockHttpUri->expects($this->once())
-                          ->method('__toString')
-                          ->will($this->returnValue('http://example.net/foo/bar'));
+        $this->httpUri->method('__toString')
+                ->will(returnValue('http://example.net/foo/bar'));
         assertEquals(
                 'http://example.net/foo/bar',
                 (string) $this->calledUri

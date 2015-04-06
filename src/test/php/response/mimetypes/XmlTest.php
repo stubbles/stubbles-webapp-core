@@ -26,7 +26,7 @@ class XmlTest extends \PHPUnit_Framework_TestCase
     /**
      * @type  \PHPUnit_Framework_MockObject_MockObject
      */
-    private $mockXmlSerializerFacade;
+    private $xmlSerializerFacade;
 
 
     /**
@@ -34,10 +34,10 @@ class XmlTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->mockXmlSerializerFacade = $this->getMockBuilder('stubbles\xml\serializer\XmlSerializerFacade')
-                                              ->disableOriginalConstructor()
-                                              ->getMock();
-        $this->xml = new Xml($this->mockXmlSerializerFacade);
+        $this->xmlSerializerFacade = $this->getMockBuilder('stubbles\xml\serializer\XmlSerializerFacade')
+                ->disableOriginalConstructor()
+                ->getMock();
+        $this->xml = new Xml($this->xmlSerializerFacade);
     }
 
     /**
@@ -78,10 +78,9 @@ class XmlTest extends \PHPUnit_Framework_TestCase
      */
     public function serializesResourceToXml()
     {
-        $this->mockXmlSerializerFacade->expects($this->once())
-                                      ->method('serializeToXml')
-                                      ->with($this->equalTo('value'))
-                                      ->will($this->returnValue('<xml/>'));
+        $this->xmlSerializerFacade->method('serializeToXml')
+                ->with(equalTo('value'))
+                ->will(returnValue('<xml/>'));
         assertEquals(
                 '<xml/>',
                 $this->xml->serialize(

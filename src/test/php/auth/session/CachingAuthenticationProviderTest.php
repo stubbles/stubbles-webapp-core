@@ -28,24 +28,24 @@ class CachingAuthenticationProviderTest extends \PHPUnit_Framework_TestCase
      *
      * @type  \PHPUnit_Framework_MockObject_MockObject
      */
-    private $mockSession;
+    private $session;
     /**
      * mocked base authentication provider
      *
      * @type  \PHPUnit_Framework_MockObject_MockObject
      */
-    private $mockAuthenticationProvider;
+    private $authenticationProvider;
 
     /**
      * set up test environment
      */
     public function setUp()
     {
-        $this->mockSession                = $this->getMock('stubbles\webapp\session\Session');
-        $this->mockAuthenticationProvider = $this->getMock('stubbles\webapp\auth\AuthenticationProvider');
+        $this->session                = $this->getMock('stubbles\webapp\session\Session');
+        $this->authenticationProvider = $this->getMock('stubbles\webapp\auth\AuthenticationProvider');
         $this->cachingAuthenticationProvider = new CachingAuthenticationProvider(
-                $this->mockSession,
-                $this->mockAuthenticationProvider
+                $this->session,
+                $this->authenticationProvider
         );
     }
 
@@ -76,10 +76,9 @@ class CachingAuthenticationProviderTest extends \PHPUnit_Framework_TestCase
     public function usesSessionValueIfUserStoredInSession()
     {
         $user = $this->getMock('stubbles\webapp\auth\User');
-        $this->mockSession->method('hasValue')->will(returnValue(true));
-        $this->mockSession->method('value')->will(returnValue($user));
-        $this->mockAuthenticationProvider->expects(never())
-                ->method('authenticate');
+        $this->session->method('hasValue')->will(returnValue(true));
+        $this->session->method('value')->will(returnValue($user));
+        $this->authenticationProvider->expects(never())->method('authenticate');
         assertSame(
                 $user,
                 $this->cachingAuthenticationProvider->authenticate(
@@ -93,11 +92,11 @@ class CachingAuthenticationProviderTest extends \PHPUnit_Framework_TestCase
      */
     public function doesNotStoreReturnValueWhenOriginalAuthenticationProviderReturnsNull()
     {
-        $this->mockSession->method('hasValue')->will(returnValue(false));
-        $this->mockAuthenticationProvider->expects($this->once())
-                                         ->method('authenticate')
-                                         ->will($this->returnValue(null));
-        $this->mockSession->expects(never())->method('putValue');
+        $this->session->method('hasValue')->will(returnValue(false));
+        $this->authenticationProvider->expects(once())
+                    ->method('authenticate')
+                    ->will(returnValue(null));
+        $this->session->expects(never())->method('putValue');
         assertNull(
                 $this->cachingAuthenticationProvider->authenticate(
                         $this->getMock('stubbles\webapp\Request')
@@ -111,10 +110,10 @@ class CachingAuthenticationProviderTest extends \PHPUnit_Framework_TestCase
     public function storeReturnValueInSessionWhenOriginalAuthenticationProviderReturnsUser()
     {
         $user = $this->getMock('stubbles\webapp\auth\User');
-        $this->mockSession->method('hasValue')->will(returnValue(false));
-        $this->mockAuthenticationProvider->method('authenticate')
+        $this->session->method('hasValue')->will(returnValue(false));
+        $this->authenticationProvider->method('authenticate')
                 ->will(returnValue($user));
-        $this->mockSession->expects(once())
+        $this->session->expects(once())
                 ->method('putValue')
                 ->with(equalTo(User::SESSION_KEY), equalTo($user));
         assertSame(
@@ -130,7 +129,7 @@ class CachingAuthenticationProviderTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsLoginUriFromOriginalAuthenticationProvider()
     {
-        $this->mockAuthenticationProvider->method('loginUri')
+        $this->authenticationProvider->method('loginUri')
                 ->will(returnValue('http://login.example.net/'));
         assertEquals(
                 'http://login.example.net/',

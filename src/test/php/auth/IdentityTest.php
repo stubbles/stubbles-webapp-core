@@ -18,10 +18,10 @@ class IdentityTest extends \PHPUnit_Framework_TestCase
     /**
      * @return  \stubbles\webapp\auth\Identity
      */
-    private function createIdentity($mockUser = null)
+    private function createIdentity($user = null)
     {
         return new Identity(
-                null === $mockUser ? $this->mockUser() : $mockUser,
+                null === $user ? $this->mockUser() : $user,
                 new Roles(['admin'])
         );
     }
@@ -39,10 +39,10 @@ class IdentityTest extends \PHPUnit_Framework_TestCase
      */
     public function isAssociatedWithGivenUser()
     {
-        $mockUser = $this->mockUser();
+        $user = $this->mockUser();
         assertSame(
-                $mockUser,
-                $this->createIdentity($mockUser)->user()
+                $user,
+                $this->createIdentity($user)->user()
         );
     }
 

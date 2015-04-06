@@ -28,15 +28,15 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     /**
      * @type  \stubbles\streams\memory\MemoryOutputStream
      */
-    private $memoryOutputStream;
+    private $memory;
 
     /**
      * set up test environment
      */
     public function setUp()
     {
-        $this->response           = $this->createResponse();
-        $this->memoryOutputStream = new MemoryOutputStream();
+        $this->response = $this->createResponse();
+        $this->memory   = new MemoryOutputStream();
     }
 
     /**
@@ -49,21 +49,43 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      */
     private function createResponse($httpVersion = HttpVersion::HTTP_1_1, $requestMethod = Http::GET, $sapi = null)
     {
-        $mockRequest = $this->getMock('stubbles\webapp\Request');
-        $mockRequest->expects($this->any())
-                    ->method('id')
-                    ->will($this->returnValue('example-request-id-foo'));
-        $mockRequest->expects($this->once())
-                    ->method('protocolVersion')
-                    ->will($this->returnValue(HttpVersion::castFrom($httpVersion)));
-        $mockRequest->expects($this->any())
-                    ->method('method')
-                    ->will($this->returnValue($requestMethod));
+        $request = $this->getMock('stubbles\webapp\Request');
+        $request->expects(any())
+                ->method('id')
+                ->will(returnValue('example-request-id-foo'));
+        $request->expects(any())
+                ->method('protocolVersion')
+                ->will(returnValue(HttpVersion::castFrom($httpVersion)));
+        $request->expects(any())
+                ->method('method')
+                ->will(returnValue($requestMethod));
         return $this->getMock(
                 'stubbles\webapp\response\WebResponse',
                 ['header'],
-                [$mockRequest, new PassThrough(), $sapi]
+                [$request, new PassThrough(), $sapi]
         );
+    }
+
+    /**
+     * sets up expectation for given status line
+     *
+     * @param  string  $statusLine
+     */
+    private function expectHeaderLineAt($headerLine, $position)
+    {
+        $this->response->expects(at($position))
+                ->method('header')
+                ->with(equalTo($headerLine));
+    }
+
+    /**
+     * sets up expectation for given status line
+     *
+     * @param  string  $statusLine
+     */
+    private function expectStatusLine($statusLine)
+    {
+        $this->expectHeaderLineAt($statusLine, 0);
     }
 
     /**
@@ -71,10 +93,8 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function versionIs1_1ByDefault()
     {
-        $this->response->expects($this->at(0))
-                       ->method('header')
-                       ->with($this->equalTo('HTTP/1.1 200 OK'));
-        $this->response->send($this->memoryOutputStream);
+        $this->expectStatusLine('HTTP/1.1 200 OK');
+        $this->response->send($this->memory);
     }
 
     /**
@@ -83,10 +103,10 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     public function versionCanBeSetOnConstruction()
     {
         $response = $this->createResponse(HttpVersion::HTTP_1_0);
-        $response->expects($this->at(0))
+        $response->expects(at(0))
                  ->method('header')
-                 ->with($this->equalTo('HTTP/1.0 200 OK'));
-        $response->send($this->memoryOutputStream);
+                 ->with(equalTo('HTTP/1.0 200 OK'));
+        $response->send($this->memory);
     }
 
     /**
@@ -104,10 +124,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function statusCodeCanBeChanged()
     {
-        assertEquals(
-                404,
-                $this->response->setStatusCode(404)->statusCode()
-        );
+        assertEquals(404, $this->response->setStatusCode(404)->statusCode());
     }
 
     /**
@@ -116,10 +133,8 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     public function statusCodeInCgiSapi()
     {
         $this->response = $this->createResponse(HttpVersion::HTTP_1_1, Http::GET, 'cgi');
-        $this->response->expects($this->at(0))
-                       ->method('header')
-                       ->with($this->equalTo('Status: 200 OK'));
-        $this->response->send($this->memoryOutputStream);
+        $this->expectStatusLine('Status: 200 OK');
+        $this->response->send($this->memory);
     }
 
     /**
@@ -127,11 +142,8 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function addedHeadersAreSend()
     {
-        $this->response->expects($this->at(1))
-                       ->method('header')
-                       ->with($this->equalTo('name: value1'));
-        $this->response->addHeader('name', 'value1')
-                       ->send($this->memoryOutputStream);
+        $this->expectHeaderLineAt('name: value1', 1);
+        $this->response->addHeader('name', 'value1')->send($this->memory);
     }
 
     /**
@@ -140,8 +152,8 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     public function addingHeaderWithSameNameReplacesExistingHeader()
     {
         $this->response->addHeader('name', 'value1')
-                       ->addHeader('name', 'value2')
-                       ->send();
+                ->addHeader('name', 'value2')
+                ->send();
         assertEquals('value2', $this->response->headers()['name']);
     }
 
@@ -196,20 +208,16 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      * @param   string  $value  optional  cookie value
      * @return  \PHPUnit_Framework_MockObject_MockObject
      */
-    protected function createMockCookie($value = null)
+    protected function createCookie($value = null)
     {
-        $mockCookie = $this->getMockBuilder('stubbles\webapp\response\Cookie')
-                           ->disableOriginalConstructor()
-                           ->getMock();
-        $mockCookie->expects($this->any())
-                   ->method('name')
-                   ->will($this->returnValue('foo'));
+        $cookie = $this->getMockBuilder('stubbles\webapp\response\Cookie')
+                ->disableOriginalConstructor()
+                ->getMock();
+        $cookie->method('name')->will(returnValue('foo'));
         if (null !== $value) {
-            $mockCookie->expects($this->any())
-                       ->method('value')
-                       ->will($this->returnValue($value));
+            $cookie->method('value')->will(returnValue($value));
         }
-        return $mockCookie;
+        return $cookie;
     }
 
     /**
@@ -217,10 +225,10 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function cookiesAreSend()
     {
-        $mockCookie = $this->createMockCookie();
-        $mockCookie->expects($this->once())->method('send');
-        $this->response->addCookie($mockCookie)
-                       ->send($this->memoryOutputStream);
+        $cookie = $this->createCookie();
+        $cookie->expects(once())->method('send');
+        $this->response->addCookie($cookie)
+                ->send($this->memory);
     }
 
     /**
@@ -228,11 +236,11 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function addingCookieWithSameNameReplacesExistingCookie()
     {
-        $mockCookie = $this->createMockCookie();
-        $mockCookie->expects($this->once())->method('send');
-        $this->response->addCookie($mockCookie)
-                       ->addCookie($mockCookie)
-                       ->send($this->memoryOutputStream);
+        $cookie = $this->createCookie();
+        $cookie->expects(once())->method('send');
+        $this->response->addCookie($cookie)
+                ->addCookie($cookie)
+                ->send($this->memory);
     }
 
     /**
@@ -251,7 +259,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     public function doesNotContainsAddedCookieWithDifferentValue()
     {
         assertFalse(
-                $this->response->addCookie($this->createMockCookie('bar'))
+                $this->response->addCookie($this->createCookie('bar'))
                                ->containsCookie('foo', 'baz')
         );
     }
@@ -263,7 +271,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     public function containsAddedCookie()
     {
         assertTrue(
-                $this->response->addCookie($this->createMockCookie('bar'))
+                $this->response->addCookie($this->createCookie('bar'))
                                ->containsCookie('foo')
         );
     }
@@ -275,7 +283,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     public function containsAddedCookieWithValue()
     {
         assertTrue(
-                $this->response->addCookie($this->createMockCookie('bar'))
+                $this->response->addCookie($this->createCookie('bar'))
                                ->containsCookie('foo', 'bar')
         );
     }
@@ -285,9 +293,9 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function hasNoBodyByDefault()
     {
-        $mockOutputStream = $this->getMock('stubbles\streams\OutputStream');
-        $mockOutputStream->expects($this->never())->method('write');
-        $this->response->send($mockOutputStream);
+        $outputStream = $this->getMock('stubbles\streams\OutputStream');
+        $outputStream->expects(never())->method('write');
+        $this->response->send($outputStream);
     }
 
     /**
@@ -305,9 +313,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     {
         assertEquals(
                 'foo',
-                $this->response->write('foo')
-                        ->send($this->memoryOutputStream)
-                        ->buffer()
+                $this->response->write('foo')->send($this->memory)->buffer()
         );
     }
 
@@ -318,9 +324,9 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     public function bodyIsNotSendWhenRequestMethodIsHead()
     {
         $this->response = $this->createResponse(HttpVersion::HTTP_1_1, Http::HEAD);
-        $mockOutputStream = $this->getMock('stubbles\streams\OutputStream');
-        $mockOutputStream->expects($this->never())->method('write');
-        $this->response->write('foo')->send($mockOutputStream);
+        $outputStream = $this->getMock('stubbles\streams\OutputStream');
+        $outputStream->expects(never())->method('write');
+        $this->response->write('foo')->send($outputStream);
     }
 
     /**
@@ -339,12 +345,8 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function redirectAddsLocationHeaderAndStatusCode()
     {
-        $this->response->expects($this->at(0))
-                       ->method('header')
-                       ->with($this->equalTo('HTTP/1.1 301 Moved Permanently'));
-        $this->response->expects($this->at(1))
-                       ->method('header')
-                       ->with($this->equalTo('Location: http://example.com/'));
+        $this->expectStatusLine('HTTP/1.1 301 Moved Permanently');
+        $this->expectHeaderLineAt('Location: http://example.com/', 1);
         $this->response->redirect('http://example.com/', 301);
         $this->response->send();
     }
@@ -356,12 +358,8 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function redirectWithoutStatusCodeAndReasonPhraseAddsLocationHeaderAndStatusCode302()
     {
-        $this->response->expects($this->at(0))
-                       ->method('header')
-                       ->with($this->equalTo('HTTP/1.1 302 Found'));
-        $this->response->expects($this->at(1))
-                       ->method('header')
-                       ->with($this->equalTo('Location: http://example.com/'));
+        $this->expectStatusLine('HTTP/1.1 302 Found');
+        $this->expectHeaderLineAt('Location: http://example.com/', 1);
         $this->response->redirect('http://example.com/');
         $this->response->send();
     }
@@ -372,9 +370,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function forbiddenSetsStatusCodeTo403()
     {
-        $this->response->expects($this->at(0))
-                       ->method('header')
-                       ->with($this->equalTo('HTTP/1.1 403 Forbidden'));
+        $this->expectStatusLine('HTTP/1.1 403 Forbidden');
         $this->response->forbidden();
         $this->response->send();
     }
@@ -405,9 +401,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function notFoundSetsStatusCodeTo404()
     {
-        $this->response->expects($this->at(0))
-                       ->method('header')
-                       ->with($this->equalTo('HTTP/1.1 404 Not Found'));
+        $this->expectStatusLine('HTTP/1.1 404 Not Found');
         $this->response->notFound();
         $this->response->send();
     }
@@ -438,12 +432,8 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function methodNotAllowedSetsStatusCodeTo405()
     {
-        $this->response->expects($this->at(0))
-                       ->method('header')
-                       ->with($this->equalTo('HTTP/1.1 405 Method Not Allowed'));
-        $this->response->expects($this->at(1))
-                       ->method('header')
-                       ->with($this->equalTo('Allow: GET, HEAD'));
+        $this->expectStatusLine('HTTP/1.1 405 Method Not Allowed');
+        $this->expectHeaderLineAt('Allow: GET, HEAD', 1);
         $this->response->methodNotAllowed('POST', ['GET', 'HEAD']);
         $this->response->send();
     }
@@ -477,9 +467,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function notAcceptableSetsStatusCodeTo406()
     {
-        $this->response->expects($this->at(0))
-                       ->method('header')
-                       ->with($this->equalTo('HTTP/1.1 406 Not Acceptable'));
+        $this->expectStatusLine('HTTP/1.1 406 Not Acceptable');
         $this->response->notAcceptable();
         $this->response->send();
     }
@@ -501,12 +489,11 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function notAcceptableWithSupportedMimeTypesSetsStatusCodeTo406()
     {
-        $this->response->expects($this->at(0))
-                       ->method('header')
-                       ->with($this->equalTo('HTTP/1.1 406 Not Acceptable'));
-        $this->response->expects($this->at(1))
-                       ->method('header')
-                       ->with($this->equalTo('X-Acceptable: application/json, application/xml'));
+        $this->expectStatusLine('HTTP/1.1 406 Not Acceptable');
+        $this->expectHeaderLineAt(
+                'X-Acceptable: application/json, application/xml',
+                1
+        );
         $this->response->notAcceptable(['application/json', 'application/xml']);
         $this->response->send();
     }
@@ -517,9 +504,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function internalServerErrorSetsStatusCodeTo500()
     {
-        $this->response->expects($this->at(0))
-                       ->method('header')
-                       ->with($this->equalTo('HTTP/1.1 500 Internal Server Error'));
+        $this->expectStatusLine('HTTP/1.1 500 Internal Server Error');
         $this->response->internalServerError('ups!');
         $this->response->send();
     }
@@ -553,13 +538,11 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function httpVersionNotSupportedSetsStatusCodeTo505()
     {
-        $this->response->expects($this->at(0))
-                       ->method('header')
-                       ->with($this->equalTo('HTTP/1.1 505 HTTP Version Not Supported'));
+        $this->expectStatusLine('HTTP/1.1 505 HTTP Version Not Supported');
         $this->response->httpVersionNotSupported();
         assertEquals(
                 'Error: Unsupported HTTP protocol version, expected HTTP/1.0 or HTTP/1.1',
-                $this->response->send($this->memoryOutputStream)->buffer()
+                $this->response->send($this->memory)->buffer()
         );
     }
 
@@ -600,7 +583,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
                  ->with($this->equalTo('HTTP/1.1 505 HTTP Version Not Supported'));
         assertEquals(
                 'Error: Unsupported HTTP protocol version, expected HTTP/1.0 or HTTP/1.1',
-                $response->send($this->memoryOutputStream)->buffer()
+                $response->send($this->memory)->buffer()
         );
     }
 
@@ -611,10 +594,8 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function requestIdAddedByDefault()
     {
-        $this->response->expects($this->at(2))
-                       ->method('header')
-                       ->with($this->equalTo('X-Request-ID: example-request-id-foo'));
-        $this->response->send($this->memoryOutputStream);
+        $this->expectHeaderLineAt('X-Request-ID: example-request-id-foo', 2);
+        $this->response->send($this->memory);
     }
 
     /**
@@ -625,9 +606,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     public function requestIdCanBeChanged()
     {
         $this->response->headers()->requestId('another-request-id-bar');
-        $this->response->expects($this->at(1))
-                       ->method('header')
-                       ->with($this->equalTo('X-Request-ID: another-request-id-bar'));
-        $this->response->send($this->memoryOutputStream);
+        $this->expectHeaderLineAt('X-Request-ID: another-request-id-bar', 1);
+        $this->response->send($this->memory);
     }
 }

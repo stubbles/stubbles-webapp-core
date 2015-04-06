@@ -54,8 +54,7 @@ class HeadersTest extends \PHPUnit_Framework_TestCase
     public function containsHeaderWhenAdded()
     {
         assertTrue(
-                $this->headers->add('X-Foo', 'bar')
-                              ->contain('X-Foo')
+                $this->headers->add('X-Foo', 'bar')->contain('X-Foo')
         );
     }
 
@@ -113,8 +112,7 @@ class HeadersTest extends \PHPUnit_Framework_TestCase
     public function acceptableDoesNotAddListOfSupportedMimeTypesWhenListEmpty()
     {
         assertFalse(
-                $this->headers->acceptable([])
-                              ->contain('X-Acceptable')
+                $this->headers->acceptable([])->contain('X-Acceptable')
         );
     }
 
@@ -135,7 +133,10 @@ class HeadersTest extends \PHPUnit_Framework_TestCase
     {
         $this->headers->forceDownload('example.csv');
         assertTrue(isset($this->headers['Content-Disposition']));
-        assertEquals('attachment; filename=example.csv', $this->headers['Content-Disposition']);
+        assertEquals(
+                'attachment; filename=example.csv',
+                $this->headers['Content-Disposition']
+        );
     }
 
     /**

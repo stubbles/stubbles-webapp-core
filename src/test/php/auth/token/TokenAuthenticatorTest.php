@@ -31,33 +31,33 @@ class TokenAuthenticatorTest extends \PHPUnit_Framework_TestCase
      *
      * @type  \PHPUnit_Framework_MockObject_MockObject
      */
-    private $mockTokenStore;
+    private $tokenStore;
     /**
      * mocked login provider
      *
      * @type  \PHPUnit_Framework_MockObject_MockObject
      */
-    private $mockLoginProvider;
+    private $loginProvider;
     /**
      * mocked request
      *
      * @type  \PHPUnit_Framework_MockObject_MockObject
      */
-    private $mockRequest;
+    private $request;
 
     /**
      * set up test environment
      */
     public function setUp()
     {
-        $this->mockTokenStore     = $this->getMock('stubbles\webapp\auth\token\TokenStore');
-        $this->mockLoginProvider  = $this->getMock('stubbles\webapp\auth\AuthenticationProvider');
+        $this->tokenStore     = $this->getMock('stubbles\webapp\auth\token\TokenStore');
+        $this->loginProvider  = $this->getMock('stubbles\webapp\auth\AuthenticationProvider');
         $this->tokenAuthenticator = new TokenAuthenticator(
-                $this->mockTokenStore,
+                $this->tokenStore,
                 'some salt',
-                $this->mockLoginProvider
+                $this->loginProvider
         );
-        $this->mockRequest  = $this->getMock('stubbles\webapp\Request');
+        $this->request  = $this->getMock('stubbles\webapp\Request');
     }
 
     /**
@@ -96,12 +96,14 @@ class TokenAuthenticatorTest extends \PHPUnit_Framework_TestCase
      */
     public function delegatesAuthenticationToLoginProviderIfNoTokenInRequest()
     {
-        $this->mockRequest->expects(once())->method('hasRedirectHeader')->will(returnValue(false));
-        $this->mockLoginProvider->expects(once())
+        $this->request->expects(once())
+                ->method('hasRedirectHeader')
+                ->will(returnValue(false));
+        $this->loginProvider->expects(once())
                 ->method('authenticate')
                 ->will($this->returnValue(null));
         assertNull(
-                $this->tokenAuthenticator->authenticate($this->mockRequest)
+                $this->tokenAuthenticator->authenticate($this->request)
         );
     }
 
@@ -110,14 +112,17 @@ class TokenAuthenticatorTest extends \PHPUnit_Framework_TestCase
      */
     public function delegatesAuthenticationToLoginProviderIfAuthorizationHeaderIsSetButEmpty()
     {
-        $this->mockRequest->expects(once())->method('hasRedirectHeader')->will(returnValue(true));
-        $this->mockRequest->expects(once())->method('readRedirectHeader')
+        $this->request->expects(once())
+                ->method('hasRedirectHeader')
+                ->will(returnValue(true));
+        $this->request->expects(once())
+                ->method('readRedirectHeader')
                 ->will(returnValue(ValueReader::forValue('')));
-        $this->mockLoginProvider->expects(once())
+        $this->loginProvider->expects(once())
                 ->method('authenticate')
                 ->will(returnValue(null));
         assertNull(
-                $this->tokenAuthenticator->authenticate($this->mockRequest)
+                $this->tokenAuthenticator->authenticate($this->request)
         );
     }
 
@@ -140,12 +145,14 @@ class TokenAuthenticatorTest extends \PHPUnit_Framework_TestCase
     public function throwsInternalAuthProviderExceptionWhenTokenStoreThrowsExceptionWhileStoringToken()
     {
         $user = $this->mockTokenAwareUser();
-        $this->mockRequest->expects(any())->method('hasHeader')->will(returnValue(false));
-        $this->mockLoginProvider->method('authenticate')
+        $this->request->expects(any())
+                ->method('hasHeader')
+                ->will(returnValue(false));
+        $this->loginProvider->method('authenticate')
                 ->will(returnValue($user));
-        $this->mockTokenStore->method('store')
+        $this->tokenStore->method('store')
                 ->will(throwException(new \Exception('failure')));
-        $this->tokenAuthenticator->authenticate($this->mockRequest);
+        $this->tokenAuthenticator->authenticate($this->request);
     }
 
     /**
@@ -154,19 +161,21 @@ class TokenAuthenticatorTest extends \PHPUnit_Framework_TestCase
     public function createsAndStoresTokenFromUserReturnedByLoginProvider()
     {
         $user = $this->mockTokenAwareUser();
-        $this->mockRequest->expects(any())->method('hasHeader')->will(returnValue(false));
-        $this->mockLoginProvider->method('authenticate')
+        $this->request->expects(any())
+                ->method('hasHeader')
+                ->will(returnValue(false));
+        $this->loginProvider->method('authenticate')
                 ->will(returnValue($user));
-        $this->mockTokenStore->expects(once())
+        $this->tokenStore->expects(once())
                 ->method('store')
                 ->with(
-                        equalTo($this->mockRequest),
+                        equalTo($this->request),
                         isInstanceOf('stubbles\webapp\auth\Token'),
                         equalTo($user)
                   );
         assertSame(
                 $user,
-                $this->tokenAuthenticator->authenticate($this->mockRequest)
+                $this->tokenAuthenticator->authenticate($this->request)
         );
     }
 
@@ -176,21 +185,21 @@ class TokenAuthenticatorTest extends \PHPUnit_Framework_TestCase
     public function userReturnedByLoginProviderHasToken()
     {
         $user = $this->mockTokenAwareUser();
-        $this->mockRequest->expects($this->any())
-                          ->method('hasHeader')
-                          ->will($this->returnValue(false));
-        $this->mockLoginProvider->expects($this->once())
-                                ->method('authenticate')
-                                ->will($this->returnValue($user));
-        $this->mockTokenStore->expects($this->once())
-                             ->method('store')
-                             ->with(
-                                     $this->equalTo($this->mockRequest),
-                                     $this->isInstanceOf('stubbles\webapp\auth\Token'),
-                                     $this->equalTo($user)
-                               );
+        $this->request->expects(any())
+                ->method('hasHeader')
+                ->will(returnValue(false));
+        $this->loginProvider->method('authenticate')
+                ->will(returnValue($user));
+        $this->tokenStore->expects($this->once())
+                ->method('store')
+                ->with(
+                        equalTo($this->request),
+                        isInstanceOf('stubbles\webapp\auth\Token'),
+                        equalTo($user)
+                );
         assertNotNull(
-                $this->tokenAuthenticator->authenticate($this->mockRequest)->token()
+                $this->tokenAuthenticator->authenticate($this->request)
+                        ->token()
         );
     }
 
@@ -201,16 +210,15 @@ class TokenAuthenticatorTest extends \PHPUnit_Framework_TestCase
      */
     public function throwsInternalAuthProviderExceptionWhenTokenStoreThrowsExceptionWhileFindingUser()
     {
-        $this->mockRequest->expects($this->once())
-                          ->method('hasRedirectHeader')
-                          ->will($this->returnValue(true));
-        $this->mockRequest->expects($this->once())
-                          ->method('readRedirectHeader')
-                          ->will($this->returnValue(ValueReader::forValue('someToken')));
-        $this->mockTokenStore->expects($this->once())
-                             ->method('findUserByToken')
-                             ->will($this->throwException(new \Exception('failure')));
-        $this->tokenAuthenticator->authenticate($this->mockRequest);
+        $this->request->expects(once())
+                ->method('hasRedirectHeader')
+                ->will(returnValue(true));
+        $this->request->expects($this->once())
+                ->method('readRedirectHeader')
+                ->will(returnValue(ValueReader::forValue('someToken')));
+        $this->tokenStore->method('findUserByToken')
+                ->will(throwException(new \Exception('failure')));
+        $this->tokenAuthenticator->authenticate($this->request);
     }
 
     /**
@@ -229,21 +237,17 @@ class TokenAuthenticatorTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsUserWhenAuthorizationHeaderContainsValidToken($headerValue, $tokenValue)
     {
-        $this->mockRequest->expects($this->once())
-                          ->method('hasRedirectHeader')
-                          ->will($this->returnValue(true));
-        $this->mockRequest->expects($this->once())
-                          ->method('readRedirectHeader')
-                          ->will($this->returnValue(ValueReader::forValue($headerValue)));
+        $this->request->expects(once())
+                ->method('hasRedirectHeader')
+                ->will(returnValue(true));
+        $this->request->expects(once())
+                ->method('readRedirectHeader')
+                ->will(returnValue(ValueReader::forValue($headerValue)));
         $user = $this->mockTokenAwareUser();
-        $this->mockTokenStore->expects($this->once())
-                             ->method('findUserByToken')
-                             ->with(
-                                     $this->equalTo($this->mockRequest),
-                                     $this->equalTo(new Token($tokenValue))
-                               )
-                             ->will($this->returnValue($user));
-        assertSame($user, $this->tokenAuthenticator->authenticate($this->mockRequest));
+        $this->tokenStore->method('findUserByToken')
+                ->with(equalTo($this->request), equalTo(new Token($tokenValue)))
+                ->will(returnValue($user));
+        assertSame($user, $this->tokenAuthenticator->authenticate($this->request));
     }
 
     /**
@@ -252,24 +256,20 @@ class TokenAuthenticatorTest extends \PHPUnit_Framework_TestCase
      */
     public function returnedUserFromValidTokenHasToken($headerValue, $tokenValue)
     {
-        $this->mockRequest->expects($this->once())
-                          ->method('hasRedirectHeader')
-                          ->will($this->returnValue(true));
-        $this->mockRequest->expects($this->once())
-                          ->method('readRedirectHeader')
-                          ->will($this->returnValue(ValueReader::forValue($headerValue)));
+        $this->request->expects(once())
+                ->method('hasRedirectHeader')
+                ->will(returnValue(true));
+        $this->request->expects(once())
+                ->method('readRedirectHeader')
+                ->will(returnValue(ValueReader::forValue($headerValue)));
         $user  = $this->mockTokenAwareUser();
         $token = new Token($tokenValue);
-        $this->mockTokenStore->expects($this->once())
-                             ->method('findUserByToken')
-                             ->with(
-                                     $this->equalTo($this->mockRequest),
-                                     $this->equalTo($token)
-                               )
-                             ->will($this->returnValue($user));
+        $this->tokenStore->method('findUserByToken')
+                ->with(equalTo($this->request), equalTo($token))
+                ->will(returnValue($user));
         assertEquals(
                 $token,
-                $this->tokenAuthenticator->authenticate($this->mockRequest)->token()
+                $this->tokenAuthenticator->authenticate($this->request)->token()
         );
     }
 
@@ -278,24 +278,18 @@ class TokenAuthenticatorTest extends \PHPUnit_Framework_TestCase
      */
     public function delegatesAuthenticationToLoginProviderIfTokenFromAuthorizationHeaderDoesNotYieldUser()
     {
-        $this->mockRequest->expects($this->once())
-                          ->method('hasRedirectHeader')
-                          ->will($this->returnValue(true));
-        $this->mockRequest->expects($this->once())
-                          ->method('readRedirectHeader')
-                          ->will($this->returnValue(ValueReader::forValue('someOtherToken')));
+        $this->request->expects(once())
+                ->method('hasRedirectHeader')
+                ->will(returnValue(true));
+        $this->request->expects(once())
+                ->method('readRedirectHeader')
+                ->will(returnValue(ValueReader::forValue('someOtherToken')));
         $token = new Token('someOtherToken');
-        $this->mockTokenStore->expects($this->once())
-                             ->method('findUserByToken')
-                             ->with(
-                                     $this->equalTo($this->mockRequest),
-                                     $this->equalTo($token)
-                               )
-                             ->will($this->returnValue(null));
-        $this->mockLoginProvider->expects($this->once())
-                                ->method('authenticate')
-                                ->will($this->returnValue(null));
-        assertNull($this->tokenAuthenticator->authenticate($this->mockRequest));
+        $this->tokenStore->method('findUserByToken')
+                ->with(equalTo($this->request), equalTo($token))
+                ->will($this->returnValue(null));
+        $this->loginProvider->method('authenticate')->will(returnValue(null));
+        assertNull($this->tokenAuthenticator->authenticate($this->request));
     }
 
     /**
@@ -303,34 +297,28 @@ class TokenAuthenticatorTest extends \PHPUnit_Framework_TestCase
      */
     public function createAndStoresNewTokenIfTokenFromAuthorizationHeaderDoesNotYieldUser()
     {
-        $this->mockRequest->expects($this->once())
-                          ->method('hasRedirectHeader')
-                          ->will($this->returnValue(true));
-        $this->mockRequest->expects($this->once())
-                          ->method('readRedirectHeader')
-                          ->will($this->returnValue(ValueReader::forValue('someOtherToken')));
+        $this->request->expects(once())
+                ->method('hasRedirectHeader')
+                ->will(returnValue(true));
+        $this->request->expects($this->once())
+                ->method('readRedirectHeader')
+                ->will(returnValue(ValueReader::forValue('someOtherToken')));
         $token = new Token('someOtherToken');
-        $this->mockTokenStore->expects($this->once())
-                             ->method('findUserByToken')
-                             ->with(
-                                     $this->equalTo($this->mockRequest),
-                                     $this->equalTo($token)
-                               )
-                             ->will($this->returnValue(null));
+        $this->tokenStore->method('findUserByToken')
+                ->with(equalTo($this->request), equalTo($token))
+                ->will(returnValue(null));
         $user  = $this->mockTokenAwareUser();
-        $this->mockLoginProvider->expects($this->once())
-                                ->method('authenticate')
-                                ->will($this->returnValue($user));
-        $this->mockTokenStore->expects($this->once())
-                             ->method('store')
-                             ->with(
-                                     $this->equalTo($this->mockRequest),
-                                     $this->isInstanceOf('stubbles\webapp\auth\Token'),
-                                     $this->equalTo($user)
-                               );
+        $this->loginProvider->method('authenticate')->will(returnValue($user));
+        $this->tokenStore->expects(once())
+                ->method('store')
+                ->with(
+                        equalTo($this->request),
+                        isInstanceOf('stubbles\webapp\auth\Token'),
+                        equalTo($user)
+                );
         assertSame(
                 $user,
-                $this->tokenAuthenticator->authenticate($this->mockRequest)
+                $this->tokenAuthenticator->authenticate($this->request)
         );
     }
 
@@ -339,33 +327,27 @@ class TokenAuthenticatorTest extends \PHPUnit_Framework_TestCase
      */
     public function userReturnedAfterTokenRecreationHasTokenIfTokenFromAuthorizationHeaderDoesNotYieldUser()
     {
-        $this->mockRequest->expects($this->once())
-                          ->method('hasRedirectHeader')
-                          ->will($this->returnValue(true));
-        $this->mockRequest->expects($this->once())
-                          ->method('readRedirectHeader')
-                          ->will($this->returnValue(ValueReader::forValue('someOtherToken')));
+        $this->request->expects(once())
+                ->method('hasRedirectHeader')
+                ->will(returnValue(true));
+        $this->request->expects(once())
+                ->method('readRedirectHeader')
+                ->will(returnValue(ValueReader::forValue('someOtherToken')));
         $token = new Token('someOtherToken');
-        $this->mockTokenStore->expects($this->once())
-                             ->method('findUserByToken')
-                             ->with(
-                                     $this->equalTo($this->mockRequest),
-                                     $this->equalTo($token)
-                               )
-                             ->will($this->returnValue(null));
+        $this->tokenStore->method('findUserByToken')
+                ->with(equalTo($this->request), equalTo($token))
+                ->will($this->returnValue(null));
         $user  = $this->mockTokenAwareUser();
-        $this->mockLoginProvider->expects($this->once())
-                                ->method('authenticate')
-                                ->will($this->returnValue($user));
-        $this->mockTokenStore->expects($this->once())
-                             ->method('store')
-                             ->with(
-                                     $this->equalTo($this->mockRequest),
-                                     $this->isInstanceOf('stubbles\webapp\auth\Token'),
-                                     $this->equalTo($user)
-                               );
+        $this->loginProvider->method('authenticate')->will(returnValue($user));
+        $this->tokenStore->expects(once())
+                ->method('store')
+                ->with(
+                        equalTo($this->request),
+                        isInstanceOf('stubbles\webapp\auth\Token'),
+                        equalTo($user)
+                );
         assertNotNull(
-                $this->tokenAuthenticator->authenticate($this->mockRequest)->token()
+                $this->tokenAuthenticator->authenticate($this->request)->token()
         );
     }
 
@@ -374,34 +356,28 @@ class TokenAuthenticatorTest extends \PHPUnit_Framework_TestCase
      */
     public function userReturnedAfterTokenRecreationHasDifferentTokenIfTokenFromAuthorizationHeaderDoesNotYieldUser()
     {
-        $this->mockRequest->expects($this->once())
-                          ->method('hasRedirectHeader')
-                          ->will($this->returnValue(true));
-        $this->mockRequest->expects($this->once())
-                          ->method('readRedirectHeader')
-                          ->will($this->returnValue(ValueReader::forValue('someOtherToken')));
+        $this->request->expects(once())
+                ->method('hasRedirectHeader')
+                ->will(returnValue(true));
+        $this->request->expects(once())
+                ->method('readRedirectHeader')
+                ->will(returnValue(ValueReader::forValue('someOtherToken')));
         $token = new Token('someOtherToken');
-        $this->mockTokenStore->expects($this->once())
-                             ->method('findUserByToken')
-                             ->with(
-                                     $this->equalTo($this->mockRequest),
-                                     $this->equalTo($token)
-                               )
-                             ->will($this->returnValue(null));
+        $this->tokenStore->method('findUserByToken')
+                ->with(equalTo($this->request), equalTo($token))
+                ->will(returnValue(null));
         $user  = $this->mockTokenAwareUser();
-        $this->mockLoginProvider->expects($this->once())
-                                ->method('authenticate')
-                                ->will($this->returnValue($user));
-        $this->mockTokenStore->expects($this->once())
-                             ->method('store')
-                             ->with(
-                                     $this->equalTo($this->mockRequest),
-                                     $this->isInstanceOf('stubbles\webapp\auth\Token'),
-                                     $this->equalTo($user)
-                               );
+        $this->loginProvider->method('authenticate')->will(returnValue($user));
+        $this->tokenStore->expects(once())
+                ->method('store')
+                ->with(
+                        equalTo($this->request),
+                        isInstanceOf('stubbles\webapp\auth\Token'),
+                        equalTo($user)
+                  );
         assertNotEquals(
                 $token,
-                $this->tokenAuthenticator->authenticate($this->mockRequest)->token()
+                $this->tokenAuthenticator->authenticate($this->request)->token()
         );
     }
 }

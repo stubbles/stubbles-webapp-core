@@ -29,24 +29,24 @@ class WebBoundSessionIdTest extends \PHPUnit_Framework_TestCase
      *
      * @type  \PHPUnit_Framework_MockObject_MockObject
      */
-    private $mockWebRequest;
+    private $request;
     /**
      * mocked responsr instance
      *
      * @type  \PHPUnit_Framework_MockObject_MockObject
      */
-    private $mockResponse;
+    private $response;
 
     /**
      * set up test enviroment
      */
     public function setUp()
     {
-        $this->mockWebRequest    = $this->getMock('stubbles\webapp\Request');
-        $this->mockResponse      = $this->getMock('stubbles\webapp\Response');
+        $this->request  = $this->getMock('stubbles\webapp\Request');
+        $this->response = $this->getMock('stubbles\webapp\Response');
         $this->webBoundSessionId = new WebBoundSessionId(
-                $this->mockWebRequest,
-                $this->mockResponse,
+                $this->request,
+                $this->response,
                 'foo'
         );
     }
@@ -64,14 +64,14 @@ class WebBoundSessionIdTest extends \PHPUnit_Framework_TestCase
      */
     public function createsSessionIdIfNotInRequest()
     {
-        $this->mockWebRequest->expects($this->once())
-                             ->method('hasParam')
-                             ->with($this->equalTo('foo'))
-                             ->will($this->returnValue(false));
-        $this->mockWebRequest->expects($this->once())
-                             ->method('hasCookie')
-                             ->with($this->equalTo('foo'))
-                             ->will($this->returnValue(false));
+        $this->request->expects(once())
+                ->method('hasParam')
+                ->with(equalTo('foo'))
+                ->will(returnValue(false));
+        $this->request->expects(once())
+                ->method('hasCookie')
+                ->with(equalTo('foo'))
+                ->will(returnValue(false));
         assertRegExp(
                 '/^([a-zA-Z0-9]{32})$/D',
                 (string) $this->webBoundSessionId
@@ -83,14 +83,14 @@ class WebBoundSessionIdTest extends \PHPUnit_Framework_TestCase
      */
     public function createsSessionIdIfRequestParamInvalid()
     {
-        $this->mockWebRequest->expects($this->once())
-                             ->method('hasParam')
-                             ->with($this->equalTo('foo'))
-                             ->will($this->returnValue(true));
-        $this->mockWebRequest->expects($this->once())
-                             ->method('readParam')
-                             ->with($this->equalTo('foo'))
-                             ->will($this->returnValue(ValueReader::forValue('invalid')));
+        $this->request->expects(once())
+                ->method('hasParam')
+                ->with(equalTo('foo'))
+                ->will(returnValue(true));
+        $this->request->expects(once())
+                ->method('readParam')
+                ->with(equalTo('foo'))
+                ->will(returnValue(ValueReader::forValue('invalid')));
         assertRegExp(
                 '/^([a-zA-Z0-9]{32})$/D',
                 (string) $this->webBoundSessionId
@@ -102,14 +102,14 @@ class WebBoundSessionIdTest extends \PHPUnit_Framework_TestCase
      */
     public function usesParamSessionIdIfRequestParamValid()
     {
-        $this->mockWebRequest->expects($this->once())
-                             ->method('hasParam')
-                             ->with($this->equalTo('foo'))
-                             ->will($this->returnValue(true));
-        $this->mockWebRequest->expects($this->once())
-                             ->method('readParam')
-                             ->with($this->equalTo('foo'))
-                             ->will($this->returnValue(ValueReader::forValue('abcdefghij1234567890abcdefghij12')));
+        $this->request->expects(once())
+                ->method('hasParam')
+                ->with(equalTo('foo'))
+                ->will(returnValue(true));
+        $this->request->expects(once())
+                ->method('readParam')
+                ->with(equalTo('foo'))
+                ->will(returnValue(ValueReader::forValue('abcdefghij1234567890abcdefghij12')));
         assertEquals(
                 'abcdefghij1234567890abcdefghij12',
                 (string) $this->webBoundSessionId
@@ -121,18 +121,18 @@ class WebBoundSessionIdTest extends \PHPUnit_Framework_TestCase
      */
     public function createsSessionIdIfRequestCookieInvalid()
     {
-        $this->mockWebRequest->expects($this->once())
-                             ->method('hasParam')
-                             ->with($this->equalTo('foo'))
-                             ->will($this->returnValue(false));
-        $this->mockWebRequest->expects($this->once())
-                             ->method('hasCookie')
-                             ->with($this->equalTo('foo'))
-                             ->will($this->returnValue(true));
-        $this->mockWebRequest->expects($this->once())
-                             ->method('readCookie')
-                             ->with($this->equalTo('foo'))
-                             ->will($this->returnValue(ValueReader::forValue('invalid')));
+        $this->request->expects(once())
+                ->method('hasParam')
+                ->with(equalTo('foo'))
+                ->will(returnValue(false));
+        $this->request->expects(once())
+                ->method('hasCookie')
+                ->with(equalTo('foo'))
+                ->will(returnValue(true));
+        $this->request->expects(once())
+                ->method('readCookie')
+                ->with(equalTo('foo'))
+                ->will(returnValue(ValueReader::forValue('invalid')));
         assertRegExp(
                 '/^([a-zA-Z0-9]{32})$/D',
                 (string) $this->webBoundSessionId
@@ -144,18 +144,18 @@ class WebBoundSessionIdTest extends \PHPUnit_Framework_TestCase
      */
     public function usesCookieSessionIdIfRequestCookieValid()
     {
-        $this->mockWebRequest->expects($this->once())
-                             ->method('hasParam')
-                             ->with($this->equalTo('foo'))
-                             ->will($this->returnValue(false));
-        $this->mockWebRequest->expects($this->once())
-                             ->method('hasCookie')
-                             ->with($this->equalTo('foo'))
-                             ->will($this->returnValue(true));
-        $this->mockWebRequest->expects($this->once())
-                             ->method('readCookie')
-                             ->with($this->equalTo('foo'))
-                             ->will($this->returnValue(ValueReader::forValue('abcdefghij1234567890abcdefghij12')));
+        $this->request->expects(once())
+                ->method('hasParam')
+                ->with(equalTo('foo'))
+                ->will(returnValue(false));
+        $this->request->expects(once())
+                ->method('hasCookie')
+                ->with(equalTo('foo'))
+                ->will(returnValue(true));
+        $this->request->expects(once())
+                ->method('readCookie')
+                ->with(equalTo('foo'))
+                ->will(returnValue(ValueReader::forValue('abcdefghij1234567890abcdefghij12')));
         assertEquals(
                 'abcdefghij1234567890abcdefghij12',
                 (string) $this->webBoundSessionId
@@ -190,8 +190,7 @@ class WebBoundSessionIdTest extends \PHPUnit_Framework_TestCase
      */
     public function regenerateStoresNewSessionIdInCookie()
     {
-        $this->mockResponse->expects($this->once())
-                           ->method('addCookie');
+        $this->response->expects(once())->method('addCookie');
         $this->webBoundSessionId->regenerate();
     }
 
@@ -200,9 +199,9 @@ class WebBoundSessionIdTest extends \PHPUnit_Framework_TestCase
      */
     public function invalidateRemovesSessionidCookie()
     {
-        $this->mockResponse->expects($this->once())
-                           ->method('removeCookie')
-                           ->with($this->equalTo('foo'));
+        $this->response->expects(once())
+                ->method('removeCookie')
+                ->with(equalTo('foo'));
         assertSame(
                 $this->webBoundSessionId,
                 $this->webBoundSessionId->invalidate()

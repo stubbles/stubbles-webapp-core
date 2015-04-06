@@ -28,15 +28,15 @@ class TokenTest extends \PHPUnit_Framework_TestCase
      *
      * @type  \PHPUnit_Framework_MockObject_MockObject
      */
-    private $mockSession;
+    private $session;
 
     /**
      * set up test enviroment
      */
     public function setUp()
     {
-        $this->mockSession = $this->getMock('stubbles\webapp\session\Session');
-        $this->token       = new Token($this->mockSession);
+        $this->session = $this->getMock('stubbles\webapp\session\Session');
+        $this->token   = new Token($this->session);
     }
 
     /**
@@ -66,11 +66,8 @@ class TokenTest extends \PHPUnit_Framework_TestCase
      */
     public function givenTokenIsNotValidWhenNotEqualToSessionToken()
     {
-        $this->mockSession->expects($this->once())
-                          ->method('value')
-                          ->will($this->returnValue('aToken'));
-        $this->mockSession->expects($this->once())
-                          ->method('putValue');
+        $this->session->method('value')->will(returnValue('aToken'));
+        $this->session->expects(once())->method('putValue');
         assertFalse($this->token->isValid('otherToken'));
     }
 
@@ -79,11 +76,8 @@ class TokenTest extends \PHPUnit_Framework_TestCase
      */
     public function givenTokenIsValidWhenEqualToSessionToken()
     {
-        $this->mockSession->expects($this->once())
-                          ->method('value')
-                          ->will($this->returnValue('aToken'));
-        $this->mockSession->expects($this->once())
-                          ->method('putValue');
+        $this->session->method('value')->will(returnValue('aToken'));
+        $this->session->expects(once())->method('putValue');
         assertTrue($this->token->isValid('aToken'));
     }
 
@@ -92,11 +86,9 @@ class TokenTest extends \PHPUnit_Framework_TestCase
      */
     public function nextTokenTakenFromSession()
     {
-        $this->mockSession->expects($this->exactly(2))
-                          ->method('value')
-                          ->will($this->onConsecutiveCalls('aToken', 'nextToken'));
-        $this->mockSession->expects($this->once())
-                          ->method('putValue');
+        $this->session->method('value')
+                ->will(onConsecutiveCalls('aToken', 'nextToken'));
+        $this->session->expects(once())->method('putValue');
         assertEquals('nextToken', $this->token->next());
     }
 }

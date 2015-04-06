@@ -28,13 +28,13 @@ class NotFoundTest extends \PHPUnit_Framework_TestCase
      *
      * @type  \PHPUnit_Framework_MockObject_MockObject
      */
-    private $mockRequest;
+    private $request;
     /**
      * mocked response instance
      *
      * @type  \PHPUnit_Framework_MockObject_MockObject
      */
-    private $mockResponse;
+    private $response;
 
     /**
      * set up test environment
@@ -51,8 +51,8 @@ class NotFoundTest extends \PHPUnit_Framework_TestCase
                         ->getMock(),
                 new SupportedMimeTypes([])
         );
-        $this->mockRequest  = $this->getMock('stubbles\webapp\Request');
-        $this->mockResponse = $this->getMock('stubbles\webapp\Response');
+        $this->request  = $this->getMock('stubbles\webapp\Request');
+        $this->response = $this->getMock('stubbles\webapp\Response');
     }
 
     /**
@@ -69,14 +69,12 @@ class NotFoundTest extends \PHPUnit_Framework_TestCase
     public function triggers404NotFoundResponse()
     {
         $error = Error::notFound();
-        $this->mockResponse->expects($this->once())
-                ->method('notFound')
-                ->will($this->returnValue($error));
+        $this->response->method('notFound')->will(returnValue($error));
         assertSame(
                 $error,
                 $this->notFound->resolve(
-                        $this->mockRequest,
-                        $this->mockResponse
+                        $this->request,
+                        $this->response
                 )
         );
     }
