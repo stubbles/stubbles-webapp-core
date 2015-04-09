@@ -17,13 +17,19 @@
         "stubbles/xml": "~4.2",
         "stubbles/image": "~4.0",
         "phpunit/phpunit": "~4.6",
-        "mikey179/vfsStream": "~1.5"
+        "mikey179/vfsStream": "~1.5",
+        "bovigo/callmap": "~0.2"
     },
     "autoload": {
         "psr-4": {
             "stubbles\\webapp\\": "src/main/php"
         },
         "files": ["src/main/php/functions.php"]
+    },
+    "autoload-dev": {
+        "files": [
+            "vendor/phpunit/phpunit/src/Framework/Assert/Functions.php"
+        ]
     },
     "extra": {
         "branch-alias": {

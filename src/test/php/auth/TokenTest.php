@@ -8,6 +8,7 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\auth;
+use bovigo\callmap\NewInstance;
 /**
  * Test for stubbles\webapp\auth\Token.
  *
@@ -23,7 +24,10 @@ class TokenTest extends \PHPUnit_Framework_TestCase
     {
         assertInstanceOf(
                 'stubbles\webapp\auth\Token',
-                Token::create($this->getMock('stubbles\webapp\auth\User'), 'some caramel salt')
+                Token::create(
+                        NewInstance::of('stubbles\webapp\auth\User'),
+                        'some caramel salt'
+                )
         );
     }
 

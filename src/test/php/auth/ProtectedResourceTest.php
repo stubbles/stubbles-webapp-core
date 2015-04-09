@@ -8,6 +8,9 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\auth;
+use bovigo\callmap;
+use bovigo\callmap\InvocationResults;
+use bovigo\callmap\NewInstance;
 use stubbles\peer\http\HttpUri;
 use stubbles\webapp\request\WebRequest;
 use stubbles\webapp\response\Error;
@@ -35,25 +38,25 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
     /**
      * actual route to execute
      *
-     * @type  \PHPUnit_Framework_MockObject_MockObject
+     * @type  \bovigo\callmap\Proxy
      */
     private $actualResource;
     /**
      * mocked injector
      *
-     * @type  \PHPUnit_Framework_MockObject_MockObject
+     * @type  \bovigo\callmap\Proxy
      */
     private $injector;
     /**
      * mocked request instance
      *
-     * @type  \PHPUnit_Framework_MockObject_MockObject
+     * @type  \bovigo\callmap\Proxy
      */
     private $request;
     /**
      * mocked response instance
      *
-     * @type  \PHPUnit_Framework_MockObject_MockObject
+     * @type  \bovigo\callmap\Proxy
      */
     private $response;
 
@@ -62,18 +65,16 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->authConstraint  = new AuthConstraint(new RoutingAnnotations(function() {}));
-        $this->actualResource  = $this->getMock('stubbles\webapp\routing\UriResource');
-        $this->injector    = $this->getMockBuilder('stubbles\ioc\Injector')
-                ->disableOriginalConstructor()
-                ->getMock();
+        $this->authConstraint    = new AuthConstraint(new RoutingAnnotations(function() {}));
+        $this->actualResource    = NewInstance::of('stubbles\webapp\routing\UriResource');
+        $this->injector          = NewInstance::stub('stubbles\ioc\Injector');
         $this->protectedResource = new ProtectedResource(
                 $this->authConstraint,
                 $this->actualResource,
                 $this->injector
         );
-        $this->request  = $this->getMock('stubbles\webapp\Request');
-        $this->response = $this->getMock('stubbles\webapp\Response');
+        $this->request  = NewInstance::of('stubbles\webapp\Request');
+        $this->response = NewInstance::of('stubbles\webapp\Response');
     }
 
     /**
@@ -81,7 +82,7 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function requiresSwitchToHttpsWhenActualRouteDoes()
     {
-        $this->actualResource->method('requiresHttps')->will(returnValue(true));
+        $this->actualResource->mapCalls(['requiresHttps' => true]);
         assertTrue($this->protectedResource->requiresHttps());
     }
 
@@ -91,7 +92,7 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
     public function returnsHttpsUriOfActualRoute()
     {
         $httpsUri = HttpUri::fromString('https://example.com/hello');
-        $this->actualResource->method('httpsUri')->will(returnValue($httpsUri));
+        $this->actualResource->mapCalls(['httpsUri' => $httpsUri]);
         assertSame($httpsUri, $this->protectedResource->httpsUri());
     }
 
@@ -101,7 +102,7 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function delegatesMimeTypeNegotiationToActualRoute()
     {
-        $this->actualResource->method('negotiateMimeType')->will(returnValue(true));
+        $this->actualResource->mapCalls(['negotiateMimeType' => true]);
         assertTrue(
                 $this->protectedResource->negotiateMimeType(
                         $this->request,
@@ -115,8 +116,7 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsSupportedMimeTypesOfActualRoute()
     {
-        $this->actualResource->method('supportedMimeTypes')
-                ->will(returnValue(['application/foo']));
+        $this->actualResource->mapCalls(['supportedMimeTypes' => ['application/foo']]);
         assertEquals(
                 ['application/foo'],
                 $this->protectedResource->supportedMimeTypes()
@@ -124,16 +124,16 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @return  \PHPUnit_Framework_MockObject_MockObject
+     * @param   array  $callmap  optional
+     * @return  \stubbles\webapp\auth\AuthenticationProvider
      */
-    private function mockAuthenticationProvider()
+    private function createAuthenticationProvider(array $callmap = [])
     {
-        $authenticationProvider = $this->getMock(
+        $authenticationProvider = NewInstance::of(
                 'stubbles\webapp\auth\AuthenticationProvider'
         );
-        $this->injector->method('getInstance')
-                ->will(returnValue($authenticationProvider));
-        return $authenticationProvider;
+        $this->injector->mapCalls(['getInstance' => $authenticationProvider]);
+        return $authenticationProvider->mapCalls($callmap);
     }
 
     /**
@@ -143,14 +143,8 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
     public function applyPreInterceptorsTriggersInternalServerErrorWhenAuthenticationThrowsInternalAuthProviderException()
     {
         $e = new InternalAuthProviderException('error');
-        $authenticationProvider = $this->mockAuthenticationProvider();
-        $authenticationProvider->method('authenticate')
-                ->will(throwException($e));
-        $this->response->expects(once())
-                ->method('internalServerError')
-                ->with(equalTo($e))
-                ->will(returnValue(Error::internalServerError($e)));
-        $this->actualResource->expects(never())->method('applyPreInterceptors');
+        $this->createAuthenticationProvider(['authenticate' => callmap\throws($e)]);
+        $this->response->mapCalls(['internalServerError' => Error::internalServerError($e)]);
         assertTrue(
                 $this->protectedResource->applyPreInterceptors(
                         $this->request,
@@ -164,6 +158,8 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
                         $this->response
                 )
         );
+        assertEquals(0, $this->actualResource->callsReceivedFor('applyPreInterceptors'));
+        assertEquals(0, $this->actualResource->callsReceivedFor('resolve'));
     }
 
     /**
@@ -173,14 +169,9 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function applyPreInterceptorsTriggersStatusCode504WhenAuthenticationThrowsExternalAuthHandlerException()
     {
-        $authenticationProvider = $this->mockAuthenticationProvider();
-        $authenticationProvider->method('authenticate')
-                ->will(throwException(new ExternalAuthProviderException('error')));
-        $this->response->expects(once())
-                ->method('setStatusCode')
-                ->with(equalTo(504))
-                ->will(returnSelf());
-        $this->actualResource->expects(never())->method('applyPreInterceptors');
+        $this->createAuthenticationProvider(
+                ['authenticate' => callmap\throws(new ExternalAuthProviderException('error'))]
+        );
         assertTrue(
                 $this->protectedResource->applyPreInterceptors(
                         $this->request,
@@ -194,6 +185,9 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
                         $this->response
                 )
         );
+        assertEquals([504], $this->response->argumentsReceived('setStatusCode'));
+        assertEquals(0, $this->actualResource->callsReceivedFor('applyPreInterceptors'));
+        assertEquals(0, $this->actualResource->callsReceivedFor('resolve'));
     }
 
     /**
@@ -201,14 +195,7 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function applyPreInterceptorsTriggersRedirectToLoginUriWhenNotAuthenticated()
     {
-        $authenticationProvider = $this->mockAuthenticationProvider();
-        $authenticationProvider->method('authenticate')->will(returnValue(null));
-        $authenticationProvider->method('loginUri')
-                ->will(returnValue('https://login.example.com/'));
-        $this->response->expects(once())
-                ->method('redirect')
-                ->with(equalTo('https://login.example.com/'));
-        $this->actualResource->expects(never())->method('applyPreInterceptors');
+        $this->createAuthenticationProvider(['loginUri' => 'https://login.example.com/']);
         assertTrue(
                 $this->protectedResource->applyPreInterceptors(
                         $this->request,
@@ -221,6 +208,12 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
                         $this->response
                 )
         );
+        assertEquals(
+                ['https://login.example.com/'],
+                $this->response->argumentsReceived('redirect')
+        );
+        assertEquals(0, $this->actualResource->callsReceivedFor('applyPreInterceptors'));
+        assertEquals(0, $this->actualResource->callsReceivedFor('resolve'));
     }
 
     /**
@@ -231,12 +224,8 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
     public function applyPreInterceptorsTriggers403ForbiddenWhenNotAuthenticatedAndRedirectToLoginForbidden()
     {
         $this->authConstraint->forbiddenWhenNotAlreadyLoggedIn();
-        $authenticationProvider = $this->mockAuthenticationProvider();
-        $authenticationProvider->method('authenticate')->will(returnValue(null));
-        $this->response->expects(once())
-                ->method('forbidden')
-                ->will(returnValue(Error::forbidden()));
-        $this->actualResource->expects(never())->method('applyPreInterceptors');
+        $this->createAuthenticationProvider();
+        $this->response->mapCalls(['forbidden' => Error::forbidden()]);
         assertTrue(
                 $this->protectedResource->applyPreInterceptors(
                         $this->request,
@@ -250,6 +239,8 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
                         $this->response
                 )
         );
+        assertEquals(0, $this->actualResource->callsReceivedFor('applyPreInterceptors'));
+        assertEquals(0, $this->actualResource->callsReceivedFor('resolve'));
     }
 
     /**
@@ -258,18 +249,18 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
     public function applyPreInterceptorsCallsActualRouteWhenAuthenticatedAndNoSpecificAuthorizationRequired()
     {
         $this->authConstraint->requireLogin();
-        $authenticationProvider = $this->mockAuthenticationProvider();
-        $authenticationProvider->method('authenticate')
-                ->will(returnValue($this->getMock('stubbles\webapp\auth\User')));
-        $this->actualResource->expects(once())
-                ->method('applyPreInterceptors')
-                ->will(returnValue(true));
+        $this->createAuthenticationProvider(
+                ['authenticate' => NewInstance::of('stubbles\webapp\auth\User')]
+        );
+
+        $this->actualResource->mapCalls(['applyPreInterceptors' => true]);
         assertTrue(
                 $this->protectedResource->applyPreInterceptors(
                         $this->request,
                         $this->response
                 )
         );
+        assertEquals(1, $this->actualResource->callsReceivedFor('applyPreInterceptors'));
     }
 
     /**
@@ -277,33 +268,34 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function storesUserInRequestIdentityWhenAuthenticated()
     {
-        $user = $this->getMock('stubbles\webapp\auth\User');
+        $user = NewInstance::of('stubbles\webapp\auth\User');
         $this->authConstraint->requireLogin();
-        $authenticationProvider = $this->mockAuthenticationProvider();
-        $authenticationProvider->method('authenticate')->will(returnValue($user));
+        $this->createAuthenticationProvider(['authenticate' => $user]);
         $request = WebRequest::fromRawSource();
         $this->protectedResource->applyPreInterceptors($request, $this->response);
         assertSame($user, $request->identity()->user());
     }
 
     /**
-     * @param   \stubbles\webapp\auth\User  $user
-     * @return  \PHPUnit_Framework_MockObject_MockObject
+     * @param   \stubbles\webapp\auth\Roles|\bovigo\callmap\Throwable  $roles
+     * @param   \stubbles\webapp\auth\User   $user
+     * @return  \stubbles\webapp\auth\AuthorizationProvider
      */
-    private function mockAuthorizationProvider($user = null)
+    private function createAuthorizationProvider($roles, User $user = null)
     {
-        $authenticationProvider = $this->getMock('stubbles\webapp\auth\AuthenticationProvider');
-        $authenticationProvider->method('authenticate')
-                ->will(returnValue(
-                        ($user === null) ? $this->getMock('stubbles\webapp\auth\User') : $user
-                    )
-                );
-        $authorizationProvider = $this->getMock('stubbles\webapp\auth\AuthorizationProvider');
-        $this->injector->method('getInstance')->will(
-                $this->onConsecutiveCalls(
-                        $authenticationProvider,
-                        $authorizationProvider
-                )
+        $authenticationProvider = NewInstance::of(
+                'stubbles\webapp\auth\AuthenticationProvider'
+        )->mapCalls(['authenticate' => ($user === null) ? NewInstance::of('stubbles\webapp\auth\User') : $user]);
+
+        $authorizationProvider = NewInstance::of(
+                'stubbles\webapp\auth\AuthorizationProvider'
+        )->mapCalls(['roles' => $roles]);
+        $this->injector->mapCalls(
+                ['getInstance' => new InvocationResults([
+                                $authenticationProvider,
+                                $authorizationProvider
+                        ])
+                ]
         );
         return $authorizationProvider;
     }
@@ -316,13 +308,8 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
     {
         $e = new InternalAuthProviderException('error');
         $this->authConstraint->requireRole('admin');
-        $authorizationProvider = $this->mockAuthorizationProvider();
-        $authorizationProvider->method('roles')->will(throwException($e));
-        $this->response->expects(once())
-                ->method('internalServerError')
-                ->with(equalTo($e))
-                ->will(returnValue(Error::internalServerError($e)));
-        $this->actualResource->expects(never())->method('applyPreInterceptors');
+        $this->createAuthorizationProvider(callmap\throws($e));
+        $this->response->mapCalls(['internalServerError' => Error::internalServerError($e)]);
         assertTrue(
                 $this->protectedResource->applyPreInterceptors(
                         $this->request,
@@ -336,6 +323,8 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
                         $this->response
                 )
         );
+        assertEquals(0, $this->actualResource->callsReceivedFor('applyPreInterceptors'));
+        assertEquals(0, $this->actualResource->callsReceivedFor('resolve'));
     }
 
     /**
@@ -346,14 +335,9 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
     public function applyPreInterceptorsTriggersStatusCode504WhenAuthorizationThrowsExternalAuthHandlerException()
     {
         $this->authConstraint->requireRole('admin');
-        $authorizationProvider = $this->mockAuthorizationProvider();
-        $authorizationProvider->method('roles')
-                ->will(throwException(new ExternalAuthProviderException('error')));
-        $this->response->expects(once())
-                ->method('setStatusCode')
-                ->with(equalTo(504))
-                ->will(returnSelf());
-        $this->actualResource->expects(never())->method('applyPreInterceptors');
+        $this->createAuthorizationProvider(
+                callmap\throws(new ExternalAuthProviderException('error'))
+        );
         assertTrue(
                 $this->protectedResource->applyPreInterceptors(
                         $this->request,
@@ -367,6 +351,9 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
                         $this->response
                 )
         );
+        assertEquals([504], $this->response->argumentsReceived('setStatusCode'));
+        assertEquals(0, $this->actualResource->callsReceivedFor('applyPreInterceptors'));
+        assertEquals(0, $this->actualResource->callsReceivedFor('resolve'));
     }
 
     /**
@@ -375,12 +362,8 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
     public function applyPreInterceptorsTriggers403ForbiddenWhenNotAuthorized()
     {
         $this->authConstraint->requireRole('admin');
-        $authorizationProvider = $this->mockAuthorizationProvider();
-        $authorizationProvider->method('roles')->will(returnValue(Roles::none()));
-        $this->response->expects(once())
-                ->method('forbidden')
-                ->will(returnValue(Error::forbidden()));
-        $this->actualResource->expects(never())->method('applyPreInterceptors');
+        $this->createAuthorizationProvider(Roles::none());
+        $this->response->mapCalls(['forbidden' => Error::forbidden()]);
         assertTrue(
                 $this->protectedResource->applyPreInterceptors(
                         $this->request,
@@ -394,6 +377,8 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
                         $this->response
                 )
         );
+        assertEquals(0, $this->actualResource->callsReceivedFor('applyPreInterceptors'));
+        assertEquals(0, $this->actualResource->callsReceivedFor('resolve'));
     }
 
     /**
@@ -402,18 +387,15 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
     public function applyPreInterceptorsCallsActualRouteWhenAuthenticatedAndAuthorized()
     {
         $this->authConstraint->requireRole('admin');
-        $authorizationProvider = $this->mockAuthorizationProvider();
-        $authorizationProvider->method('roles')
-                ->will(returnValue(new Roles(['admin'])));
-        $this->actualResource->expects(once())
-                ->method('applyPreInterceptors')
-                ->will(returnValue(true));
+        $this->createAuthorizationProvider(new Roles(['admin']));
+        $this->actualResource->mapCalls(['applyPreInterceptors' => true]);
         assertTrue(
                 $this->protectedResource->applyPreInterceptors(
                         $this->request,
                         $this->response
                 )
         );
+        assertEquals(1, $this->actualResource->callsReceivedFor('applyPreInterceptors'));
     }
 
     /**
@@ -421,11 +403,9 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function storesUserInRequestIdentityWhenAuthenticatedAndAuthorized()
     {
-        $user = $this->getMock('stubbles\webapp\auth\User');
+        $user = NewInstance::of('stubbles\webapp\auth\User');
         $this->authConstraint->requireRole('admin');
-        $authorizationProvider = $this->mockAuthorizationProvider($user);
-        $authorizationProvider->method('roles')
-                ->will(returnValue(new Roles(['admin'])));
+        $this->createAuthorizationProvider(new Roles(['admin']), $user);
         $request = WebRequest::fromRawSource();
         $this->protectedResource->applyPreInterceptors(
                 $request,
@@ -440,10 +420,8 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
     public function storesRolesInRequestIdentityWhenAuthenticatedAndAuthorized()
     {
         $this->authConstraint->requireRole('admin');
-        $authorizationProvider = $this->mockAuthorizationProvider();
         $roles = new Roles(['admin']);
-        $authorizationProvider->method('roles')
-                ->will(returnValue($roles));
+        $this->createAuthorizationProvider($roles);
         $request = WebRequest::fromRawSource();
         $this->protectedResource->applyPreInterceptors(
                 $request,
@@ -455,32 +433,27 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function doesNotCallsProcessOfActualRouteWhenNotAuthorized()
+    public function doesNotCallResolveOfActualRouteWhenNotAuthorized()
     {
-        $this->actualResource->expects(never())->method('process');
         assertNull(
                 $this->protectedResource->resolve(
                         $this->request,
                         $this->response
                 )
         );
+        assertEquals(0, $this->actualResource->callsReceivedFor('resolve'));
     }
 
     /**
      * @test
      */
-    public function processCallsProcessOfActualRouteWhenAuthorized()
+    public function resolveCallsResolveOfActualRouteWhenAuthorized()
     {
         $this->authConstraint->requireRole('admin');
-        $authorizationProvider = $this->mockAuthorizationProvider();
-        $authorizationProvider->method('roles')
-                ->will(returnValue(new Roles(['admin'])));
-        $this->actualResource->expects(once())
-                ->method('applyPreInterceptors')
-                ->will($this->returnValue(true));
-        $this->actualResource->expects(once())
-                ->method('resolve')
-                ->will($this->returnValue('foo'));
+        $this->createAuthorizationProvider(new Roles(['admin']));
+        $this->actualResource->mapCalls(
+                ['applyPreInterceptors' => true, 'resolve' => 'foo']
+        );
         assertTrue(
                 $this->protectedResource->applyPreInterceptors(
                         $this->request,
@@ -502,25 +475,19 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
     public function appliesPostInterceptorsWhenNotAuthorized()
     {
         $this->authConstraint->requireRole('admin');
-        $authorizationProvider = $this->mockAuthorizationProvider();
-        $authorizationProvider->method('roles')
-                ->will(returnValue(new Roles([])));
-        $this->actualResource->expects(never())->method('applyPreInterceptors');
-        $this->actualResource->expects(once())
-                ->method('applyPostInterceptors')
-                ->will(returnValue(true));
+        $this->createAuthorizationProvider(Roles::none());
         assertTrue(
                 $this->protectedResource->applyPreInterceptors(
                         $this->request,
                         $this->response
                 )
         );
-        assertTrue(
-                $this->protectedResource->applyPostInterceptors(
-                        $this->request,
-                        $this->response
-                )
+        $this->protectedResource->applyPostInterceptors(
+                $this->request,
+                $this->response
         );
+        assertEquals(0, $this->actualResource->callsReceivedFor('applyPreInterceptors'));
+        assertEquals(1, $this->actualResource->callsReceivedFor('applyPostInterceptors'));
     }
 
     /**
@@ -529,26 +496,21 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
     public function appliesPostInterceptorsWhenAuthorized()
     {
         $this->authConstraint->requireRole('admin');
-        $authorizationProvider = $this->mockAuthorizationProvider();
-        $authorizationProvider->method('roles')
-                ->will(returnValue(new Roles(['admin'])));
-        $this->actualResource->expects(once())
-                ->method('applyPreInterceptors')
-                ->will($this->returnValue(true));
-        $this->actualResource->expects(once())
-                ->method('applyPostInterceptors')
-                ->will($this->returnValue(true));
+        $this->createAuthorizationProvider(new Roles(['admin']));
+        $this->actualResource->mapCalls(
+                ['applyPreInterceptors' => true, 'resolve' => 'foo']
+        );
         assertTrue(
                 $this->protectedResource->applyPreInterceptors(
                         $this->request,
                         $this->response
                 )
         );
-        assertTrue(
-                $this->protectedResource->applyPostInterceptors(
-                        $this->request,
-                        $this->response
-                )
+        $this->protectedResource->applyPostInterceptors(
+                $this->request,
+                $this->response
         );
+        assertEquals(1, $this->actualResource->callsReceivedFor('applyPreInterceptors'));
+        assertEquals(1, $this->actualResource->callsReceivedFor('applyPostInterceptors'));
     }
 }

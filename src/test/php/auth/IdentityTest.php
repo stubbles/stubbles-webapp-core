@@ -8,6 +8,7 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\auth;
+use bovigo\callmap\NewInstance;
 /**
  * Tests for stubbles\webapp\auth\Identity.
  *
@@ -16,22 +17,23 @@ namespace stubbles\webapp\auth;
 class IdentityTest extends \PHPUnit_Framework_TestCase
 {
     /**
+     * @param   \stubbles\webapp\auth\User
      * @return  \stubbles\webapp\auth\Identity
      */
-    private function createIdentity($user = null)
+    private function createIdentity(User $user = null)
     {
         return new Identity(
-                null === $user ? $this->mockUser() : $user,
+                null === $user ? $this->createUser() : $user,
                 new Roles(['admin'])
         );
     }
 
     /**
-     * @return  \PHPUnit_Framework_MockObject_MockObject
+     * @return  \stubbles\webapp\auth\User
      */
-    private function mockUser()
+    private function createUser()
     {
-        return $this->getMock('stubbles\webapp\auth\User');
+        return NewInstance::of('stubbles\webapp\auth\User');
     }
 
     /**
@@ -39,7 +41,7 @@ class IdentityTest extends \PHPUnit_Framework_TestCase
      */
     public function isAssociatedWithGivenUser()
     {
-        $user = $this->mockUser();
+        $user = $this->createUser();
         assertSame(
                 $user,
                 $this->createIdentity($user)->user()
