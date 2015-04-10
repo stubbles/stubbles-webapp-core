@@ -8,7 +8,10 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\routing;
+use bovigo\callmap\NewInstance;
+use stubbles\peer\http\HttpVersion;
 use stubbles\webapp\response\Error;
+use stubbles\webapp\response\WebResponse;
 /**
  * Tests for stubbles\webapp\routing\MethodNotAllowed.
  *
@@ -23,18 +26,6 @@ class MethodNotAllowedTest extends \PHPUnit_Framework_TestCase
      * @type  \stubbles\webapp\routing\MethodNotAllowed
      */
     private $methodNotAllowed;
-    /**
-     * mocked request instance
-     *
-     * @type  \PHPUnit_Framework_MockObject_MockObject
-     */
-    private $request;
-    /**
-     * mocked response instance
-     *
-     * @type  \PHPUnit_Framework_MockObject_MockObject
-     */
-    private $response;
 
     /**
      * set up test environment
@@ -42,18 +33,12 @@ class MethodNotAllowedTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->methodNotAllowed = new MethodNotAllowed(
-                $this->getMockBuilder('stubbles\ioc\Injector')
-                        ->disableOriginalConstructor()
-                        ->getMock(),
+                NewInstance::stub('stubbles\ioc\Injector'),
                 new CalledUri('http://example.com/hello/world', 'GET'),
-                $this->getMockBuilder('stubbles\webapp\routing\Interceptors')
-                        ->disableOriginalConstructor()
-                        ->getMock(),
+                NewInstance::stub('stubbles\webapp\routing\Interceptors'),
                 new SupportedMimeTypes([]),
                 ['GET', 'POST', 'HEAD']
         );
-        $this->request  = $this->getMock('stubbles\webapp\Request');
-        $this->response = $this->getMock('stubbles\webapp\Response');
     }
 
     /**
@@ -69,25 +54,16 @@ class MethodNotAllowedTest extends \PHPUnit_Framework_TestCase
      */
     public function triggers405MethodNotAllowedResponse()
     {
-        $error = Error::methodNotAllowed(
-                'DELETE',
-                ['GET', 'POST', 'HEAD', 'OPTIONS']
+        $request = NewInstance::of('stubbles\webapp\Request')->mapCalls(
+                ['method' => 'DELETE', 'protocolVersion' => new HttpVersion(1, 1)]
         );
-        $this->request->expects(once())
-                ->method('method')
-                ->will(returnValue('DELETE'));
-        $this->response->method('methodNotAllowed')
-                ->with(
-                        equalTo('DELETE'),
-                        equalTo(['GET', 'POST', 'HEAD', 'OPTIONS'])
-                 )
-                 ->will(returnValue($error));
-        assertSame(
-                $error,
-                $this->methodNotAllowed->resolve(
-                        $this->request,
-                        $this->response
-                )
+        $response = new WebResponse($request);
+        assertEquals(
+                Error::methodNotAllowed(
+                        'DELETE',
+                        ['GET', 'POST', 'HEAD', 'OPTIONS']
+                ),
+                $this->methodNotAllowed->resolve($request, $response)
         );
     }
 }

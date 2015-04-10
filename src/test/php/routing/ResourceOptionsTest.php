@@ -8,6 +8,7 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\routing;
+use bovigo\callmap\NewInstance;
 /**
  * Tests for stubbles\webapp\routing\ResourceOptions.
  *
@@ -22,18 +23,6 @@ class ResourceOptionsTest extends \PHPUnit_Framework_TestCase
      * @type  \stubbles\webapp\routing\ResourceOptions
      */
     private $resourceOptions;
-    /**
-     * mocked request instance
-     *
-     * @type  \PHPUnit_Framework_MockObject_MockObject
-     */
-    private $request;
-    /**
-     * mocked response instance
-     *
-     * @type  \PHPUnit_Framework_MockObject_MockObject
-     */
-    private $response;
 
     /**
      * set up test environment
@@ -41,18 +30,12 @@ class ResourceOptionsTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->resourceOptions = new ResourceOptions(
-                $this->getMockBuilder('stubbles\ioc\Injector')
-                        ->disableOriginalConstructor()
-                        ->getMock(),
+                NewInstance::stub('stubbles\ioc\Injector'),
                 new CalledUri('http://example.com/hello/world', 'GET'),
-                $this->getMockBuilder('stubbles\webapp\routing\Interceptors')
-                        ->disableOriginalConstructor()
-                        ->getMock(),
+                NewInstance::stub('stubbles\webapp\routing\Interceptors'),
                 new SupportedMimeTypes([]),
                 new MatchingRoutes([], ['GET', 'POST', 'HEAD'])
         );
-        $this->request  = $this->getMock('stubbles\webapp\Request');
-        $this->response = $this->getMock('stubbles\webapp\Response');
     }
 
     /**
@@ -66,22 +49,36 @@ class ResourceOptionsTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function addsAllowHeadersWhenRequestMethodIsOptions()
+    public function addsAllowHeader()
     {
-        $this->response->expects(at(0))
-                ->method('addHeader')
-                ->with(equalTo('Allow'), equalTo('GET, POST, HEAD, OPTIONS'))
-                ->will(returnSelf());
-        $this->response->expects(at(1))
-                ->method('addHeader')
-                ->with(
-                        equalTo('Access-Control-Allow-Methods'),
-                        equalTo('GET, POST, HEAD, OPTIONS')
-                 )
-                ->will($this->returnSelf());
+        $response = NewInstance::of('stubbles\webapp\Response');
+        $response->mapCalls(['addHeader' => $response]);
+
         $this->resourceOptions->resolve(
-                $this->request,
-                $this->response
+                NewInstance::of('stubbles\webapp\Request'),
+                $response
+        );
+        assertEquals(
+                ['Allow', 'GET, POST, HEAD, OPTIONS'],
+                $response->argumentsReceived('addHeader', 1)
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function addsAllowMethodsHeader()
+    {
+        $response = NewInstance::of('stubbles\webapp\Response');
+        $response->mapCalls(['addHeader' => $response]);
+
+        $this->resourceOptions->resolve(
+                NewInstance::of('stubbles\webapp\Request'),
+                $response
+        );
+        assertEquals(
+                ['Access-Control-Allow-Methods', 'GET, POST, HEAD, OPTIONS'],
+                $response->argumentsReceived('addHeader', 2)
         );
     }
 }

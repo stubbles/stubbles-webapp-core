@@ -8,7 +8,10 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\routing;
+use bovigo\callmap\NewInstance;
+use stubbles\peer\http\HttpVersion;
 use stubbles\webapp\response\Error;
+use stubbles\webapp\response\WebResponse;
 /**
  * Tests for stubbles\webapp\routing\NotFound.
  *
@@ -23,18 +26,6 @@ class NotFoundTest extends \PHPUnit_Framework_TestCase
      * @type  \stubbles\webapp\routing\NotFound
      */
     private $notFound;
-    /**
-     * mocked request instance
-     *
-     * @type  \PHPUnit_Framework_MockObject_MockObject
-     */
-    private $request;
-    /**
-     * mocked response instance
-     *
-     * @type  \PHPUnit_Framework_MockObject_MockObject
-     */
-    private $response;
 
     /**
      * set up test environment
@@ -42,17 +33,11 @@ class NotFoundTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->notFound = new NotFound(
-                $this->getMockBuilder('stubbles\ioc\Injector')
-                        ->disableOriginalConstructor()
-                        ->getMock(),
+                NewInstance::stub('stubbles\ioc\Injector'),
                 new CalledUri('http://example.com/hello/world', 'GET'),
-                $this->getMockBuilder('stubbles\webapp\routing\Interceptors')
-                        ->disableOriginalConstructor()
-                        ->getMock(),
+                NewInstance::stub('stubbles\webapp\routing\Interceptors'),
                 new SupportedMimeTypes([])
         );
-        $this->request  = $this->getMock('stubbles\webapp\Request');
-        $this->response = $this->getMock('stubbles\webapp\Response');
     }
 
     /**
@@ -68,14 +53,13 @@ class NotFoundTest extends \PHPUnit_Framework_TestCase
      */
     public function triggers404NotFoundResponse()
     {
-        $error = Error::notFound();
-        $this->response->method('notFound')->will(returnValue($error));
-        assertSame(
-                $error,
-                $this->notFound->resolve(
-                        $this->request,
-                        $this->response
-                )
+        $request = NewInstance::of('stubbles\webapp\Request')->mapCalls(
+                ['protocolVersion' => new HttpVersion(1, 1)]
+        );
+        $response = new WebResponse($request);
+        assertEquals(
+                Error::notFound(),
+                $this->notFound->resolve($request, $response)
         );
     }
 }
