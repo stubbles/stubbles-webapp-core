@@ -8,6 +8,7 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\auth\session;
+use bovigo\callmap\NewInstance;
 use stubbles\lang\reflect;
 use stubbles\webapp\auth\Roles;
 /**
@@ -26,13 +27,13 @@ class CachingAuthorizationProviderTest extends \PHPUnit_Framework_TestCase
     /**
      * mocked session
      *
-     * @type  \PHPUnit_Framework_MockObject_MockObject
+     * @type  \bovigo\callmap\Proxy
      */
     private $session;
     /**
      * mocked base authentication provider
      *
-     * @type  \PHPUnit_Framework_MockObject_MockObject
+     * @type  \bovigo\callmap\Proxy
      */
     private $authorizationProvider;
 
@@ -41,8 +42,8 @@ class CachingAuthorizationProviderTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->session                  = $this->getMock('stubbles\webapp\session\Session');
-        $this->authorizationProvider    = $this->getMock('stubbles\webapp\auth\AuthorizationProvider');
+        $this->session                  = NewInstance::of('stubbles\webapp\session\Session');
+        $this->authorizationProvider    = NewInstance::of('stubbles\webapp\auth\AuthorizationProvider');
         $this->cachingAuthorizationProvider = new CachingAuthorizationProvider(
                 $this->session,
                 $this->authorizationProvider
@@ -54,11 +55,6 @@ class CachingAuthorizationProviderTest extends \PHPUnit_Framework_TestCase
      */
     public function annotationsPresentOnConstructor()
     {
-        assertTrue(
-                reflect\annotationsOfConstructor($this->cachingAuthorizationProvider)
-                        ->contain('Inject')
-        );
-
         $annotations = reflect\annotationsOfConstructorParameter(
                 'authorizationProvider',
                 $this->cachingAuthorizationProvider
@@ -76,15 +72,14 @@ class CachingAuthorizationProviderTest extends \PHPUnit_Framework_TestCase
     public function usesSessionValueIfRolesStoredInSession()
     {
         $roles = new Roles(['admin']);
-        $this->session->method('hasValue')->will(returnValue(true));
-        $this->session->method('value')->will(returnValue($roles));
-        $this->authorizationProvider->expects(never())->method('roles');
+        $this->session->mapCalls(['hasValue' => true, 'value' => $roles]);
         assertSame(
                 $roles,
                 $this->cachingAuthorizationProvider->roles(
                         $this->getMock('stubbles\webapp\auth\User')
                 )
         );
+        assertEquals(0, $this->authorizationProvider->callsReceivedFor('roles'));
     }
 
     /**
@@ -93,16 +88,17 @@ class CachingAuthorizationProviderTest extends \PHPUnit_Framework_TestCase
     public function storeReturnValueInSessionWhenOriginalAuthenticationProviderReturnsRoles()
     {
         $roles = new Roles(['admin']);
-        $this->session->method('hasValue')->will(returnValue(false));
-        $this->authorizationProvider->method('roles')->will(returnValue($roles));
-        $this->session->expects(once())
-                ->method('putValue')
-                ->with(equalTo(Roles::SESSION_KEY), equalTo($roles));
+        $this->session->mapCalls(['hasValue' => false]);
+        $this->authorizationProvider->mapCalls(['roles' => $roles]);
         assertSame(
                 $roles,
                 $this->cachingAuthorizationProvider->roles(
                         $this->getMock('stubbles\webapp\auth\User')
                 )
+        );
+        assertEquals(
+                [Roles::SESSION_KEY, $roles],
+                $this->session->argumentsReceived('putValue')
         );
     }
 }

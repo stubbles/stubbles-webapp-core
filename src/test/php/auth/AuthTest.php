@@ -44,7 +44,7 @@ class AuthTest extends \PHPUnit_Framework_TestCase
         $this->authorizationProviderClass  = NewInstance::classname('stubbles\webapp\auth\AuthorizationProvider');
         $this->binder = new Binder();
         $this->binder->bind('stubbles\webapp\session\Session')
-                ->toInstance($this->getMock('stubbles\webapp\session\Session'));
+                ->toInstance(NewInstance::of('stubbles\webapp\session\Session'));
         $this->binder->bindProperties(
                 lang\properties(['config' => ['stubbles.webapp.auth.token.salt' => 'pepper']]),
                 NewInstance::of('stubbles\lang\Mode')

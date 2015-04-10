@@ -9,7 +9,6 @@
  */
 namespace stubbles\webapp\auth;
 use bovigo\callmap;
-use bovigo\callmap\InvocationResults;
 use bovigo\callmap\NewInstance;
 use stubbles\peer\http\HttpUri;
 use stubbles\webapp\request\WebRequest;
@@ -291,10 +290,10 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
                 'stubbles\webapp\auth\AuthorizationProvider'
         )->mapCalls(['roles' => $roles]);
         $this->injector->mapCalls(
-                ['getInstance' => new InvocationResults([
+                ['getInstance' => callmap\onConsecutiveCalls(
                                 $authenticationProvider,
                                 $authorizationProvider
-                        ])
+                        )
                 ]
         );
         return $authorizationProvider;

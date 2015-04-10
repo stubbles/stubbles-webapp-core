@@ -8,6 +8,7 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\interceptor;
+use bovigo\callmap\NewInstance;
 use stubbles\input\ValueReader;
 use stubbles\lang\reflect;
 /**
@@ -21,13 +22,13 @@ class AddAccessControlAllowOriginHeaderTest extends \PHPUnit_Framework_TestCase
     /**
      * mocked request instance
      *
-     * @type  \PHPUnit_Framework_MockObject_MockObject
+     * @type  \bovigo\callmap\Proxy
      */
     private $request;
     /**
      * mocked response instance
      *
-     * @type  \PHPUnit_Framework_MockObject_MockObject
+     * @type  \bovigo\callmap\Proxy
      */
     private $response;
 
@@ -36,8 +37,8 @@ class AddAccessControlAllowOriginHeaderTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->request  = $this->getMock('stubbles\webapp\Request');
-        $this->response = $this->getMock('stubbles\webapp\Response');
+        $this->request  = NewInstance::of('stubbles\webapp\Request');
+        $this->response = NewInstance::of('stubbles\webapp\Response');
     }
 
     /**
@@ -48,7 +49,6 @@ class AddAccessControlAllowOriginHeaderTest extends \PHPUnit_Framework_TestCase
         $annotations = reflect\annotationsOfConstructor(
                 'stubbles\webapp\interceptor\AddAccessControlAllowOriginHeader'
         );
-        assertTrue($annotations->contain('Inject'));
         assertTrue($annotations->contain('Property'));
         assertEquals(
                 'stubbles.webapp.origin.hosts',
@@ -79,8 +79,8 @@ class AddAccessControlAllowOriginHeaderTest extends \PHPUnit_Framework_TestCase
      */
     public function doesNotAddHeaderWhenNoAllowedOriginHostConfigured($emptyConfig)
     {
-        $this->response->expects(never())->method('addHeader');
         $this->apply($emptyConfig);
+        assertEquals(0, $this->response->callsReceivedFor('addHeader'));
     }
 
     /**
@@ -88,11 +88,9 @@ class AddAccessControlAllowOriginHeaderTest extends \PHPUnit_Framework_TestCase
      */
     public function doesNotAddHeaderWhenRequestContainsNoOriginHeader()
     {
-        $this->request->expects(any())
-                ->method('hasHeader')
-                ->will(returnValue(false));
-        $this->response->expects(never())->method('addHeader');
+        $this->request->mapCalls(['hasHeader' => false]);
         $this->apply('^http://[a-zA-Z0-9-\.]+example\.com(:[0-9]{4})?$');
+        assertEquals(0, $this->response->callsReceivedFor('addHeader'));
     }
 
     /**
@@ -100,14 +98,13 @@ class AddAccessControlAllowOriginHeaderTest extends \PHPUnit_Framework_TestCase
      */
     public function doesNotAddHeaderWhenOriginFromRequestDoesNotMatchAllowedOriginHosts()
     {
-        $this->request->expects(any())
-                ->method('hasHeader')
-                ->will(returnValue(true));
-        $this->request->expects(any())
-                ->method('readHeader')
-                ->will(returnValue(ValueReader::forValue('http://example.net')));
-        $this->response->expects(never())->method('addHeader');
+        $this->request->mapCalls(
+                ['hasHeader'  => true,
+                 'readHeader' => ValueReader::forValue('http://example.net')
+                ]
+        );
         $this->apply('^http://[a-zA-Z0-9-\.]+example\.com(:[0-9]{4})?$');
+        assertEquals(0, $this->response->callsReceivedFor('addHeader'));
     }
 
     /**
@@ -115,21 +112,18 @@ class AddAccessControlAllowOriginHeaderTest extends \PHPUnit_Framework_TestCase
      */
     public function addsHeaderWhenOriginFromRequestIsAllowed()
     {
-        $this->request->expects(any())
-                ->method('hasHeader')
-                ->will(returnValue(true));
-        $this->request->expects(any())
-                ->method('readHeader')
-                ->will(returnValue(ValueReader::forValue('http://foo.example.com:9039')));
-        $this->response->expects(once())
-                ->method('addHeader')
-                ->with(
-                        equalTo('Access-Control-Allow-Origin'),
-                        equalTo('http://foo.example.com:9039')
-                );
+        $this->request->mapCalls(
+                ['hasHeader'  => true,
+                 'readHeader' => ValueReader::forValue('http://foo.example.com:9039')
+                ]
+        );
         $this->apply(
                 '^http://[a-zA-Z0-9-\.]+example\.net(:[0-9]{4})?$'
                 . '|^http://[a-zA-Z0-9-\.]+example\.com(:[0-9]{4})?$'
+        );
+        assertEquals(
+                ['Access-Control-Allow-Origin', 'http://foo.example.com:9039'],
+                $this->response->argumentsReceived('addHeader')
         );
     }
 }

@@ -8,6 +8,7 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\request;
+use bovigo\callmap\NewInstance;
 use stubbles\peer\http\HttpVersion;
 use stubbles\webapp\auth\Identity;
 use stubbles\webapp\auth\Roles;
@@ -991,7 +992,7 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
     public function hasSessionWhenAttached()
     {
         $request = $this->createBaseWebRequest();
-        $session = $this->getMock('stubbles\webapp\session\Session');
+        $session = NewInstance::of('stubbles\webapp\session\Session');
         $request->attachSession($session);
         assertTrue($request->hasSessionAttached());
     }
@@ -1003,7 +1004,7 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
     public function returnsAttachedSession()
     {
         $request = $this->createBaseWebRequest();
-        $session = $this->getMock('stubbles\webapp\session\Session');
+        $session = NewInstance::of('stubbles\webapp\session\Session');
         assertSame(
                 $request->attachSession($session),
                 $request->attachedSession()
@@ -1035,7 +1036,7 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
     public function hasIdentityWhenAssociated()
     {
         $identity = new Identity(
-                $this->getMock('stubbles\webapp\auth\User'), Roles::none()
+                NewInstance::of('stubbles\webapp\auth\User'), Roles::none()
         );
         assertTrue(
                 $this->createBaseWebRequest()
@@ -1051,7 +1052,7 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
     public function returnsAssociatedIdentity()
     {
         $identity = new Identity(
-                $this->getMock('stubbles\webapp\auth\User'), Roles::none()
+                NewInstance::of('stubbles\webapp\auth\User'), Roles::none()
         );
         assertSame(
                 $identity,

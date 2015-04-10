@@ -8,6 +8,8 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\response\mimetypes;
+use bovigo\callmap;
+use bovigo\callmap\NewInstance;
 use stubbles\img\Image as ImageSource;
 use stubbles\img\driver\DummyDriver;
 use stubbles\lang\reflect;
@@ -27,7 +29,7 @@ class ImageTest extends \PHPUnit_Framework_TestCase
      */
     private $image;
     /**
-     * @type  \PHPUnit_Framework_MockObject_MockObject
+     * @type  \bovigo\callmap\Proxy
      */
     private $resourceLoader;
 
@@ -37,9 +39,7 @@ class ImageTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->resourceLoader = $this->getMockBuilder('stubbles\lang\ResourceLoader')
-                ->disableOriginalConstructor()
-                ->getMock();
+        $this->resourceLoader = NewInstance::stub('stubbles\lang\ResourceLoader');
         $this->image = new Image($this->resourceLoader, 'error.png');
     }
 
@@ -48,11 +48,6 @@ class ImageTest extends \PHPUnit_Framework_TestCase
      */
     public function annotationsPresent()
     {
-        assertTrue(
-                reflect\annotationsOfConstructor($this->image)
-                        ->contain('Inject')
-        );
-
         $annotations = reflect\annotationsOfConstructorParameter(
                 'errorImgResource',
                 $this->image
@@ -100,10 +95,7 @@ class ImageTest extends \PHPUnit_Framework_TestCase
      */
     public function doesNothingWhenPassedResourceIsEmpty($empty)
     {
-        $this->image->serialize(
-                $empty,
-                new MemoryOutputStream()
-        );
+        $this->image->serialize($empty, new MemoryOutputStream());
     }
 
     /**
@@ -112,20 +104,15 @@ class ImageTest extends \PHPUnit_Framework_TestCase
     public function usesErrorImgResourceWhenResourceIsError()
     {
         $dummyDriver = new DummyDriver('fake');
-        $this->resourceLoader->method('load')
-                ->with(equalTo('error.png'))
-                ->will(returnValue(
-                       ImageSource::load(
-                               'error.png',
-                               $dummyDriver
-                       )
-               )
+        $this->resourceLoader->mapCalls(
+                ['load' => ImageSource::load('error.png', $dummyDriver)]
         );
-        $this->image->serialize(
-                new Error('ups'),
-                new MemoryOutputStream()
-        );
+        $this->image->serialize(new Error('ups'), new MemoryOutputStream());
         assertEquals('fake', $dummyDriver->lastDisplayedHandle());
+        assertEquals(
+                'error.png',
+                $this->resourceLoader->argumentsReceived('load')[0]
+        );
     }
 
     /**
@@ -134,20 +121,15 @@ class ImageTest extends \PHPUnit_Framework_TestCase
     public function displaysImageLoadedFromFilename()
     {
         $dummyDriver = new DummyDriver('fake');
-        $this->resourceLoader->method('load')
-                ->with(equalTo('pixel.png'))
-                ->will(returnValue(
-                       ImageSource::load(
-                               'pixel.png',
-                               $dummyDriver
-                       )
-               )
+        $this->resourceLoader->mapCalls(
+                ['load' => ImageSource::load('error.png', $dummyDriver)]
         );
-        $this->image->serialize(
-                'pixel.png',
-                new MemoryOutputStream()
-        );
+        $this->image->serialize('pixel.png', new MemoryOutputStream());
         assertEquals('fake', $dummyDriver->lastDisplayedHandle());
+        assertEquals(
+                'pixel.png',
+                $this->resourceLoader->argumentsReceived('load')[0]
+        );
     }
 
     /**
@@ -156,7 +138,6 @@ class ImageTest extends \PHPUnit_Framework_TestCase
     public function displaysImagePassedAsResource()
     {
         $dummyDriver = new DummyDriver('fake');
-        $this->resourceLoader->expects(never())->method('load');
         $this->image->serialize(
                 ImageSource::load(
                         'pixel.png',
@@ -174,11 +155,9 @@ class ImageTest extends \PHPUnit_Framework_TestCase
      */
     public function triggersUserErrorWhenImageLoadingFails()
     {
-        $this->resourceLoader->method('load')
-                ->will(throwException(new \Exception('hm...')));
-        $this->image->serialize(
-                'pixel.png',
-                new MemoryOutputStream()
+        $this->resourceLoader->mapCalls(
+                ['load' => callmap\throws(new \Exception('hm...'))]
         );
+        $this->image->serialize('pixel.png', new MemoryOutputStream());
     }
 }

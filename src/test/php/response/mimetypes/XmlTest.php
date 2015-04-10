@@ -8,6 +8,7 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\response\mimetypes;
+use bovigo\callmap\NewInstance;
 use stubbles\lang\reflect;
 use stubbles\streams\memory\MemoryOutputStream;
 /**
@@ -34,21 +35,8 @@ class XmlTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->xmlSerializerFacade = $this->getMockBuilder('stubbles\xml\serializer\XmlSerializerFacade')
-                ->disableOriginalConstructor()
-                ->getMock();
+        $this->xmlSerializerFacade = NewInstance::stub('stubbles\xml\serializer\XmlSerializerFacade');
         $this->xml = new Xml($this->xmlSerializerFacade);
-    }
-
-    /**
-     * @test
-     */
-    public function annotationsPresent()
-    {
-        assertTrue(
-                reflect\annotationsOfConstructor($this->xml)
-                        ->contain('Inject')
-        );
     }
 
     /**
@@ -78,9 +66,7 @@ class XmlTest extends \PHPUnit_Framework_TestCase
      */
     public function serializesResourceToXml()
     {
-        $this->xmlSerializerFacade->method('serializeToXml')
-                ->with(equalTo('value'))
-                ->will(returnValue('<xml/>'));
+        $this->xmlSerializerFacade->mapCalls(['serializeToXml' => '<xml/>']);
         assertEquals(
                 '<xml/>',
                 $this->xml->serialize(

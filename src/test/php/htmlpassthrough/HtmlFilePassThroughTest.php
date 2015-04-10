@@ -8,6 +8,7 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\htmlpassthrough;
+use bovigo\callmap\NewInstance;
 use org\bovigo\vfs\vfsStream;
 use stubbles\lang\reflect;
 use stubbles\webapp\UriPath;
@@ -26,18 +27,6 @@ class HtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
      * @type  \stubbles\webapp\htmlpassthrough\HtmlFilePassThrough
      */
     private $htmlFilePassThrough;
-    /**
-     * mocked request instance
-     *
-     * @type  \PHPUnit_Framework_MockObject_MockObject
-     */
-    private $request;
-    /**
-     * mocked response instance
-     *
-     * @type  \PHPUnit_Framework_MockObject_MockObject
-     */
-    private $response;
 
     /**
      * set up the test environment
@@ -47,8 +36,6 @@ class HtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
         $root = vfsStream::setup();
         vfsStream::newFile('index.html')->withContent('this is index.html')->at($root);
         vfsStream::newFile('foo.html')->withContent('this is foo.html')->at($root);
-        $this->request             = $this->getMock('stubbles\webapp\Request');
-        $this->response            = $this->getMock('stubbles\webapp\Response');
         $this->htmlFilePassThrough = new HtmlFilePassThrough(vfsStream::url('root'));
     }
 
@@ -69,7 +56,6 @@ class HtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
     public function annotationsPresentOnConstructor()
     {
         $annotations = reflect\annotationsOfConstructor($this->htmlFilePassThrough);
-        assertTrue($annotations->contain('Inject'));
         assertTrue($annotations->contain('Named'));
         assertEquals(
                 'stubbles.pages.path',
@@ -83,12 +69,12 @@ class HtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
     public function requestForNonExistingFileWritesNotFoundResponse()
     {
         $error = Error::notFound();
-        $this->response->method('notFound')->will(returnValue($error));
         assertSame(
                 $error,
                 $this->htmlFilePassThrough->resolve(
-                        $this->request,
-                        $this->response,
+                        NewInstance::of('stubbles\webapp\Request'),
+                        NewInstance::of('stubbles\webapp\Response')
+                                ->mapCalls(['notFound' => $error]),
                         new UriPath('/', '/doesNotExist.html')
                 )
         );
@@ -102,8 +88,8 @@ class HtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
         assertEquals(
                 'this is foo.html',
                 $this->htmlFilePassThrough->resolve(
-                        $this->request,
-                        $this->response,
+                        NewInstance::of('stubbles\webapp\Request'),
+                        NewInstance::of('stubbles\webapp\Response'),
                         new UriPath('/', '/foo.html')
                 )
         );
@@ -117,8 +103,8 @@ class HtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
         assertEquals(
                 'this is index.html',
                 $this->htmlFilePassThrough->resolve(
-                        $this->request,
-                        $this->response,
+                        NewInstance::of('stubbles\webapp\Request'),
+                        NewInstance::of('stubbles\webapp\Response'),
                         new UriPath('/', '/')
                 )
         );

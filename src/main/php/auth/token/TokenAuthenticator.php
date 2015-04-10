@@ -80,7 +80,10 @@ class TokenAuthenticator implements AuthenticationProvider
             $user->setToken($token);
             return $user;
         } catch (\Exception $e) {
-            throw new InternalAuthProviderException('Error while trying to find user by token: ' . $e->getMessage(), $e);
+            throw new InternalAuthProviderException(
+                    'Error while trying to find user by token: ' . $e->getMessage(),
+                    $e
+            );
         }
     }
 
@@ -100,7 +103,10 @@ class TokenAuthenticator implements AuthenticationProvider
                 $this->tokenStore->store($request, $token, $user);
                 return $user;
             } catch (\Exception $e) {
-                throw new InternalAuthProviderException('Error while trying to store new token for user: ' . $e->getMessage(), $e);
+                throw new InternalAuthProviderException(
+                        'Error while trying to store new token for user: ' . $e->getMessage(),
+                        $e
+                );
             }
         }
 
@@ -119,7 +125,8 @@ class TokenAuthenticator implements AuthenticationProvider
             return null;
         }
 
-        return $request->readRedirectHeader('HTTP_AUTHORIZATION')->withFilter(TokenFilter::instance());
+        return $request->readRedirectHeader('HTTP_AUTHORIZATION')
+                ->withFilter(TokenFilter::instance());
     }
 
     /**

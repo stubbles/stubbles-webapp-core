@@ -8,6 +8,7 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\auth\session;
+use bovigo\callmap\NewInstance;
 use stubbles\lang\reflect;
 use stubbles\webapp\auth\User;
 /**
@@ -26,13 +27,13 @@ class CachingAuthenticationProviderTest extends \PHPUnit_Framework_TestCase
     /**
      * mocked session
      *
-     * @type  \PHPUnit_Framework_MockObject_MockObject
+     * @type  \bovigo\callmap\Proxy
      */
     private $session;
     /**
      * mocked base authentication provider
      *
-     * @type  \PHPUnit_Framework_MockObject_MockObject
+     * @type  \bovigo\callmap\Proxy
      */
     private $authenticationProvider;
 
@@ -41,8 +42,8 @@ class CachingAuthenticationProviderTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->session                = $this->getMock('stubbles\webapp\session\Session');
-        $this->authenticationProvider = $this->getMock('stubbles\webapp\auth\AuthenticationProvider');
+        $this->session                = NewInstance::of('stubbles\webapp\session\Session');
+        $this->authenticationProvider = NewInstance::of('stubbles\webapp\auth\AuthenticationProvider');
         $this->cachingAuthenticationProvider = new CachingAuthenticationProvider(
                 $this->session,
                 $this->authenticationProvider
@@ -54,11 +55,6 @@ class CachingAuthenticationProviderTest extends \PHPUnit_Framework_TestCase
      */
     public function annotationsPresentOnConstructor()
     {
-        assertTrue(
-                reflect\annotationsOfConstructor($this->cachingAuthenticationProvider)
-                        ->contain('Inject')
-        );
-
         $parameterAnnotations = reflect\annotationsOfConstructorParameter(
                 'authenticationProvider',
                 $this->cachingAuthenticationProvider
@@ -75,16 +71,15 @@ class CachingAuthenticationProviderTest extends \PHPUnit_Framework_TestCase
      */
     public function usesSessionValueIfUserStoredInSession()
     {
-        $user = $this->getMock('stubbles\webapp\auth\User');
-        $this->session->method('hasValue')->will(returnValue(true));
-        $this->session->method('value')->will(returnValue($user));
-        $this->authenticationProvider->expects(never())->method('authenticate');
+        $user = NewInstance::of('stubbles\webapp\auth\User');
+        $this->session->mapCalls(['hasValue' => true, 'value' => $user]);
         assertSame(
                 $user,
                 $this->cachingAuthenticationProvider->authenticate(
                         $this->getMock('stubbles\webapp\Request')
                 )
         );
+        assertEquals(0, $this->authenticationProvider->callsReceivedFor('authenticate'));
     }
 
     /**
@@ -92,16 +87,13 @@ class CachingAuthenticationProviderTest extends \PHPUnit_Framework_TestCase
      */
     public function doesNotStoreReturnValueWhenOriginalAuthenticationProviderReturnsNull()
     {
-        $this->session->method('hasValue')->will(returnValue(false));
-        $this->authenticationProvider->expects(once())
-                    ->method('authenticate')
-                    ->will(returnValue(null));
-        $this->session->expects(never())->method('putValue');
+        $this->session->mapCalls(['hasValue' => false]);
         assertNull(
                 $this->cachingAuthenticationProvider->authenticate(
                         $this->getMock('stubbles\webapp\Request')
                 )
         );
+        assertEquals(0, $this->session->callsReceivedFor('putValue'));
     }
 
     /**
@@ -109,18 +101,18 @@ class CachingAuthenticationProviderTest extends \PHPUnit_Framework_TestCase
      */
     public function storeReturnValueInSessionWhenOriginalAuthenticationProviderReturnsUser()
     {
-        $user = $this->getMock('stubbles\webapp\auth\User');
-        $this->session->method('hasValue')->will(returnValue(false));
-        $this->authenticationProvider->method('authenticate')
-                ->will(returnValue($user));
-        $this->session->expects(once())
-                ->method('putValue')
-                ->with(equalTo(User::SESSION_KEY), equalTo($user));
+        $user = NewInstance::of('stubbles\webapp\auth\User');
+        $this->session->mapCalls(['hasValue' => false]);
+        $this->authenticationProvider->mapCalls(['authenticate' => $user]);
         assertSame(
                 $user,
                 $this->cachingAuthenticationProvider->authenticate(
                         $this->getMock('stubbles\webapp\Request')
                 )
+        );
+        assertEquals(
+                [User::SESSION_KEY, $user],
+                $this->session->argumentsReceived('putValue')
         );
     }
 
@@ -129,8 +121,9 @@ class CachingAuthenticationProviderTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsLoginUriFromOriginalAuthenticationProvider()
     {
-        $this->authenticationProvider->method('loginUri')
-                ->will(returnValue('http://login.example.net/'));
+        $this->authenticationProvider->mapCalls(
+                ['loginUri' => 'http://login.example.net/']
+        );
         assertEquals(
                 'http://login.example.net/',
                 $this->cachingAuthenticationProvider->loginUri(
