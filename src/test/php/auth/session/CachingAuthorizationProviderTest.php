@@ -76,7 +76,7 @@ class CachingAuthorizationProviderTest extends \PHPUnit_Framework_TestCase
         assertSame(
                 $roles,
                 $this->cachingAuthorizationProvider->roles(
-                        $this->getMock('stubbles\webapp\auth\User')
+                        NewInstance::of('stubbles\webapp\auth\User')
                 )
         );
         assertEquals(0, $this->authorizationProvider->callsReceivedFor('roles'));
@@ -93,12 +93,12 @@ class CachingAuthorizationProviderTest extends \PHPUnit_Framework_TestCase
         assertSame(
                 $roles,
                 $this->cachingAuthorizationProvider->roles(
-                        $this->getMock('stubbles\webapp\auth\User')
+                        NewInstance::of('stubbles\webapp\auth\User')
                 )
         );
         assertEquals(
                 [Roles::SESSION_KEY, $roles],
-                $this->session->argumentsReceived('putValue')
+                $this->session->argumentsReceivedFor('putValue')
         );
     }
 }

@@ -71,7 +71,7 @@ class AbstractResourceTest extends \PHPUnit_Framework_TestCase
     /**
      * mocked request instance
      *
-     * @type  \PHPUnit_Framework_MockObject_MockObject
+     * @type  \bovigo\callmap\Proxy
      */
     private $request;
     /**
@@ -81,11 +81,11 @@ class AbstractResourceTest extends \PHPUnit_Framework_TestCase
      */
     private $response;
     /**
-     * @type  \PHPUnit_Framework_MockObject_MockObject
+     * @type  \bovigo\callmap\Proxy
      */
     private $injector;
     /**
-     * @type  \PHPUnit_Framework_MockObject_MockObject
+     * @type  \bovigo\callmap\Proxy
      */
     private $interceptors;
 

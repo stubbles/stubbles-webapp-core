@@ -71,7 +71,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
         $this->response->send($this->memory);
         assertEquals(
                 ['HTTP/1.1 200 OK'],
-                $this->response->argumentsReceived('header')
+                $this->response->argumentsReceivedFor('header')
         );
     }
 
@@ -84,7 +84,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
         $response->send($this->memory);
         assertEquals(
                 ['HTTP/1.0 200 OK'],
-                $response->argumentsReceived('header')
+                $response->argumentsReceivedFor('header')
         );
     }
 
@@ -115,7 +115,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
         $this->response->send($this->memory);
         assertEquals(
                 ['Status: 200 OK'],
-                $this->response->argumentsReceived('header')
+                $this->response->argumentsReceivedFor('header')
         );
     }
 
@@ -127,7 +127,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
         $this->response->addHeader('name', 'value1')->send($this->memory);
         assertEquals(
                 ['name: value1'],
-                $this->response->argumentsReceived('header', 2)
+                $this->response->argumentsReceivedFor('header', 2)
         );
     }
 
@@ -330,11 +330,11 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
         $this->response->send();
         assertEquals(
                 ['HTTP/1.1 301 Moved Permanently'],
-                $this->response->argumentsReceived('header', 1)
+                $this->response->argumentsReceivedFor('header', 1)
         );
         assertEquals(
                 ['Location: http://example.com/'],
-                $this->response->argumentsReceived('header', 2)
+                $this->response->argumentsReceivedFor('header', 2)
         );
     }
 
@@ -349,11 +349,11 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
         $this->response->send();
         assertEquals(
                 ['HTTP/1.1 302 Found'],
-                $this->response->argumentsReceived('header', 1)
+                $this->response->argumentsReceivedFor('header', 1)
         );
         assertEquals(
                 ['Location: http://example.com/'],
-                $this->response->argumentsReceived('header', 2)
+                $this->response->argumentsReceivedFor('header', 2)
         );
     }
 
@@ -367,7 +367,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
         $this->response->send();
         assertEquals(
                 ['HTTP/1.1 403 Forbidden'],
-                $this->response->argumentsReceived('header')
+                $this->response->argumentsReceivedFor('header')
         );
     }
 
@@ -401,7 +401,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
         $this->response->send();
         assertEquals(
                 ['HTTP/1.1 404 Not Found'],
-                $this->response->argumentsReceived('header')
+                $this->response->argumentsReceivedFor('header')
         );
     }
 
@@ -435,11 +435,11 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
         $this->response->send();
         assertEquals(
                 ['HTTP/1.1 405 Method Not Allowed'],
-                $this->response->argumentsReceived('header', 1)
+                $this->response->argumentsReceivedFor('header', 1)
         );
         assertEquals(
                 ['Allow: GET, HEAD'],
-                $this->response->argumentsReceived('header', 2)
+                $this->response->argumentsReceivedFor('header', 2)
         );
     }
 
@@ -476,7 +476,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
         $this->response->send();
         assertEquals(
                 ['HTTP/1.1 406 Not Acceptable'],
-                $this->response->argumentsReceived('header')
+                $this->response->argumentsReceivedFor('header')
         );
     }
 
@@ -501,11 +501,11 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
         $this->response->send();
         assertEquals(
                 ['HTTP/1.1 406 Not Acceptable'],
-                $this->response->argumentsReceived('header', 1)
+                $this->response->argumentsReceivedFor('header', 1)
         );
         assertEquals(
                 ['X-Acceptable: application/json, application/xml'],
-                $this->response->argumentsReceived('header', 2)
+                $this->response->argumentsReceivedFor('header', 2)
         );
     }
 
@@ -519,7 +519,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
         $this->response->send();
         assertEquals(
                 ['HTTP/1.1 500 Internal Server Error'],
-                $this->response->argumentsReceived('header')
+                $this->response->argumentsReceivedFor('header')
         );
     }
 
@@ -559,7 +559,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
         );
         assertEquals(
                 ['HTTP/1.1 505 HTTP Version Not Supported'],
-                $this->response->argumentsReceived('header')
+                $this->response->argumentsReceivedFor('header')
         );
     }
 
@@ -601,7 +601,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
         );
         assertEquals(
                 ['HTTP/1.1 505 HTTP Version Not Supported'],
-                $response->argumentsReceived('header')
+                $response->argumentsReceivedFor('header')
         );
     }
 
@@ -615,7 +615,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
         $this->response->send($this->memory);
         assertEquals(
                 ['X-Request-ID: example-request-id-foo'],
-                $this->response->argumentsReceived('header', 3)
+                $this->response->argumentsReceivedFor('header', 3)
         );
     }
 
@@ -630,7 +630,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
         $this->response->send($this->memory);
         assertEquals(
                 ['X-Request-ID: another-request-id-bar'],
-                $this->response->argumentsReceived('header', 2)
+                $this->response->argumentsReceivedFor('header', 2)
         );
     }
 }

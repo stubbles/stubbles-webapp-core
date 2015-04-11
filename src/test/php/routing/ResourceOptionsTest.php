@@ -52,15 +52,13 @@ class ResourceOptionsTest extends \PHPUnit_Framework_TestCase
     public function addsAllowHeader()
     {
         $response = NewInstance::of('stubbles\webapp\Response');
-        $response->mapCalls(['addHeader' => $response]);
-
         $this->resourceOptions->resolve(
                 NewInstance::of('stubbles\webapp\Request'),
                 $response
         );
         assertEquals(
                 ['Allow', 'GET, POST, HEAD, OPTIONS'],
-                $response->argumentsReceived('addHeader', 1)
+                $response->argumentsReceivedFor('addHeader', 1)
         );
     }
 
@@ -70,15 +68,13 @@ class ResourceOptionsTest extends \PHPUnit_Framework_TestCase
     public function addsAllowMethodsHeader()
     {
         $response = NewInstance::of('stubbles\webapp\Response');
-        $response->mapCalls(['addHeader' => $response]);
-
         $this->resourceOptions->resolve(
                 NewInstance::of('stubbles\webapp\Request'),
                 $response
         );
         assertEquals(
                 ['Access-Control-Allow-Methods', 'GET, POST, HEAD, OPTIONS'],
-                $response->argumentsReceived('addHeader', 2)
+                $response->argumentsReceivedFor('addHeader', 2)
         );
     }
 }

@@ -52,7 +52,7 @@ class MethodNotAllowedTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function triggers405MethodNotAllowedResponse()
+    public function triggers405MethodNotAllowedError()
     {
         $request = NewInstance::of('stubbles\webapp\Request')->mapCalls(
                 ['method' => 'DELETE', 'protocolVersion' => new HttpVersion(1, 1)]
@@ -65,5 +65,18 @@ class MethodNotAllowedTest extends \PHPUnit_Framework_TestCase
                 ),
                 $this->methodNotAllowed->resolve($request, $response)
         );
+    }
+
+    /**
+     * @test
+     */
+    public function sets405MethodNotAllowedStatusCode()
+    {
+        $request = NewInstance::of('stubbles\webapp\Request')->mapCalls(
+                ['method' => 'DELETE', 'protocolVersion' => new HttpVersion(1, 1)]
+        );
+        $response = new WebResponse($request);
+        $this->methodNotAllowed->resolve($request, $response);
+        assertEquals(405, $response->statusCode());
     }
 }

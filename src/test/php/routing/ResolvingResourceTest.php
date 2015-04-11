@@ -8,6 +8,7 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\routing;
+use bovigo\callmap\NewInstance;
 use stubbles\webapp\Request;
 use stubbles\webapp\Response;
 use stubbles\webapp\UriPath;
@@ -23,19 +24,19 @@ class ResolvingResourceTest extends \PHPUnit_Framework_TestCase
     /**
      * mocked request instance
      *
-     * @type  \PHPUnit_Framework_MockObject_MockObject
+     * @type  \bovigo\callmap\Proxy
      */
     private $request;
     /**
      * mocked response instance
      *
-     * @type  \PHPUnit_Framework_MockObject_MockObject
+     * @type  \bovigo\callmap\Proxy
      */
     private $response;
     /**
      * mocked injector instance
      *
-     * @type  \PHPUnit_Framework_MockObject_MockObject
+     * @type  \bovigo\callmap\Proxy
      */
     private $injector;
 
@@ -44,11 +45,9 @@ class ResolvingResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->request  = $this->getMock('stubbles\webapp\Request');
-        $this->response = $this->getMock('stubbles\webapp\Response');
-        $this->injector = $this->getMockBuilder('stubbles\ioc\Injector')
-                ->disableOriginalConstructor()
-                ->getMock();
+        $this->request  = NewInstance::of('stubbles\webapp\Request');
+        $this->response = NewInstance::of('stubbles\webapp\Response');
+        $this->injector = NewInstance::stub('stubbles\ioc\Injector');
     }
 
     /**
@@ -62,9 +61,7 @@ class ResolvingResourceTest extends \PHPUnit_Framework_TestCase
         return new ResolvingResource(
                 $this->injector,
                 new CalledUri($uri, 'GET'),
-                $this->getMockBuilder('stubbles\webapp\routing\Interceptors')
-                        ->disableOriginalConstructor()
-                        ->getMock(),
+                NewInstance::stub('stubbles\webapp\routing\Interceptors'),
                 new SupportedMimeTypes([]),
                 $route
         );
@@ -134,9 +131,6 @@ class ResolvingResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function processCallsClosureGivenAsCallback()
     {
-        $this->response->expects(once())
-                ->method('setStatusCode')
-                ->with(equalTo(418));
         assertEquals(
                 'Hello world',
                 $this->createResolvingResourceWithTarget(
@@ -147,6 +141,7 @@ class ResolvingResourceTest extends \PHPUnit_Framework_TestCase
                         }
                 )->resolve($this->request, $this->response)
         );
+        assertEquals([418], $this->response->argumentsReceivedFor('setStatusCode'));
     }
 
     /**
@@ -166,14 +161,12 @@ class ResolvingResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function processCallsGivenCallback()
     {
-        $this->response->expects(once())
-                ->method('setStatusCode')
-                ->with(equalTo(418));
         assertEquals(
                 'Hello world',
                 $this->createResolvingResourceWithTarget([$this, 'theCallable'])
                         ->resolve($this->request, $this->response)
         );
+        assertEquals([418], $this->response->argumentsReceivedFor('setStatusCode'));
     }
 
     /**
@@ -193,17 +186,16 @@ class ResolvingResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function processCallsGivenProcessorInstance()
     {
-        $target = $this->getMock('stubbles\webapp\Target');
-        $target->method('resolve')
-                ->with(
-                        equalTo($this->request),
-                        equalTo($this->response),
-                        equalTo(new UriPath('/hello/{name}', '/hello/world'))
-                )->will(returnValue('Hello world'));
+        $target = NewInstance::of('stubbles\webapp\Target');
+        $target->mapCalls(['resolve' => 'Hello world']);
         assertEquals(
                 'Hello world',
                 $this->createResolvingResourceWithTarget($target)
                         ->resolve($this->request, $this->response)
+        );
+        assertEquals(
+                [$this->request, $this->response, new UriPath('/hello/{name}', '/hello/world')],
+                $target->argumentsReceivedFor('resolve')
         );
     }
 
@@ -212,11 +204,9 @@ class ResolvingResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function respondsWithInternalServerErrorIfProcessorDoesNotImplementInterface()
     {
-        $this->injector->method('getInstance')
-                ->with(equalTo('\stdClass'))
-                ->will(returnValue(new \stdClass()));
+        $this->injector->mapCalls(['getInstance' => new \stdClass()]);
         $error = new Error('error');
-        $this->response->method('internalServerError')->will(returnValue($error));
+        $this->response->mapCalls(['internalServerError' => $error]);
         assertSame(
                 $error,
                 $this->createResolvingResourceWithTarget('\stdClass')
@@ -229,16 +219,9 @@ class ResolvingResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function processCreatesAndCallsGivenProcessorClass()
     {
-        $target = $this->getMock('stubbles\webapp\Target');
-        $target->method('resolve')
-                ->with(
-                        equalTo($this->request),
-                        equalTo($this->response),
-                        equalTo(new UriPath('/hello/{name}', '/hello/world'))
-                )->will(returnValue('Hello world'));
-        $this->injector->method('getInstance')
-                ->with(equalTo(get_class($target)))
-                ->will(returnValue($target));
+        $target = NewInstance::of('stubbles\webapp\Target');
+        $target->mapCalls(['resolve' => 'Hello world']);
+        $this->injector->mapCalls(['getInstance' => $target]);
         assertEquals(
                 'Hello world',
                 $this->createResolvingResourceWithTarget(get_class($target))

@@ -8,6 +8,7 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\routing;
+use bovigo\callmap\NewInstance;
 use stubbles\webapp\Target;
 use stubbles\webapp\Request;
 use stubbles\webapp\Response;
@@ -273,7 +274,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     public function hasGivenListOfPreInterceptors()
     {
         $preInterceptorClosure  = function() {};
-        $preInterceptor         = $this->getMock('stubbles\webapp\interceptor\PreInterceptor');
+        $preInterceptor         = NewInstance::of('stubbles\webapp\interceptor\PreInterceptor');
         $preInterceptorFunction = 'array_map';
         assertEquals(
                 [get_class($preInterceptor),
@@ -312,7 +313,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     public function hasGivenListOfPostInterceptors()
     {
         $postInterceptorClosure  = function() {};
-        $postInterceptor         = $this->getMock('stubbles\webapp\interceptor\PostInterceptor');
+        $postInterceptor         = NewInstance::of('stubbles\webapp\interceptor\PostInterceptor');
         $postInterceptorFunction = 'array_map';
         assertEquals(
                 [get_class($postInterceptor),

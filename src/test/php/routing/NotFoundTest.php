@@ -51,7 +51,7 @@ class NotFoundTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function triggers404NotFoundResponse()
+    public function returns404NotFoundError()
     {
         $request = NewInstance::of('stubbles\webapp\Request')->mapCalls(
                 ['protocolVersion' => new HttpVersion(1, 1)]
@@ -61,5 +61,18 @@ class NotFoundTest extends \PHPUnit_Framework_TestCase
                 Error::notFound(),
                 $this->notFound->resolve($request, $response)
         );
+    }
+
+    /**
+     * @test
+     */
+    public function sets404NotFoundStatusCode()
+    {
+        $request = NewInstance::of('stubbles\webapp\Request')->mapCalls(
+                ['protocolVersion' => new HttpVersion(1, 1)]
+        );
+        $response = new WebResponse($request);
+        $this->notFound->resolve($request, $response);
+        assertEquals(404, $response->statusCode());
     }
 }

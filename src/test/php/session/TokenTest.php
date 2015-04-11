@@ -8,6 +8,8 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\session;
+use bovigo\callmap;
+use bovigo\callmap\NewInstance;
 use stubbles\lang\reflect;
 /**
  * Tests for stubbles\webapp\session\Token.
@@ -26,7 +28,7 @@ class TokenTest extends \PHPUnit_Framework_TestCase
     /**
      * mocked session id
      *
-     * @type  \PHPUnit_Framework_MockObject_MockObject
+     * @type  \bovigo\callmap\Proxy
      */
     private $session;
 
@@ -35,7 +37,7 @@ class TokenTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->session = $this->getMock('stubbles\webapp\session\Session');
+        $this->session = NewInstance::of('stubbles\webapp\session\Session');
         $this->token   = new Token($this->session);
     }
 
@@ -66,8 +68,7 @@ class TokenTest extends \PHPUnit_Framework_TestCase
      */
     public function givenTokenIsNotValidWhenNotEqualToSessionToken()
     {
-        $this->session->method('value')->will(returnValue('aToken'));
-        $this->session->expects(once())->method('putValue');
+        $this->session->mapCalls(['value' => 'aToken']);
         assertFalse($this->token->isValid('otherToken'));
     }
 
@@ -76,9 +77,18 @@ class TokenTest extends \PHPUnit_Framework_TestCase
      */
     public function givenTokenIsValidWhenEqualToSessionToken()
     {
-        $this->session->method('value')->will(returnValue('aToken'));
-        $this->session->expects(once())->method('putValue');
+        $this->session->mapCalls(['value' => 'aToken']);
         assertTrue($this->token->isValid('aToken'));
+    }
+
+    /**
+     * @test
+     */
+    public function storesNextTokenInSessionWhenTokenIsValidated()
+    {
+        $this->session->mapCalls(['value' => 'aToken']);
+        $this->token->isValid('otherToken');
+        assertEquals(1, $this->session->callsReceivedFor('putValue'));
     }
 
     /**
@@ -86,9 +96,18 @@ class TokenTest extends \PHPUnit_Framework_TestCase
      */
     public function nextTokenTakenFromSession()
     {
-        $this->session->method('value')
-                ->will(onConsecutiveCalls('aToken', 'nextToken'));
-        $this->session->expects(once())->method('putValue');
+        $this->session->mapCalls(
+                ['value' => callmap\onConsecutiveCalls('aToken', 'nextToken')]
+        );
         assertEquals('nextToken', $this->token->next());
+    }
+
+    /**
+     * @test
+     */
+    public function nextStoresNextTokenInSession()
+    {
+        $this->token->next();
+        assertEquals(1, $this->session->callsReceivedFor('putValue'));
     }
 }

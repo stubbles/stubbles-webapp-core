@@ -9,7 +9,6 @@
  */
 namespace stubbles\webapp\response\mimetypes;
 use bovigo\callmap\NewInstance;
-use stubbles\lang\reflect;
 use stubbles\streams\memory\MemoryOutputStream;
 /**
  * Tests for stubbles\webapp\response\mimetypes\Xml.
@@ -25,7 +24,7 @@ class XmlTest extends \PHPUnit_Framework_TestCase
      */
     private $xml;
     /**
-     * @type  \PHPUnit_Framework_MockObject_MockObject
+     * @type  \bovigo\callmap\Proxy
      */
     private $xmlSerializerFacade;
 

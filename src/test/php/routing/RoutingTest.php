@@ -8,8 +8,8 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\routing;
+use bovigo\callmap\NewInstance;
 use stubbles\input\ValueReader;
-use stubbles\lang\reflect;
 /**
  * Tests for stubbles\webapp\routing\Routing.
  *
@@ -25,13 +25,13 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
      */
     private $routing;
     /**
-     * @type  \PHPUnit_Framework_MockObject_MockObject
+     * @type  \bovigo\callmap\Proxy
      */
     private $injector;
     /**
      * called uri during tests
      *
-     * @type  UriRequest
+     * @type  \stubbles\webapp\routing\CalledUri
      */
     private $calledUri;
 
@@ -41,9 +41,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         SupportedMimeTypes::removeDefaultMimeTypeClass('application/foo');
-        $this->injector = $this->getMockBuilder('stubbles\ioc\Injector')
-                ->disableOriginalConstructor()
-                ->getMock();
+        $this->injector  = NewInstance::stub('stubbles\ioc\Injector');
         $this->routing   = new Routing($this->injector);
         $this->calledUri = new CalledUri('http://example.net/hello', 'GET');
     }
@@ -54,17 +52,6 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
     public function tearDown()
     {
         SupportedMimeTypes::removeDefaultMimeTypeClass('application/foo');
-    }
-
-    /**
-     * @test
-     */
-    public function annotationsPresentOnConstructor()
-    {
-        assertTrue(
-                reflect\annotationsOfConstructor($this->routing)
-                        ->contain('Inject')
-        );
     }
 
     /**
@@ -165,13 +152,13 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
     public function routeWithoutMethodRestrictionProvidesListOfAllMethodsOnOptionRequest()
     {
         $this->routing->onAll('/hello', function() { });
-        $response = $this->getMock('stubbles\webapp\Response');
-        $response->expects(at(0))
-                ->method('addHeader')
-                ->with(equalTo('Allow'), equalTo('GET, HEAD, POST, PUT, DELETE, OPTIONS'))
-                ->will(returnSelf());
+        $response = NewInstance::of('stubbles\webapp\Response');
         $this->routing->findResource('http://example.net/hello', 'OPTIONS')
-                ->resolve($this->getMock('stubbles\webapp\Request'), $response);
+                ->resolve(NewInstance::of('stubbles\webapp\Request'), $response);
+        assertEquals(
+                ['Allow', 'GET, HEAD, POST, PUT, DELETE, OPTIONS'],
+                $response->argumentsReceivedFor('addHeader')
+        );
     }
 
     /**
@@ -189,9 +176,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
             array $postInterceptors = [],
             $path = 'hello')
     {
-        $injector = $this->getMockBuilder('stubbles\ioc\Injector')
-                             ->disableOriginalConstructor()
-                             ->getMock();
+        $injector = NewInstance::stub('stubbles\ioc\Injector');
         return new ResolvingResource(
                 $injector,
                 new CalledUri('http://example.net/' . $path, 'GET'),
@@ -229,10 +214,10 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
         assertEquals(
                 $route,
                 $this->routing->preInterceptOnHead($preInterceptor)
-                              ->preInterceptOnPost($preInterceptor)
-                              ->preInterceptOnPut($preInterceptor)
-                              ->preInterceptOnDelete($preInterceptor)
-                              ->findResource($this->calledUri)
+                        ->preInterceptOnPost($preInterceptor)
+                        ->preInterceptOnPut($preInterceptor)
+                        ->preInterceptOnDelete($preInterceptor)
+                        ->findResource($this->calledUri)
         );
     }
 
@@ -249,8 +234,8 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
         assertEquals(
                 $route,
                 $this->routing->preIntercept('array_map')
-                              ->preInterceptOnGet($preInterceptor)
-                              ->findResource($this->calledUri)
+                        ->preInterceptOnGet($preInterceptor)
+                        ->findResource($this->calledUri)
         );
     }
 
@@ -268,8 +253,8 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
         assertEquals(
                 $route,
                 $this->routing->preIntercept('array_map', '/hello')
-                              ->preInterceptOnGet($preInterceptor, '/world')
-                              ->findResource($this->calledUri)
+                        ->preInterceptOnGet($preInterceptor, '/world')
+                        ->findResource($this->calledUri)
         );
     }
 
@@ -287,8 +272,8 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
         assertEquals(
                 $route,
                 $this->routing->preIntercept($preInterceptor)
-                              ->preIntercept($preFunction)
-                              ->findResource($this->calledUri)
+                        ->preIntercept($preFunction)
+                        ->findResource($this->calledUri)
         );
     }
 
@@ -306,7 +291,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
         assertEquals(
                 $route,
                 $this->routing->preInterceptOnGet($preInterceptor)
-                              ->findResource($this->calledUri)
+                        ->findResource($this->calledUri)
         );
     }
 
@@ -331,10 +316,10 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
         assertEquals(
                 $route,
                 $this->routing->postInterceptOnHead($postInterceptor)
-                              ->postInterceptOnPost($postInterceptor)
-                              ->postInterceptOnPut($postInterceptor)
-                              ->postInterceptOnDelete($postInterceptor)
-                              ->findResource($this->calledUri)
+                        ->postInterceptOnPost($postInterceptor)
+                        ->postInterceptOnPut($postInterceptor)
+                        ->postInterceptOnDelete($postInterceptor)
+                        ->findResource($this->calledUri)
         );
     }
 
@@ -352,8 +337,8 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
         assertEquals(
                 $route,
                 $this->routing->postIntercept('array_map')
-                              ->postInterceptOnGet($postInterceptor)
-                              ->findResource($this->calledUri)
+                        ->postInterceptOnGet($postInterceptor)
+                        ->findResource($this->calledUri)
         );
     }
 
@@ -372,8 +357,8 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
         assertEquals(
                 $route,
                 $this->routing->postIntercept('array_map', '/hello')
-                              ->postInterceptOnGet($postInterceptor, '/world')
-                              ->findResource($this->calledUri)
+                        ->postInterceptOnGet($postInterceptor, '/world')
+                        ->findResource($this->calledUri)
         );
     }
 
@@ -394,8 +379,8 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
         assertEquals(
                 $route,
                 $this->routing->postIntercept($postInterceptor)
-                              ->postIntercept($postFunction)
-                              ->findResource($this->calledUri)
+                        ->postIntercept($postFunction)
+                        ->findResource($this->calledUri)
         );
     }
 
@@ -414,7 +399,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
         assertEquals(
                 $route,
                 $this->routing->postInterceptOnGet($postInterceptor)
-                              ->findResource($this->calledUri)
+                        ->findResource($this->calledUri)
         );
     }
 
@@ -463,26 +448,19 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
      */
     public function passesGlobalClassToSupportedMimeTypesOfSelectedRoute()
     {
-        $request = $this->getMock('stubbles\webapp\Request');
-        $request->expects($this->once())
-                ->method('readHeader')
-                ->with(equalTo('HTTP_ACCEPT'))
-                ->will(returnValue(ValueReader::forValue('application/foo')));
+        $request = NewInstance::of('stubbles\webapp\Request')
+                ->mapCalls(['readHeader' => ValueReader::forValue('application/foo')]);
         $mimeType = new \stubbles\webapp\response\mimetypes\Json();
-        $this->injector->method('getInstance')
-                ->with(equalTo('example\Special'))
-                ->will(returnValue($mimeType));
+        $this->injector->mapCalls(['getInstance' => $mimeType]);
         $this->routing->onGet('/hello', function() {})
                 ->supportsMimeType('application/json');
         $this->routing->supportsMimeType('application/foo', 'example\Special');
-        $response = $this->getMockBuilder('stubbles\webapp\response\WebResponse')
-                ->disableOriginalConstructor()
-                ->getMock();
-        $response->expects(once())->method('adjustMimeType')->with(equalTo($mimeType));
+        $response = NewInstance::stub('stubbles\webapp\response\WebResponse');
         assertTrue(
                 $this->routing->findResource($this->calledUri)
                         ->negotiateMimeType($request, $response)
         );
+        assertEquals([$mimeType], $response->argumentsReceivedFor('adjustMimeType'));
     }
 
     /**
@@ -524,18 +502,16 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
     public function contentNegotationCanBeDisabled()
     {
         $this->routing->onGet('/hello', function() {});
-        $response = $this->getMockBuilder('stubbles\webapp\response\WebResponse')
-                ->disableOriginalConstructor()
-                ->getMock();
-        $response->expects(never())->method('adjustMimeType');
+        $response = NewInstance::stub('stubbles\webapp\response\WebResponse');
         assertTrue(
                 $this->routing->disableContentNegotiation()
                         ->findResource($this->calledUri)
                         ->negotiateMimeType(
-                                $this->getMock('stubbles\webapp\Request'),
+                                NewInstance::of('stubbles\webapp\Request'),
                                 $response
                         )
         );
+        assertEquals(0, $response->callsReceivedFor('adjustMimeType'));
     }
 
     /**
@@ -546,18 +522,16 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
     {
         $this->routing->onGet('/hello', function() {})
                       ->disableContentNegotiation();
-        $response = $this->getMockBuilder('stubbles\webapp\response\WebResponse')
-                ->disableOriginalConstructor()
-                ->getMock();
-        $response->expects(never())->method('adjustMimeType');
+        $response = NewInstance::stub('stubbles\webapp\response\WebResponse');
         assertTrue(
                 $this->routing->disableContentNegotiation()
                         ->findResource($this->calledUri)
                         ->negotiateMimeType(
-                                $this->getMock('stubbles\webapp\Request'),
+                                NewInstance::of('stubbles\webapp\Request'),
                                 $response
                         )
         );
+        assertEquals(0, $response->callsReceivedFor('adjustMimeType'));
     }
 
     /**

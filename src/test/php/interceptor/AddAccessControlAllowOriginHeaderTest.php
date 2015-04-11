@@ -123,7 +123,7 @@ class AddAccessControlAllowOriginHeaderTest extends \PHPUnit_Framework_TestCase
         );
         assertEquals(
                 ['Access-Control-Allow-Origin', 'http://foo.example.com:9039'],
-                $this->response->argumentsReceived('addHeader')
+                $this->response->argumentsReceivedFor('addHeader')
         );
     }
 }

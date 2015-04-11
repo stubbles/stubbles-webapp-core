@@ -8,8 +8,10 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\routing;
+use bovigo\callmap\NewInstance;
 use stubbles\webapp\Request;
 use stubbles\webapp\Response;
+use stubbles\webapp\response\Error;
 /**
  * Tests for stubbles\webapp\routing\Interceptors.
  *
@@ -21,19 +23,19 @@ class InterceptorsTest extends \PHPUnit_Framework_TestCase
     /**
      * mocked request instance
      *
-     * @type  \PHPUnit_Framework_MockObject_MockObject
+     * @type  \bovigo\callmap\Proxy
      */
     private $request;
     /**
      * mocked response instance
      *
-     * @type  \PHPUnit_Framework_MockObject_MockObject
+     * @type  \bovigo\callmap\Proxy
      */
     private $response;
     /**
      * mocked injector instance
      *
-     * @type  \PHPUnit_Framework_MockObject_MockObject
+     * @type  \bovigo\callmap\Proxy
      */
     private $injector;
 
@@ -42,11 +44,9 @@ class InterceptorsTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->request  = $this->getMock('stubbles\webapp\Request');
-        $this->response = $this->getMock('stubbles\webapp\Response');
-        $this->injector = $this->getMockBuilder('stubbles\ioc\Injector')
-                ->disableOriginalConstructor()
-                ->getMock();
+        $this->request  = NewInstance::of('stubbles\webapp\Request');
+        $this->response = NewInstance::of('stubbles\webapp\Response');
+        $this->injector = NewInstance::stub('stubbles\ioc\Injector');
     }
 
     /**
@@ -77,11 +77,7 @@ class InterceptorsTest extends \PHPUnit_Framework_TestCase
      */
     public function respondsWithInternalServerErrorIfPreInterceptorDoesNotImplementInterface()
     {
-        $this->injector->method('getInstance')
-                ->with(equalTo('some\PreInterceptor'))
-                ->will(returnValue(new \stdClass()));
-        $this->response->expects(once())->method('internalServerError');
-        $this->response->expects(once())->method('write');
+        $this->injector->mapCalls(['getInstance' => new \stdClass()]);
         assertFalse(
                 $this->createInterceptors(
                         ['some\PreInterceptor',
@@ -89,6 +85,11 @@ class InterceptorsTest extends \PHPUnit_Framework_TestCase
                         ]
                 )->preProcess($this->request, $this->response)
         );
+        assertEquals(
+                ['Configured pre interceptor some\PreInterceptor is not an instance of stubbles\webapp\interceptor\PreInterceptor'],
+                $this->response->argumentsReceivedFor('internalServerError')
+        );
+        assertEquals(1, $this->response->callsReceivedFor('write'));
     }
 
     /**
@@ -96,13 +97,9 @@ class InterceptorsTest extends \PHPUnit_Framework_TestCase
      */
     public function doesNotCallOtherPreInterceptorsIfOneReturnsFalse()
     {
-        $preInterceptor = $this->getMock('stubbles\webapp\interceptor\PreInterceptor');
-        $preInterceptor->method('preProcess')
-                ->with(equalTo($this->request), equalTo($this->response))
-                ->will(returnValue(false));
-        $this->injector->method('getInstance')
-                ->with(equalTo('some\PreInterceptor'))
-                ->will(returnValue($preInterceptor));
+        $preInterceptor = NewInstance::of('stubbles\webapp\interceptor\PreInterceptor');
+        $preInterceptor->mapCalls(['preProcess' => false]);
+        $this->injector->mapCalls(['getInstance' => $preInterceptor]);
         assertFalse(
                 $this->createInterceptors(
                         ['some\PreInterceptor',
@@ -110,6 +107,7 @@ class InterceptorsTest extends \PHPUnit_Framework_TestCase
                         ]
                 )->preProcess($this->request, $this->response)
         );
+        assertEquals(1, $preInterceptor->callsReceivedFor('preProcess'));
     }
 
     /**
@@ -117,15 +115,8 @@ class InterceptorsTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsTrueWhenNoPreInterceptorReturnsFalse()
     {
-        $preInterceptor = $this->getMock('stubbles\webapp\interceptor\PreInterceptor');
-        $preInterceptor->expects(exactly(2))
-                ->method('preProcess')
-                ->with(equalTo($this->request), equalTo($this->response));
-        $this->injector->method('getInstance')
-                ->with(equalTo('some\PreInterceptor'))
-                ->will(returnValue($preInterceptor));
-        $this->response->expects(once())->method('setStatusCode');
-        $this->response->expects(once())->method('addHeader');
+        $preInterceptor = NewInstance::of('stubbles\webapp\interceptor\PreInterceptor');
+        $this->injector->mapCalls(['getInstance' => $preInterceptor]);
         assertTrue(
                 $this->createInterceptors(
                         ['some\PreInterceptor',
@@ -138,6 +129,7 @@ class InterceptorsTest extends \PHPUnit_Framework_TestCase
                         ]
                 )->preProcess($this->request, $this->response)
         );
+        assertEquals(2, $preInterceptor->callsReceivedFor('preProcess'));
     }
 
     /**
@@ -145,17 +137,18 @@ class InterceptorsTest extends \PHPUnit_Framework_TestCase
      */
     public function respondsWithInternalServerErrorIfPostInterceptorDoesNotImplementInterface()
     {
-        $this->injector->method('getInstance')
-                ->with(equalTo('some\PostInterceptor'))
-                ->will(returnValue(new \stdClass()));
-        $this->response->expects(once())->method('internalServerError');
-        $this->response->expects(once())->method('write');
+        $this->injector->mapCalls(['getInstance' => new \stdClass()]);
         assertFalse(
                 $this->createInterceptors(
                         [],
                         ['some\PostInterceptor',  'other\PostInterceptor']
                 )->postProcess($this->request, $this->response)
         );
+        assertEquals(
+                ['Configured post interceptor some\PostInterceptor is not an instance of stubbles\webapp\interceptor\PostInterceptor'],
+                $this->response->argumentsReceivedFor('internalServerError')
+        );
+        assertEquals(1, $this->response->callsReceivedFor('write'));
     }
 
     /**
@@ -163,20 +156,16 @@ class InterceptorsTest extends \PHPUnit_Framework_TestCase
      */
     public function doesNotCallOtherPostInterceptorsIfOneReturnsFalse()
     {
-        $postInterceptor = $this->getMock('stubbles\webapp\interceptor\PostInterceptor');
-        $postInterceptor->expects(once())
-                ->method('postProcess')
-                ->with(equalTo($this->request), equalTo($this->response))
-                ->will(returnValue(false));
-        $this->injector->method('getInstance')
-                ->with(equalTo('some\PostInterceptor'))
-                ->will(returnValue($postInterceptor));
+        $postInterceptor = NewInstance::of('stubbles\webapp\interceptor\PostInterceptor');
+        $postInterceptor->mapCalls(['postProcess' => false]);
+        $this->injector->mapCalls(['getInstance' => $postInterceptor]);
         assertFalse(
                 $this->createInterceptors(
                         [],
                         ['some\PostInterceptor', 'other\PostInterceptor']
                 )->postProcess($this->request, $this->response)
         );
+        assertEquals(1, $postInterceptor->callsReceivedFor('postProcess'));
     }
 
     /**
@@ -184,15 +173,8 @@ class InterceptorsTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsTrueWhenNoPostInterceptorReturnsFalse()
     {
-        $postInterceptor = $this->getMock('stubbles\webapp\interceptor\PostInterceptor');
-        $postInterceptor->expects(exactly(2))
-                ->method('postProcess')
-                ->with(equalTo($this->request), equalTo($this->response));
-        $this->injector->method('getInstance')
-                ->with(equalTo('some\PostInterceptor'))
-                ->will(returnValue($postInterceptor));
-        $this->response->expects(once())->method('setStatusCode');
-        $this->response->expects(once())->method('addHeader');
+        $postInterceptor = NewInstance::of('stubbles\webapp\interceptor\PostInterceptor');
+        $this->injector->mapCalls(['getInstance' => $postInterceptor]);
         assertTrue(
                 $this->createInterceptors(
                         [],
@@ -206,6 +188,7 @@ class InterceptorsTest extends \PHPUnit_Framework_TestCase
                         ]
                 )->postProcess($this->request, $this->response)
         );
+        assertEquals(2, $postInterceptor->callsReceivedFor('postProcess'));
     }
 
 }

@@ -8,6 +8,7 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\session;
+use bovigo\callmap\NewInstance;
 /**
  * Tests for stubbles\webapp\session\NullSession.
  *
@@ -19,13 +20,13 @@ class NullSessionTest extends \PHPUnit_Framework_TestCase
     /**
      * instance to test
      *
-     * @type  NullSession
+     * @type  \stubbles\webapp\session\NullSession
      */
     private $nullSession;
     /**
      * mocked session id
      *
-     * @type  \PHPUnit_Framework_MockObject_MockObject
+     * @type  \bovigo\callmap\Proxy
      */
     private $sessionId;
 
@@ -34,7 +35,7 @@ class NullSessionTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->sessionId   = $this->getMock('stubbles\webapp\session\id\SessionId');
+        $this->sessionId   = NewInstance::of('stubbles\webapp\session\id\SessionId');
         $this->nullSession = new NullSession($this->sessionId);
     }
 
@@ -51,7 +52,7 @@ class NullSessionTest extends \PHPUnit_Framework_TestCase
      */
     public function idIsSessionId()
     {
-        $this->sessionId->method('__toString')->will(returnValue('303'));
+        $this->sessionId->mapCalls(['__toString' => '303']);
         assertEquals('303', $this->nullSession->id());
     }
 
@@ -60,11 +61,11 @@ class NullSessionTest extends \PHPUnit_Framework_TestCase
      */
     public function regenerateCreatesNewSessionId()
     {
-        $this->sessionId->expects(once())->method('regenerate');
         assertEquals(
                 $this->nullSession,
                 $this->nullSession->regenerateId()
         );
+        assertEquals(1, $this->sessionId->callsReceivedFor('regenerate'));
     }
 
     /**
@@ -72,7 +73,7 @@ class NullSessionTest extends \PHPUnit_Framework_TestCase
      */
     public function nameIsSessionIdName()
     {
-        $this->sessionId->method('name')->will(returnValue('foo'));
+        $this->sessionId->mapCalls(['name' => 'foo']);
         assertEquals('foo', $this->nullSession->name());
     }
 
@@ -89,11 +90,11 @@ class NullSessionTest extends \PHPUnit_Framework_TestCase
      */
     public function invalidateInvalidatesSessionId()
     {
-        $this->sessionId->expects(once())->method('invalidate');
         assertEquals(
                 $this->nullSession,
                 $this->nullSession->invalidate()
         );
+        assertEquals(1, $this->sessionId->callsReceivedFor('invalidate'));
     }
 
     /**

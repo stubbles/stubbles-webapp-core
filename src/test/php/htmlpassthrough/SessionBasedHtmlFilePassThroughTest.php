@@ -126,7 +126,7 @@ class SessionBasedHtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
         );
         assertEquals(
                 ['stubbles.webapp.lastPage', 'index.html'],
-                $this->session->argumentsReceived('putValue')
+                $this->session->argumentsReceivedFor('putValue')
         );
     }
 

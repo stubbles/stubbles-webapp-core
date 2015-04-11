@@ -184,7 +184,7 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
                         $this->response
                 )
         );
-        assertEquals([504], $this->response->argumentsReceived('setStatusCode'));
+        assertEquals([504], $this->response->argumentsReceivedFor('setStatusCode'));
         assertEquals(0, $this->actualResource->callsReceivedFor('applyPreInterceptors'));
         assertEquals(0, $this->actualResource->callsReceivedFor('resolve'));
     }
@@ -209,7 +209,7 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
         );
         assertEquals(
                 ['https://login.example.com/'],
-                $this->response->argumentsReceived('redirect')
+                $this->response->argumentsReceivedFor('redirect')
         );
         assertEquals(0, $this->actualResource->callsReceivedFor('applyPreInterceptors'));
         assertEquals(0, $this->actualResource->callsReceivedFor('resolve'));
@@ -350,7 +350,7 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
                         $this->response
                 )
         );
-        assertEquals([504], $this->response->argumentsReceived('setStatusCode'));
+        assertEquals([504], $this->response->argumentsReceivedFor('setStatusCode'));
         assertEquals(0, $this->actualResource->callsReceivedFor('applyPreInterceptors'));
         assertEquals(0, $this->actualResource->callsReceivedFor('resolve'));
     }

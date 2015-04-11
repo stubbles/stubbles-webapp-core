@@ -157,7 +157,7 @@ class TokenAuthenticatorTest extends \PHPUnit_Framework_TestCase
         );
         assertEquals(
                 [$this->request, $token, $user],
-                $this->tokenStore->argumentsReceived('store')
+                $this->tokenStore->argumentsReceivedFor('store')
         );
     }
 
@@ -218,7 +218,7 @@ class TokenAuthenticatorTest extends \PHPUnit_Framework_TestCase
         assertSame($user, $this->tokenAuthenticator->authenticate($this->request));
         assertEquals(
                 [$this->request, new Token($tokenValue)],
-                $this->tokenStore->argumentsReceived('findUserByToken')
+                $this->tokenStore->argumentsReceivedFor('findUserByToken')
         );
     }
 
@@ -255,7 +255,7 @@ class TokenAuthenticatorTest extends \PHPUnit_Framework_TestCase
         assertNull($this->tokenAuthenticator->authenticate($this->request));
         assertEquals(
                 [$this->request, new Token('someOtherToken')],
-                $this->tokenStore->argumentsReceived('findUserByToken')
+                $this->tokenStore->argumentsReceivedFor('findUserByToken')
         );
         assertEquals(1, $this->loginProvider->callsReceivedFor('authenticate'));
     }
@@ -278,7 +278,7 @@ class TokenAuthenticatorTest extends \PHPUnit_Framework_TestCase
         );
         assertEquals(
                 [$this->request, new Token('someOtherToken')],
-                $this->tokenStore->argumentsReceived('findUserByToken')
+                $this->tokenStore->argumentsReceivedFor('findUserByToken')
         );
     }
 
@@ -299,7 +299,7 @@ class TokenAuthenticatorTest extends \PHPUnit_Framework_TestCase
         );
         assertEquals(
                 [$this->request, new Token('someOtherToken')],
-                $this->tokenStore->argumentsReceived('findUserByToken')
+                $this->tokenStore->argumentsReceivedFor('findUserByToken')
         );
     }
 

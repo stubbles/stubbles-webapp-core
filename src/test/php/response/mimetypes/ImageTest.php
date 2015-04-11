@@ -111,7 +111,7 @@ class ImageTest extends \PHPUnit_Framework_TestCase
         assertEquals('fake', $dummyDriver->lastDisplayedHandle());
         assertEquals(
                 'error.png',
-                $this->resourceLoader->argumentsReceived('load')[0]
+                $this->resourceLoader->argumentsReceivedFor('load')[0]
         );
     }
 
@@ -128,7 +128,7 @@ class ImageTest extends \PHPUnit_Framework_TestCase
         assertEquals('fake', $dummyDriver->lastDisplayedHandle());
         assertEquals(
                 'pixel.png',
-                $this->resourceLoader->argumentsReceived('load')[0]
+                $this->resourceLoader->argumentsReceivedFor('load')[0]
         );
     }
 

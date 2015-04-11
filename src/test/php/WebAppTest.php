@@ -192,7 +192,7 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
         $this->webApp->run();
         assertEquals(
                 [TestWebApp::$session, 'stubbles\webapp\session\Session'],
-                $this->injector->argumentsReceived('setSession')
+                $this->injector->argumentsReceivedFor('setSession')
         );
     }
 
@@ -241,7 +241,7 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
         $exceptionLogger = $this->setUpExceptionLogger($exception);
         $response = $this->webApp->run();
         assertEquals(500, $response->statusCode());
-        assertEquals([$exception], $exceptionLogger->argumentsReceived('log'));
+        assertEquals([$exception], $exceptionLogger->argumentsReceivedFor('log'));
         assertEquals(0, $resource->callsReceivedFor('process'));
         assertEquals(0, $resource->callsReceivedFor('applyPostInterceptors'));
     }
@@ -260,7 +260,7 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
         $exceptionLogger = $this->setUpExceptionLogger($exception);
         $response = $this->webApp->run();
         assertEquals(500, $response->statusCode());
-        assertEquals([$exception], $exceptionLogger->argumentsReceived('log'));
+        assertEquals([$exception], $exceptionLogger->argumentsReceivedFor('log'));
         assertEquals(0, $resource->callsReceivedFor('applyPostInterceptors'));
     }
 
@@ -278,7 +278,7 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
         $exceptionLogger = $this->setUpExceptionLogger($exception);
         $response = $this->webApp->run();
         assertEquals(500, $response->statusCode());
-        assertEquals([$exception], $exceptionLogger->argumentsReceived('log'));
+        assertEquals([$exception], $exceptionLogger->argumentsReceivedFor('log'));
     }
 
     /**
