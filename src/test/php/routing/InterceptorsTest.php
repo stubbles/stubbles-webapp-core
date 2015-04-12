@@ -8,10 +8,10 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\routing;
+use bovigo\callmap;
 use bovigo\callmap\NewInstance;
 use stubbles\webapp\Request;
 use stubbles\webapp\Response;
-use stubbles\webapp\response\Error;
 /**
  * Tests for stubbles\webapp\routing\Interceptors.
  *
@@ -85,11 +85,9 @@ class InterceptorsTest extends \PHPUnit_Framework_TestCase
                         ]
                 )->preProcess($this->request, $this->response)
         );
-        assertEquals(
-                ['Configured pre interceptor some\PreInterceptor is not an instance of stubbles\webapp\interceptor\PreInterceptor'],
-                $this->response->argumentsReceivedFor('internalServerError')
-        );
-        assertEquals(1, $this->response->callsReceivedFor('write'));
+        callmap\verify($this->response, 'internalServerError')
+                ->received('Configured pre interceptor some\PreInterceptor is not an instance of stubbles\webapp\interceptor\PreInterceptor');
+        callmap\verify($this->response, 'write')->wasCalledOnce();
     }
 
     /**
@@ -107,7 +105,7 @@ class InterceptorsTest extends \PHPUnit_Framework_TestCase
                         ]
                 )->preProcess($this->request, $this->response)
         );
-        assertEquals(1, $preInterceptor->callsReceivedFor('preProcess'));
+        callmap\verify($preInterceptor, 'preProcess')->wasCalledOnce();
     }
 
     /**
@@ -129,7 +127,7 @@ class InterceptorsTest extends \PHPUnit_Framework_TestCase
                         ]
                 )->preProcess($this->request, $this->response)
         );
-        assertEquals(2, $preInterceptor->callsReceivedFor('preProcess'));
+        callmap\verify($preInterceptor, 'preProcess')->wasCalled(2);
     }
 
     /**
@@ -144,11 +142,9 @@ class InterceptorsTest extends \PHPUnit_Framework_TestCase
                         ['some\PostInterceptor',  'other\PostInterceptor']
                 )->postProcess($this->request, $this->response)
         );
-        assertEquals(
-                ['Configured post interceptor some\PostInterceptor is not an instance of stubbles\webapp\interceptor\PostInterceptor'],
-                $this->response->argumentsReceivedFor('internalServerError')
-        );
-        assertEquals(1, $this->response->callsReceivedFor('write'));
+        callmap\verify($this->response, 'internalServerError')
+                ->received('Configured post interceptor some\PostInterceptor is not an instance of stubbles\webapp\interceptor\PostInterceptor');
+        callmap\verify($this->response, 'write')->wasCalledOnce();
     }
 
     /**
@@ -165,7 +161,7 @@ class InterceptorsTest extends \PHPUnit_Framework_TestCase
                         ['some\PostInterceptor', 'other\PostInterceptor']
                 )->postProcess($this->request, $this->response)
         );
-        assertEquals(1, $postInterceptor->callsReceivedFor('postProcess'));
+        callmap\verify($postInterceptor, 'postProcess')->wasCalledOnce();
     }
 
     /**
@@ -188,7 +184,7 @@ class InterceptorsTest extends \PHPUnit_Framework_TestCase
                         ]
                 )->postProcess($this->request, $this->response)
         );
-        assertEquals(2, $postInterceptor->callsReceivedFor('postProcess'));
+        callmap\verify($postInterceptor, 'postProcess')->wasCalled(2);
     }
 
 }

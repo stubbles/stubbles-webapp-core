@@ -8,6 +8,7 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\routing;
+use bovigo\callmap;
 use bovigo\callmap\NewInstance;
 use stubbles\input\ValueReader;
 /**
@@ -155,10 +156,8 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
         $response = NewInstance::of('stubbles\webapp\Response');
         $this->routing->findResource('http://example.net/hello', 'OPTIONS')
                 ->resolve(NewInstance::of('stubbles\webapp\Request'), $response);
-        assertEquals(
-                ['Allow', 'GET, HEAD, POST, PUT, DELETE, OPTIONS'],
-                $response->argumentsReceivedFor('addHeader')
-        );
+        callmap\verify($response, 'addHeader')
+                ->received('Allow', 'GET, HEAD, POST, PUT, DELETE, OPTIONS');
     }
 
     /**
@@ -460,7 +459,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
                 $this->routing->findResource($this->calledUri)
                         ->negotiateMimeType($request, $response)
         );
-        assertEquals([$mimeType], $response->argumentsReceivedFor('adjustMimeType'));
+        callmap\verify($response, 'adjustMimeType')->received($mimeType);
     }
 
     /**
@@ -511,7 +510,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
                                 $response
                         )
         );
-        assertEquals(0, $response->callsReceivedFor('adjustMimeType'));
+        callmap\verify($response, 'adjustMimeType')->wasNeverCalled();
     }
 
     /**
@@ -531,7 +530,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
                                 $response
                         )
         );
-        assertEquals(0, $response->callsReceivedFor('adjustMimeType'));
+        callmap\verify($response, 'adjustMimeType')->wasNeverCalled();
     }
 
     /**

@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "a2cef7186015273e43dc7f3e96b3ba12",
+    "hash": "7188081967819e4af27710ba71edcdcd",
     "packages": [
         {
             "name": "stubbles/core",
@@ -105,12 +105,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/mikey179/bovigo-callmap.git",
-                "reference": "be68331a3dcd2d9600d7af79f374b97e0f361a74"
+                "reference": "b38c4abc763c3f0f9085933ed274026402370476"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mikey179/bovigo-callmap/zipball/be68331a3dcd2d9600d7af79f374b97e0f361a74",
-                "reference": "be68331a3dcd2d9600d7af79f374b97e0f361a74",
+                "url": "https://api.github.com/repos/mikey179/bovigo-callmap/zipball/b38c4abc763c3f0f9085933ed274026402370476",
+                "reference": "b38c4abc763c3f0f9085933ed274026402370476",
                 "shasum": ""
             },
             "require": {
@@ -119,10 +119,13 @@
             "require-dev": {
                 "phpunit/phpunit": "~4.6"
             },
+            "suggest": {
+                "phpunit/phpunit": "To use argument verification"
+            },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "0.3.x-dev"
+                    "dev-master": "0.5.x-dev"
                 }
             },
             "autoload": {
@@ -138,7 +141,7 @@
                 "BSD-3-Clause"
             ],
             "description": "Allows to stub and mock method calls by applying a callmap.",
-            "time": "2015-04-11 10:49:58"
+            "time": "2015-04-12 19:05:30"
         },
         {
             "name": "doctrine/instantiator",

@@ -18,7 +18,7 @@
         "stubbles/image": "~4.0",
         "phpunit/phpunit": "~4.6",
         "mikey179/vfsStream": "~1.5",
-        "bovigo/callmap": "~0.3"
+        "bovigo/callmap": "~0.5"
     },
     "autoload": {
         "psr-4": {

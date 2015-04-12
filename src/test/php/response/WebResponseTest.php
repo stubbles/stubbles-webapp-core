@@ -8,6 +8,7 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\response;
+use bovigo\callmap;
 use bovigo\callmap\NewInstance;
 use stubbles\peer\http\Http;
 use stubbles\peer\http\HttpVersion;
@@ -69,10 +70,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     public function versionIs1_1ByDefault()
     {
         $this->response->send($this->memory);
-        assertEquals(
-                ['HTTP/1.1 200 OK'],
-                $this->response->argumentsReceivedFor('header')
-        );
+        callmap\verify($this->response, 'header')->received('HTTP/1.1 200 OK');
     }
 
     /**
@@ -82,10 +80,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     {
         $response = $this->createResponse(HttpVersion::HTTP_1_0);
         $response->send($this->memory);
-        assertEquals(
-                ['HTTP/1.0 200 OK'],
-                $response->argumentsReceivedFor('header')
-        );
+        callmap\verify($response, 'header')->received('HTTP/1.0 200 OK');
     }
 
     /**
@@ -113,10 +108,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     {
         $this->response = $this->createResponse(HttpVersion::HTTP_1_1, Http::GET, 'cgi');
         $this->response->send($this->memory);
-        assertEquals(
-                ['Status: 200 OK'],
-                $this->response->argumentsReceivedFor('header')
-        );
+        callmap\verify($this->response, 'header')->received('Status: 200 OK');
     }
 
     /**
@@ -125,10 +117,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     public function addedHeadersAreSend()
     {
         $this->response->addHeader('name', 'value1')->send($this->memory);
-        assertEquals(
-                ['name: value1'],
-                $this->response->argumentsReceivedFor('header', 2)
-        );
+        callmap\verify($this->response, 'header')->receivedOn(2, 'name: value1');
     }
 
     /**
@@ -209,7 +198,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
         $cookie = $this->createCookie();
         $this->response->addCookie($cookie)
                 ->send($this->memory);
-        assertEquals(1, $cookie->callsReceivedFor('send'));
+        callmap\verify($cookie, 'send')->wasCalledOnce();
     }
 
     /**
@@ -221,7 +210,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
         $this->response->addCookie($cookie)
                 ->addCookie($cookie)
                 ->send($this->memory);
-        assertEquals(1, $cookie->callsReceivedFor('send'));
+        callmap\verify($cookie, 'send')->wasCalledOnce();
     }
 
     /**
@@ -276,7 +265,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     {
         $outputStream = NewInstance::of('stubbles\streams\OutputStream');
         $this->response->send($outputStream);
-        assertEquals(0, $outputStream->callsReceivedFor('write'));
+        callmap\verify($outputStream, 'write')->wasNeverCalled();
     }
 
     /**
@@ -307,7 +296,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
         $this->response = $this->createResponse(HttpVersion::HTTP_1_1, Http::HEAD);
         $outputStream = NewInstance::of('stubbles\streams\OutputStream');
         $this->response->write('foo')->send($outputStream);
-        assertEquals(0, $outputStream->callsReceivedFor('write'));
+        callmap\verify($outputStream, 'write')->wasNeverCalled();
     }
 
     /**
@@ -328,14 +317,10 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     {
         $this->response->redirect('http://example.com/', 301);
         $this->response->send();
-        assertEquals(
-                ['HTTP/1.1 301 Moved Permanently'],
-                $this->response->argumentsReceivedFor('header', 1)
-        );
-        assertEquals(
-                ['Location: http://example.com/'],
-                $this->response->argumentsReceivedFor('header', 2)
-        );
+        callmap\verify($this->response, 'header')
+                ->receivedOn(1, 'HTTP/1.1 301 Moved Permanently');
+        callmap\verify($this->response, 'header')
+                ->receivedOn(2, 'Location: http://example.com/');
     }
 
     /**
@@ -347,14 +332,10 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     {
         $this->response->redirect('http://example.com/');
         $this->response->send();
-        assertEquals(
-                ['HTTP/1.1 302 Found'],
-                $this->response->argumentsReceivedFor('header', 1)
-        );
-        assertEquals(
-                ['Location: http://example.com/'],
-                $this->response->argumentsReceivedFor('header', 2)
-        );
+        callmap\verify($this->response, 'header')
+                ->receivedOn(1, 'HTTP/1.1 302 Found');
+        callmap\verify($this->response, 'header')
+                ->receivedOn(2, 'Location: http://example.com/');
     }
 
     /**
@@ -365,10 +346,8 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     {
         $this->response->forbidden();
         $this->response->send();
-        assertEquals(
-                ['HTTP/1.1 403 Forbidden'],
-                $this->response->argumentsReceivedFor('header')
-        );
+        callmap\verify($this->response, 'header')
+                ->received('HTTP/1.1 403 Forbidden');
     }
 
     /**
@@ -399,10 +378,8 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     {
         $this->response->notFound();
         $this->response->send();
-        assertEquals(
-                ['HTTP/1.1 404 Not Found'],
-                $this->response->argumentsReceivedFor('header')
-        );
+        callmap\verify($this->response, 'header')
+                ->received('HTTP/1.1 404 Not Found');
     }
 
     /**
@@ -433,14 +410,10 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     {
         $this->response->methodNotAllowed('POST', ['GET', 'HEAD']);
         $this->response->send();
-        assertEquals(
-                ['HTTP/1.1 405 Method Not Allowed'],
-                $this->response->argumentsReceivedFor('header', 1)
-        );
-        assertEquals(
-                ['Allow: GET, HEAD'],
-                $this->response->argumentsReceivedFor('header', 2)
-        );
+        callmap\verify($this->response, 'header')
+                ->receivedOn(1, 'HTTP/1.1 405 Method Not Allowed');
+        callmap\verify($this->response, 'header')
+                ->receivedOn(2, 'Allow: GET, HEAD');
     }
 
     /**
@@ -474,10 +447,8 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     {
         $this->response->notAcceptable();
         $this->response->send();
-        assertEquals(
-                ['HTTP/1.1 406 Not Acceptable'],
-                $this->response->argumentsReceivedFor('header')
-        );
+        callmap\verify($this->response, 'header')
+                ->received('HTTP/1.1 406 Not Acceptable');
     }
 
     /**
@@ -499,14 +470,10 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     {
         $this->response->notAcceptable(['application/json', 'application/xml']);
         $this->response->send();
-        assertEquals(
-                ['HTTP/1.1 406 Not Acceptable'],
-                $this->response->argumentsReceivedFor('header', 1)
-        );
-        assertEquals(
-                ['X-Acceptable: application/json, application/xml'],
-                $this->response->argumentsReceivedFor('header', 2)
-        );
+        callmap\verify($this->response, 'header')
+                ->receivedOn(1, 'HTTP/1.1 406 Not Acceptable');
+        callmap\verify($this->response, 'header')
+                ->receivedOn(2, 'X-Acceptable: application/json, application/xml');
     }
 
     /**
@@ -517,10 +484,8 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     {
         $this->response->internalServerError('ups!');
         $this->response->send();
-        assertEquals(
-                ['HTTP/1.1 500 Internal Server Error'],
-                $this->response->argumentsReceivedFor('header')
-        );
+        callmap\verify($this->response, 'header')
+                ->received('HTTP/1.1 500 Internal Server Error');
     }
 
     /**
@@ -557,10 +522,8 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
                 'Error: Unsupported HTTP protocol version, expected HTTP/1.0 or HTTP/1.1',
                 $this->response->send($this->memory)->buffer()
         );
-        assertEquals(
-                ['HTTP/1.1 505 HTTP Version Not Supported'],
-                $this->response->argumentsReceivedFor('header')
-        );
+        callmap\verify($this->response, 'header')
+                ->received('HTTP/1.1 505 HTTP Version Not Supported');
     }
 
     /**
@@ -599,10 +562,8 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
                 'Error: Unsupported HTTP protocol version, expected HTTP/1.0 or HTTP/1.1',
                 $response->send($this->memory)->buffer()
         );
-        assertEquals(
-                ['HTTP/1.1 505 HTTP Version Not Supported'],
-                $response->argumentsReceivedFor('header')
-        );
+        callmap\verify($response, 'header')
+                ->received('HTTP/1.1 505 HTTP Version Not Supported');
     }
 
     /**
@@ -613,10 +574,8 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     public function requestIdAddedByDefault()
     {
         $this->response->send($this->memory);
-        assertEquals(
-                ['X-Request-ID: example-request-id-foo'],
-                $this->response->argumentsReceivedFor('header', 3)
-        );
+        callmap\verify($this->response, 'header')
+                ->receivedOn(3, 'X-Request-ID: example-request-id-foo');
     }
 
     /**
@@ -628,9 +587,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     {
         $this->response->headers()->requestId('another-request-id-bar');
         $this->response->send($this->memory);
-        assertEquals(
-                ['X-Request-ID: another-request-id-bar'],
-                $this->response->argumentsReceivedFor('header', 2)
-        );
+        callmap\verify($this->response, 'header')
+                ->receivedOn(2, 'X-Request-ID: another-request-id-bar');
     }
 }

@@ -75,7 +75,7 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
     public function regeneratesSessionIdWhenSessionIsNew()
     {
         $this->createWebSession('aFingerprint', null);
-        assertEquals(1, $this->sessionId->callsReceivedFor('regenerate'));
+        callmap\verify($this->sessionId, 'regenerate')->wasCalledOnce();
     }
 
     /**
@@ -84,10 +84,8 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
     public function storesFingerPrintWhenSessionIsNew()
     {
         $this->createWebSession('aFingerprint', null);
-        assertEquals(
-                [Session::FINGERPRINT, 'aFingerprint'],
-                $this->sessionStorage->argumentsReceivedFor('putValue')
-        );
+        callmap\verify($this->sessionStorage, 'putValue')
+                ->received(Session::FINGERPRINT, 'aFingerprint');
     }
 
     /**
@@ -96,7 +94,7 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
     public function regeneratesSessionIdWhenSessionIsHijacked()
     {
         $this->createWebSession('otherFingerprint');
-        assertEquals(1, $this->sessionId->callsReceivedFor('regenerate'));
+        callmap\verify($this->sessionId, 'regenerate')->wasCalledOnce();
     }
 
     /**
@@ -105,7 +103,7 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
     public function clearsSessionDataWhenSessionIsHijacked()
     {
         $this->createWebSession('otherFingerprint');
-        assertEquals(1, $this->sessionStorage->callsReceivedFor('clear'));
+        callmap\verify($this->sessionStorage, 'clear')->wasCalledOnce();
     }
 
     /**
@@ -114,10 +112,8 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
     public function storesGivenFingerPrintWhenSessionIsHijacked()
     {
         $this->createWebSession('otherFingerprint');
-        assertEquals(
-                [Session::FINGERPRINT, 'otherFingerprint'],
-                $this->sessionStorage->argumentsReceivedFor('putValue')
-        );
+        callmap\verify($this->sessionStorage, 'putValue')
+                ->received(Session::FINGERPRINT, 'otherFingerprint');
     }
 
     /**
@@ -136,7 +132,7 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
     {
         $webSession = $this->createWebSession();
         assertEquals($webSession, $webSession->regenerateId());
-        assertEquals(1, $this->sessionId->callsReceivedFor('regenerate'));
+        callmap\verify($this->sessionId, 'regenerate')->wasCalledOnce();
     }
 
     /**
@@ -193,7 +189,7 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
     {
         $webSession = $this->createWebSession();
         assertEquals($webSession, $webSession->invalidate());
-        assertEquals(1, $this->sessionStorage->callsReceivedFor('clear'));
+        callmap\verify($this->sessionStorage, 'clear')->wasCalledOnce();
     }
 
     /**
@@ -203,7 +199,7 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
     {
         $webSession = $this->createWebSession();
         assertEquals($webSession, $webSession->invalidate());
-        assertEquals(1, $this->sessionId->callsReceivedFor('invalidate'));
+        callmap\verify($this->sessionId, 'invalidate')->wasCalledOnce();
     }
 
     /**
@@ -303,10 +299,8 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
     {
         $webSession = $this->createWebSession();
         assertEquals($webSession, $webSession->putValue('foo', 'bar'));
-        assertEquals(
-                ['foo', 'bar'],
-                $this->sessionStorage->argumentsReceivedFor('putValue')
-        );
+        callmap\verify($this->sessionStorage, 'putValue')
+                ->received('foo', 'bar');
     }
 
     /**
@@ -332,10 +326,7 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
     public function removeReturnsTrueIfValueWasNotStoredBefore()
     {
         assertTrue($this->createWebSessionWithValues('bar')->removeValue('foo'));
-        assertEquals(
-                ['foo'],
-                $this->sessionStorage->argumentsReceivedFor('removeValue')
-        );
+        callmap\verify($this->sessionStorage, 'removeValue')->received('foo');
     }
 
     /**

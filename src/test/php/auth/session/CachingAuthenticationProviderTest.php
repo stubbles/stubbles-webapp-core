@@ -8,6 +8,7 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\auth\session;
+use bovigo\callmap;
 use bovigo\callmap\NewInstance;
 use stubbles\lang\reflect;
 use stubbles\webapp\auth\User;
@@ -79,7 +80,8 @@ class CachingAuthenticationProviderTest extends \PHPUnit_Framework_TestCase
                         NewInstance::of('stubbles\webapp\Request')
                 )
         );
-        assertEquals(0, $this->authenticationProvider->callsReceivedFor('authenticate'));
+        callmap\verify($this->authenticationProvider, 'authenticate')
+                ->wasNeverCalled();
     }
 
     /**
@@ -93,7 +95,7 @@ class CachingAuthenticationProviderTest extends \PHPUnit_Framework_TestCase
                         NewInstance::of('stubbles\webapp\Request')
                 )
         );
-        assertEquals(0, $this->session->callsReceivedFor('putValue'));
+        callmap\verify($this->session, 'putValue')->wasNeverCalled();
     }
 
     /**
@@ -110,10 +112,8 @@ class CachingAuthenticationProviderTest extends \PHPUnit_Framework_TestCase
                         NewInstance::of('stubbles\webapp\Request')
                 )
         );
-        assertEquals(
-                [User::SESSION_KEY, $user],
-                $this->session->argumentsReceivedFor('putValue')
-        );
+        callmap\verify($this->session, 'putValue')
+                ->received(User::SESSION_KEY, $user);
     }
 
     /**

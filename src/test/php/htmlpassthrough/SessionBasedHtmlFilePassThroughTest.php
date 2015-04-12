@@ -8,6 +8,7 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\htmlpassthrough;
+use bovigo\callmap;
 use bovigo\callmap\NewInstance;
 use org\bovigo\vfs\vfsStream;
 use stubbles\webapp\UriPath;
@@ -124,10 +125,8 @@ class SessionBasedHtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
                         new UriPath('/', '/')
                 )
         );
-        assertEquals(
-                ['stubbles.webapp.lastPage', 'index.html'],
-                $this->session->argumentsReceivedFor('putValue')
-        );
+        callmap\verify($this->session, 'putValue')
+                ->received('stubbles.webapp.lastPage', 'index.html');
     }
 
     /**
@@ -149,8 +148,8 @@ class SessionBasedHtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
                         new UriPath('/', '/foo.html')
                 )
         );
-        assertEquals(0, $this->session->callsReceivedFor('name'));
-        assertEquals(0, $this->session->callsReceivedFor('id'));
+        callmap\verify($this->session, 'name')->wasNeverCalled();
+        callmap\verify($this->session, 'id')->wasNeverCalled();
     }
 
     /**
@@ -172,7 +171,7 @@ class SessionBasedHtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
                         new UriPath('/', '/foo.html')
                 )
         );
-        assertEquals(1, $this->session->callsReceivedFor('name'));
-        assertEquals(1, $this->session->callsReceivedFor('id'));
+        callmap\verify($this->session, 'name')->wasCalledOnce();
+        callmap\verify($this->session, 'id')->wasCalledOnce();
     }
 }

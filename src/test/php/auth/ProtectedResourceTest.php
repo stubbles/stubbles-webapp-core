@@ -157,8 +157,8 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
                         $this->response
                 )
         );
-        assertEquals(0, $this->actualResource->callsReceivedFor('applyPreInterceptors'));
-        assertEquals(0, $this->actualResource->callsReceivedFor('resolve'));
+        callmap\verify($this->actualResource, 'applyPreInterceptors')->wasNeverCalled();
+        callmap\verify($this->actualResource, 'resolve')->wasNeverCalled();
     }
 
     /**
@@ -184,9 +184,9 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
                         $this->response
                 )
         );
-        assertEquals([504], $this->response->argumentsReceivedFor('setStatusCode'));
-        assertEquals(0, $this->actualResource->callsReceivedFor('applyPreInterceptors'));
-        assertEquals(0, $this->actualResource->callsReceivedFor('resolve'));
+        callmap\verify($this->response, 'setStatusCode')->received(504);
+        callmap\verify($this->actualResource, 'applyPreInterceptors')->wasNeverCalled();
+        callmap\verify($this->actualResource, 'resolve')->wasNeverCalled();
     }
 
     /**
@@ -207,12 +207,11 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
                         $this->response
                 )
         );
-        assertEquals(
-                ['https://login.example.com/'],
-                $this->response->argumentsReceivedFor('redirect')
-        );
-        assertEquals(0, $this->actualResource->callsReceivedFor('applyPreInterceptors'));
-        assertEquals(0, $this->actualResource->callsReceivedFor('resolve'));
+        callmap\verify($this->response, 'redirect')
+                ->received('https://login.example.com/');
+        callmap\verify($this->actualResource, 'applyPreInterceptors')
+                ->wasNeverCalled();
+        callmap\verify($this->actualResource, 'resolve')->wasNeverCalled();
     }
 
     /**
@@ -238,8 +237,8 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
                         $this->response
                 )
         );
-        assertEquals(0, $this->actualResource->callsReceivedFor('applyPreInterceptors'));
-        assertEquals(0, $this->actualResource->callsReceivedFor('resolve'));
+        callmap\verify($this->actualResource, 'applyPreInterceptors')->wasNeverCalled();
+        callmap\verify($this->actualResource, 'resolve')->wasNeverCalled();
     }
 
     /**
@@ -259,7 +258,7 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
                         $this->response
                 )
         );
-        assertEquals(1, $this->actualResource->callsReceivedFor('applyPreInterceptors'));
+        callmap\verify($this->actualResource, 'applyPreInterceptors')->wasCalledOnce();
     }
 
     /**
@@ -322,8 +321,8 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
                         $this->response
                 )
         );
-        assertEquals(0, $this->actualResource->callsReceivedFor('applyPreInterceptors'));
-        assertEquals(0, $this->actualResource->callsReceivedFor('resolve'));
+        callmap\verify($this->actualResource, 'applyPreInterceptors')->wasNeverCalled();
+        callmap\verify($this->actualResource, 'resolve')->wasNeverCalled();
     }
 
     /**
@@ -350,9 +349,9 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
                         $this->response
                 )
         );
-        assertEquals([504], $this->response->argumentsReceivedFor('setStatusCode'));
-        assertEquals(0, $this->actualResource->callsReceivedFor('applyPreInterceptors'));
-        assertEquals(0, $this->actualResource->callsReceivedFor('resolve'));
+        callmap\verify($this->response, 'setStatusCode')->received(504);
+        callmap\verify($this->actualResource, 'applyPreInterceptors')->wasNeverCalled();
+        callmap\verify($this->actualResource, 'resolve')->wasNeverCalled();
     }
 
     /**
@@ -376,8 +375,8 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
                         $this->response
                 )
         );
-        assertEquals(0, $this->actualResource->callsReceivedFor('applyPreInterceptors'));
-        assertEquals(0, $this->actualResource->callsReceivedFor('resolve'));
+        callmap\verify($this->actualResource, 'applyPreInterceptors')->wasNeverCalled();
+        callmap\verify($this->actualResource, 'resolve')->wasNeverCalled();
     }
 
     /**
@@ -394,7 +393,7 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
                         $this->response
                 )
         );
-        assertEquals(1, $this->actualResource->callsReceivedFor('applyPreInterceptors'));
+        callmap\verify($this->actualResource, 'applyPreInterceptors')->wasCalledOnce();
     }
 
     /**
@@ -440,7 +439,7 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
                         $this->response
                 )
         );
-        assertEquals(0, $this->actualResource->callsReceivedFor('resolve'));
+        callmap\verify($this->actualResource, 'resolve')->wasNeverCalled();
     }
 
     /**
@@ -485,8 +484,8 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
                 $this->request,
                 $this->response
         );
-        assertEquals(0, $this->actualResource->callsReceivedFor('applyPreInterceptors'));
-        assertEquals(1, $this->actualResource->callsReceivedFor('applyPostInterceptors'));
+        callmap\verify($this->actualResource, 'applyPreInterceptors')->wasNeverCalled();
+        callmap\verify($this->actualResource, 'applyPostInterceptors')->wasCalledOnce();
     }
 
     /**
@@ -509,7 +508,7 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
                 $this->request,
                 $this->response
         );
-        assertEquals(1, $this->actualResource->callsReceivedFor('applyPreInterceptors'));
-        assertEquals(1, $this->actualResource->callsReceivedFor('applyPostInterceptors'));
+        callmap\verify($this->actualResource, 'applyPreInterceptors')->wasCalledOnce();
+        callmap\verify($this->actualResource, 'applyPostInterceptors')->wasCalledOnce();
     }
 }

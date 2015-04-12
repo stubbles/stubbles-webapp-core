@@ -109,10 +109,7 @@ class ImageTest extends \PHPUnit_Framework_TestCase
         );
         $this->image->serialize(new Error('ups'), new MemoryOutputStream());
         assertEquals('fake', $dummyDriver->lastDisplayedHandle());
-        assertEquals(
-                'error.png',
-                $this->resourceLoader->argumentsReceivedFor('load')[0]
-        );
+        callmap\verify($this->resourceLoader, 'load')->received('error.png');
     }
 
     /**
@@ -126,10 +123,7 @@ class ImageTest extends \PHPUnit_Framework_TestCase
         );
         $this->image->serialize('pixel.png', new MemoryOutputStream());
         assertEquals('fake', $dummyDriver->lastDisplayedHandle());
-        assertEquals(
-                'pixel.png',
-                $this->resourceLoader->argumentsReceivedFor('load')[0]
-        );
+        callmap\verify($this->resourceLoader, 'load')->received('pixel.png');
     }
 
     /**

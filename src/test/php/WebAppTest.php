@@ -175,9 +175,9 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
                 ]
         );
         $this->webApp->run();
-        assertEquals(0, $resource->callsReceivedFor('applyPreInterceptors'));
-        assertEquals(0, $resource->callsReceivedFor('process'));
-        assertEquals(0, $resource->callsReceivedFor('applyPostInterceptors'));
+        callmap\verify($resource, 'applyPreInterceptors')->wasNeverCalled();
+        callmap\verify($resource, 'resolve')->wasNeverCalled();
+        callmap\verify($resource, 'applyPostInterceptors')->wasNeverCalled();
 
     }
 
@@ -190,9 +190,10 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
         TestWebApp::$session = NewInstance::of('stubbles\webapp\session\Session');
         $this->createNonHttpsResource();
         $this->webApp->run();
-        assertEquals(
-                [TestWebApp::$session, 'stubbles\webapp\session\Session'],
-                $this->injector->argumentsReceivedFor('setSession')
+        callmap\verify($this->injector, 'setSession')
+                ->received(
+                        TestWebApp::$session,
+                        'stubbles\webapp\session\Session'
         );
     }
 
@@ -204,7 +205,7 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
     {
         $this->createNonHttpsResource();
         $this->webApp->run();
-        assertEquals(0, $this->injector->callsReceivedFor('setSession'));
+        callmap\verify($this->injector, 'setSession')->wasNeverCalled();
     }
 
     /**
@@ -214,8 +215,8 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
     {
         $resource = $this->createNonHttpsResource(['applyPreInterceptors' => false]);
         $this->webApp->run();
-        assertEquals(0, $resource->callsReceivedFor('process'));
-        assertEquals(0, $resource->callsReceivedFor('applyPostInterceptors'));
+        callmap\verify($resource, 'resolve')->wasNeverCalled();
+        callmap\verify($resource, 'applyPostInterceptors')->wasNeverCalled();
     }
 
     /**
@@ -241,9 +242,9 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
         $exceptionLogger = $this->setUpExceptionLogger($exception);
         $response = $this->webApp->run();
         assertEquals(500, $response->statusCode());
-        assertEquals([$exception], $exceptionLogger->argumentsReceivedFor('log'));
-        assertEquals(0, $resource->callsReceivedFor('process'));
-        assertEquals(0, $resource->callsReceivedFor('applyPostInterceptors'));
+        callmap\verify($exceptionLogger, 'log')->received($exception);
+        callmap\verify($resource, 'resolve')->wasNeverCalled();
+        callmap\verify($resource, 'applyPostInterceptors')->wasNeverCalled();
     }
 
     /**
@@ -260,8 +261,8 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
         $exceptionLogger = $this->setUpExceptionLogger($exception);
         $response = $this->webApp->run();
         assertEquals(500, $response->statusCode());
-        assertEquals([$exception], $exceptionLogger->argumentsReceivedFor('log'));
-        assertEquals(0, $resource->callsReceivedFor('applyPostInterceptors'));
+        callmap\verify($exceptionLogger, 'log')->received($exception);
+        callmap\verify($resource, 'applyPostInterceptors')->wasNeverCalled();
     }
 
     /**
@@ -278,7 +279,7 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
         $exceptionLogger = $this->setUpExceptionLogger($exception);
         $response = $this->webApp->run();
         assertEquals(500, $response->statusCode());
-        assertEquals([$exception], $exceptionLogger->argumentsReceivedFor('log'));
+        callmap\verify($exceptionLogger, 'log')->received($exception);
     }
 
     /**
@@ -290,8 +291,8 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
                 ['applyPreInterceptors' => true]
         );
         $this->webApp->run();
-        assertEquals(1, $resource->callsReceivedFor('resolve'));
-        assertEquals(1, $resource->callsReceivedFor('applyPostInterceptors'));
+        callmap\verify($resource, 'resolve')->wasCalledOnce();
+        callmap\verify($resource, 'applyPostInterceptors')->wasCalledOnce();
     }
 
     /**

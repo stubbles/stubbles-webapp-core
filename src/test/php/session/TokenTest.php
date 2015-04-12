@@ -88,7 +88,7 @@ class TokenTest extends \PHPUnit_Framework_TestCase
     {
         $this->session->mapCalls(['value' => 'aToken']);
         $this->token->isValid('otherToken');
-        assertEquals(1, $this->session->callsReceivedFor('putValue'));
+        callmap\verify($this->session, 'putValue')->wasCalledOnce();
     }
 
     /**
@@ -108,6 +108,6 @@ class TokenTest extends \PHPUnit_Framework_TestCase
     public function nextStoresNextTokenInSession()
     {
         $this->token->next();
-        assertEquals(1, $this->session->callsReceivedFor('putValue'));
+        callmap\verify($this->session, 'putValue')->wasCalledOnce();
     }
 }
