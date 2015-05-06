@@ -48,6 +48,27 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function hasDescriptionWhenNotNull()
+    {
+        assertTrue($this->resource->hasDescription());
+    }
+
+    /**
+     * @test
+     */
+    public function hasNoDescriptionWhenNull()
+    {
+        $resource = new Resource(
+                'Orders',
+                null,
+                HttpUri::fromString('http://example.com/orders')
+        );
+        assertFalse($resource->hasDescription());
+    }
+
+    /**
+     * @test
+     */
     public function returnsProvidedDescription()
     {
         assertEquals(

@@ -56,6 +56,17 @@ class Resource implements \JsonSerializable
     }
 
     /**
+     * checks whether resource has a description
+     *
+     * @return  bool
+     * @XmlIgnore
+     */
+    public function hasDescription()
+    {
+        return null !== $this->description;
+    }
+
+    /**
      * returns description of resource
      *
      * @return  string
