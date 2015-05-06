@@ -141,4 +141,45 @@ class RoutingAnnotations
 
         return $class;
     }
+
+    /**
+     * checks whether a name is set
+     *
+     * @return  bool
+     * @since   6.1.0
+     */
+    public function hasName()
+    {
+        return $this->annotations->contain('Name');
+    }
+
+    /**
+     * returns description of resource
+     *
+     * @return  string
+     * @since   6.1.0
+     */
+    public function name()
+    {
+        if ($this->annotations->contain('Name')) {
+            return $this->annotations->firstNamed('Name')->getValue();
+        }
+
+        return null;
+    }
+
+    /**
+     * returns description of resource
+     *
+     * @return  string
+     * @since   6.1.0
+     */
+    public function description()
+    {
+        if ($this->annotations->contain('Description')) {
+            return $this->annotations->firstNamed('Description')->getValue();
+        }
+
+        return null;
+    }
 }

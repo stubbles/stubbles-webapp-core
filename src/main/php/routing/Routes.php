@@ -13,7 +13,7 @@ namespace stubbles\webapp\routing;
  *
  * @since  5.4.0
  */
-class Routes
+class Routes implements \IteratorAggregate
 {
     /**
      * list of routes for the web app
@@ -61,6 +61,25 @@ class Routes
         }
 
         return new MatchingRoutes($matching, $allowedMethods);
+    }
+
+    /**
+     * allows iteration over all configured routes
+     *
+     * @return  \Traversable
+     * @since   6.1.0
+     */
+    public function getIterator()
+    {
+        $routes = $this->routes;
+        usort(
+                $routes,
+                function(Route $a, Route $b)
+                {
+                    return strnatcmp($a->configuredPath(), $b->configuredPath());
+                }
+        );
+        return new \ArrayIterator($routes);
     }
 }
 

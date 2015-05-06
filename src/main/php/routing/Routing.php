@@ -13,6 +13,7 @@ use stubbles\webapp\RoutingConfigurator;
 use stubbles\webapp\auth\ProtectedResource;
 use stubbles\webapp\interceptor\PreInterceptor;
 use stubbles\webapp\interceptor\PostInterceptor;
+use stubbles\webapp\routing\api\Index;
 /**
  * Contains routing information and decides which route is applicable for given request.
  *
@@ -95,9 +96,23 @@ class Routing implements RoutingConfigurator
      * @return  \stubbles\webapp\routing\ConfigurableRoute
      * @since   4.0.0
      */
-    public function passThroughOnGet($path = '/[a-zA-Z0-9-_]+.html$', $target = 'stubbles\webapp\htmlpassthrough\HtmlFilePassThrough')
+    public function passThroughOnGet(
+            $path = '/[a-zA-Z0-9-_]+.html$',
+            $target = 'stubbles\webapp\htmlpassthrough\HtmlFilePassThrough')
     {
         return $this->onGet($path, $target);
+    }
+
+    /**
+     * reply with API index overview
+     *
+     * @param   string  $path
+     * @return  \stubbles\webapp\routing\ConfigurableRoute
+     * @since   6.1.0
+     */
+    public function apiIndexOnGet($path)
+    {
+        return $this->onGet($path, new Index($this->routes));
     }
 
     /**

@@ -9,6 +9,7 @@
  */
 namespace stubbles\webapp\routing;
 use bovigo\callmap\NewInstance;
+use stubbles\peer\http\HttpUri;
 use stubbles\webapp\Target;
 use stubbles\webapp\Request;
 use stubbles\webapp\Response;
@@ -19,6 +20,8 @@ use stubbles\webapp\auth\Roles;
  *
  * @RequiresHttps
  * @RequiresLogin
+ * @Name('Orders')
+ * @Description('List of placed orders')
  * @SupportsMimeType(mimeType="text/plain")
  * @SupportsMimeType(mimeType="application/bar", class="example\\Bar")
  * @SupportsMimeType(mimeType="application/baz", class=stubbles\webapp\routing\Baz.class)
@@ -855,6 +858,42 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 $route->supportsMimeType('application/bar', 'example\OtherBar')
                       ->supportedMimeTypes()
                       ->classFor('application/bar')
+        );
+    }
+
+    /**
+     * @return  array
+     */
+    public function resources()
+    {
+        return [
+            ['stubbles\webapp\routing\AnnotatedProcessor', 'Orders', 'List of placed orders'],
+            [new AnnotatedProcessor(), 'Orders', 'List of placed orders'],
+            ['stubbles\webapp\routing\OtherAnnotatedProcessor', 'OtherAnnotatedProcessor', null],
+            [new OtherAnnotatedProcessor(), 'OtherAnnotatedProcessor', null],
+            [function() {}, null, null]
+        ];
+    }
+
+    /**
+     * @test
+     * @since  6.1.0
+     * @dataProvider  resources
+     */
+    public function routeCanBeRepresentedAsResource($target, $name, $description)
+    {
+        $route = new Route(
+                '/orders',
+                $target,
+                'GET'
+        );
+        assertEquals(
+                new api\Resource(
+                        $name,
+                        $description,
+                        HttpUri::fromString('http://example.com/orders')
+                ),
+                $route->asResource(HttpUri::fromString('http://example.com/'))
         );
     }
 }

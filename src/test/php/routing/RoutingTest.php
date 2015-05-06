@@ -558,4 +558,17 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
                 $this->routing->findResource('http://example.net/' . $htmlFile, 'GET')
         );
     }
+
+    /**
+     * @test
+     * @since  6.1.0
+     */
+    public function apiIndexOnGetCreatesRouteWithIndexTarget()
+    {
+        assertInstanceOf(
+                'stubbles\webapp\routing\api\Index',
+                $this->routing->apiIndexOnGet('/')->target()
+        );
+
+    }
 }

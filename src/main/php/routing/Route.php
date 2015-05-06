@@ -9,10 +9,12 @@
  */
 namespace stubbles\webapp\routing;
 use stubbles\lang;
+use stubbles\peer\http\HttpUri;
 use stubbles\webapp\Target;
 use stubbles\webapp\auth\AuthConstraint;
 use stubbles\webapp\interceptor\PreInterceptor;
 use stubbles\webapp\interceptor\PostInterceptor;
+use stubbles\webapp\routing\api\Resource;
 /**
  * Represents information about a route that can be called.
  *
@@ -420,5 +422,47 @@ class Route implements ConfigurableRoute
         }
 
         return $this->routingAnnotations;
+    }
+
+    /**
+     * returns route as resource
+     *
+     * @param   \stubbles\peer\http\HttpUri  $uri
+     * @return  \stubbles\webapp\routing\api\Resource
+     * @since   6.1.0
+     */
+    public function asResource(HttpUri $uri)
+    {
+        return new Resource(
+                $this->resourceName(),
+                $this->routingAnnotations()->description(),
+                $uri->withPath($this->path)
+        );
+    }
+
+    /**
+     * returns useful name for resource
+     *
+     * @return  string
+     */
+    private function resourceName()
+    {
+        if ($this->routingAnnotations()->hasName()) {
+            return $this->routingAnnotations()->name();
+        }
+
+        if (is_string($this->target) && class_exists($this->target)) {
+            return substr(
+                    $this->target,
+                    strrpos($this->target, '\\') + 1
+            );
+        } elseif (!is_callable($this->target) && is_object($this->target)) {
+            return substr(
+                    get_class($this->target),
+                    strrpos(get_class($this->target), '\\') + 1
+            );
+        }
+
+        return null;
     }
 }
