@@ -896,4 +896,26 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 $route->asResource(HttpUri::fromString('http://example.com/'))
         );
     }
+
+    /**
+     * @test
+     * @since  6.1.0
+     */
+    public function normalizesPathForResource()
+    {
+        $route = new Route(
+                '/orders/?$',
+                'stubbles\webapp\routing\AnnotatedProcessor',
+                'GET'
+        );
+        assertEquals(
+                new api\Resource(
+                        'Orders',
+                        'List of placed orders',
+                        HttpUri::fromString('http://example.com/orders/')
+                ),
+                $route->asResource(HttpUri::fromString('http://example.com/'))
+        );
+
+    }
 }

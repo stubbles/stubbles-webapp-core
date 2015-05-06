@@ -436,8 +436,27 @@ class Route implements ConfigurableRoute
         return new Resource(
                 $this->resourceName(),
                 $this->routingAnnotations()->description(),
-                $uri->withPath($this->path)
+                $uri->withPath($this->normalizePath())
         );
+    }
+
+    /**
+     * normalizes path for better understanding
+     *
+     * @return  string
+     */
+    private function normalizePath()
+    {
+        $path = $this->path;
+        if (substr($path, -1) === '$') {
+            $path = substr($path, 0, strlen($path) - 1);
+        }
+
+        if (substr($path, -1) === '?') {
+            $path = substr($path, 0, strlen($path) - 1);
+        }
+
+        return $path;
     }
 
     /**
