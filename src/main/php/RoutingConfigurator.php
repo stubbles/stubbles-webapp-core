@@ -37,6 +37,15 @@ interface RoutingConfigurator
     public function passThroughOnGet($path = '/*\.html$', $target = 'stubbles\webapp\htmlpassthrough\HtmlFilePassThrough');
 
     /**
+     * reply with API index overview
+     *
+     * @param   string  $path
+     * @return  \stubbles\webapp\routing\ConfigurableRoute
+     * @since   6.1.0
+     */
+    public function apiIndexOnGet($path);
+
+    /**
      * reply with given class or callable for HEAD request on given path
      *
      * @param   string                                   $path    path this route is applicable for
