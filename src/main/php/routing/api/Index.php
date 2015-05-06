@@ -17,8 +17,10 @@ use stubbles\webapp\routing\Routes;
  * Provides an index over all available resources.
  *
  * @since  6.1.0
- * SupportsMimeType(mimeType='application/xml')
- * SupportsMimeType(mimeType='application/json')
+ * @Name('Index')
+ * @Description('List of available resources.')
+ * @SupportsMimeType(mimeType='application/xml')
+ * @SupportsMimeType(mimeType='application/json')
  */
 class Index implements Target
 {
