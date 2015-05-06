@@ -916,6 +916,5 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 ),
                 $route->asResource(HttpUri::fromString('http://example.com/'))
         );
-
     }
 }
