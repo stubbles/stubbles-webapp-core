@@ -45,6 +45,22 @@ interface RoutingConfigurator
      */
     public function apiIndexOnGet($path);
 
+
+    /**
+     * reply with a redirect
+     *
+     * If the given $target is a string it is used in different ways:
+     * - if the string starts with http it is assumed to be a complete uri
+     * - else it is assumed to be a path within the application
+     *
+     * @param   string                              $path        path this route is applicable for
+     * @param   string|\stubbles\peer\http\HttpUri  $target      path or uri to redirect to
+     * @param   int                                 $statusCode  optional  status code for redirect, defaults to 302
+     * @return  \stubbles\webapp\routing\ConfigurableRoute
+     * @since   6.1.0
+     */
+    public function redirectOnGet($path, $target, $statusCode = 302);
+
     /**
      * reply with given class or callable for HEAD request on given path
      *

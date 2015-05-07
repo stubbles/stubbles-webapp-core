@@ -9,6 +9,8 @@
  */
 namespace stubbles\webapp\routing;
 use stubbles\ioc\Injector;
+use stubbles\webapp\Request;
+use stubbles\webapp\Response;
 use stubbles\webapp\RoutingConfigurator;
 use stubbles\webapp\auth\ProtectedResource;
 use stubbles\webapp\interceptor\PreInterceptor;
@@ -113,6 +115,24 @@ class Routing implements RoutingConfigurator
     public function apiIndexOnGet($path)
     {
         return $this->onGet($path, new Index($this->routes));
+    }
+
+    /**
+     * reply with a redirect
+     *
+     * If the given $target is a string it is used in different ways:
+     * - if the string starts with http it is assumed to be a complete uri
+     * - else it is assumed to be a path within the application
+     *
+     * @param   string                              $path        path this route is applicable for
+     * @param   string|\stubbles\peer\http\HttpUri  $target      path or uri to redirect to
+     * @param   int                                 $statusCode  optional  status code for redirect, defaults to 302
+     * @return  \stubbles\webapp\routing\ConfigurableRoute
+     * @since   6.1.0
+     */
+    public function redirectOnGet($path, $target, $statusCode = 302)
+    {
+        return $this->onGet($path, new Redirect($target, $statusCode));
     }
 
     /**

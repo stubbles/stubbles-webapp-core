@@ -571,4 +571,17 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
         );
 
     }
+
+    /**
+     * @test
+     * @since  6.1.0
+     */
+    public function redirectOnGetCreatesRouteWithRedirectTarget()
+    {
+        assertInstanceOf(
+                'stubbles\webapp\routing\Redirect',
+                $this->routing->redirectOnGet('/foo', '/bar')->target()
+        );
+
+    }
 }

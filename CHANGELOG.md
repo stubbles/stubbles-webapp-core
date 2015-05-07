@@ -1,3 +1,10 @@
+6.1.0 (2015-05-??)
+------------------
+
+   * added `stubbles\webapp\RoutingConfigurator::redirectOnGet()` to specify simple redirects
+   * added support for displaying an API index with `stubbles\webapp\RoutingConfigurator::apiIndexOnGet()`
+
+
 6.0.1 (2015-04-02)
 ------------------
 
