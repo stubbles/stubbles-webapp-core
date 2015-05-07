@@ -3,6 +3,8 @@
 
    * added `stubbles\webapp\RoutingConfigurator::redirectOnGet()` to specify simple redirects
    * added support for displaying an API index with `stubbles\webapp\RoutingConfigurator::apiIndexOnGet()`
+   * fixed bug where allowed methods on 404 Method Not Allowed response contained methods more than once
+   * fixed bug that allowed methods on 404 Method Not Allowed response did not contain HEAD when GET was allowed
 
 
 6.0.1 (2015-04-02)

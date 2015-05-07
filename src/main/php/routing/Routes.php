@@ -60,7 +60,7 @@ class Routes implements \IteratorAggregate
             }
         }
 
-        return new MatchingRoutes($matching, $allowedMethods);
+        return new MatchingRoutes($matching, array_unique($allowedMethods));
     }
 
     /**

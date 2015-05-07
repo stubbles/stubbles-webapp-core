@@ -39,7 +39,7 @@ class MatchingRoutes
     {
         $this->routes         = $routes;
         $this->allowedMethods = $allowedMethods;
-        if (in_array(Http::HEAD, $allowedMethods) && !in_array(Http::HEAD, $allowedMethods)) {
+        if (in_array(Http::GET, $allowedMethods) && !in_array(Http::HEAD, $allowedMethods)) {
             $this->allowedMethods[] = Http::HEAD;
         }
     }
