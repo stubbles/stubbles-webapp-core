@@ -143,6 +143,17 @@ class RoutingAnnotations
     }
 
     /**
+     * checks whether route should be ignored when building the API index
+     *
+     * @return  bool
+     * @since   6.1.0
+     */
+    public function shouldBeIgnoredInApiIndex()
+    {
+        return $this->annotations->contain('ExcludeFromApiIndex');
+    }
+
+    /**
      * checks whether a name is set
      *
      * @return  bool

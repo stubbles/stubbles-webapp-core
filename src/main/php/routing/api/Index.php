@@ -53,7 +53,9 @@ class Index implements Target
         $resources = new Resources();
         foreach ($this->routes as $route) {
             /* @var $route \stubbles\webapp\routing\Route */
-            $resources->add($route->asResource($uri));
+            if (!$route->shouldBeIgnoredInApiIndex()) {
+                $resources->add($route->asResource($uri));
+            }
         }
 
         return $resources;

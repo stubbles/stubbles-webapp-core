@@ -68,6 +68,7 @@ class OtherAnnotatedProcessor implements Target
  * Class with annotations for tests.
  *
  * @RolesAware
+ * @ExcludeFromApiIndex
  * @since  5.0.0
  */
 class RoleAwareAnnotatedProcessor implements Target
@@ -916,5 +917,47 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 ),
                 $route->asResource(HttpUri::fromString('http://example.com/'))
         );
+    }
+
+    /**
+     * @test
+     * @since  6.1.0
+     */
+    public function routeIsIncludedInApiIndexByDefault()
+    {
+        $route = new Route(
+                '/orders/?$',
+                function() {},
+                'GET'
+        );
+        assertFalse($route->shouldBeIgnoredInApiIndex());
+    }
+
+    /**
+     * @test
+     * @since  6.1.0
+     */
+    public function routeCanBeExcludedFromApiIndexViaSwitch()
+    {
+        $route = new Route(
+                '/orders/?$',
+                function() {},
+                'GET'
+        );
+        assertTrue($route->excludeFromApiIndex()->shouldBeIgnoredInApiIndex());
+    }
+
+    /**
+     * @test
+     * @since  6.1.0
+     */
+    public function routeCanBeExcludedFromApiIndexViaAnnotation()
+    {
+        $route = new Route(
+                '/orders/?$',
+                'stubbles\webapp\routing\RoleAwareAnnotatedProcessor',
+                'GET'
+        );
+        assertTrue($route->shouldBeIgnoredInApiIndex());
     }
 }

@@ -87,7 +87,14 @@ class Route implements ConfigurableRoute
      *
      * @type  string[]
      */
-    private $mimeTypeClasses                = [];
+    private $mimeTypeClasses          = [];
+    /**
+     * whether route should be ignored in API index or not
+     *
+     * @type   bool
+     * @since  6.1.0
+     */
+    private $ignoreInApiIndex         = false;
 
     /**
      * constructor
@@ -422,6 +429,33 @@ class Route implements ConfigurableRoute
         }
 
         return $this->routingAnnotations;
+    }
+
+    /**
+     * hides route in API index
+     *
+     * @return  \stubbles\webapp\routing\Route
+     * @since   6.1.0
+     */
+    public function excludeFromApiIndex()
+    {
+        $this->ignoreInApiIndex = true;
+        return $this;
+    }
+
+    /**
+     * checks whether route should be ignored when building the API index
+     *
+     * @return  bool
+     * @since   6.1.0
+     */
+    public function shouldBeIgnoredInApiIndex()
+    {
+        if ($this->ignoreInApiIndex) {
+            return true;
+        }
+
+        return $this->routingAnnotations()->shouldBeIgnoredInApiIndex();
     }
 
     /**

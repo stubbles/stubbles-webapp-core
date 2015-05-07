@@ -83,4 +83,12 @@ interface ConfigurableRoute
      * @since   2.1.1
      */
     public function disableContentNegotiation();
+
+    /**
+     * hides route in API index
+     *
+     * @return  \stubbles\webapp\routing\ConfigurableRoute
+     * @since   6.1.0
+     */
+    public function excludeFromApiIndex();
 }
