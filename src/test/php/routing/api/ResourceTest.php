@@ -33,7 +33,8 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
         $this->resource = new Resource(
                 'Orders',
                 'Endpoint for handling orders.',
-                HttpUri::fromString('http://example.com/orders')
+                HttpUri::fromString('http://example.com/orders'),
+                ['application/xml']
         );
     }
 
@@ -61,7 +62,8 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
         $resource = new Resource(
                 'Orders',
                 null,
-                HttpUri::fromString('http://example.com/orders')
+                HttpUri::fromString('http://example.com/orders'),
+                ['application/xml']
         );
         assertFalse($resource->hasDescription());
     }
@@ -80,11 +82,22 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function returnsProvidedListOfMimeTypes()
+    {
+        assertEquals(
+                ['application/xml'],
+                $this->resource->mimeTypes()
+        );
+    }
+
+    /**
+     * @test
+     */
     public function returnsLinksWithProvidedLinkAsSelf()
     {
         foreach ($this->resource->links() as $rel => $link) {
             assertEquals('self', $rel);
             assertEquals('http://example.com/orders', $link);
-        }   
+        }
     }
 }

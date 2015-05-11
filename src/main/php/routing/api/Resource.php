@@ -29,6 +29,12 @@ class Resource implements \JsonSerializable
      * @type  \stubbles\webapp\routing\api\Links
      */
     private $links;
+    /**
+     * list of mime types supported by this resource
+     *
+     * @type  string[]
+     */
+    private $mimeTypes;
 
     /**
      * constructor
@@ -36,12 +42,18 @@ class Resource implements \JsonSerializable
      * @param  string                       $name         name of resource
      * @param  string                       $description  description of resource
      * @param  \stubbles\peer\http\HttpUri  $selfUri
+     * @param  string[]                     $mimeTypes    list of supported mime types
      */
-    public function __construct($name, $description, HttpUri $selfUri)
+    public function __construct(
+            $name,
+            $description,
+            HttpUri $selfUri,
+            array $mimeTypes)
     {
         $this->name        = $name;
         $this->description = $description;
         $this->links       = new Links('self', $selfUri);
+        $this->mimeTypes   = $mimeTypes;
     }
 
     /**
@@ -101,6 +113,17 @@ class Resource implements \JsonSerializable
     }
 
     /**
+     * returns list of mime types supported by this resource
+     *
+     * @return  string[]
+     * @XmlTag(tagName='mimetypes', elementTagName='mimetype')
+     */
+    public function mimeTypes()
+    {
+        return $this->mimeTypes;
+    }
+
+    /**
      * returns proper representation which can be serialized to JSON
      *
      * @return  array
@@ -111,6 +134,7 @@ class Resource implements \JsonSerializable
         return [
                 'name'        => $this->name,
                 'description' => $this->description,
+                'mimetypes'   => $this->mimeTypes,
                 '_links'      => $this->links
         ];
     }

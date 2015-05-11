@@ -868,11 +868,11 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     public function resources()
     {
         return [
-            ['stubbles\webapp\routing\AnnotatedProcessor', 'Orders', 'List of placed orders'],
-            [new AnnotatedProcessor(), 'Orders', 'List of placed orders'],
-            ['stubbles\webapp\routing\OtherAnnotatedProcessor', 'OtherAnnotatedProcessor', null],
-            [new OtherAnnotatedProcessor(), 'OtherAnnotatedProcessor', null],
-            [function() {}, null, null]
+            ['stubbles\webapp\routing\AnnotatedProcessor', 'Orders', 'List of placed orders', ['text/plain', 'application/bar', 'application/baz']],
+            [new AnnotatedProcessor(), 'Orders', 'List of placed orders', ['text/plain', 'application/bar', 'application/baz']],
+            ['stubbles\webapp\routing\OtherAnnotatedProcessor', 'OtherAnnotatedProcessor', null, []],
+            [new OtherAnnotatedProcessor(), 'OtherAnnotatedProcessor', null, []],
+            [function() {}, null, null, []]
         ];
     }
 
@@ -881,7 +881,11 @@ class RouteTest extends \PHPUnit_Framework_TestCase
      * @since  6.1.0
      * @dataProvider  resources
      */
-    public function routeCanBeRepresentedAsResource($target, $name, $description)
+    public function routeCanBeRepresentedAsResource(
+            $target,
+            $name,
+            $description,
+            array $mimeTypes)
     {
         $route = new Route(
                 '/orders',
@@ -892,7 +896,8 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 new api\Resource(
                         $name,
                         $description,
-                        HttpUri::fromString('http://example.com/orders')
+                        HttpUri::fromString('http://example.com/orders'),
+                        $mimeTypes
                 ),
                 $route->asResource(HttpUri::fromString('http://example.com/'))
         );
@@ -913,7 +918,8 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 new api\Resource(
                         'Orders',
                         'List of placed orders',
-                        HttpUri::fromString('http://example.com/orders/')
+                        HttpUri::fromString('http://example.com/orders/'),
+                        ['text/plain', 'application/bar', 'application/baz']
                 ),
                 $route->asResource(HttpUri::fromString('http://example.com/'))
         );
@@ -959,5 +965,28 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 'GET'
         );
         assertTrue($route->shouldBeIgnoredInApiIndex());
+    }
+
+    /**
+     * @test
+     * @since  6.1.0
+     */
+    public function resourceRepresentationContainsListOfSupportedMimeTypes()
+    {
+        $route = new Route(
+                '/orders/?$',
+                'stubbles\webapp\routing\AnnotatedProcessor',
+                'GET'
+        );
+        $route->supportsMimeType('application/xml');
+        assertEquals(
+                ['text/plain',
+                 'application/bar',
+                 'application/baz',
+                 'application/xml'
+                ],
+                $route->asResource(HttpUri::fromString('http://example.com/'))
+                        ->mimeTypes()
+        );
     }
 }
