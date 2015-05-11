@@ -28,6 +28,8 @@ use stubbles\webapp\routing\api\Status;
  * @SupportsMimeType(mimeType="application/baz", class=stubbles\webapp\routing\Baz.class)
  * @Status(code=200, description='Default status code')
  * @Status(code=404, description='No orders found')
+ * @Parameter(name='', in='', description='', type='', required=false)
+ * @Header(name='', description='', type='')
  */
 class AnnotatedProcessor implements Target
 {
