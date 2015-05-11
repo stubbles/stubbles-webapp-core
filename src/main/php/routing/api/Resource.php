@@ -35,25 +35,34 @@ class Resource implements \JsonSerializable
      * @type  string[]
      */
     private $mimeTypes;
+    /**
+     * map of possible response status codes
+     *
+     * @type  stubbles\webapp\routing\api\Status[]
+     */
+    private $statusCodes;
 
     /**
      * constructor
      *
-     * @param  string                       $name         name of resource
-     * @param  string                       $description  description of resource
-     * @param  \stubbles\peer\http\HttpUri  $selfUri
-     * @param  string[]                     $mimeTypes    list of supported mime types
+     * @param  string                                $name         name of resource
+     * @param  string                                $description  description of resource
+     * @param  \stubbles\peer\http\HttpUri           $selfUri      uri under which resource is available
+     * @param  string[]                              $mimeTypes    list of supported mime types
+     * @param  stubbles\webapp\routing\api\Status[]  $statusCodes  map of possible response status codes
      */
     public function __construct(
             $name,
             $description,
             HttpUri $selfUri,
-            array $mimeTypes)
+            array $mimeTypes,
+            array $statusCodes)
     {
         $this->name        = $name;
         $this->description = $description;
         $this->links       = new Links('self', $selfUri);
         $this->mimeTypes   = $mimeTypes;
+        $this->statusCodes = $statusCodes;
     }
 
     /**
@@ -116,11 +125,22 @@ class Resource implements \JsonSerializable
      * returns list of mime types supported by this resource
      *
      * @return  string[]
-     * @XmlTag(tagName='mimetypes', elementTagName='mimetype')
+     * @XmlTag(tagName='produces', elementTagName='mimetype')
      */
     public function mimeTypes()
     {
         return $this->mimeTypes;
+    }
+
+    /**
+     * returns map of possible response status codes
+     *
+     * @return  stubbles\webapp\routing\api\Status[]
+     * @XmlTag(tagName='responses')
+     */
+    public function statusCodes()
+    {
+        return $this->statusCodes;
     }
 
     /**
@@ -134,7 +154,8 @@ class Resource implements \JsonSerializable
         return [
                 'name'        => $this->name,
                 'description' => $this->description,
-                'mimetypes'   => $this->mimeTypes,
+                'produces'    => $this->mimeTypes,
+                'responses'   => $this->statusCodes,
                 '_links'      => $this->links
         ];
     }

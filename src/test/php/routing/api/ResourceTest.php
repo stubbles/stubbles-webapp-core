@@ -34,7 +34,8 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
                 'Orders',
                 'Endpoint for handling orders.',
                 HttpUri::fromString('http://example.com/orders'),
-                ['application/xml']
+                ['application/xml'],
+                [new Status(200, 'Default response code')]
         );
     }
 
@@ -63,7 +64,8 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
                 'Orders',
                 null,
                 HttpUri::fromString('http://example.com/orders'),
-                ['application/xml']
+                ['application/xml'],
+                [new Status(200, 'Default response code')]
         );
         assertFalse($resource->hasDescription());
     }
@@ -87,6 +89,17 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
         assertEquals(
                 ['application/xml'],
                 $this->resource->mimeTypes()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function returnsProvidedListOfStatusCodes()
+    {
+        assertEquals(
+                [new Status(200, 'Default response code')],
+                $this->resource->statusCodes()
         );
     }
 

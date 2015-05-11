@@ -81,6 +81,52 @@ class LinksTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function relWithoutLinks()
+    {
+        assertEquals([], $this->createEmpty()->with('self'));
+    }
+
+    /**
+     * @test
+     */
+    public function relWithOneLink()
+    {
+        $links = $this->createEmpty();
+        $links->add(
+                'self',
+                HttpUri::fromString('http://example.com/foo')
+        );
+        assertEquals(
+                [new Link('self', HttpUri::fromString('http://example.com/foo'))],
+                $links->with('self')
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function relWithSeveralLinks()
+    {
+        $links = $this->createEmpty();
+        $links->add(
+                'other',
+                HttpUri::fromString('http://example.com/foo')
+        );
+        $links->add(
+                'other',
+                HttpUri::fromString('http://example.com/bar')
+        );
+        assertEquals(
+                [new Link('other', HttpUri::fromString('http://example.com/foo')),
+                 new Link('other', HttpUri::fromString('http://example.com/bar'))
+                ],
+                $links->with('other')
+        );
+    }
+
+    /**
+     * @test
+     */
     public function canBeSerializedToJson()
     {
         $links = $this->createPrefilled();

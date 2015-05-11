@@ -15,6 +15,7 @@ use stubbles\webapp\Request;
 use stubbles\webapp\Response;
 use stubbles\webapp\UriPath;
 use stubbles\webapp\auth\Roles;
+use stubbles\webapp\routing\api\Status;
 /**
  * Class with annotations for tests.
  *
@@ -25,6 +26,8 @@ use stubbles\webapp\auth\Roles;
  * @SupportsMimeType(mimeType="text/plain")
  * @SupportsMimeType(mimeType="application/bar", class="example\\Bar")
  * @SupportsMimeType(mimeType="application/baz", class=stubbles\webapp\routing\Baz.class)
+ * @Status(code=200, description='Default status code')
+ * @Status(code=404, description='No orders found')
  */
 class AnnotatedProcessor implements Target
 {
@@ -868,11 +871,41 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     public function resources()
     {
         return [
-            ['stubbles\webapp\routing\AnnotatedProcessor', 'Orders', 'List of placed orders', ['text/plain', 'application/bar', 'application/baz']],
-            [new AnnotatedProcessor(), 'Orders', 'List of placed orders', ['text/plain', 'application/bar', 'application/baz']],
-            ['stubbles\webapp\routing\OtherAnnotatedProcessor', 'OtherAnnotatedProcessor', null, []],
-            [new OtherAnnotatedProcessor(), 'OtherAnnotatedProcessor', null, []],
-            [function() {}, null, null, []]
+            [
+                'stubbles\webapp\routing\AnnotatedProcessor',
+                'Orders',
+                'List of placed orders',
+                ['text/plain', 'application/bar', 'application/baz'],
+                [new Status(200, 'Default status code'), new Status(404, 'No orders found')]
+            ],
+            [
+                new AnnotatedProcessor(),
+                'Orders',
+                'List of placed orders',
+                ['text/plain', 'application/bar', 'application/baz'],
+                [new Status(200, 'Default status code'), new Status(404, 'No orders found')]
+            ],
+            [
+                'stubbles\webapp\routing\OtherAnnotatedProcessor',
+                'OtherAnnotatedProcessor',
+                null,
+                [],
+                []
+            ],
+            [
+                new OtherAnnotatedProcessor(),
+                'OtherAnnotatedProcessor',
+                null,
+                [],
+                []
+            ],
+            [
+                function() {},
+                null,
+                null,
+                [],
+                []
+            ]
         ];
     }
 
@@ -885,7 +918,8 @@ class RouteTest extends \PHPUnit_Framework_TestCase
             $target,
             $name,
             $description,
-            array $mimeTypes)
+            array $mimeTypes,
+            array $statusCodes)
     {
         $route = new Route(
                 '/orders',
@@ -897,7 +931,8 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                         $name,
                         $description,
                         HttpUri::fromString('http://example.com/orders'),
-                        $mimeTypes
+                        $mimeTypes,
+                        $statusCodes
                 ),
                 $route->asResource(HttpUri::fromString('http://example.com/'))
         );
@@ -915,13 +950,9 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 'GET'
         );
         assertEquals(
-                new api\Resource(
-                        'Orders',
-                        'List of placed orders',
-                        HttpUri::fromString('http://example.com/orders/'),
-                        ['text/plain', 'application/bar', 'application/baz']
-                ),
+                'http://example.com/orders/',
                 $route->asResource(HttpUri::fromString('http://example.com/'))
+                        ->links()->with('self')[0]->uri()
         );
     }
 
@@ -987,6 +1018,25 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 ],
                 $route->asResource(HttpUri::fromString('http://example.com/'))
                         ->mimeTypes()
+        );
+    }
+
+    /**
+     * @test
+     * @since  6.1.0
+     */
+    public function resourceRepresentationContainsListOfStatusCodes()
+    {
+        $route = new Route(
+                '/orders/?$',
+                'stubbles\webapp\routing\AnnotatedProcessor',
+                'GET'
+        );
+        $route->supportsMimeType('application/xml');
+        assertEquals(
+                [new Status(200, 'Default status code'), new Status(404, 'No orders found')],
+                $route->asResource(HttpUri::fromString('http://example.com/'))
+                        ->statusCodes()
         );
     }
 }

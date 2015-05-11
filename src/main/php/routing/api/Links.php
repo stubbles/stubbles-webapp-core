@@ -66,6 +66,25 @@ class Links implements \IteratorAggregate, \JsonSerializable, \Countable
     }
 
     /**
+     * returns all links with given relation
+     *
+     * @param   string  $rel
+     * @return  \stubbles\webapp\routing\api\Link[]
+     */
+    public function with($rel)
+    {
+        if (isset($this->links[$rel])) {
+            if (is_array($this->links[$rel])) {
+                return $this->links[$rel];
+            }
+
+            return [$this->links[$rel]];
+        }
+
+        return [];
+    }
+
+    /**
      * allows to iterate over all resources
      *
      * @return  \Traversable

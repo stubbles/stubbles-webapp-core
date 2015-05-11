@@ -9,6 +9,7 @@
  */
 namespace stubbles\webapp\routing;
 use stubbles\lang\reflect;
+use stubbles\webapp\routing\api\Status;
 /**
  * Provides access to routing related annotations on a callback.
  *
@@ -192,5 +193,21 @@ class RoutingAnnotations
         }
 
         return null;
+    }
+
+    /**
+     * returns list of possible status codes on this route
+     *
+     * @return  stubbles\webapp\routing\api\Status[]
+     * @since   6.1.0
+     */
+    public function statusCodes()
+    {
+        $codes = [];
+        foreach ($this->annotations->named('Status') as $status) {
+            $codes[] = new Status($status->getCode(), $status->getDescription());
+        }
+
+        return $codes;
     }
 }

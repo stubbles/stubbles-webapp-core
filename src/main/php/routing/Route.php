@@ -471,7 +471,8 @@ class Route implements ConfigurableRoute
                 $this->resourceName(),
                 $this->routingAnnotations()->description(),
                 $uri->withPath($this->normalizePath()),
-                $this->supportedMimeTypes()->asArray()
+                $this->supportedMimeTypes()->asArray(),
+                $this->routingAnnotations()->statusCodes()
         );
     }
 
