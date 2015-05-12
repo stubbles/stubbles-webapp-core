@@ -124,7 +124,7 @@ class AuthConstraint implements \JsonSerializable
      * checks whether auth is required
      *
      * @return  bool
-     * @XmlIgnore
+     * @XmlAttribute(attributeName='required')
      */
     public function requiresAuth()
     {
