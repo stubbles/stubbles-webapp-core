@@ -196,6 +196,17 @@ class RoutingAnnotations
     }
 
     /**
+     * checks if any annotation of type Status is present
+     *
+     * @return  bool
+     * @since   6.1.0
+     */
+    public function containStatusCodes()
+    {
+        return $this->annotations->contain('Status');
+    }
+
+    /**
      * returns list of possible status codes on this route
      *
      * @return  stubbles\webapp\routing\api\Status[]

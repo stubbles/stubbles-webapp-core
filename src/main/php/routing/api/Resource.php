@@ -148,6 +148,17 @@ class Resource implements \JsonSerializable
     }
 
     /**
+     * checks if information about status codes is provided
+     *
+     * @return  bool
+     * @XmlIgnore
+     */
+    public function providesStatusCodes()
+    {
+        return $this->annotations->containStatusCodes();
+    }
+
+    /**
      * returns map of possible response status codes
      *
      * @return  stubbles\webapp\routing\api\Status[]

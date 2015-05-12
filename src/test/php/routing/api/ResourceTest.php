@@ -125,6 +125,30 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function providesNoStatusCodesWhenNoStatusAnnotationPresent()
+    {
+        $this->routingAnnotations->mapCalls(
+                ['containStatusCodes' => false]
+        );
+
+        assertFalse($this->resource->providesStatusCodes());
+    }
+
+    /**
+     * @test
+     */
+    public function providesStatusCodesWhenStatusAnnotationPresent()
+    {
+        $this->routingAnnotations->mapCalls(
+                ['containStatusCodes' => true]
+        );
+
+        assertTrue($this->resource->providesStatusCodes());
+    }
+
+    /**
+     * @test
+     */
     public function returnsProvidedListOfAnnotatedStatusCodes()
     {
         $this->routingAnnotations->mapCalls(
