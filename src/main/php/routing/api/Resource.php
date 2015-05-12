@@ -159,7 +159,7 @@ class Resource implements \JsonSerializable
     }
 
     /**
-     * returns map of possible response status codes
+     * returns list of possible response status codes
      *
      * @return  stubbles\webapp\routing\api\Status[]
      * @XmlTag(tagName='responses')
@@ -167,6 +167,28 @@ class Resource implements \JsonSerializable
     public function statusCodes()
     {
         return $this->annotations->statusCodes();
+    }
+
+    /**
+     * checks if information about response headers is provided
+     *
+     * @return  bool
+     * @XmlIgnore
+     */
+    public function hasHeaders()
+    {
+        return $this->annotations->containHeaders();
+    }
+
+    /**
+     * returns list of possible response headers
+     *
+     * @return  stubbles\webapp\routing\api\Status[]
+     * @XmlTag(tagName='headers')
+     */
+    public function headers()
+    {
+        return $this->annotations->headers();
     }
 
     /**

@@ -9,6 +9,7 @@
  */
 namespace stubbles\webapp\routing;
 use stubbles\lang\reflect;
+use stubbles\webapp\routing\api\Header;
 use stubbles\webapp\routing\api\Status;
 /**
  * Provides access to routing related annotations on a callback.
@@ -196,7 +197,7 @@ class RoutingAnnotations
     }
 
     /**
-     * checks if any annotation of type Status is present
+     * checks if any annotations of type Status are present
      *
      * @return  bool
      * @since   6.1.0
@@ -220,5 +221,32 @@ class RoutingAnnotations
         }
 
         return $codes;
+    }
+
+    /**
+     * checks if annotations of type Header are present
+     *
+     * @return  bool
+     * @since   6.1.0
+     */
+    public function containHeaders()
+    {
+        return $this->annotations->contain('Header');
+    }
+
+    /**
+     * returns list of headers on this route
+     *
+     * @return  stubbles\webapp\routing\api\Header[]
+     * @since   6.1.0
+     */
+    public function headers()
+    {
+        $headers = [];
+        foreach ($this->annotations->named('Header') as $header) {
+            $headers[] = new Header($header->getName(), $header->getDescription());
+        }
+
+        return $headers;
     }
 }

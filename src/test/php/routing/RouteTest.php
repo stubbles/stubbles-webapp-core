@@ -16,6 +16,7 @@ use stubbles\webapp\Response;
 use stubbles\webapp\UriPath;
 use stubbles\webapp\auth\AuthConstraint;
 use stubbles\webapp\auth\Roles;
+use stubbles\webapp\routing\api\Header;
 use stubbles\webapp\routing\api\Status;
 /**
  * Class with annotations for tests.
@@ -30,7 +31,8 @@ use stubbles\webapp\routing\api\Status;
  * @Status(code=200, description='Default status code')
  * @Status(code=404, description='No orders found')
  * @Parameter(name='d', in='path|query|header|body', description='d', type='string', required=false)
- * @Header(name='d', description='d', type='integer')
+ * @Header(name='Last-Modified', description='Some explanation')
+ * @Header(name='X-Binford', description='More power!')
  */
 class AnnotatedProcessor implements Target
 {
@@ -1054,11 +1056,30 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 'stubbles\webapp\routing\AnnotatedProcessor',
                 'GET'
         );
-        $route->supportsMimeType('application/xml');
         assertEquals(
                 [new Status(200, 'Default status code'), new Status(404, 'No orders found')],
                 $route->asResource(HttpUri::fromString('http://example.com/'))
                         ->statusCodes()
+        );
+    }
+
+    /**
+     * @test
+     * @since  6.1.0
+     */
+    public function resourceRepresenationContainsListOfHeaders()
+    {
+        $route = new Route(
+                '/orders/?$',
+                'stubbles\webapp\routing\AnnotatedProcessor',
+                'GET'
+        );
+        assertEquals(
+                [new Header('Last-Modified', 'Some explanation'),
+                 new Header('X-Binford', 'More power!')
+                ],
+                $route->asResource(HttpUri::fromString('http://example.com/'))
+                        ->headers()
         );
     }
 }

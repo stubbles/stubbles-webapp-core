@@ -163,6 +163,44 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function providesNoHeadersWhenNoHeaderAnnotationPresent()
+    {
+        $this->routingAnnotations->mapCalls(
+                ['containHeaders' => false]
+        );
+
+        assertFalse($this->resource->hasHeaders());
+    }
+
+    /**
+     * @test
+     */
+    public function providesHeadersWhenHeaderAnnotationPresent()
+    {
+        $this->routingAnnotations->mapCalls(
+                ['containHeaders' => true]
+        );
+
+        assertTrue($this->resource->hasHeaders());
+    }
+
+    /**
+     * @test
+     */
+    public function returnsProvidedListOfAnnotatedHeaders()
+    {
+        $this->routingAnnotations->mapCalls(
+                ['headers' => [new Header('X-Binford', 'More power!')]]
+        );
+        assertEquals(
+                [new Header('X-Binford', 'More power!')],
+                $this->resource->headers()
+        );
+    }
+
+    /**
+     * @test
+     */
     public function returnsProvidedAuthConstraint()
     {
         assertEquals(
