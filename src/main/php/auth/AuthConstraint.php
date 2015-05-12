@@ -185,9 +185,11 @@ class AuthConstraint implements \JsonSerializable
      */
     public function jsonSerialize()
     {
-        $data = ['required'      => $this->requiresAuth(),
-                 'requiresLogin' => $this->requiresLogin()
-        ];
+        $data = ['required' => $this->requiresAuth()];
+        if ($this->requiresAuth()) {
+            $data['requiresLogin'] = $this->requiresLogin();
+        }
+
         if ($this->requiresRoles()) {
             $data['requiresRoles'] = true;
             $data['requiredRole']  = $this->requiredRole();

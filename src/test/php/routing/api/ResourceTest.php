@@ -176,9 +176,9 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsLinksWithProvidedLinkAsSelf()
     {
-        foreach ($this->resource->links() as $rel => $link) {
-            assertEquals('self', $rel);
-            assertEquals('http://example.com/orders', $link);
-        }
+        assertEquals(
+                ['http://example.com/orders'],
+                $this->resource->links()->with('self')
+        );
     }
 }
