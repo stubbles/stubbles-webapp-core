@@ -151,6 +151,7 @@ class Resource implements \JsonSerializable
      * returns auth constraint of resource
      *
      * @return  \stubbles\webapp\auth\AuthConstraint
+     * @XmlTag(tagName='auth')
      */
     public function authConstraint()
     {
