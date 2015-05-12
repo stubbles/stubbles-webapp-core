@@ -91,7 +91,16 @@ class Links implements \IteratorAggregate, \JsonSerializable, \Countable
      */
     public function getIterator()
     {
-        return new \ArrayIterator($this->links);
+        $result = [];
+        foreach ($this->links as $link) {
+            if (is_array($link)) {
+                $result = array_merge($result, $link);
+            } else {
+                $result[] = $link;
+            }
+        }
+
+        return new \ArrayIterator($result);
     }
 
     /**
