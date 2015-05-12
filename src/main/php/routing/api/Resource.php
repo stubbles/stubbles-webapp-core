@@ -126,6 +126,17 @@ class Resource implements \JsonSerializable
     }
 
     /**
+     * checks if any mime types are defined for this resource
+     *
+     * @return  bool
+     * @XmlIgnore
+     */
+    public function hasMimeTypes()
+    {
+        return count($this->mimeTypes) > 0;
+    }
+
+    /**
      * returns list of mime types supported by this resource
      *
      * @return  string[]

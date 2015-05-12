@@ -91,6 +91,29 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function hasNoMimeTypesWhenEmptyListProvided()
+    {
+        $resource = new Resource(
+                'Orders',
+                HttpUri::fromString('http://example.com/orders'),
+                [],
+                $this->routingAnnotations,
+                new AuthConstraint($this->routingAnnotations)
+        );
+        assertFalse($resource->hasMimeTypes());
+    }
+
+    /**
+     * @test
+     */
+    public function hasMimeTypesWhenListProvided()
+    {
+        assertTrue($this->resource->hasMimeTypes());
+    }
+
+    /**
+     * @test
+     */
     public function returnsProvidedListOfMimeTypes()
     {
         assertEquals(
