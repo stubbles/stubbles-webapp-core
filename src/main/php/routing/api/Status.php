@@ -26,9 +26,10 @@ class Status implements \JsonSerializable
     private $description;
 
     /**
+     * constructor
      *
      * @param  int     $code         actual status code
-     * @param  strint  $description  description of status code
+     * @param  string  $description  description of status code
      */
     public function __construct($code, $description)
     {

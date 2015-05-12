@@ -26,9 +26,10 @@ class Header implements \JsonSerializable
     private $description;
 
     /**
+     * constructor
      *
      * @param  int     $name         header name
-     * @param  strint  $description  description of header
+     * @param  string  $description  description of header
      */
     public function __construct($name, $description)
     {
