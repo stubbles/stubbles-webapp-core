@@ -14,6 +14,7 @@ use stubbles\webapp\Target;
 use stubbles\webapp\Request;
 use stubbles\webapp\Response;
 use stubbles\webapp\UriPath;
+use stubbles\webapp\auth\AuthConstraint;
 use stubbles\webapp\auth\Roles;
 use stubbles\webapp\routing\api\Status;
 /**
@@ -909,12 +910,14 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 $target,
                 'GET'
         );
+        $annotations = new RoutingAnnotations($target);
         assertEquals(
                 new api\Resource(
                         $name,
                         HttpUri::fromString('https://example.com/orders'),
                         $mimeTypes,
-                        new RoutingAnnotations($target)
+                        $annotations,
+                        new AuthConstraint($annotations)
                 ),
                 $route->asResource(HttpUri::fromString('https://example.com/'))
         );

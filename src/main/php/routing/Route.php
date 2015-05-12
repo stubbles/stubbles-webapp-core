@@ -473,7 +473,8 @@ class Route implements ConfigurableRoute
                 $this->resourceName(),
                 $this->requiresHttps() ? $routeUri->toHttps() : $routeUri,
                 $this->supportedMimeTypes()->asArray(),
-                $this->routingAnnotations()
+                $this->routingAnnotations(),
+                $this->authConstraint()
         );
     }
 

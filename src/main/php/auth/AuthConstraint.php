@@ -13,8 +13,9 @@ use stubbles\webapp\routing\RoutingAnnotations;
  * Contains auth informations about a route.
  *
  * @since  5.0.0
+ * @XmlTag(tagName='auth')
  */
-class AuthConstraint
+class AuthConstraint implements \JsonSerializable
 {
     /**
      * list of annotations on callback
@@ -55,6 +56,7 @@ class AuthConstraint
      * require a login
      *
      * @return  \stubbles\webapp\auth\AuthConstraint
+     * @XmlIgnore
      */
     public function requireLogin()
     {
@@ -71,6 +73,7 @@ class AuthConstraint
      * authentication provider.
      *
      * @return  \stubbles\webapp\auth\AuthConstraint
+     * @XmlIgnore
      */
     public function forbiddenWhenNotAlreadyLoggedIn()
     {
@@ -82,6 +85,7 @@ class AuthConstraint
      * checks whether a login is allowed
      *
      * @return  bool
+     * @XmlIgnore
      */
     public function loginAllowed()
     {
@@ -92,6 +96,7 @@ class AuthConstraint
      * checks whether login is required
      *
      * @return  bool
+     * @XmlAttribute(attributeName='requiresLogin')
      */
     private function requiresLogin()
     {
@@ -119,6 +124,7 @@ class AuthConstraint
      * checks whether auth is required
      *
      * @return  bool
+     * @XmlIgnore
      */
     public function requiresAuth()
     {
@@ -129,6 +135,7 @@ class AuthConstraint
      * checks if access to this route required authorization
      *
      * @return  bool
+     * @XmlAttribute(attributeName='requiresRoles')
      */
     public function requiresRoles()
     {
@@ -139,8 +146,9 @@ class AuthConstraint
      * returns required role for this route
      *
      * @return  string
+     * @XmlAttribute(attributeName='role', skipEmpty=true)
      */
-    private function requiredRole()
+    public function requiredRole()
     {
         if (null === $this->requiredRole) {
             $this->requiredRole = $this->callbackAnnotatedWith->requiredRole();
@@ -167,4 +175,24 @@ class AuthConstraint
 
         return $roles->contain($this->requiredRole());
     }
+
+    /**
+     * returns data suitable for encoding to JSON
+     *
+     * @return  array
+     * @since   6.1.0
+     */
+    public function jsonSerialize()
+    {
+        $data = ['required'      => $this->requiresAuth(),
+                 'requiresLogin' => $this->requiresLogin()
+        ];
+        if ($this->requiresRoles()) {
+            $data['requiresRoles'] = true;
+            $data['requiredRole']  = $this->requiredRole();
+        }
+
+        return $data;
+    }
+
 }

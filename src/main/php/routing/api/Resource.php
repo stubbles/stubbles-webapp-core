@@ -9,6 +9,7 @@
  */
 namespace stubbles\webapp\routing\api;
 use stubbles\peer\http\HttpUri;
+use stubbles\webapp\auth\AuthConstraint;
 use stubbles\webapp\routing\RoutingAnnotations;
 /**
  * Represents a single resource.
@@ -38,25 +39,34 @@ class Resource implements \JsonSerializable
      * @type  \stubbles\webapp\routing\RoutingAnnotations
      */
     private $annotations;
+    /**
+     * authentication and authorization constraints of resource
+     *
+     * @type  \stubbles\webapp\auth\AuthConstraint
+     */
+    private $authConstraint;
 
     /**
      * constructor
      *
-     * @param  string                                       $name         name of resource
-     * @param  \stubbles\peer\http\HttpUri                  $selfUri      uri under which resource is available
-     * @param  string[]                                     $mimeTypes    list of supported mime types
-     * @param  \stubbles\webapp\routing\RoutingAnnotations  $annotations  list of annotations on resource
+     * @param  string                                       $name            name of resource
+     * @param  \stubbles\peer\http\HttpUri                  $selfUri         uri under which resource is available
+     * @param  string[]                                     $mimeTypes       list of supported mime types
+     * @param  \stubbles\webapp\routing\RoutingAnnotations  $annotations     list of annotations on resource
+     * @param  \stubbles\webapp\auth\AuthConstraint         $authConstraint  authentication and authorization constraints of resource
      */
     public function __construct(
             $name,
             HttpUri $selfUri,
             array $mimeTypes,
-            RoutingAnnotations $annotations)
+            RoutingAnnotations $annotations,
+            AuthConstraint $authConstraint)
     {
-        $this->name        = $name;
-        $this->links       = new Links('self', $selfUri);
-        $this->mimeTypes   = $mimeTypes;
-        $this->annotations = $annotations;
+        $this->name           = $name;
+        $this->links          = new Links('self', $selfUri);
+        $this->mimeTypes      = $mimeTypes;
+        $this->annotations    = $annotations;
+        $this->authConstraint = $authConstraint;
     }
 
     /**
@@ -138,6 +148,16 @@ class Resource implements \JsonSerializable
     }
 
     /**
+     * returns auth constraint of resource
+     *
+     * @return  \stubbles\webapp\auth\AuthConstraint
+     */
+    public function authConstraint()
+    {
+        return $this->authConstraint;
+    }
+
+    /**
      * returns proper representation which can be serialized to JSON
      *
      * @return  array
@@ -150,6 +170,7 @@ class Resource implements \JsonSerializable
                 'description' => $this->annotations->description(),
                 'produces'    => $this->mimeTypes,
                 'responses'   => $this->annotations->statusCodes(),
+                'auth'        => $this->authConstraint,
                 '_links'      => $this->links
         ];
     }

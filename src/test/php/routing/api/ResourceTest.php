@@ -10,6 +10,7 @@
 namespace stubbles\webapp\routing\api;
 use bovigo\callmap\NewInstance;
 use stubbles\peer\http\HttpUri;
+use stubbles\webapp\auth\AuthConstraint;
 /**
  * Test for stubbles\webapp\routing\api\Resource.
  *
@@ -41,7 +42,8 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
                 'Orders',
                 HttpUri::fromString('http://example.com/orders'),
                 ['application/xml'],
-                $this->routingAnnotations
+                $this->routingAnnotations,
+                new AuthConstraint($this->routingAnnotations)
         );
     }
 
@@ -108,6 +110,17 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
         assertEquals(
                 [new Status(200, 'Default response code')],
                 $this->resource->statusCodes()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function returnsProvidedAuthConstraint()
+    {
+        assertEquals(
+                new AuthConstraint($this->routingAnnotations),
+                $this->resource->authConstraint()
         );
     }
 
