@@ -876,37 +876,23 @@ class RouteTest extends \PHPUnit_Framework_TestCase
             [
                 'stubbles\webapp\routing\AnnotatedProcessor',
                 'Orders',
-                'List of placed orders',
                 ['text/plain', 'application/bar', 'application/baz'],
-                [new Status(200, 'Default status code'), new Status(404, 'No orders found')]
             ],
             [
                 new AnnotatedProcessor(),
                 'Orders',
-                'List of placed orders',
                 ['text/plain', 'application/bar', 'application/baz'],
-                [new Status(200, 'Default status code'), new Status(404, 'No orders found')]
             ],
             [
                 'stubbles\webapp\routing\OtherAnnotatedProcessor',
                 'OtherAnnotatedProcessor',
-                null,
                 [],
-                []
             ],
             [
-                new OtherAnnotatedProcessor(),
-                'OtherAnnotatedProcessor',
-                null,
-                [],
-                []
+                new OtherAnnotatedProcessor(), 'OtherAnnotatedProcessor', [],
             ],
             [
-                function() {},
-                null,
-                null,
-                [],
-                []
+                function() {}, null, []
             ]
         ];
     }
@@ -916,12 +902,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
      * @since  6.1.0
      * @dataProvider  resources
      */
-    public function routeCanBeRepresentedAsResource(
-            $target,
-            $name,
-            $description,
-            array $mimeTypes,
-            array $statusCodes)
+    public function routeCanBeRepresentedAsResource($target, $name, array $mimeTypes)
     {
         $route = new Route(
                 '/orders',
@@ -931,10 +912,9 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         assertEquals(
                 new api\Resource(
                         $name,
-                        $description,
                         HttpUri::fromString('http://example.com/orders'),
                         $mimeTypes,
-                        $statusCodes
+                        new RoutingAnnotations($target)
                 ),
                 $route->asResource(HttpUri::fromString('http://example.com/'))
         );

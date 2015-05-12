@@ -469,10 +469,9 @@ class Route implements ConfigurableRoute
     {
         return new Resource(
                 $this->resourceName(),
-                $this->routingAnnotations()->description(),
                 $uri->withPath($this->normalizePath()),
                 $this->supportedMimeTypes()->asArray(),
-                $this->routingAnnotations()->statusCodes()
+                $this->routingAnnotations()
         );
     }
 

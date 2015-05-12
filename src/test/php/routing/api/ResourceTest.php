@@ -8,6 +8,7 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\routing\api;
+use bovigo\callmap\NewInstance;
 use stubbles\peer\http\HttpUri;
 /**
  * Test for stubbles\webapp\routing\api\Resource.
@@ -24,18 +25,23 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
      * @type  \stubbles\webapp\routing\api\Resource
      */
     private $resource;
+    /**
+     *
+     * @type  \stubbles\webapp\routing\RoutingAnnotations
+     */
+    private $routingAnnotations;
 
     /**
      * set up test environment
      */
     public function setUp()
     {
+        $this->routingAnnotations = NewInstance::stub('stubbles\webapp\routing\RoutingAnnotations');
         $this->resource = new Resource(
                 'Orders',
-                'Endpoint for handling orders.',
                 HttpUri::fromString('http://example.com/orders'),
                 ['application/xml'],
-                [new Status(200, 'Default response code')]
+                $this->routingAnnotations
         );
     }
 
@@ -52,22 +58,18 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function hasDescriptionWhenNotNull()
     {
+        $this->routingAnnotations->mapCalls(
+                ['description' => 'Endpoint for handling orders.']
+        );
         assertTrue($this->resource->hasDescription());
     }
 
     /**
      * @test
      */
-    public function hasNoDescriptionWhenNull()
+    public function hasNoDescriptionWhenNoDescriptionAnnotationPresent()
     {
-        $resource = new Resource(
-                'Orders',
-                null,
-                HttpUri::fromString('http://example.com/orders'),
-                ['application/xml'],
-                [new Status(200, 'Default response code')]
-        );
-        assertFalse($resource->hasDescription());
+        assertFalse($this->resource->hasDescription());
     }
 
     /**
@@ -75,6 +77,9 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsProvidedDescription()
     {
+        $this->routingAnnotations->mapCalls(
+                ['description' => 'Endpoint for handling orders.']
+        );
         assertEquals(
                 'Endpoint for handling orders.',
                 $this->resource->description()
@@ -95,8 +100,11 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function returnsProvidedListOfStatusCodes()
+    public function returnsProvidedListOfAnnotatedStatusCodes()
     {
+        $this->routingAnnotations->mapCalls(
+                ['statusCodes' => [new Status(200, 'Default response code')]]
+        );
         assertEquals(
                 [new Status(200, 'Default response code')],
                 $this->resource->statusCodes()

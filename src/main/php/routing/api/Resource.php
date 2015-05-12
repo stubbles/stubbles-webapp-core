@@ -9,6 +9,7 @@
  */
 namespace stubbles\webapp\routing\api;
 use stubbles\peer\http\HttpUri;
+use stubbles\webapp\routing\RoutingAnnotations;
 /**
  * Represents a single resource.
  *
@@ -22,10 +23,6 @@ class Resource implements \JsonSerializable
      */
     private $name;
     /**
-     * @type  string
-     */
-    private $description;
-    /**
      * @type  \stubbles\webapp\routing\api\Links
      */
     private $links;
@@ -36,33 +33,30 @@ class Resource implements \JsonSerializable
      */
     private $mimeTypes;
     /**
-     * map of possible response status codes
+     * list of annotations on resource
      *
-     * @type  stubbles\webapp\routing\api\Status[]
+     * @type  \stubbles\webapp\routing\RoutingAnnotations
      */
-    private $statusCodes;
+    private $annotations;
 
     /**
      * constructor
      *
-     * @param  string                                $name         name of resource
-     * @param  string                                $description  description of resource
-     * @param  \stubbles\peer\http\HttpUri           $selfUri      uri under which resource is available
-     * @param  string[]                              $mimeTypes    list of supported mime types
-     * @param  stubbles\webapp\routing\api\Status[]  $statusCodes  map of possible response status codes
+     * @param  string                                       $name         name of resource
+     * @param  \stubbles\peer\http\HttpUri                  $selfUri      uri under which resource is available
+     * @param  string[]                                     $mimeTypes    list of supported mime types
+     * @param  \stubbles\webapp\routing\RoutingAnnotations  $annotations  list of annotations on resource
      */
     public function __construct(
             $name,
-            $description,
             HttpUri $selfUri,
             array $mimeTypes,
-            array $statusCodes)
+            RoutingAnnotations $annotations)
     {
         $this->name        = $name;
-        $this->description = $description;
         $this->links       = new Links('self', $selfUri);
         $this->mimeTypes   = $mimeTypes;
-        $this->statusCodes = $statusCodes;
+        $this->annotations = $annotations;
     }
 
     /**
@@ -84,7 +78,7 @@ class Resource implements \JsonSerializable
      */
     public function hasDescription()
     {
-        return null !== $this->description;
+        return null !== $this->annotations->description();
     }
 
     /**
@@ -95,7 +89,7 @@ class Resource implements \JsonSerializable
      */
     public function description()
     {
-        return $this->description;
+        return $this->annotations->description();
     }
 
     /**
@@ -140,7 +134,7 @@ class Resource implements \JsonSerializable
      */
     public function statusCodes()
     {
-        return $this->statusCodes;
+        return $this->annotations->statusCodes();
     }
 
     /**
@@ -153,9 +147,9 @@ class Resource implements \JsonSerializable
     {
         return [
                 'name'        => $this->name,
-                'description' => $this->description,
+                'description' => $this->annotations->description(),
                 'produces'    => $this->mimeTypes,
-                'responses'   => $this->statusCodes,
+                'responses'   => $this->annotations->statusCodes(),
                 '_links'      => $this->links
         ];
     }
