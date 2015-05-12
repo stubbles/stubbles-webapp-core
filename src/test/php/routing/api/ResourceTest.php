@@ -201,6 +201,44 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function providesNoParametersWhenNoParameterAnnotationPresent()
+    {
+        $this->routingAnnotations->mapCalls(
+                ['containParameters' => false]
+        );
+
+        assertFalse($this->resource->hasParameters());
+    }
+
+    /**
+     * @test
+     */
+    public function providesParametersWhenParameterAnnotationPresent()
+    {
+        $this->routingAnnotations->mapCalls(
+                ['containParameters' => true]
+        );
+
+        assertTrue($this->resource->hasParameters());
+    }
+
+    /**
+     * @test
+     */
+    public function returnsProvidedListOfAnnotatedParameters()
+    {
+        $this->routingAnnotations->mapCalls(
+                ['parameters' => [new Parameter('binford', 'More power!', 'query')]]
+        );
+        assertEquals(
+                [new Parameter('binford', 'More power!', 'query')],
+                $this->resource->parameters()
+        );
+    }
+
+    /**
+     * @test
+     */
     public function returnsProvidedAuthConstraint()
     {
         assertEquals(

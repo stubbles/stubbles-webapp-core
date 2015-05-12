@@ -17,6 +17,7 @@ use stubbles\webapp\UriPath;
 use stubbles\webapp\auth\AuthConstraint;
 use stubbles\webapp\auth\Roles;
 use stubbles\webapp\routing\api\Header;
+use stubbles\webapp\routing\api\Parameter;
 use stubbles\webapp\routing\api\Status;
 /**
  * Class with annotations for tests.
@@ -30,7 +31,8 @@ use stubbles\webapp\routing\api\Status;
  * @SupportsMimeType(mimeType="application/baz", class=stubbles\webapp\routing\Baz.class)
  * @Status(code=200, description='Default status code')
  * @Status(code=404, description='No orders found')
- * @Parameter(name='d', in='path|query|header|body', description='d', type='string', required=false)
+ * @Parameter(name='foo', in='path', description='Some path parameter', required=true)
+ * @Parameter(name='bar', in='query', description='A query parameter')
  * @Header(name='Last-Modified', description='Some explanation')
  * @Header(name='X-Binford', description='More power!')
  */
@@ -1080,6 +1082,26 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 ],
                 $route->asResource(HttpUri::fromString('http://example.com/'))
                         ->headers()
+        );
+    }
+
+    /**
+     * @test
+     * @since  6.1.0
+     */
+    public function resourceRepresenationContainsListOfParameters()
+    {
+        $route = new Route(
+                '/orders/?$',
+                'stubbles\webapp\routing\AnnotatedProcessor',
+                'GET'
+        );
+        assertEquals(
+                [(new Parameter('foo', 'Some path parameter', 'path'))->markRequired(),
+                 new Parameter('bar', 'A query parameter', 'query')
+                ],
+                $route->asResource(HttpUri::fromString('http://example.com/'))
+                        ->parameters()
         );
     }
 }

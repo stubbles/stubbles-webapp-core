@@ -161,7 +161,7 @@ class Resource implements \JsonSerializable
     /**
      * returns list of possible response status codes
      *
-     * @return  stubbles\webapp\routing\api\Status[]
+     * @return  \stubbles\webapp\routing\api\Status[]
      * @XmlTag(tagName='responses')
      */
     public function statusCodes()
@@ -183,12 +183,34 @@ class Resource implements \JsonSerializable
     /**
      * returns list of possible response headers
      *
-     * @return  stubbles\webapp\routing\api\Status[]
+     * @return  \stubbles\webapp\routing\api\Header[]
      * @XmlTag(tagName='headers')
      */
     public function headers()
     {
         return $this->annotations->headers();
+    }
+
+    /**
+     * checks if information about parameters is provided
+     *
+     * @return  bool
+     * @XmlIgnore
+     */
+    public function hasParameters()
+    {
+        return $this->annotations->containParameters();
+    }
+
+    /**
+     * returns list of parameters that can be used for on this resource
+     *
+     * @return  \stubbles\webapp\routing\api\Parameter[]
+     * @XmlTag(tagName='parameters')
+     */
+    public function parameters()
+    {
+        return $this->annotations->parameters();
     }
 
     /**
@@ -215,6 +237,8 @@ class Resource implements \JsonSerializable
                 'description' => $this->annotations->description(),
                 'produces'    => $this->mimeTypes,
                 'responses'   => $this->annotations->statusCodes(),
+                'headers'     => $this->annotations->headers(),
+                'parameters'  => $this->annotations->parameters(),
                 'auth'        => $this->authConstraint,
                 '_links'      => $this->links
         ];

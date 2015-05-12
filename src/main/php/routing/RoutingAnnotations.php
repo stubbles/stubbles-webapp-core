@@ -10,6 +10,7 @@
 namespace stubbles\webapp\routing;
 use stubbles\lang\reflect;
 use stubbles\webapp\routing\api\Header;
+use stubbles\webapp\routing\api\Parameter;
 use stubbles\webapp\routing\api\Status;
 /**
  * Provides access to routing related annotations on a callback.
@@ -237,7 +238,7 @@ class RoutingAnnotations
     /**
      * returns list of headers on this route
      *
-     * @return  stubbles\webapp\routing\api\Header[]
+     * @return  \stubbles\webapp\routing\api\Header[]
      * @since   6.1.0
      */
     public function headers()
@@ -248,5 +249,42 @@ class RoutingAnnotations
         }
 
         return $headers;
+    }
+
+    /**
+     * checks if annotations of type Parameter are present
+     *
+     * @return  bool
+     * @since   6.1.0
+     */
+    public function containParameters()
+    {
+        return $this->annotations->contain('Parameter');
+    }
+
+    /**
+     * returns list of parameters
+     *
+     * @return  \stubbles\webapp\routing\api\Parameter[]
+     * @since   6.1.0
+     */
+    public function parameters()
+    {
+        $parameters = [];
+        foreach ($this->annotations->named('Parameter') as $parameter) {
+            $param = new Parameter(
+                    $parameter->getName(),
+                    $parameter->getDescription(),
+                    $parameter->getIn()
+            );
+
+            if ($parameter->hasValueByName('required') && $parameter->isRequired()) {
+                $param->markRequired();
+            }
+
+            $parameters[] = $param;
+        }
+
+        return $parameters;
     }
 }
