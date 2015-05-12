@@ -181,6 +181,7 @@ class AuthConstraint implements \JsonSerializable
      *
      * @return  array
      * @since   6.1.0
+     * @XmlIgnore
      */
     public function jsonSerialize()
     {
