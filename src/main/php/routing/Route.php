@@ -9,6 +9,7 @@
  */
 namespace stubbles\webapp\routing;
 use stubbles\lang;
+use stubbles\peer\http\Http;
 use stubbles\peer\http\HttpUri;
 use stubbles\webapp\Target;
 use stubbles\webapp\auth\AuthConstraint;
@@ -136,7 +137,7 @@ class Route implements ConfigurableRoute
         }
 
         if (null === $requestMethod) {
-            return ['GET', 'HEAD', 'POST', 'PUT', 'DELETE'];
+            return [Http::GET, Http::HEAD, Http::POST, Http::PUT, Http::DELETE];
         }
 
         if (is_array($requestMethod)) {
@@ -172,8 +173,8 @@ class Route implements ConfigurableRoute
             return true;
         }
 
-        if (in_array('GET', $this->allowedRequestMethods)) {
-            return $calledUri->methodEquals('HEAD');
+        if (in_array(Http::GET, $this->allowedRequestMethods)) {
+            return $calledUri->methodEquals(Http::HEAD);
         }
 
         return false;
