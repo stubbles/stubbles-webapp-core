@@ -61,7 +61,7 @@ class Link implements \JsonSerializable
      */
     public function uri()
     {
-        return $this->uri->asString();
+        return $this->uri->asStringWithNonDefaultPort();
     }
 
     /**
@@ -71,7 +71,7 @@ class Link implements \JsonSerializable
      */
     public function __toString()
     {
-        return $this->uri->asString();
+        return $this->uri->asStringWithNonDefaultPort();
     }
 
     /**
