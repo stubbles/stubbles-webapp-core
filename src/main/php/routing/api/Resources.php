@@ -13,7 +13,6 @@ namespace stubbles\webapp\routing\api;
  *
  * @since  6.1.0
  * @XmlTag(tagName='resources')
- * @XmlNonTraversable
  */
 class Resources implements \IteratorAggregate, \JsonSerializable
 {
