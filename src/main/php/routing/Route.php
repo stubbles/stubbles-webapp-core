@@ -467,9 +467,10 @@ class Route implements ConfigurableRoute
      */
     public function asResource(HttpUri $uri)
     {
+        $routeUri = $uri->withPath($this->normalizePath());
         return new Resource(
                 $this->resourceName(),
-                $uri->withPath($this->normalizePath()),
+                $this->requiresHttps() ? $routeUri->toHttps() : $routeUri,
                 $this->supportedMimeTypes()->asArray(),
                 $this->routingAnnotations()
         );

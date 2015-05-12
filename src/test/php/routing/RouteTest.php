@@ -912,11 +912,11 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         assertEquals(
                 new api\Resource(
                         $name,
-                        HttpUri::fromString('http://example.com/orders'),
+                        HttpUri::fromString('https://example.com/orders'),
                         $mimeTypes,
                         new RoutingAnnotations($target)
                 ),
-                $route->asResource(HttpUri::fromString('http://example.com/'))
+                $route->asResource(HttpUri::fromString('https://example.com/'))
         );
     }
 
@@ -929,6 +929,43 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         $route = new Route(
                 '/orders/?$',
                 'stubbles\webapp\routing\AnnotatedProcessor',
+                'GET'
+        );
+        assertEquals(
+                'https://example.com/orders/',
+                $route->asResource(HttpUri::fromString('http://example.com/'))
+                        ->links()->with('self')[0]->uri()
+        );
+    }
+
+    /**
+     * @test
+     * @since  6.1.0
+     */
+    public function uriTransformedToHttpsWhenHttpsRequired()
+    {
+        $route = new Route(
+                '/orders/?$',
+                'stubbles\webapp\routing\OtherAnnotatedProcessor',
+                'GET'
+        );
+        $route->httpsOnly();
+        assertEquals(
+                'https://example.com/orders/',
+                $route->asResource(HttpUri::fromString('http://example.com/'))
+                        ->links()->with('self')[0]->uri()
+        );
+    }
+
+    /**
+     * @test
+     * @since  6.1.0
+     */
+    public function uriNotTransformedToHttpsWhenHttpsNotRequired()
+    {
+        $route = new Route(
+                '/orders/?$',
+                'stubbles\webapp\routing\OtherAnnotatedProcessor',
                 'GET'
         );
         assertEquals(
