@@ -9,8 +9,6 @@
  */
 namespace stubbles\webapp\routing;
 use stubbles\ioc\Injector;
-use stubbles\webapp\Request;
-use stubbles\webapp\Response;
 use stubbles\webapp\RoutingConfigurator;
 use stubbles\webapp\auth\ProtectedResource;
 use stubbles\webapp\interceptor\PreInterceptor;
