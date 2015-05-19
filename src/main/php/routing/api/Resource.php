@@ -24,6 +24,12 @@ class Resource implements \JsonSerializable
      */
     private $name;
     /**
+     * list of allowed request methods for this resource
+     *
+     * @type  string[]
+     */
+    private $requestMethods;
+    /**
      * @type  \stubbles\webapp\routing\api\Links
      */
     private $links;
@@ -50,6 +56,7 @@ class Resource implements \JsonSerializable
      * constructor
      *
      * @param  string                                       $name            name of resource
+     * @param  string[]                                     $requestMethods  list of possible request methods
      * @param  \stubbles\peer\http\HttpUri                  $selfUri         uri under which resource is available
      * @param  string[]                                     $mimeTypes       list of supported mime types
      * @param  \stubbles\webapp\routing\RoutingAnnotations  $annotations     list of annotations on resource
@@ -57,12 +64,14 @@ class Resource implements \JsonSerializable
      */
     public function __construct(
             $name,
+            array $requestMethods,
             HttpUri $selfUri,
             array $mimeTypes,
             RoutingAnnotations $annotations,
             AuthConstraint $authConstraint)
     {
         $this->name           = $name;
+        $this->requestMethods = $requestMethods;
         $this->links          = new Links('self', $selfUri);
         $this->mimeTypes      = $mimeTypes;
         $this->annotations    = $annotations;
@@ -78,6 +87,16 @@ class Resource implements \JsonSerializable
     public function name()
     {
         return $this->name;
+    }
+
+    /**
+     * returns list of allowed request methods
+     *
+     * @return  string[]
+     */
+    public function requestMethods()
+    {
+        return $this->requestMethods;
     }
 
     /**
@@ -234,6 +253,7 @@ class Resource implements \JsonSerializable
     {
         return [
                 'name'        => $this->name,
+                'methods'     => $this->requestMethods,
                 'description' => $this->annotations->description(),
                 'produces'    => $this->mimeTypes,
                 'responses'   => $this->annotations->statusCodes(),

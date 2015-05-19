@@ -918,6 +918,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         assertEquals(
                 new api\Resource(
                         $name,
+                        ['GET'],
                         HttpUri::fromString('https://example.com/orders'),
                         $mimeTypes,
                         $annotations,

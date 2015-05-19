@@ -40,6 +40,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
         $this->routingAnnotations = NewInstance::stub('stubbles\webapp\routing\RoutingAnnotations');
         $this->resource = new Resource(
                 'Orders',
+                ['GET'],
                 HttpUri::fromString('http://example.com/orders'),
                 ['application/xml'],
                 $this->routingAnnotations,
@@ -53,6 +54,14 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
     public function returnsProvidedName()
     {
         assertEquals('Orders', $this->resource->name());
+    }
+
+    /**
+     * @test
+     */
+    public function returnsProvidedRequestMethods()
+    {
+        assertEquals(['GET'], $this->resource->requestMethods());
     }
 
     /**
@@ -95,6 +104,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
     {
         $resource = new Resource(
                 'Orders',
+                ['GET'],
                 HttpUri::fromString('http://example.com/orders'),
                 [],
                 $this->routingAnnotations,
