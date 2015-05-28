@@ -1,4 +1,4 @@
-6.1.0 (2015-05-??)
+6.1.0 (2015-05-28)
 ------------------
 
    * added `stubbles\webapp\RoutingConfigurator::redirectOnGet()` to specify simple redirects
