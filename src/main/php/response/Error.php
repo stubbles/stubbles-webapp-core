@@ -8,6 +8,9 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\response;
+use stubbles\input\errors\ParamErrors;
+use stubbles\input\errors\messages\ParamErrorMessages;
+use stubbles\lang\Sequence;
 /**
  * Represents an error.
  *
@@ -124,6 +127,33 @@ class Error implements \JsonSerializable
     public function message()
     {
         return $this->message;
+    }
+
+    /**
+     * creates error with given list of param errors
+     *
+     * @param   \stubbles\input\errors\ParamErrors            $errors
+     * @param   \stubbles\webapp\response\ParamErrorMessages  $errorMessages
+     * @return  self
+     * @since   6.2.0
+     */
+    public static function inParams(ParamErrors $errors, ParamErrorMessages $errorMessages)
+    {
+        return new self(Sequence::of($errors)->map(
+                function(array $errors, $paramName) use ($errorMessages)
+                {
+                    $resolved = ['field' => $paramName, 'errors' => []];
+                    foreach ($errors as $id => $error) {
+                        $resolved['errors'][] = [
+                                'id'      => $id,
+                                'details' => $error->details(),
+                                'message' => $errorMessages->messageFor($error)->message()
+                        ];
+                    }
+
+                    return $resolved;
+                }
+        ));
     }
 
     /**

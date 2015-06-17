@@ -6,8 +6,8 @@
     "description": "Base classes for Stubbles based web applications.",
     "require": {
         "php": ">=5.4.0",
-        "stubbles/core": "^6.0",
-        "stubbles/input": "^5.0"
+        "stubbles/core": "^6.1",
+        "stubbles/input": "^5.1"
     },
     "suggest": {
         "stubbles/xml": "^4.3",
@@ -16,7 +16,7 @@
     "require-dev": {
         "stubbles/xml": "^4.3",
         "stubbles/image": "^4.0",
-        "phpunit/phpunit": "^4.6",
+        "phpunit/phpunit": "^4.7",
         "mikey179/vfsStream": "^1.5",
         "bovigo/callmap": "^1.0"
     },
@@ -33,7 +33,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "6.1.x-dev"
+            "dev-master": "6.2.x-dev"
         }
     },
     "minimum-stability": "dev",
