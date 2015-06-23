@@ -112,7 +112,7 @@ class Routing implements RoutingConfigurator
      */
     public function apiIndexOnGet($path)
     {
-        return $this->onGet($path, new Index($this->routes));
+        return $this->onGet($path, new Index($this->routes, $this->mimeTypes));
     }
 
     /**

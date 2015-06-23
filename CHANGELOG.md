@@ -1,3 +1,9 @@
+6.2.1 (2015-06-23)
+------------------
+
+   * API index now contains information about globally supported mime types
+
+
 6.2.0 (2015-06-17)
 ------------------
 

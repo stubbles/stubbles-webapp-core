@@ -28,15 +28,21 @@ class Index implements Target
      * @type  \stubbles\webapp\routing\Routes
      */
     private $routes;
+    /**
+     * @type  string[]
+     */
+    private $globalMimeTypes;
 
     /**
      * constructor
      *
-     * @param  \stubbles\webapp\routing\Routes  $routes
+     * @param  \stubbles\webapp\routing\Routes  $routes           list of available routes
+     * @param  string[]                         $globalMimeTypes  list of globally supported mime types
      */
-    public function __construct(Routes $routes)
+    public function __construct(Routes $routes, array $globalMimeTypes)
     {
-        $this->routes = $routes;
+        $this->routes          = $routes;
+        $this->globalMimeTypes = $globalMimeTypes;
     }
 
     /**
@@ -54,7 +60,7 @@ class Index implements Target
         foreach ($this->routes as $route) {
             /* @var $route \stubbles\webapp\routing\Route */
             if (!$route->shouldBeIgnoredInApiIndex()) {
-                $resources->add($route->asResource($uri));
+                $resources->add($route->asResource($uri, $this->globalMimeTypes));
             }
         }
 

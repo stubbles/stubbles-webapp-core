@@ -463,17 +463,18 @@ class Route implements ConfigurableRoute
      * returns route as resource
      *
      * @param   \stubbles\peer\http\HttpUri  $uri
+     * @param   string[]                      $globalMimeTypes  list of globally supported mime types
      * @return  \stubbles\webapp\routing\api\Resource
      * @since   6.1.0
      */
-    public function asResource(HttpUri $uri)
+    public function asResource(HttpUri $uri, array $globalMimeTypes = [])
     {
         $routeUri = $uri->withPath($this->normalizePath());
         return new Resource(
                 $this->resourceName(),
                 $this->allowedRequestMethods,
                 $this->requiresHttps() ? $routeUri->toHttps() : $routeUri,
-                $this->supportedMimeTypes()->asArray(),
+                $this->supportedMimeTypes($globalMimeTypes)->asArray(),
                 $this->routingAnnotations(),
                 $this->authConstraint()
         );

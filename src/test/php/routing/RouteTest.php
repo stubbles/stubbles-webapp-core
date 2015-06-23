@@ -1050,6 +1050,30 @@ class RouteTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
+     * @since  6.2.1
+     */
+    public function resourceRepresentationContainsListOfSupportedMimeTypesIncludingGlobal()
+    {
+        $route = new Route(
+                '/orders/?$',
+                'stubbles\webapp\routing\AnnotatedProcessor',
+                'GET'
+        );
+        $route->supportsMimeType('application/xml');
+        assertEquals(
+                ['text/plain',
+                 'application/bar',
+                 'application/baz',
+                 'application/xml',
+                 'application/foo'
+                ],
+                $route->asResource(HttpUri::fromString('http://example.com/'), ['application/foo'])
+                        ->mimeTypes()
+        );
+    }
+
+    /**
+     * @test
      * @since  6.1.0
      */
     public function resourceRepresentationContainsListOfStatusCodes()
