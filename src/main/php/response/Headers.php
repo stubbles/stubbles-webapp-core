@@ -94,7 +94,7 @@ class Headers implements \IteratorAggregate, \ArrayAccess
      */
     public function forceDownload($filename)
     {
-        return $this->add('Content-Disposition', 'attachment; filename=' . $filename);
+        return $this->add('Content-Disposition', 'attachment; filename="' . $filename . '"');
     }
 
     /**
