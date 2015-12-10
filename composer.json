@@ -5,20 +5,20 @@
     "license": "BSD-3-Clause",
     "description": "Base classes for Stubbles based web applications.",
     "require": {
-        "php": ">=5.4.0",
-        "stubbles/core": "^6.1",
-        "stubbles/input": "^5.1"
+        "php": ">=5.5.0",
+        "stubbles/core": "^7.0",
+        "stubbles/input": "^6.0"
     },
     "suggest": {
-        "stubbles/xml": "^4.3",
+        "stubbles/xml": "^5.0",
         "stubbles/image": "^4.0"
     },
     "require-dev": {
-        "stubbles/xml": "^4.3",
+        "stubbles/xml": "^5.0",
         "stubbles/image": "^4.0",
-        "phpunit/phpunit": "^4.7",
-        "mikey179/vfsStream": "^1.5",
-        "bovigo/callmap": "^1.0"
+        "phpunit/phpunit": "^4.8",
+        "mikey179/vfsStream": "^1.6",
+        "bovigo/callmap": "^1.1"
     },
     "autoload": {
         "psr-4": {
@@ -33,7 +33,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "6.2.x-dev"
+            "dev-master": "7.0.x-dev"
         }
     },
     "minimum-stability": "dev",
