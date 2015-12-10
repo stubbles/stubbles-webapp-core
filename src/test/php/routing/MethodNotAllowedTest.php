@@ -9,9 +9,12 @@
  */
 namespace stubbles\webapp\routing;
 use bovigo\callmap\NewInstance;
+use stubbles\ioc\Injector;
 use stubbles\peer\http\HttpVersion;
+use stubbles\webapp\Request;
 use stubbles\webapp\response\Error;
 use stubbles\webapp\response\WebResponse;
+use stubbles\webapp\routing\Interceptors;
 /**
  * Tests for stubbles\webapp\routing\MethodNotAllowed.
  *
@@ -33,9 +36,9 @@ class MethodNotAllowedTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->methodNotAllowed = new MethodNotAllowed(
-                NewInstance::stub('stubbles\ioc\Injector'),
+                NewInstance::stub(Injector::class),
                 new CalledUri('http://example.com/hello/world', 'GET'),
-                NewInstance::stub('stubbles\webapp\routing\Interceptors'),
+                NewInstance::stub(Interceptors::class),
                 new SupportedMimeTypes([]),
                 ['GET', 'POST', 'HEAD']
         );
@@ -54,7 +57,7 @@ class MethodNotAllowedTest extends \PHPUnit_Framework_TestCase
      */
     public function triggers405MethodNotAllowedError()
     {
-        $request = NewInstance::of('stubbles\webapp\Request')->mapCalls(
+        $request = NewInstance::of(Request::class)->mapCalls(
                 ['method' => 'DELETE', 'protocolVersion' => new HttpVersion(1, 1)]
         );
         $response = new WebResponse($request);
@@ -72,7 +75,7 @@ class MethodNotAllowedTest extends \PHPUnit_Framework_TestCase
      */
     public function sets405MethodNotAllowedStatusCode()
     {
-        $request = NewInstance::of('stubbles\webapp\Request')->mapCalls(
+        $request = NewInstance::of(Request::class)->mapCalls(
                 ['method' => 'DELETE', 'protocolVersion' => new HttpVersion(1, 1)]
         );
         $response = new WebResponse($request);

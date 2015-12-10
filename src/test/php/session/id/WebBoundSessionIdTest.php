@@ -11,6 +11,8 @@ namespace stubbles\webapp\session\id;
 use bovigo\callmap;
 use bovigo\callmap\NewInstance;
 use stubbles\input\ValueReader;
+use stubbles\webapp\Request;
+use stubbles\webapp\Response;
 /**
  * Tests for stubbles\webapp\session\id\WebBoundSessionId.
  *
@@ -44,8 +46,8 @@ class WebBoundSessionIdTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->request  = NewInstance::of('stubbles\webapp\Request');
-        $this->response = NewInstance::of('stubbles\webapp\Response');
+        $this->request  = NewInstance::of(Request::class);
+        $this->response = NewInstance::of(Response::class);
         $this->webBoundSessionId = new WebBoundSessionId(
                 $this->request,
                 $this->response,

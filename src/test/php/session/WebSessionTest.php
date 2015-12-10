@@ -10,6 +10,8 @@
 namespace stubbles\webapp\session;
 use bovigo\callmap;
 use bovigo\callmap\NewInstance;
+use stubbles\webapp\session\id\SessionId;
+use stubbles\webapp\session\storage\SessionStorage;
 /**
  * Tests for stubbles\webapp\session\WebSession.
  *
@@ -35,8 +37,8 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->sessionStorage = NewInstance::of('stubbles\webapp\session\storage\SessionStorage');
-        $this->sessionId      = NewInstance::of('stubbles\webapp\session\id\SessionId');
+        $this->sessionStorage = NewInstance::of(SessionStorage::class);
+        $this->sessionId      = NewInstance::of(SessionId::class);
     }
 
     /**

@@ -10,6 +10,7 @@
 namespace stubbles\webapp\session;
 use bovigo\callmap;
 use bovigo\callmap\NewInstance;
+use stubbles\webapp\session\id\SessionId;
 /**
  * Tests for stubbles\webapp\session\NullSession.
  *
@@ -36,7 +37,7 @@ class NullSessionTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->sessionId   = NewInstance::of('stubbles\webapp\session\id\SessionId');
+        $this->sessionId   = NewInstance::of(SessionId::class);
         $this->nullSession = new NullSession($this->sessionId);
     }
 

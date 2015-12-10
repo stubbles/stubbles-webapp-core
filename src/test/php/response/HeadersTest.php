@@ -180,7 +180,7 @@ class HeadersTest extends \PHPUnit_Framework_TestCase
     public function cacheControlReturnsCacheControlInstance()
     {
         assertInstanceOf(
-                'stubbles\webapp\response\CacheControl',
+                CacheControl::class,
                 $this->headers->cacheControl()
         );
     }

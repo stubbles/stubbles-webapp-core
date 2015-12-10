@@ -11,7 +11,10 @@ namespace stubbles\webapp\auth\session;
 use bovigo\callmap;
 use bovigo\callmap\NewInstance;
 use stubbles\lang\reflect;
+use stubbles\webapp\auth\AuthorizationProvider;
 use stubbles\webapp\auth\Roles;
+use stubbles\webapp\auth\User;
+use stubbles\webapp\session\Session;
 /**
  * Tests for stubbles\webapp\auth\session\CachingAuthorizationProvider
  *
@@ -43,8 +46,8 @@ class CachingAuthorizationProviderTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->session                  = NewInstance::of('stubbles\webapp\session\Session');
-        $this->authorizationProvider    = NewInstance::of('stubbles\webapp\auth\AuthorizationProvider');
+        $this->session                  = NewInstance::of(Session::class);
+        $this->authorizationProvider    = NewInstance::of(AuthorizationProvider::class);
         $this->cachingAuthorizationProvider = new CachingAuthorizationProvider(
                 $this->session,
                 $this->authorizationProvider
@@ -77,7 +80,7 @@ class CachingAuthorizationProviderTest extends \PHPUnit_Framework_TestCase
         assertSame(
                 $roles,
                 $this->cachingAuthorizationProvider->roles(
-                        NewInstance::of('stubbles\webapp\auth\User')
+                        NewInstance::of(User::class)
                 )
         );
         callmap\verify($this->authorizationProvider, 'roles')->wasNeverCalled();
@@ -94,7 +97,7 @@ class CachingAuthorizationProviderTest extends \PHPUnit_Framework_TestCase
         assertSame(
                 $roles,
                 $this->cachingAuthorizationProvider->roles(
-                        NewInstance::of('stubbles\webapp\auth\User')
+                        NewInstance::of(User::class)
                 )
         );
         callmap\verify($this->session, 'putValue')

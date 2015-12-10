@@ -10,10 +10,13 @@
 namespace stubbles\webapp\routing;
 use bovigo\callmap;
 use bovigo\callmap\NewInstance;
+use stubbles\ioc\Injector;
 use stubbles\webapp\Request;
 use stubbles\webapp\Response;
+use stubbles\webapp\Target;
 use stubbles\webapp\UriPath;
 use stubbles\webapp\response\Error;
+use stubbles\webapp\routing\Interceptors;
 /**
  * Tests for stubbles\webapp\routing\ResolvingResource.
  *
@@ -46,9 +49,9 @@ class ResolvingResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->request  = NewInstance::of('stubbles\webapp\Request');
-        $this->response = NewInstance::of('stubbles\webapp\Response');
-        $this->injector = NewInstance::stub('stubbles\ioc\Injector');
+        $this->request  = NewInstance::of(Request::class);
+        $this->response = NewInstance::of(Response::class);
+        $this->injector = NewInstance::stub(Injector::class);
     }
 
     /**
@@ -62,7 +65,7 @@ class ResolvingResourceTest extends \PHPUnit_Framework_TestCase
         return new ResolvingResource(
                 $this->injector,
                 new CalledUri($uri, 'GET'),
-                NewInstance::stub('stubbles\webapp\routing\Interceptors'),
+                NewInstance::stub(Interceptors::class),
                 new SupportedMimeTypes([]),
                 $route
         );
@@ -187,7 +190,7 @@ class ResolvingResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function processCallsGivenProcessorInstance()
     {
-        $target = NewInstance::of('stubbles\webapp\Target');
+        $target = NewInstance::of(Target::class);
         $target->mapCalls(['resolve' => 'Hello world']);
         assertEquals(
                 'Hello world',
@@ -222,7 +225,7 @@ class ResolvingResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function processCreatesAndCallsGivenProcessorClass()
     {
-        $target = NewInstance::of('stubbles\webapp\Target');
+        $target = NewInstance::of(Target::class);
         $target->mapCalls(['resolve' => 'Hello world']);
         $this->injector->mapCalls(['getInstance' => $target]);
         assertEquals(

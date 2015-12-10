@@ -10,6 +10,10 @@
 namespace stubbles\webapp\routing;
 use bovigo\callmap;
 use bovigo\callmap\NewInstance;
+use stubbles\ioc\Injector;
+use stubbles\webapp\Request;
+use stubbles\webapp\Response;
+use stubbles\webapp\routing\Interceptors;
 /**
  * Tests for stubbles\webapp\routing\ResourceOptions.
  *
@@ -31,9 +35,9 @@ class ResourceOptionsTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->resourceOptions = new ResourceOptions(
-                NewInstance::stub('stubbles\ioc\Injector'),
+                NewInstance::stub(Injector::class),
                 new CalledUri('http://example.com/hello/world', 'GET'),
-                NewInstance::stub('stubbles\webapp\routing\Interceptors'),
+                NewInstance::stub(Interceptors::class),
                 new SupportedMimeTypes([]),
                 new MatchingRoutes([], ['GET', 'POST', 'HEAD'])
         );
@@ -52,9 +56,9 @@ class ResourceOptionsTest extends \PHPUnit_Framework_TestCase
      */
     public function addsAllowHeader()
     {
-        $response = NewInstance::of('stubbles\webapp\Response');
+        $response = NewInstance::of(Response::class);
         $this->resourceOptions->resolve(
-                NewInstance::of('stubbles\webapp\Request'),
+                NewInstance::of(Request::class),
                 $response
         );
         callmap\verify($response, 'addHeader')
@@ -66,9 +70,9 @@ class ResourceOptionsTest extends \PHPUnit_Framework_TestCase
      */
     public function addsAllowMethodsHeader()
     {
-        $response = NewInstance::of('stubbles\webapp\Response');
+        $response = NewInstance::of(Response::class);
         $this->resourceOptions->resolve(
-                NewInstance::of('stubbles\webapp\Request'),
+                NewInstance::of(Request::class),
                 $response
         );
         callmap\verify($response, 'addHeader')

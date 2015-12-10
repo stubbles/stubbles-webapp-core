@@ -9,6 +9,12 @@
  */
 namespace stubbles\webapp\routing;
 use stubbles\peer\http\AcceptHeader;
+use stubbles\webapp\response\mimetypes\Csv;
+use stubbles\webapp\response\mimetypes\Image;
+use stubbles\webapp\response\mimetypes\Json;
+use stubbles\webapp\response\mimetypes\PassThrough;
+use stubbles\webapp\response\mimetypes\TextPlain;
+use stubbles\webapp\response\mimetypes\Xml;
 /**
  * Handles list of supported mime types.
  *
@@ -33,27 +39,27 @@ class SupportedMimeTypes
      *
      * @type  array
      */
-    private static $supported = ['application/json' => 'stubbles\webapp\response\mimetypes\Json',
-                                 'text/json'        => 'stubbles\webapp\response\mimetypes\Json',
-                                 'text/plain'       => 'stubbles\webapp\response\mimetypes\TextPlain',
-                                 'text/html'        => 'stubbles\webapp\response\mimetypes\PassThrough',
-                                 'text/csv'         => 'stubbles\webapp\response\mimetypes\Csv'
+    private static $supported = ['application/json' => Json::class,
+                                 'text/json'        => Json::class,
+                                 'text/plain'       => TextPlain::class,
+                                 'text/html'        => PassThrough::class,
+                                 'text/csv'         => Csv::class
                                 ];
     /**
      * map of xml mime type classes
      *
      * @type  array
      */
-    private static $xml = ['text/xml'            => 'stubbles\webapp\response\mimetypes\Xml',
-                           'application/xml'     => 'stubbles\webapp\response\mimetypes\Xml',
-                           'application/rss+xml' => 'stubbles\webapp\response\mimetypes\Xml'
+    private static $xml = ['text/xml'            => Xml::class,
+                           'application/xml'     => Xml::class,
+                           'application/rss+xml' => Xml::class
                           ];
     /**
      * map of image mime type classes
      *
      * @type  array
      */
-    private static $image = ['image/png' => 'stubbles\webapp\response\mimetypes\Image'];
+    private static $image = ['image/png' => Image::class];
     /**
      * map of available mime types classes
      *

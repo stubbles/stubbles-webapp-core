@@ -10,11 +10,14 @@
 namespace stubbles\webapp;
 use stubbles\ioc\App;
 use stubbles\ioc\Injector;
+use stubbles\lang\errorhandler\ExceptionLogger;
 use stubbles\peer\MalformedUriException;
+use stubbles\webapp\interceptor\AddAccessControlAllowOriginHeader;
 use stubbles\webapp\request\WebRequest;
 use stubbles\webapp\response\WebResponse;
 use stubbles\webapp\routing\UriResource;
 use stubbles\webapp\routing\Routing;
+use stubbles\webapp\session\Session;
 /**
  * Abstract base class for web applications.
  *
@@ -84,9 +87,7 @@ abstract class WebApp extends App
                 $uriResource->applyPostInterceptors($request, $response);
             }
         } catch (\Exception $e) {
-            $this->injector->getInstance(
-                    'stubbles\lang\errorhandler\ExceptionLogger'
-            )->log($e);
+            $this->injector->getInstance(ExceptionLogger::class)->log($e);
             $response->write($response->internalServerError($e->getMessage()));
         }
 
@@ -105,7 +106,7 @@ abstract class WebApp extends App
         if (null !== $session) {
             $this->injector->setSession(
                     $request->attachSession($session),
-                    'stubbles\webapp\session\Session'
+                    Session::class
             );
         }
     }
@@ -150,6 +151,6 @@ abstract class WebApp extends App
      */
     protected static function addAccessControlAllowOriginHeaderClass()
     {
-        return 'stubbles\webapp\interceptor\AddAccessControlAllowOriginHeader';
+        return AddAccessControlAllowOriginHeader::class;
     }
 }

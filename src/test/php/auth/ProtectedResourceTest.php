@@ -10,10 +10,15 @@
 namespace stubbles\webapp\auth;
 use bovigo\callmap;
 use bovigo\callmap\NewInstance;
+use stubbles\ioc\Injector;
 use stubbles\peer\http\HttpUri;
+use stubbles\webapp\Request;
+use stubbles\webapp\Response;
+use stubbles\webapp\auth\AuthenticationProvider;
 use stubbles\webapp\request\WebRequest;
 use stubbles\webapp\response\Error;
 use stubbles\webapp\routing\RoutingAnnotations;
+use stubbles\webapp\routing\UriResource;
 /**
  * Tests for stubbles\webapp\auth\ProtectedResource.
  *
@@ -65,15 +70,15 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->authConstraint    = new AuthConstraint(new RoutingAnnotations(function() {}));
-        $this->actualResource    = NewInstance::of('stubbles\webapp\routing\UriResource');
-        $this->injector          = NewInstance::stub('stubbles\ioc\Injector');
+        $this->actualResource    = NewInstance::of(UriResource::class);
+        $this->injector          = NewInstance::stub(Injector::class);
         $this->protectedResource = new ProtectedResource(
                 $this->authConstraint,
                 $this->actualResource,
                 $this->injector
         );
-        $this->request  = NewInstance::of('stubbles\webapp\Request');
-        $this->response = NewInstance::of('stubbles\webapp\Response');
+        $this->request  = NewInstance::of(Request::class);
+        $this->response = NewInstance::of(Response::class);
     }
 
     /**
@@ -128,9 +133,7 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
      */
     private function createAuthenticationProvider(array $callmap = [])
     {
-        $authenticationProvider = NewInstance::of(
-                'stubbles\webapp\auth\AuthenticationProvider'
-        );
+        $authenticationProvider = NewInstance::of(AuthenticationProvider::class);
         $this->injector->mapCalls(['getInstance' => $authenticationProvider]);
         return $authenticationProvider->mapCalls($callmap);
     }
@@ -248,7 +251,7 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
     {
         $this->authConstraint->requireLogin();
         $this->createAuthenticationProvider(
-                ['authenticate' => NewInstance::of('stubbles\webapp\auth\User')]
+                ['authenticate' => NewInstance::of(User::class)]
         );
 
         $this->actualResource->mapCalls(['applyPreInterceptors' => true]);
@@ -266,7 +269,7 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function storesUserInRequestIdentityWhenAuthenticated()
     {
-        $user = NewInstance::of('stubbles\webapp\auth\User');
+        $user = NewInstance::of(User::class);
         $this->authConstraint->requireLogin();
         $this->createAuthenticationProvider(['authenticate' => $user]);
         $request = WebRequest::fromRawSource();
@@ -281,13 +284,10 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
      */
     private function createAuthorizationProvider($roles, User $user = null)
     {
-        $authenticationProvider = NewInstance::of(
-                'stubbles\webapp\auth\AuthenticationProvider'
-        )->mapCalls(['authenticate' => ($user === null) ? NewInstance::of('stubbles\webapp\auth\User') : $user]);
-
-        $authorizationProvider = NewInstance::of(
-                'stubbles\webapp\auth\AuthorizationProvider'
-        )->mapCalls(['roles' => $roles]);
+        $authenticationProvider = NewInstance::of(AuthenticationProvider::class)
+                ->mapCalls(['authenticate' => ($user === null) ? NewInstance::of(User::class) : $user]);
+        $authorizationProvider = NewInstance::of(AuthorizationProvider::class)
+                ->mapCalls(['roles' => $roles]);
         $this->injector->mapCalls(
                 ['getInstance' => callmap\onConsecutiveCalls(
                                 $authenticationProvider,
@@ -401,7 +401,7 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function storesUserInRequestIdentityWhenAuthenticatedAndAuthorized()
     {
-        $user = NewInstance::of('stubbles\webapp\auth\User');
+        $user = NewInstance::of(User::class);
         $this->authConstraint->requireRole('admin');
         $this->createAuthorizationProvider(new Roles(['admin']), $user);
         $request = WebRequest::fromRawSource();

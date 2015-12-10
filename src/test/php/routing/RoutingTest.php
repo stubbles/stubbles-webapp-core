@@ -11,6 +11,13 @@ namespace stubbles\webapp\routing;
 use bovigo\callmap;
 use bovigo\callmap\NewInstance;
 use stubbles\input\ValueReader;
+use stubbles\ioc\Injector;
+use stubbles\webapp\Request;
+use stubbles\webapp\Response;
+use stubbles\webapp\auth\ProtectedResource;
+use stubbles\webapp\response\WebResponse;
+use stubbles\webapp\response\mimetypes\Json;
+use stubbles\webapp\routing\api\Index;
 /**
  * Tests for stubbles\webapp\routing\Routing.
  *
@@ -42,7 +49,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         SupportedMimeTypes::removeDefaultMimeTypeClass('application/foo');
-        $this->injector  = NewInstance::stub('stubbles\ioc\Injector');
+        $this->injector  = NewInstance::stub(Injector::class);
         $this->routing   = new Routing($this->injector);
         $this->calledUri = new CalledUri('http://example.net/hello', 'GET');
     }
@@ -61,7 +68,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
     public function returnsNotFoundOnRouteSelectionWhenNoRouteAdded()
     {
         assertInstanceOf(
-                'stubbles\webapp\routing\NotFound',
+                NotFound::class,
                 $this->routing->findResource($this->calledUri)
         );
     }
@@ -74,7 +81,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
         $this->routing->onHead('/bar', function() {});
         $this->routing->onGet('/foo', function() {});
         assertInstanceOf(
-                'stubbles\webapp\routing\NotFound',
+                NotFound::class,
                 $this->routing->findResource($this->calledUri)
         );
     }
@@ -88,7 +95,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
         $this->routing->onHead('/hello', function() {});
         $this->routing->onGet('/foo', function() {});
         assertInstanceOf(
-                'stubbles\webapp\routing\ResourceOptions',
+                ResourceOptions::class,
                 $this->routing->findResource('http://example.net/hello', 'OPTIONS')
         );
     }
@@ -102,7 +109,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
         $this->routing->onHead('/hello', function() {});
         $this->routing->onGet('/foo', function() {});
         assertInstanceOf(
-                'stubbles\webapp\routing\MethodNotAllowed',
+                MethodNotAllowed::class,
                 $this->routing->findResource($this->calledUri)
         );
     }
@@ -115,7 +122,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
     {
         $this->routing->onGet('/hello', function() {})->withLoginOnly();
         assertInstanceOf(
-                'stubbles\webapp\auth\ProtectedResource',
+                ProtectedResource::class,
                 $this->routing->findResource($this->calledUri)
         );
     }
@@ -128,7 +135,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
     {
         $this->routing->onGet('/hello', function() {})->withRoleOnly('admin');
         assertInstanceOf(
-                'stubbles\webapp\auth\ProtectedResource',
+                ProtectedResource::class,
                 $this->routing->findResource($this->calledUri)
         );
     }
@@ -141,7 +148,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
     {
         $this->routing->onAll('/hello', function() { });
         assertInstanceOf(
-                'stubbles\webapp\routing\ResourceOptions',
+                ResourceOptions::class,
                 $this->routing->findResource('http://example.net/hello', 'OPTIONS')
         );
     }
@@ -153,9 +160,9 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
     public function routeWithoutMethodRestrictionProvidesListOfAllMethodsOnOptionRequest()
     {
         $this->routing->onAll('/hello', function() { });
-        $response = NewInstance::of('stubbles\webapp\Response');
+        $response = NewInstance::of(Response::class);
         $this->routing->findResource('http://example.net/hello', 'OPTIONS')
-                ->resolve(NewInstance::of('stubbles\webapp\Request'), $response);
+                ->resolve(NewInstance::of(Request::class), $response);
         callmap\verify($response, 'addHeader')
                 ->received('Allow', 'GET, HEAD, POST, PUT, DELETE, OPTIONS');
     }
@@ -175,7 +182,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
             array $postInterceptors = [],
             $path = 'hello')
     {
-        $injector = NewInstance::stub('stubbles\ioc\Injector');
+        $injector = NewInstance::stub(Injector::class);
         return new ResolvingResource(
                 $injector,
                 new CalledUri('http://example.net/' . $path, 'GET'),
@@ -447,14 +454,14 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
      */
     public function passesGlobalClassToSupportedMimeTypesOfSelectedRoute()
     {
-        $request = NewInstance::of('stubbles\webapp\Request')
+        $request = NewInstance::of(Request::class)
                 ->mapCalls(['readHeader' => ValueReader::forValue('application/foo')]);
-        $mimeType = new \stubbles\webapp\response\mimetypes\Json();
+        $mimeType = new Json();
         $this->injector->mapCalls(['getInstance' => $mimeType]);
         $this->routing->onGet('/hello', function() {})
                 ->supportsMimeType('application/json');
         $this->routing->supportsMimeType('application/foo', 'example\Special');
-        $response = NewInstance::stub('stubbles\webapp\response\WebResponse');
+        $response = NewInstance::stub(WebResponse::class);
         assertTrue(
                 $this->routing->findResource($this->calledUri)
                         ->negotiateMimeType($request, $response)
@@ -501,12 +508,12 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
     public function contentNegotationCanBeDisabled()
     {
         $this->routing->onGet('/hello', function() {});
-        $response = NewInstance::stub('stubbles\webapp\response\WebResponse');
+        $response = NewInstance::stub(WebResponse::class);
         assertTrue(
                 $this->routing->disableContentNegotiation()
                         ->findResource($this->calledUri)
                         ->negotiateMimeType(
-                                NewInstance::of('stubbles\webapp\Request'),
+                                NewInstance::of(Request::class),
                                 $response
                         )
         );
@@ -521,12 +528,12 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
     {
         $this->routing->onGet('/hello', function() {})
                       ->disableContentNegotiation();
-        $response = NewInstance::stub('stubbles\webapp\response\WebResponse');
+        $response = NewInstance::stub(WebResponse::class);
         assertTrue(
                 $this->routing->disableContentNegotiation()
                         ->findResource($this->calledUri)
                         ->negotiateMimeType(
-                                NewInstance::of('stubbles\webapp\Request'),
+                                NewInstance::of(Request::class),
                                 $response
                         )
         );
@@ -566,7 +573,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
     public function apiIndexOnGetCreatesRouteWithIndexTarget()
     {
         assertInstanceOf(
-                'stubbles\webapp\routing\api\Index',
+                Index::class,
                 $this->routing->apiIndexOnGet('/')->target()
         );
 
@@ -579,7 +586,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
     public function redirectOnGetCreatesRouteWithRedirectTarget()
     {
         assertInstanceOf(
-                'stubbles\webapp\routing\Redirect',
+                Redirect::class,
                 $this->routing->redirectOnGet('/foo', '/bar')->target()
         );
 

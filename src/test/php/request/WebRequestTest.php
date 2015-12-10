@@ -9,9 +9,16 @@
  */
 namespace stubbles\webapp\request;
 use bovigo\callmap\NewInstance;
+use stubbles\input\ValueReader;
+use stubbles\input\ValueValidator;
+use stubbles\input\errors\ParamErrors;
+use stubbles\peer\IpAddress;
 use stubbles\peer\http\HttpVersion;
+use stubbles\streams\InputStream;
 use stubbles\webapp\auth\Identity;
 use stubbles\webapp\auth\Roles;
+use stubbles\webapp\auth\User;
+use stubbles\webapp\session\Session;
 /**
  * Tests for stubbles\webapp\request\WebRequest.
  *
@@ -274,7 +281,7 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
     public function originatingIpAddressIsInstanceOfIpAddress()
     {
         assertInstanceOf(
-                'stubbles\peer\IpAddress',
+                IpAddress::class,
                 $this->createBaseWebRequest([], ['REMOTE_ADDR' => '127.0.0.1'])
                      ->originatingIpAddress()
         );
@@ -421,17 +428,6 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function returnsParamErrors()
-    {
-        assertInstanceOf(
-                'stubbles\input\errors\ParamErrors',
-                $this->webRequest->paramErrors()
-        );
-    }
-
-    /**
-     * @test
-     */
     public function returnsFalseOnCheckForNonExistingParam()
     {
         assertFalse($this->webRequest->hasParam('baz'));
@@ -451,7 +447,7 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
     public function validateParamReturnsValueValidator()
     {
         assertInstanceOf(
-                'stubbles\input\ValueValidator',
+                ValueValidator::class,
                 $this->webRequest->validateParam('foo')
         );
     }
@@ -462,7 +458,7 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
     public function validateParamReturnsValueValidatorForNonExistingParam()
     {
         assertInstanceOf(
-                'stubbles\input\ValueValidator',
+                ValueValidator::class,
                 $this->webRequest->validateParam('baz')
         );
     }
@@ -473,7 +469,7 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
     public function readParamReturnsValueReader()
     {
         assertInstanceOf(
-                'stubbles\input\ValueReader',
+                ValueReader::class,
                 $this->webRequest->readParam('foo')
         );
     }
@@ -484,7 +480,7 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
     public function readParamReturnsValueReaderForNonExistingParam()
     {
         assertInstanceOf(
-                'stubbles\input\ValueReader',
+                ValueReader::class,
                 $this->webRequest->readParam('baz')
         );
     }
@@ -506,7 +502,7 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
     public function returnsHeaderErrors()
     {
         assertInstanceOf(
-                'stubbles\input\errors\ParamErrors',
+                ParamErrors::class,
                 $this->webRequest->headerErrors()
         );
     }
@@ -571,7 +567,7 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
     public function validateHeaderReturnsValueValidator()
     {
         assertInstanceOf(
-                'stubbles\input\ValueValidator',
+                ValueValidator::class,
                 $this->webRequest->validateHeader('HTTP_ACCEPT')
         );
     }
@@ -582,7 +578,7 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
     public function validateHeaderReturnsValueValidatorForNonExistingParam()
     {
         assertInstanceOf(
-                'stubbles\input\ValueValidator',
+                ValueValidator::class,
                 $this->webRequest->validateHeader('baz')
         );
     }
@@ -596,7 +592,7 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
     {
         $webRequest = $this->createBaseWebRequest([], []);
         assertInstanceOf(
-                'stubbles\input\ValueValidator',
+                ValueValidator::class,
                 $webRequest->validateRedirectHeader('HTTP_AUTHORIZATION')
         );
     }
@@ -640,7 +636,7 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
     public function readHeaderReturnsValueReader()
     {
         assertInstanceOf(
-                'stubbles\input\ValueReader',
+                ValueReader::class,
                 $this->webRequest->readHeader('HTTP_ACCEPT')
         );
     }
@@ -651,7 +647,7 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
     public function readHeaderReturnsValueReaderForNonExistingParam()
     {
         assertInstanceOf(
-                'stubbles\input\ValueReader',
+                ValueReader::class,
                 $this->webRequest->readHeader('baz')
         );
     }
@@ -719,7 +715,7 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
     public function returnsCookieErrors()
     {
         assertInstanceOf(
-                'stubbles\input\errors\ParamErrors',
+                ParamErrors::class,
                 $this->webRequest->cookieErrors()
         );
     }
@@ -746,7 +742,7 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
     public function validateCookieReturnsValueValidator()
     {
         assertInstanceOf(
-                'stubbles\input\ValueValidator',
+                ValueValidator::class,
                 $this->webRequest->validateCookie('chocolateChip')
         );
     }
@@ -757,7 +753,7 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
     public function validateCookieReturnsValueValidatorForNonExistingParam()
     {
         assertInstanceOf(
-                'stubbles\input\ValueValidator',
+                ValueValidator::class,
                 $this->webRequest->validateCookie('baz')
         );
     }
@@ -768,7 +764,7 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
     public function readCookieReturnsValueReader()
     {
         assertInstanceOf(
-                'stubbles\input\ValueReader',
+                ValueReader::class,
                 $this->webRequest->readCookie('chocolateChip')
         );
     }
@@ -779,7 +775,7 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
     public function readCookieReturnsValueReaderForNonExistingParam()
     {
         assertInstanceOf(
-                'stubbles\input\ValueReader',
+                ValueReader::class,
                 $this->webRequest->readCookie('baz')
         );
     }
@@ -962,7 +958,7 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
     public function bodyReturnsInputStream()
     {
         assertInstanceOf(
-                'stubbles\streams\InputStream',
+                InputStream::class,
                 $this->createBaseWebRequest()->body()
         );
     }
@@ -992,7 +988,7 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
     public function hasSessionWhenAttached()
     {
         $request = $this->createBaseWebRequest();
-        $session = NewInstance::of('stubbles\webapp\session\Session');
+        $session = NewInstance::of(Session::class);
         $request->attachSession($session);
         assertTrue($request->hasSessionAttached());
     }
@@ -1004,7 +1000,7 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
     public function returnsAttachedSession()
     {
         $request = $this->createBaseWebRequest();
-        $session = NewInstance::of('stubbles\webapp\session\Session');
+        $session = NewInstance::of(Session::class);
         assertSame(
                 $request->attachSession($session),
                 $request->attachedSession()
@@ -1035,9 +1031,7 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
      */
     public function hasIdentityWhenAssociated()
     {
-        $identity = new Identity(
-                NewInstance::of('stubbles\webapp\auth\User'), Roles::none()
-        );
+        $identity = new Identity(NewInstance::of(User::class), Roles::none());
         assertTrue(
                 $this->createBaseWebRequest()
                         ->associate($identity)
@@ -1051,9 +1045,7 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsAssociatedIdentity()
     {
-        $identity = new Identity(
-                NewInstance::of('stubbles\webapp\auth\User'), Roles::none()
-        );
+        $identity = new Identity(NewInstance::of(User::class), Roles::none());
         assertSame(
                 $identity,
                 $this->createBaseWebRequest()

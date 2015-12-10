@@ -11,7 +11,10 @@ namespace stubbles\webapp\auth\session;
 use bovigo\callmap;
 use bovigo\callmap\NewInstance;
 use stubbles\lang\reflect;
+use stubbles\webapp\Request;
+use stubbles\webapp\auth\AuthenticationProvider;
 use stubbles\webapp\auth\User;
+use stubbles\webapp\session\Session;
 /**
  * Tests for stubbles\webapp\auth\session\CachingAuthenticationProvider
  *
@@ -43,8 +46,8 @@ class CachingAuthenticationProviderTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->session                = NewInstance::of('stubbles\webapp\session\Session');
-        $this->authenticationProvider = NewInstance::of('stubbles\webapp\auth\AuthenticationProvider');
+        $this->session                = NewInstance::of(Session::class);
+        $this->authenticationProvider = NewInstance::of(AuthenticationProvider::class);
         $this->cachingAuthenticationProvider = new CachingAuthenticationProvider(
                 $this->session,
                 $this->authenticationProvider
@@ -72,12 +75,12 @@ class CachingAuthenticationProviderTest extends \PHPUnit_Framework_TestCase
      */
     public function usesSessionValueIfUserStoredInSession()
     {
-        $user = NewInstance::of('stubbles\webapp\auth\User');
+        $user = NewInstance::of(User::class);
         $this->session->mapCalls(['hasValue' => true, 'value' => $user]);
         assertSame(
                 $user,
                 $this->cachingAuthenticationProvider->authenticate(
-                        NewInstance::of('stubbles\webapp\Request')
+                        NewInstance::of(Request::class)
                 )
         );
         callmap\verify($this->authenticationProvider, 'authenticate')
@@ -92,7 +95,7 @@ class CachingAuthenticationProviderTest extends \PHPUnit_Framework_TestCase
         $this->session->mapCalls(['hasValue' => false]);
         assertNull(
                 $this->cachingAuthenticationProvider->authenticate(
-                        NewInstance::of('stubbles\webapp\Request')
+                        NewInstance::of(Request::class)
                 )
         );
         callmap\verify($this->session, 'putValue')->wasNeverCalled();
@@ -103,13 +106,13 @@ class CachingAuthenticationProviderTest extends \PHPUnit_Framework_TestCase
      */
     public function storeReturnValueInSessionWhenOriginalAuthenticationProviderReturnsUser()
     {
-        $user = NewInstance::of('stubbles\webapp\auth\User');
+        $user = NewInstance::of(User::class);
         $this->session->mapCalls(['hasValue' => false]);
         $this->authenticationProvider->mapCalls(['authenticate' => $user]);
         assertSame(
                 $user,
                 $this->cachingAuthenticationProvider->authenticate(
-                        NewInstance::of('stubbles\webapp\Request')
+                        NewInstance::of(Request::class)
                 )
         );
         callmap\verify($this->session, 'putValue')
@@ -127,7 +130,7 @@ class CachingAuthenticationProviderTest extends \PHPUnit_Framework_TestCase
         assertEquals(
                 'http://login.example.net/',
                 $this->cachingAuthenticationProvider->loginUri(
-                        NewInstance::of('stubbles\webapp\Request')
+                        NewInstance::of(Request::class)
                 )
         );
     }

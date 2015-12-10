@@ -13,6 +13,7 @@ use bovigo\callmap\NewInstance;
 use stubbles\img\Image as ImageSource;
 use stubbles\img\driver\DummyDriver;
 use stubbles\lang\reflect;
+use stubbles\lang\ResourceLoader;
 use stubbles\streams\memory\MemoryOutputStream;
 use stubbles\webapp\response\Error;
 /**
@@ -39,7 +40,7 @@ class ImageTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->resourceLoader = NewInstance::stub('stubbles\lang\ResourceLoader');
+        $this->resourceLoader = NewInstance::stub(ResourceLoader::class);
         $this->image = new Image($this->resourceLoader, 'error.png');
     }
 

@@ -11,6 +11,7 @@ namespace stubbles\webapp\routing\api;
 use bovigo\callmap\NewInstance;
 use stubbles\peer\http\HttpUri;
 use stubbles\webapp\auth\AuthConstraint;
+use stubbles\webapp\routing\RoutingAnnotations;
 /**
  * Test for stubbles\webapp\routing\api\Resource.
  *
@@ -37,7 +38,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->routingAnnotations = NewInstance::stub('stubbles\webapp\routing\RoutingAnnotations');
+        $this->routingAnnotations = NewInstance::stub(RoutingAnnotations::class);
         $this->resource = new Resource(
                 'Orders',
                 ['GET'],

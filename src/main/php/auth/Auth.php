@@ -10,6 +10,10 @@
 namespace stubbles\webapp\auth;
 use stubbles\ioc\Binder;
 use stubbles\ioc\module\BindingModule;
+use stubbles\webapp\auth\session\CachingAuthenticationProvider;
+use stubbles\webapp\auth\session\CachingAuthorizationProvider;
+use stubbles\webapp\auth\token\TokenAuthenticator;
+use stubbles\webapp\auth\token\TokenStore;
 /**
  * Binds authentication and authorization providers.
  *
@@ -81,10 +85,7 @@ class Auth implements BindingModule
      */
     public static function usingTokens($tokenStore, $loginProvider, $authorizationProvider = null)
     {
-        $self = new self(
-                'stubbles\webapp\auth\token\TokenAuthenticator',
-                $authorizationProvider
-        );
+        $self = new self(TokenAuthenticator::class, $authorizationProvider);
         $self->loginProvider = $loginProvider;
         $self->tokenStore    = $tokenStore;
         return $self;
@@ -109,41 +110,33 @@ class Auth implements BindingModule
     public function configure(Binder $binder)
     {
         if ($this->enableSessionCaching) {
-            $binder->bind('stubbles\webapp\auth\AuthenticationProvider')
-                   ->to('stubbles\webapp\auth\session\CachingAuthenticationProvider');
-            $binder->bind('stubbles\webapp\auth\AuthenticationProvider')
+            $binder->bind(AuthenticationProvider::class)
+                   ->to(CachingAuthenticationProvider::class);
+            $binder->bind(AuthenticationProvider::class)
                ->named('original')
                ->to($this->authenticationProvider);
             if (null !== $this->authorizationProvider) {
-                $binder->bind('stubbles\webapp\auth\AuthorizationProvider')
-                   ->to('stubbles\webapp\auth\session\CachingAuthorizationProvider');
-                $binder->bind('stubbles\webapp\auth\AuthorizationProvider')
+                $binder->bind(AuthorizationProvider::class)
+                   ->to(CachingAuthorizationProvider::class);
+                $binder->bind(AuthorizationProvider::class)
                        ->named('original')
                        ->to($this->authorizationProvider);
             }
-
-            if (null !== $this->tokenStore) {
-                $binder->bind('stubbles\webapp\auth\AuthenticationProvider')
-                       ->named('stubbles.webapp.auth.token.loginProvider')
-                       ->to($this->loginProvider);
-                $binder->bind('stubbles\webapp\auth\token\TokenStore')
-                       ->to($this->tokenStore);
-            }
         } else {
-            $binder->bind('stubbles\webapp\auth\AuthenticationProvider')
+            $binder->bind(AuthenticationProvider::class)
                ->to($this->authenticationProvider);
-            if (null !== $this->tokenStore) {
-                $binder->bind('stubbles\webapp\auth\AuthenticationProvider')
-                       ->named('stubbles.webapp.auth.token.loginProvider')
-                       ->to($this->loginProvider);
-                $binder->bind('stubbles\webapp\auth\token\TokenStore')
-                       ->to($this->tokenStore);
-            }
-
             if (null !== $this->authorizationProvider) {
-                $binder->bind('stubbles\webapp\auth\AuthorizationProvider')
+                $binder->bind(AuthorizationProvider::class)
                        ->to($this->authorizationProvider);
             }
+        }
+
+        if (null !== $this->tokenStore) {
+            $binder->bind(AuthenticationProvider::class)
+                   ->named('stubbles.webapp.auth.token.loginProvider')
+                   ->to($this->loginProvider);
+            $binder->bind(TokenStore::class)
+                   ->to($this->tokenStore);
         }
     }
 }

@@ -8,6 +8,7 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp;
+use stubbles\webapp\htmlpassthrough\HtmlFilePassThrough;
 use stubbles\webapp\routing\Route;
 /**
  * Contains routing information and decides which route is applicable for given request.
@@ -34,7 +35,7 @@ interface RoutingConfigurator
      * @return  \stubbles\webapp\routing\ConfigurableRoute
      * @since   4.0.0
      */
-    public function passThroughOnGet($path = '/*\.html$', $target = 'stubbles\webapp\htmlpassthrough\HtmlFilePassThrough');
+    public function passThroughOnGet($path = '/*\.html$', $target = HtmlFilePassThrough::class);
 
     /**
      * reply with API index overview

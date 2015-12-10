@@ -9,6 +9,7 @@
  */
 namespace stubbles\webapp\routing;
 use bovigo\callmap\NewInstance;
+use stubbles\peer\http\HttpUri;
 /**
  * Tests for stubbles\webapp\CalledUri.
  *
@@ -35,7 +36,7 @@ class CalledUriTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->httpUri   = NewInstance::stub('stubbles\peer\http\HttpUri');
+        $this->httpUri   = NewInstance::stub(HttpUri::class);
         $this->calledUri = new CalledUri($this->httpUri, 'GET');
     }
 
@@ -224,7 +225,7 @@ class CalledUriTest extends \PHPUnit_Framework_TestCase
      */
     public function toHttpReturnsTransformedUri()
     {
-        $httpUri = NewInstance::stub('stubbles\peer\http\HttpUri');
+        $httpUri = NewInstance::stub(HttpUri::class);
         $this->httpUri->mapCalls(['toHttp' => $httpUri]);
         assertSame($httpUri, $this->calledUri->toHttp());
     }
@@ -235,7 +236,7 @@ class CalledUriTest extends \PHPUnit_Framework_TestCase
      */
     public function toHttpsReturnsTransformedUri()
     {
-        $httpUri = NewInstance::stub('stubbles\peer\http\HttpUri');
+        $httpUri = NewInstance::stub(HttpUri::class);
         $this->httpUri->mapCalls(['toHttps' => $httpUri]);
         assertSame($httpUri, $this->calledUri->toHttps());
     }

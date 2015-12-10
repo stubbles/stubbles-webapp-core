@@ -10,6 +10,7 @@
 namespace stubbles\webapp\response\mimetypes;
 use bovigo\callmap\NewInstance;
 use stubbles\streams\memory\MemoryOutputStream;
+use stubbles\xml\serializer\XmlSerializerFacade;
 /**
  * Tests for stubbles\webapp\response\mimetypes\Xml.
  *
@@ -34,7 +35,7 @@ class XmlTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->xmlSerializerFacade = NewInstance::stub('stubbles\xml\serializer\XmlSerializerFacade');
+        $this->xmlSerializerFacade = NewInstance::stub(XmlSerializerFacade::class);
         $this->xml = new Xml($this->xmlSerializerFacade);
     }
 

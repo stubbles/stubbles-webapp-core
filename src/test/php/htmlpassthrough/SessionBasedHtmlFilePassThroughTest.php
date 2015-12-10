@@ -11,9 +11,12 @@ namespace stubbles\webapp\htmlpassthrough;
 use bovigo\callmap;
 use bovigo\callmap\NewInstance;
 use org\bovigo\vfs\vfsStream;
+use stubbles\webapp\Request;
+use stubbles\webapp\Response;
 use stubbles\webapp\UriPath;
 use stubbles\webapp\request\UserAgent;
 use stubbles\webapp\response\Error;
+use stubbles\webapp\session\Session;
 /**
  * Test for stubbles\webapp\htmlpassthrough\SessionBasedHtmlFilePassThrough.
  *
@@ -54,9 +57,9 @@ class SessionBasedHtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
         $root = vfsStream::setup();
         vfsStream::newFile('index.html')->withContent('this is index.html')->at($root);
         vfsStream::newFile('foo.html')->withContent('this is foo.html')->at($root);
-        $this->session  = NewInstance::of('stubbles\webapp\session\Session');
-        $this->request  = NewInstance::of('stubbles\webapp\Request');
-        $this->response = NewInstance::of('stubbles\webapp\Response');
+        $this->session  = NewInstance::of(Session::class);
+        $this->request  = NewInstance::of(Request::class);
+        $this->response = NewInstance::of(Response::class);
         $this->sessionBasedHtmlFilePassThrough = new SessionBasedHtmlFilePassThrough(
                 vfsStream::url('root')
         );
@@ -68,7 +71,7 @@ class SessionBasedHtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
     public function functionReturnsClassName()
     {
         assertEquals(
-                get_class($this->sessionBasedHtmlFilePassThrough),
+                SessionBasedHtmlFilePassThrough::class,
                 \stubbles\webapp\sessionBasedHtmlPassThrough()
         );
     }

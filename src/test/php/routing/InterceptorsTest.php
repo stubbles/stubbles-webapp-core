@@ -10,8 +10,11 @@
 namespace stubbles\webapp\routing;
 use bovigo\callmap;
 use bovigo\callmap\NewInstance;
+use stubbles\ioc\Injector;
 use stubbles\webapp\Request;
 use stubbles\webapp\Response;
+use stubbles\webapp\interceptor\PreInterceptor;
+use stubbles\webapp\interceptor\PostInterceptor;
 /**
  * Tests for stubbles\webapp\routing\Interceptors.
  *
@@ -44,9 +47,9 @@ class InterceptorsTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->request  = NewInstance::of('stubbles\webapp\Request');
-        $this->response = NewInstance::of('stubbles\webapp\Response');
-        $this->injector = NewInstance::stub('stubbles\ioc\Injector');
+        $this->request  = NewInstance::of(Request::class);
+        $this->response = NewInstance::of(Response::class);
+        $this->injector = NewInstance::stub(Injector::class);
     }
 
     /**
@@ -95,7 +98,7 @@ class InterceptorsTest extends \PHPUnit_Framework_TestCase
      */
     public function doesNotCallOtherPreInterceptorsIfOneReturnsFalse()
     {
-        $preInterceptor = NewInstance::of('stubbles\webapp\interceptor\PreInterceptor');
+        $preInterceptor = NewInstance::of(PreInterceptor::class);
         $preInterceptor->mapCalls(['preProcess' => false]);
         $this->injector->mapCalls(['getInstance' => $preInterceptor]);
         assertFalse(
@@ -113,7 +116,7 @@ class InterceptorsTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsTrueWhenNoPreInterceptorReturnsFalse()
     {
-        $preInterceptor = NewInstance::of('stubbles\webapp\interceptor\PreInterceptor');
+        $preInterceptor = NewInstance::of(PreInterceptor::class);
         $this->injector->mapCalls(['getInstance' => $preInterceptor]);
         assertTrue(
                 $this->createInterceptors(
@@ -152,7 +155,7 @@ class InterceptorsTest extends \PHPUnit_Framework_TestCase
      */
     public function doesNotCallOtherPostInterceptorsIfOneReturnsFalse()
     {
-        $postInterceptor = NewInstance::of('stubbles\webapp\interceptor\PostInterceptor');
+        $postInterceptor = NewInstance::of(PostInterceptor::class);
         $postInterceptor->mapCalls(['postProcess' => false]);
         $this->injector->mapCalls(['getInstance' => $postInterceptor]);
         assertFalse(
@@ -169,7 +172,7 @@ class InterceptorsTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsTrueWhenNoPostInterceptorReturnsFalse()
     {
-        $postInterceptor = NewInstance::of('stubbles\webapp\interceptor\PostInterceptor');
+        $postInterceptor = NewInstance::of(PostInterceptor::class);
         $this->injector->mapCalls(['getInstance' => $postInterceptor]);
         assertTrue(
                 $this->createInterceptors(

@@ -23,9 +23,9 @@ class TokenTest extends \PHPUnit_Framework_TestCase
     public function canCreateTokenFromUser()
     {
         assertInstanceOf(
-                'stubbles\webapp\auth\Token',
+                Token::class,
                 Token::create(
-                        NewInstance::of('stubbles\webapp\auth\User'),
+                        NewInstance::of(User::class),
                         'some caramel salt'
                 )
         );

@@ -11,6 +11,8 @@ namespace stubbles\webapp\htmlpassthrough;
 use bovigo\callmap\NewInstance;
 use org\bovigo\vfs\vfsStream;
 use stubbles\lang\reflect;
+use stubbles\webapp\Request;
+use stubbles\webapp\Response;
 use stubbles\webapp\UriPath;
 use stubbles\webapp\response\Error;
 /**
@@ -72,8 +74,8 @@ class HtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
         assertSame(
                 $error,
                 $this->htmlFilePassThrough->resolve(
-                        NewInstance::of('stubbles\webapp\Request'),
-                        NewInstance::of('stubbles\webapp\Response')
+                        NewInstance::of(Request::class),
+                        NewInstance::of(Response::class)
                                 ->mapCalls(['notFound' => $error]),
                         new UriPath('/', '/doesNotExist.html')
                 )
@@ -88,8 +90,8 @@ class HtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
         assertEquals(
                 'this is foo.html',
                 $this->htmlFilePassThrough->resolve(
-                        NewInstance::of('stubbles\webapp\Request'),
-                        NewInstance::of('stubbles\webapp\Response'),
+                        NewInstance::of(Request::class),
+                        NewInstance::of(Response::class),
                         new UriPath('/', '/foo.html')
                 )
         );
@@ -103,8 +105,8 @@ class HtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
         assertEquals(
                 'this is index.html',
                 $this->htmlFilePassThrough->resolve(
-                        NewInstance::of('stubbles\webapp\Request'),
-                        NewInstance::of('stubbles\webapp\Response'),
+                        NewInstance::of(Request::class),
+                        NewInstance::of(Response::class),
                         new UriPath('/', '/')
                 )
         );

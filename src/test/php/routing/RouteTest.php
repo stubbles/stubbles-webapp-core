@@ -16,6 +16,8 @@ use stubbles\webapp\Response;
 use stubbles\webapp\UriPath;
 use stubbles\webapp\auth\AuthConstraint;
 use stubbles\webapp\auth\Roles;
+use stubbles\webapp\interceptor\PreInterceptor;
+use stubbles\webapp\interceptor\PostInterceptor;
 use stubbles\webapp\routing\api\Header;
 use stubbles\webapp\routing\api\Parameter;
 use stubbles\webapp\routing\api\Status;
@@ -288,7 +290,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     public function hasGivenListOfPreInterceptors()
     {
         $preInterceptorClosure  = function() {};
-        $preInterceptor         = NewInstance::of('stubbles\webapp\interceptor\PreInterceptor');
+        $preInterceptor         = NewInstance::of(PreInterceptor::class);
         $preInterceptorFunction = 'array_map';
         assertEquals(
                 [get_class($preInterceptor),
@@ -327,7 +329,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     public function hasGivenListOfPostInterceptors()
     {
         $postInterceptorClosure  = function() {};
-        $postInterceptor         = NewInstance::of('stubbles\webapp\interceptor\PostInterceptor');
+        $postInterceptor         = NewInstance::of(PostInterceptor::class);
         $postInterceptorFunction = 'array_map';
         assertEquals(
                 [get_class($postInterceptor),
@@ -377,7 +379,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     {
         $route = new Route(
                 '/hello/{name}',
-                'stubbles\webapp\routing\AnnotatedProcessor',
+                AnnotatedProcessor::class,
                 'GET'
         );
         assertTrue($route->requiresHttps());
@@ -418,7 +420,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     public function requiresAuthWhenCallbackClassAnnotatedWithRequiresLogin()
     {
         $route = new Route('/hello/{name}',
-                           'stubbles\webapp\routing\AnnotatedProcessor',
+                           AnnotatedProcessor::class,
                            'GET'
                  );
         assertTrue($route->requiresAuth());
@@ -451,7 +453,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     {
         $route = new Route(
                 '/hello/{name}',
-                'stubbles\webapp\routing\OtherAnnotatedProcessor',
+                OtherAnnotatedProcessor::class,
                 'GET'
         );
         assertTrue($route->requiresAuth());
@@ -481,7 +483,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     {
         $route = new Route(
                 '/hello/{name}',
-                'stubbles\webapp\routing\RoleAwareAnnotatedProcessor',
+                RoleAwareAnnotatedProcessor::class,
                 'GET'
         );
         assertTrue($route->requiresAuth());
@@ -544,7 +546,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     {
         $route = new Route(
                 '/hello/{name}',
-                'stubbles\webapp\routing\OtherAnnotatedProcessor',
+                OtherAnnotatedProcessor::class,
                 'GET'
         );
         assertTrue($route->authConstraint()->requiresRoles());
@@ -574,7 +576,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     {
         $route = new Route(
                 '/hello/{name}',
-                'stubbles\webapp\routing\RoleAwareAnnotatedProcessor',
+                RoleAwareAnnotatedProcessor::class,
                 'GET'
         );
         assertTrue($route->authConstraint()->requiresRoles());
@@ -599,7 +601,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     {
         $route = new Route(
                 '/hello/{name}',
-                'stubbles\webapp\routing\RoleAwareAnnotatedProcessor',
+                RoleAwareAnnotatedProcessor::class,
                 'GET'
         );
         assertFalse($route->authConstraint()->satisfiedByRoles());
@@ -659,7 +661,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     {
         $route = new Route(
                 '/hello/{name}',
-                'stubbles\webapp\routing\OtherAnnotatedProcessor',
+                OtherAnnotatedProcessor::class,
                 'GET'
         );
         assertTrue($route->authConstraint()->satisfiedByRoles(new Roles(['admin', 'superadmin'])));
@@ -674,7 +676,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     {
         $route = new Route(
                 '/hello/{name}',
-                'stubbles\webapp\routing\OtherAnnotatedProcessor',
+                OtherAnnotatedProcessor::class,
                 'GET'
         );
         assertFalse($route->authConstraint()->satisfiedByRoles(new Roles(['user'])));
@@ -689,7 +691,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     {
         $route = new Route(
                 '/hello/{name}',
-                'stubbles\webapp\routing\OtherAnnotatedProcessor',
+                OtherAnnotatedProcessor::class,
                 'GET'
         );
         assertFalse($route->forbiddenWhenNotAlreadyLoggedIn()->authConstraint()->loginAllowed());
@@ -796,7 +798,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     {
         $route = new Route(
                 '/hello',
-                'stubbles\webapp\routing\OtherAnnotatedProcessor',
+                OtherAnnotatedProcessor::class,
                 'GET'
         );
         assertTrue(
@@ -813,7 +815,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     {
         $route = new Route(
                 '/hello',
-                'stubbles\webapp\routing\AnnotatedProcessor',
+                AnnotatedProcessor::class,
                 'GET'
         );
         assertEquals(
@@ -829,7 +831,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     {
         return [
             ['example\Bar', 'application/bar'],
-            ['stubbles\webapp\routing\Baz', 'application/baz']
+            [Baz::class, 'application/baz']
         ];
     }
 
@@ -843,7 +845,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     {
         $route = new Route(
                 '/hello',
-                'stubbles\webapp\routing\AnnotatedProcessor',
+                AnnotatedProcessor::class,
                 'GET'
         );
         assertEquals(
@@ -861,7 +863,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     {
         $route = new Route(
                 '/hello',
-                'stubbles\webapp\routing\AnnotatedProcessor',
+                AnnotatedProcessor::class,
                 'GET'
         );
         assertEquals(
@@ -879,7 +881,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     {
         return [
             [
-                'stubbles\webapp\routing\AnnotatedProcessor',
+                AnnotatedProcessor::class,
                 'Orders',
                 ['text/plain', 'application/bar', 'application/baz'],
             ],
@@ -889,7 +891,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 ['text/plain', 'application/bar', 'application/baz'],
             ],
             [
-                'stubbles\webapp\routing\OtherAnnotatedProcessor',
+                OtherAnnotatedProcessor::class,
                 'OtherAnnotatedProcessor',
                 [],
             ],
@@ -936,7 +938,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     {
         $route = new Route(
                 '/orders/?$',
-                'stubbles\webapp\routing\AnnotatedProcessor',
+                AnnotatedProcessor::class,
                 'GET'
         );
         assertEquals(
@@ -954,7 +956,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     {
         $route = new Route(
                 '/orders/?$',
-                'stubbles\webapp\routing\OtherAnnotatedProcessor',
+                OtherAnnotatedProcessor::class,
                 'GET'
         );
         $route->httpsOnly();
@@ -973,7 +975,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     {
         $route = new Route(
                 '/orders/?$',
-                'stubbles\webapp\routing\OtherAnnotatedProcessor',
+                OtherAnnotatedProcessor::class,
                 'GET'
         );
         assertEquals(
@@ -1019,7 +1021,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     {
         $route = new Route(
                 '/orders/?$',
-                'stubbles\webapp\routing\RoleAwareAnnotatedProcessor',
+                RoleAwareAnnotatedProcessor::class,
                 'GET'
         );
         assertTrue($route->shouldBeIgnoredInApiIndex());
@@ -1033,7 +1035,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     {
         $route = new Route(
                 '/orders/?$',
-                'stubbles\webapp\routing\AnnotatedProcessor',
+                AnnotatedProcessor::class,
                 'GET'
         );
         $route->supportsMimeType('application/xml');
@@ -1056,7 +1058,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     {
         $route = new Route(
                 '/orders/?$',
-                'stubbles\webapp\routing\AnnotatedProcessor',
+                AnnotatedProcessor::class,
                 'GET'
         );
         $route->supportsMimeType('application/xml');
@@ -1080,7 +1082,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     {
         $route = new Route(
                 '/orders/?$',
-                'stubbles\webapp\routing\AnnotatedProcessor',
+                AnnotatedProcessor::class,
                 'GET'
         );
         assertEquals(
@@ -1098,7 +1100,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     {
         $route = new Route(
                 '/orders/?$',
-                'stubbles\webapp\routing\AnnotatedProcessor',
+                AnnotatedProcessor::class,
                 'GET'
         );
         assertEquals(
@@ -1118,7 +1120,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     {
         $route = new Route(
                 '/orders/?$',
-                'stubbles\webapp\routing\AnnotatedProcessor',
+                AnnotatedProcessor::class,
                 'GET'
         );
         assertEquals(

@@ -33,7 +33,7 @@ class IdentityTest extends \PHPUnit_Framework_TestCase
      */
     private function createUser()
     {
-        return NewInstance::of('stubbles\webapp\auth\User');
+        return NewInstance::of(User::class);
     }
 
     /**

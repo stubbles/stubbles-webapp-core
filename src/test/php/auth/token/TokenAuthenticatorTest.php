@@ -12,7 +12,10 @@ use bovigo\callmap;
 use bovigo\callmap\NewInstance;
 use stubbles\input\ValueReader;
 use stubbles\lang\reflect;
+use stubbles\webapp\Request;
+use stubbles\webapp\auth\AuthenticationProvider;
 use stubbles\webapp\auth\Token;
+use stubbles\webapp\auth\TokenAwareUser;
 /**
  * Test for stubbles\webapp\auth\token\TokenAuthenticator.
  *
@@ -52,14 +55,14 @@ class TokenAuthenticatorTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->tokenStore     = NewInstance::of('stubbles\webapp\auth\token\TokenStore');
-        $this->loginProvider  = NewInstance::of('stubbles\webapp\auth\AuthenticationProvider');
+        $this->tokenStore     = NewInstance::of(TokenStore::class);
+        $this->loginProvider  = NewInstance::of(AuthenticationProvider::class);
         $this->tokenAuthenticator = new TokenAuthenticator(
                 $this->tokenStore,
                 'some salt',
                 $this->loginProvider
         );
-        $this->request = NewInstance::of('stubbles\webapp\Request');
+        $this->request = NewInstance::of(Request::class);
     }
 
     /**
@@ -121,7 +124,7 @@ class TokenAuthenticatorTest extends \PHPUnit_Framework_TestCase
      */
     private function createTokenAwareUser()
     {
-        return NewInstance::of('stubbles\webapp\auth\TokenAwareUser');
+        return NewInstance::of(TokenAwareUser::class);
     }
 
     /**

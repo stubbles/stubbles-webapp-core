@@ -164,7 +164,7 @@ class ProtectedResource implements UriResource
      */
     private function authenticate(Request $request, Response $response)
     {
-        $authenticationProvider = $this->injector->getInstance('stubbles\webapp\auth\AuthenticationProvider');
+        $authenticationProvider = $this->injector->getInstance(AuthenticationProvider::class);
         try {
             $user = $authenticationProvider->authenticate($request);
             if (null == $user && $this->authConstraint->loginAllowed()) {
@@ -193,8 +193,8 @@ class ProtectedResource implements UriResource
     private function roles(Response $response, User $user)
     {
         try {
-            return $this->injector->getInstance('stubbles\webapp\auth\AuthorizationProvider')
-                                  ->roles($user);
+            return $this->injector->getInstance(AuthorizationProvider::class)
+                    ->roles($user);
         } catch (AuthProviderException $ahe) {
             $this->handleAuthProviderException($ahe, $response);
             return null;

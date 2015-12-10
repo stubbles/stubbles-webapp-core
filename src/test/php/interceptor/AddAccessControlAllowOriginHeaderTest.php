@@ -12,6 +12,8 @@ use bovigo\callmap;
 use bovigo\callmap\NewInstance;
 use stubbles\input\ValueReader;
 use stubbles\lang\reflect;
+use stubbles\webapp\Request;
+use stubbles\webapp\Response;
 /**
  * Tests for stubbles\webapp\interceptor\AddAccessControlAllowOriginHeader.
  *
@@ -38,8 +40,8 @@ class AddAccessControlAllowOriginHeaderTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->request  = NewInstance::of('stubbles\webapp\Request');
-        $this->response = NewInstance::of('stubbles\webapp\Response');
+        $this->request  = NewInstance::of(Request::class);
+        $this->response = NewInstance::of(Response::class);
     }
 
     /**
@@ -48,7 +50,7 @@ class AddAccessControlAllowOriginHeaderTest extends \PHPUnit_Framework_TestCase
     public function annotationsPresentOnConstructor()
     {
         $annotations = reflect\annotationsOfConstructor(
-                'stubbles\webapp\interceptor\AddAccessControlAllowOriginHeader'
+                AddAccessControlAllowOriginHeader::class
         );
         assertTrue($annotations->contain('Property'));
         assertEquals(

@@ -11,6 +11,11 @@ namespace stubbles\webapp;
 use bovigo\callmap;
 use bovigo\callmap\NewInstance;
 use stubbles\ioc\Binder;
+use stubbles\ioc\Injector;
+use stubbles\lang\errorhandler\ExceptionLogger;
+use stubbles\webapp\routing\Routing;
+use stubbles\webapp\routing\UriResource;
+use stubbles\webapp\session\Session;
 /**
  * Helper class for the test.
  */
@@ -93,8 +98,8 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->injector = NewInstance::stub('stubbles\ioc\Injector');
-        $this->routing  = NewInstance::stub('stubbles\webapp\routing\Routing');
+        $this->injector = NewInstance::stub(Injector::class);
+        $this->routing  = NewInstance::stub(Routing::class);
         $this->webApp   = new TestWebApp($this->injector, $this->routing);
         $_SERVER['REQUEST_METHOD'] = 'GET';
         $_SERVER['REQUEST_URI']    = '/hello';
@@ -118,7 +123,7 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
      */
     private function createResource()
     {
-        $resource = NewInstance::of('stubbles\webapp\routing\UriResource');
+        $resource = NewInstance::of(UriResource::class);
         $this->routing->mapCalls(['findResource' => $resource]);
         return $resource;
     }
@@ -167,7 +172,7 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
      */
     public function doesNotExecuteInterceptorsAndResourceIfMimeTypeNegotiationFails  ()
     {
-        $resource = NewInstance::of('stubbles\webapp\routing\UriResource');
+        $resource = NewInstance::of(UriResource::class);
         $this->routing->mapCalls(['findResource' => $resource]);
         $resource->mapCalls(
                 ['requiresHttps'     => false,
@@ -187,13 +192,13 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
      */
     public function enablesSessionScopeWhenSessionIsAvailable()
     {
-        TestWebApp::$session = NewInstance::of('stubbles\webapp\session\Session');
+        TestWebApp::$session = NewInstance::of(Session::class);
         $this->createNonHttpsResource();
         $this->webApp->run();
         callmap\verify($this->injector, 'setSession')
                 ->received(
                         TestWebApp::$session,
-                        'stubbles\webapp\session\Session'
+                        Session::class
         );
     }
 
@@ -224,7 +229,7 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
      */
     private function setUpExceptionLogger()
     {
-        $exceptionLogger = NewInstance::stub('stubbles\lang\errorhandler\ExceptionLogger');
+        $exceptionLogger = NewInstance::stub(ExceptionLogger::class);
         $this->injector->mapCalls(['getInstance' => $exceptionLogger]);
         return $exceptionLogger;
 
@@ -302,7 +307,7 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
     public function createCreatesInstance()
     {
         assertInstanceOf(
-                'stubbles\webapp\TestWebApp',
+                TestWebApp::class,
                 TestWebApp::create('projectPath')
         );
     }
@@ -314,7 +319,7 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
     public function createInstanceCreatesInstance()
     {
         assertInstanceOf(
-                'stubbles\webapp\TestWebApp',
+                TestWebApp::class,
                 TestWebApp::create('projectPath')
         );
     }

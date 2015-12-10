@@ -8,6 +8,8 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp {
+    use stubbles\webapp\htmlpassthrough\HtmlFilePassThrough;
+    use stubbles\webapp\htmlpassthrough\SessionBasedHtmlFilePassThrough;
     /**
      * returns class name for session based HTML file pass through processor
      *
@@ -16,7 +18,7 @@ namespace stubbles\webapp {
      */
     function htmlPassThrough()
     {
-        return 'stubbles\webapp\htmlpassthrough\HtmlFilePassThrough';
+        return HtmlFilePassThrough::class;
     }
 
     /**
@@ -27,7 +29,7 @@ namespace stubbles\webapp {
      */
     function sessionBasedHtmlPassThrough()
     {
-        return 'stubbles\webapp\htmlpassthrough\SessionBasedHtmlFilePassThrough';
+        return SessionBasedHtmlFilePassThrough::class;
     }
 
 }

@@ -11,6 +11,7 @@ namespace stubbles\webapp\routing;
 use stubbles\ioc\Injector;
 use stubbles\webapp\RoutingConfigurator;
 use stubbles\webapp\auth\ProtectedResource;
+use stubbles\webapp\htmlpassthrough\HtmlFilePassThrough;
 use stubbles\webapp\interceptor\PreInterceptor;
 use stubbles\webapp\interceptor\PostInterceptor;
 use stubbles\webapp\routing\api\Index;
@@ -98,7 +99,7 @@ class Routing implements RoutingConfigurator
      */
     public function passThroughOnGet(
             $path = '/[a-zA-Z0-9-_]+.html$',
-            $target = 'stubbles\webapp\htmlpassthrough\HtmlFilePassThrough')
+            $target = HtmlFilePassThrough::class)
     {
         return $this->onGet($path, $target);
     }

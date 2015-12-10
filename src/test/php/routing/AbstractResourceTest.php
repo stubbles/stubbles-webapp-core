@@ -10,12 +10,16 @@
 namespace stubbles\webapp\routing;
 use bovigo\callmap\NewInstance;
 use stubbles\input\ValueReader;
+use stubbles\ioc\Injector;
 use stubbles\peer\http\HttpVersion;
 use stubbles\streams\memory\MemoryOutputStream;
 use stubbles\webapp\Request;
 use stubbles\webapp\Response;
 use stubbles\webapp\auth\AuthHandler;
+use stubbles\webapp\response\WebResponse;
 use stubbles\webapp\response\mimetypes\Json;
+use stubbles\webapp\response\mimetypes\PassThrough;
+use stubbles\webapp\routing\Interceptors;
 /**
  * Helper class for the test.
  */
@@ -94,14 +98,12 @@ class AbstractResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->request = NewInstance::of('stubbles\webapp\Request')
+        $this->request = NewInstance::of(Request::class)
                 ->mapCalls(['protocolVersion' => new HttpVersion(1, 1)]);
-        $this->response = NewInstance::of(
-                'stubbles\webapp\response\WebResponse',
-                [$this->request]
-        )->mapCalls(['header' => false]);
-        $this->injector     = NewInstance::stub('stubbles\ioc\Injector');
-        $this->interceptors = NewInstance::stub('stubbles\webapp\routing\Interceptors');
+        $this->response = NewInstance::of(WebResponse::class, [$this->request])
+                ->mapCalls(['header' => false]);
+        $this->injector     = NewInstance::stub(Injector::class);
+        $this->interceptors = NewInstance::stub(Interceptors::class);
     }
 
     /**
@@ -143,12 +145,12 @@ class AbstractResourceTest extends \PHPUnit_Framework_TestCase
                 $this->createRoute(
                         SupportedMimeTypes::createWithDisabledContentNegotation()
                 )->negotiateMimeType(
-                        NewInstance::of('stubbles\webapp\Request'),
+                        NewInstance::of(Request::class),
                         $this->response
                 )
         );
         assertInstanceOf(
-                'stubbles\webapp\response\mimetypes\PassThrough',
+                PassThrough::class,
                 $this->response->mimeType()
         );
     }
@@ -159,7 +161,7 @@ class AbstractResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function negotiatesNothingIfNoMatchCanBeFound()
     {
-        $request = NewInstance::of('stubbles\webapp\Request')
+        $request = NewInstance::of(Request::class)
                 ->mapCalls(['readHeader' => ValueReader::forValue('text/html')]);
         assertFalse(
                 $this->createRoute(
@@ -183,7 +185,7 @@ class AbstractResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function missingMimeTypeClassForNegotiatedMimeTypeTriggersInternalServerError()
     {
-        $request = NewInstance::of('stubbles\webapp\Request')
+        $request = NewInstance::of(Request::class)
                 ->mapCalls(['readHeader' => ValueReader::forValue('application/foo')]);
         assertFalse(
                 $this->createRoute(
@@ -205,7 +207,7 @@ class AbstractResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function createsNegotiatedMimeType()
     {
-        $request = NewInstance::of('stubbles\webapp\Request')
+        $request = NewInstance::of(Request::class)
                 ->mapCalls(['readHeader' => ValueReader::forValue('application/json')]);
         $mimeType = new Json();
         $this->injector->mapCalls(['getInstance' => $mimeType]);

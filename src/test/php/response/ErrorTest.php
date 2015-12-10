@@ -12,6 +12,7 @@ use bovigo\callmap;
 use bovigo\callmap\NewInstance;
 use stubbles\input\errors\ParamErrors;
 use stubbles\input\errors\messages\LocalizedMessage;
+use stubbles\input\errors\messages\ParamErrorMessages;
 /**
  * Tests for stubbles\webapp\response\Error.
  *
@@ -30,7 +31,7 @@ class ErrorTest extends \PHPUnit_Framework_TestCase
         $paramErrors->append('foo', 'STRING_TOO_SHORT', ['baz' => 303]);
         $paramErrors->append('bar', 'STRING_TOO_LONG');
 
-        $errorMessages = NewInstance::of('stubbles\input\errors\messages\ParamErrorMessages')
+        $errorMessages = NewInstance::of(ParamErrorMessages::class)
                 ->mapCalls(['messageFor' => callmap\onConsecutiveCalls(
                         new LocalizedMessage('en_*', 'foo empty'),
                         new LocalizedMessage('en_*', 'foo_too_short'),

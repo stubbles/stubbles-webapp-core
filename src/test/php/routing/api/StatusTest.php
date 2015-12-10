@@ -9,6 +9,7 @@
  */
 namespace stubbles\webapp\routing\api;
 use stubbles\ioc\Binder;
+use stubbles\xml\serializer\XmlSerializerFacade;
 /**
  * Test for stubbles\webapp\routing\api\Status.
  *
@@ -68,7 +69,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
                 '<?xml version="1.0" encoding="UTF-8"?>
 <status code="200"><description>Default <b>response</b> code</description></status>',
                 $binder->getInjector()
-                        ->getInstance('stubbles\xml\serializer\XmlSerializerFacade')
+                        ->getInstance(XmlSerializerFacade::class)
                         ->serializeToXml($this->status)
         );
     }

@@ -11,6 +11,7 @@ namespace stubbles\webapp\session;
 use bovigo\callmap;
 use bovigo\callmap\NewInstance;
 use stubbles\lang\reflect;
+use stubbles\webapp\session\Session;
 /**
  * Tests for stubbles\webapp\session\Token.
  *
@@ -37,7 +38,7 @@ class TokenTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->session = NewInstance::of('stubbles\webapp\session\Session');
+        $this->session = NewInstance::of(Session::class);
         $this->token   = new Token($this->session);
     }
 

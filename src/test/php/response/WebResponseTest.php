@@ -12,7 +12,9 @@ use bovigo\callmap;
 use bovigo\callmap\NewInstance;
 use stubbles\peer\http\Http;
 use stubbles\peer\http\HttpVersion;
+use stubbles\streams\OutputStream;
 use stubbles\streams\memory\MemoryOutputStream;
+use stubbles\webapp\Request;
 use stubbles\webapp\response\mimetypes\PassThrough;
 /**
  * Tests for stubbles\webapp\response\WebResponse.
@@ -51,7 +53,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      */
     private function createResponse($httpVersion = HttpVersion::HTTP_1_1, $requestMethod = Http::GET, $sapi = null)
     {
-        $request = NewInstance::of('stubbles\webapp\Request')
+        $request = NewInstance::of(Request::class)
                 ->mapCalls(
                         ['id'              => 'example-request-id-foo',
                          'protocolVersion' => HttpVersion::castFrom($httpVersion),
@@ -59,7 +61,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
                         ]
         );
         return NewInstance::of(
-                'stubbles\webapp\response\WebResponse',
+                WebResponse::class,
                 [$request, new PassThrough(), $sapi]
         )->mapCalls(['header' => false]); // prevent call to original method
     }
@@ -185,7 +187,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     protected function createCookie($value = null)
     {
         return NewInstance::of(
-                'stubbles\webapp\response\Cookie',
+                Cookie::class,
                 ['foo', $value]
         )->mapCalls(['send' => false]); // disable actual sending of cookie
     }
@@ -263,7 +265,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function hasNoBodyByDefault()
     {
-        $outputStream = NewInstance::of('stubbles\streams\OutputStream');
+        $outputStream = NewInstance::of(OutputStream::class);
         $this->response->send($outputStream);
         callmap\verify($outputStream, 'write')->wasNeverCalled();
     }
@@ -294,7 +296,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     public function bodyIsNotSendWhenRequestMethodIsHead()
     {
         $this->response = $this->createResponse(HttpVersion::HTTP_1_1, Http::HEAD);
-        $outputStream = NewInstance::of('stubbles\streams\OutputStream');
+        $outputStream = NewInstance::of(OutputStream::class);
         $this->response->write('foo')->send($outputStream);
         callmap\verify($outputStream, 'write')->wasNeverCalled();
     }
