@@ -8,10 +8,13 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\session;
-use bovigo\callmap;
 use bovigo\callmap\NewInstance;
-use stubbles\lang\reflect;
 use stubbles\webapp\session\Session;
+
+use function bovigo\callmap\onConsecutiveCalls;
+use function bovigo\callmap\verify;
+use function stubbles\lang\reflect\annotationsOf;
+use function stubbles\lang\reflect\annotationsOfConstructor;
 /**
  * Tests for stubbles\webapp\session\Token.
  *
@@ -47,10 +50,7 @@ class TokenTest extends \PHPUnit_Framework_TestCase
      */
     public function annotationsPresentOnClass()
     {
-        assertTrue(
-                reflect\annotationsOf($this->token)
-                        ->contain('Singleton')
-        );
+        assertTrue(annotationsOf($this->token)->contain('Singleton'));
     }
 
     /**
@@ -58,10 +58,7 @@ class TokenTest extends \PHPUnit_Framework_TestCase
      */
     public function annotationsPresentOnConstructor()
     {
-        assertTrue(
-                reflect\annotationsOfConstructor($this->token)
-                        ->contain('Inject')
-        );
+        assertTrue(annotationsOfConstructor($this->token)->contain('Inject'));
     }
 
     /**
@@ -89,7 +86,7 @@ class TokenTest extends \PHPUnit_Framework_TestCase
     {
         $this->session->mapCalls(['value' => 'aToken']);
         $this->token->isValid('otherToken');
-        callmap\verify($this->session, 'putValue')->wasCalledOnce();
+        verify($this->session, 'putValue')->wasCalledOnce();
     }
 
     /**
@@ -98,7 +95,7 @@ class TokenTest extends \PHPUnit_Framework_TestCase
     public function nextTokenTakenFromSession()
     {
         $this->session->mapCalls(
-                ['value' => callmap\onConsecutiveCalls('aToken', 'nextToken')]
+                ['value' => onConsecutiveCalls('aToken', 'nextToken')]
         );
         assertEquals('nextToken', $this->token->next());
     }
@@ -109,6 +106,6 @@ class TokenTest extends \PHPUnit_Framework_TestCase
     public function nextStoresNextTokenInSession()
     {
         $this->token->next();
-        callmap\verify($this->session, 'putValue')->wasCalledOnce();
+        verify($this->session, 'putValue')->wasCalledOnce();
     }
 }

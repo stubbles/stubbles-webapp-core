@@ -8,11 +8,12 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\session\id;
-use bovigo\callmap;
 use bovigo\callmap\NewInstance;
 use stubbles\input\ValueReader;
 use stubbles\webapp\Request;
 use stubbles\webapp\Response;
+
+use function bovigo\callmap\verify;
 /**
  * Tests for stubbles\webapp\session\id\WebBoundSessionId.
  *
@@ -82,8 +83,8 @@ class WebBoundSessionIdTest extends \PHPUnit_Framework_TestCase
     {
         $this->request->mapCalls(['hasParam' => false, 'hasCookie' => false]);
         (string) $this->webBoundSessionId;
-        callmap\verify($this->request, 'hasParam')->received('foo');
-        callmap\verify($this->request, 'hasCookie')->received('foo');
+        verify($this->request, 'hasParam')->received('foo');
+        verify($this->request, 'hasCookie')->received('foo');
     }
 
     /**
@@ -181,7 +182,7 @@ class WebBoundSessionIdTest extends \PHPUnit_Framework_TestCase
     public function regenerateStoresNewSessionIdInCookie()
     {
         $this->webBoundSessionId->regenerate();
-        callmap\verify($this->response, 'addCookie')->wasCalledOnce();
+        verify($this->response, 'addCookie')->wasCalledOnce();
     }
 
     /**
@@ -193,6 +194,6 @@ class WebBoundSessionIdTest extends \PHPUnit_Framework_TestCase
                 $this->webBoundSessionId,
                 $this->webBoundSessionId->invalidate()
         );
-        callmap\verify($this->response, 'removeCookie')->received('foo');
+        verify($this->response, 'removeCookie')->received('foo');
     }
 }

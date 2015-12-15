@@ -8,12 +8,13 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\routing;
-use bovigo\callmap;
 use bovigo\callmap\NewInstance;
 use stubbles\ioc\Injector;
 use stubbles\webapp\Request;
 use stubbles\webapp\Response;
 use stubbles\webapp\routing\Interceptors;
+
+use function bovigo\callmap\verify;
 /**
  * Tests for stubbles\webapp\routing\ResourceOptions.
  *
@@ -61,7 +62,7 @@ class ResourceOptionsTest extends \PHPUnit_Framework_TestCase
                 NewInstance::of(Request::class),
                 $response
         );
-        callmap\verify($response, 'addHeader')
+        verify($response, 'addHeader')
                 ->received('Allow', 'GET, POST, HEAD, OPTIONS');
     }
 
@@ -75,11 +76,10 @@ class ResourceOptionsTest extends \PHPUnit_Framework_TestCase
                 NewInstance::of(Request::class),
                 $response
         );
-        callmap\verify($response, 'addHeader')
-                ->receivedOn(
-                        2,
-                        'Access-Control-Allow-Methods',
-                        'GET, POST, HEAD, OPTIONS'
+        verify($response, 'addHeader')->receivedOn(
+                2,
+                'Access-Control-Allow-Methods',
+                'GET, POST, HEAD, OPTIONS'
         );
     }
 }

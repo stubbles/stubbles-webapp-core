@@ -8,9 +8,10 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\session;
-use bovigo\callmap;
 use bovigo\callmap\NewInstance;
 use stubbles\webapp\session\id\SessionId;
+
+use function bovigo\callmap\verify;
 /**
  * Tests for stubbles\webapp\session\NullSession.
  *
@@ -67,7 +68,7 @@ class NullSessionTest extends \PHPUnit_Framework_TestCase
                 $this->nullSession,
                 $this->nullSession->regenerateId()
         );
-        callmap\verify($this->sessionId, 'regenerate')->wasCalledOnce();
+        verify($this->sessionId, 'regenerate')->wasCalledOnce();
     }
 
     /**
@@ -96,7 +97,7 @@ class NullSessionTest extends \PHPUnit_Framework_TestCase
                 $this->nullSession,
                 $this->nullSession->invalidate()
         );
-        callmap\verify($this->sessionId, 'invalidate')->wasCalledOnce();
+        verify($this->sessionId, 'invalidate')->wasCalledOnce();
     }
 
     /**

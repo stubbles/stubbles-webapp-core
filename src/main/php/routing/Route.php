@@ -8,7 +8,6 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\routing;
-use stubbles\lang;
 use stubbles\peer\http\Http;
 use stubbles\peer\http\HttpUri;
 use stubbles\webapp\Target;
@@ -16,6 +15,8 @@ use stubbles\webapp\auth\AuthConstraint;
 use stubbles\webapp\interceptor\PreInterceptor;
 use stubbles\webapp\interceptor\PostInterceptor;
 use stubbles\webapp\routing\api\Resource;
+
+use function stubbles\lang\getType;
 /**
  * Represents information about a route that can be called.
  *
@@ -144,7 +145,7 @@ class Route implements ConfigurableRoute
             return $requestMethod;
         }
 
-        throw new \InvalidArgumentException('Given request method must be null, a string or an array, but received ' . lang\getType($requestMethod));
+        throw new \InvalidArgumentException('Given request method must be null, a string or an array, but received ' . getType($requestMethod));
     }
 
     /**

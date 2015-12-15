@@ -8,14 +8,16 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\auth\token;
-use bovigo\callmap;
 use bovigo\callmap\NewInstance;
 use stubbles\input\ValueReader;
-use stubbles\lang\reflect;
 use stubbles\webapp\Request;
 use stubbles\webapp\auth\AuthenticationProvider;
 use stubbles\webapp\auth\Token;
 use stubbles\webapp\auth\TokenAwareUser;
+
+use function bovigo\callmap\throws;
+use function bovigo\callmap\verify;
+use function stubbles\lang\reflect\annotationsOfConstructorParameter;
 /**
  * Test for stubbles\webapp\auth\token\TokenAuthenticator.
  *
@@ -70,7 +72,7 @@ class TokenAuthenticatorTest extends \PHPUnit_Framework_TestCase
      */
     public function annotationsPresentOnConstructor()
     {
-        $tokenSaltParamAnnotations = reflect\annotationsOfConstructorParameter(
+        $tokenSaltParamAnnotations = annotationsOfConstructorParameter(
                 'tokenSalt',
                 $this->tokenAuthenticator
         );
@@ -80,7 +82,7 @@ class TokenAuthenticatorTest extends \PHPUnit_Framework_TestCase
                 $tokenSaltParamAnnotations->firstNamed('Property')->getName()
         );
 
-        $loginProviderParamAnnotations = reflect\annotationsOfConstructorParameter(
+        $loginProviderParamAnnotations = annotationsOfConstructorParameter(
                 'loginProvider',
                 $this->tokenAuthenticator
         );
@@ -100,7 +102,7 @@ class TokenAuthenticatorTest extends \PHPUnit_Framework_TestCase
         assertNull(
                 $this->tokenAuthenticator->authenticate($this->request)
         );
-        callmap\verify($this->loginProvider, 'authenticate')->wasCalledOnce();
+        verify($this->loginProvider, 'authenticate')->wasCalledOnce();
     }
 
     /**
@@ -116,7 +118,7 @@ class TokenAuthenticatorTest extends \PHPUnit_Framework_TestCase
         assertNull(
                 $this->tokenAuthenticator->authenticate($this->request)
         );
-        callmap\verify($this->loginProvider, 'authenticate')->wasCalledOnce();
+        verify($this->loginProvider, 'authenticate')->wasCalledOnce();
     }
 
     /**
@@ -138,7 +140,7 @@ class TokenAuthenticatorTest extends \PHPUnit_Framework_TestCase
         $this->request->mapCalls(['hasRedirectHeader' => false]);
         $this->loginProvider->mapCalls(['authenticate' => $user]);
         $this->tokenStore->mapCalls(
-                ['store' => callmap\throws(new \Exception('failure'))]
+                ['store' => throws(new \Exception('failure'))]
         );
 
         $this->tokenAuthenticator->authenticate($this->request);
@@ -158,7 +160,7 @@ class TokenAuthenticatorTest extends \PHPUnit_Framework_TestCase
                 $user,
                 $this->tokenAuthenticator->authenticate($this->request)
         );
-        callmap\verify($this->tokenStore, 'store')
+        verify($this->tokenStore, 'store')
                 ->received($this->request, $token, $user);
     }
 
@@ -188,7 +190,7 @@ class TokenAuthenticatorTest extends \PHPUnit_Framework_TestCase
                 ]
         );
         $this->tokenStore->mapCalls(
-                ['findUserByToken' => callmap\throws(new \Exception('failure'))]
+                ['findUserByToken' => throws(new \Exception('failure'))]
         );
         $this->tokenAuthenticator->authenticate($this->request);
     }
@@ -217,7 +219,7 @@ class TokenAuthenticatorTest extends \PHPUnit_Framework_TestCase
         $user = $this->createTokenAwareUser();
         $this->tokenStore->mapCalls(['findUserByToken' => $user]);
         assertSame($user, $this->tokenAuthenticator->authenticate($this->request));
-        callmap\verify($this->tokenStore, 'findUserByToken')
+        verify($this->tokenStore, 'findUserByToken')
                 ->received($this->request, new Token($tokenValue));
     }
 
@@ -252,9 +254,9 @@ class TokenAuthenticatorTest extends \PHPUnit_Framework_TestCase
                 ]
         );
         assertNull($this->tokenAuthenticator->authenticate($this->request));
-        callmap\verify($this->tokenStore, 'findUserByToken')
+        verify($this->tokenStore, 'findUserByToken')
                 ->received($this->request, new Token('someOtherToken'));
-        callmap\verify($this->loginProvider, 'authenticate')->wasCalledOnce();
+        verify($this->loginProvider, 'authenticate')->wasCalledOnce();
     }
 
     /**
@@ -273,7 +275,7 @@ class TokenAuthenticatorTest extends \PHPUnit_Framework_TestCase
                 $user,
                 $this->tokenAuthenticator->authenticate($this->request)
         );
-        callmap\verify($this->tokenStore, 'findUserByToken')
+        verify($this->tokenStore, 'findUserByToken')
                 ->received($this->request, new Token('someOtherToken'));
     }
 
@@ -292,7 +294,7 @@ class TokenAuthenticatorTest extends \PHPUnit_Framework_TestCase
         assertNotNull(
                 $this->tokenAuthenticator->authenticate($this->request)->token()
         );
-        callmap\verify($this->tokenStore, 'findUserByToken')
+        verify($this->tokenStore, 'findUserByToken')
                 ->received($this->request, new Token('someOtherToken'));
     }
 

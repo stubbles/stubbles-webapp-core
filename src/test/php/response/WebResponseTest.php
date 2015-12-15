@@ -8,7 +8,6 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\response;
-use bovigo\callmap;
 use bovigo\callmap\NewInstance;
 use stubbles\peer\http\Http;
 use stubbles\peer\http\HttpVersion;
@@ -16,6 +15,8 @@ use stubbles\streams\OutputStream;
 use stubbles\streams\memory\MemoryOutputStream;
 use stubbles\webapp\Request;
 use stubbles\webapp\response\mimetypes\PassThrough;
+
+use function bovigo\callmap\verify;
 /**
  * Tests for stubbles\webapp\response\WebResponse.
  *
@@ -72,7 +73,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     public function versionIs1_1ByDefault()
     {
         $this->response->send($this->memory);
-        callmap\verify($this->response, 'header')->received('HTTP/1.1 200 OK');
+        verify($this->response, 'header')->received('HTTP/1.1 200 OK');
     }
 
     /**
@@ -82,7 +83,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     {
         $response = $this->createResponse(HttpVersion::HTTP_1_0);
         $response->send($this->memory);
-        callmap\verify($response, 'header')->received('HTTP/1.0 200 OK');
+        verify($response, 'header')->received('HTTP/1.0 200 OK');
     }
 
     /**
@@ -110,7 +111,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     {
         $this->response = $this->createResponse(HttpVersion::HTTP_1_1, Http::GET, 'cgi');
         $this->response->send($this->memory);
-        callmap\verify($this->response, 'header')->received('Status: 200 OK');
+        verify($this->response, 'header')->received('Status: 200 OK');
     }
 
     /**
@@ -119,7 +120,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     public function addedHeadersAreSend()
     {
         $this->response->addHeader('name', 'value1')->send($this->memory);
-        callmap\verify($this->response, 'header')->receivedOn(2, 'name: value1');
+        verify($this->response, 'header')->receivedOn(2, 'name: value1');
     }
 
     /**
@@ -200,7 +201,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
         $cookie = $this->createCookie();
         $this->response->addCookie($cookie)
                 ->send($this->memory);
-        callmap\verify($cookie, 'send')->wasCalledOnce();
+        verify($cookie, 'send')->wasCalledOnce();
     }
 
     /**
@@ -212,7 +213,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
         $this->response->addCookie($cookie)
                 ->addCookie($cookie)
                 ->send($this->memory);
-        callmap\verify($cookie, 'send')->wasCalledOnce();
+        verify($cookie, 'send')->wasCalledOnce();
     }
 
     /**
@@ -267,7 +268,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     {
         $outputStream = NewInstance::of(OutputStream::class);
         $this->response->send($outputStream);
-        callmap\verify($outputStream, 'write')->wasNeverCalled();
+        verify($outputStream, 'write')->wasNeverCalled();
     }
 
     /**
@@ -298,7 +299,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
         $this->response = $this->createResponse(HttpVersion::HTTP_1_1, Http::HEAD);
         $outputStream = NewInstance::of(OutputStream::class);
         $this->response->write('foo')->send($outputStream);
-        callmap\verify($outputStream, 'write')->wasNeverCalled();
+        verify($outputStream, 'write')->wasNeverCalled();
     }
 
     /**
@@ -319,9 +320,9 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     {
         $this->response->redirect('http://example.com/', 301);
         $this->response->send();
-        callmap\verify($this->response, 'header')
+        verify($this->response, 'header')
                 ->receivedOn(1, 'HTTP/1.1 301 Moved Permanently');
-        callmap\verify($this->response, 'header')
+        verify($this->response, 'header')
                 ->receivedOn(2, 'Location: http://example.com/');
     }
 
@@ -334,9 +335,9 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     {
         $this->response->redirect('http://example.com/');
         $this->response->send();
-        callmap\verify($this->response, 'header')
+        verify($this->response, 'header')
                 ->receivedOn(1, 'HTTP/1.1 302 Found');
-        callmap\verify($this->response, 'header')
+        verify($this->response, 'header')
                 ->receivedOn(2, 'Location: http://example.com/');
     }
 
@@ -348,8 +349,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     {
         $this->response->forbidden();
         $this->response->send();
-        callmap\verify($this->response, 'header')
-                ->received('HTTP/1.1 403 Forbidden');
+        verify($this->response, 'header')->received('HTTP/1.1 403 Forbidden');
     }
 
     /**
@@ -380,8 +380,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     {
         $this->response->notFound();
         $this->response->send();
-        callmap\verify($this->response, 'header')
-                ->received('HTTP/1.1 404 Not Found');
+        verify($this->response, 'header')->received('HTTP/1.1 404 Not Found');
     }
 
     /**
@@ -412,9 +411,9 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     {
         $this->response->methodNotAllowed('POST', ['GET', 'HEAD']);
         $this->response->send();
-        callmap\verify($this->response, 'header')
+        verify($this->response, 'header')
                 ->receivedOn(1, 'HTTP/1.1 405 Method Not Allowed');
-        callmap\verify($this->response, 'header')
+        verify($this->response, 'header')
                 ->receivedOn(2, 'Allow: GET, HEAD');
     }
 
@@ -449,8 +448,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     {
         $this->response->notAcceptable();
         $this->response->send();
-        callmap\verify($this->response, 'header')
-                ->received('HTTP/1.1 406 Not Acceptable');
+        verify($this->response, 'header')->received('HTTP/1.1 406 Not Acceptable');
     }
 
     /**
@@ -472,9 +470,9 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     {
         $this->response->notAcceptable(['application/json', 'application/xml']);
         $this->response->send();
-        callmap\verify($this->response, 'header')
+        verify($this->response, 'header')
                 ->receivedOn(1, 'HTTP/1.1 406 Not Acceptable');
-        callmap\verify($this->response, 'header')
+        verify($this->response, 'header')
                 ->receivedOn(2, 'X-Acceptable: application/json, application/xml');
     }
 
@@ -486,7 +484,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     {
         $this->response->internalServerError('ups!');
         $this->response->send();
-        callmap\verify($this->response, 'header')
+        verify($this->response, 'header')
                 ->received('HTTP/1.1 500 Internal Server Error');
     }
 
@@ -524,7 +522,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
                 'Error: Unsupported HTTP protocol version, expected HTTP/1.0 or HTTP/1.1',
                 $this->response->send($this->memory)->buffer()
         );
-        callmap\verify($this->response, 'header')
+        verify($this->response, 'header')
                 ->received('HTTP/1.1 505 HTTP Version Not Supported');
     }
 
@@ -564,7 +562,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
                 'Error: Unsupported HTTP protocol version, expected HTTP/1.0 or HTTP/1.1',
                 $response->send($this->memory)->buffer()
         );
-        callmap\verify($response, 'header')
+        verify($response, 'header')
                 ->received('HTTP/1.1 505 HTTP Version Not Supported');
     }
 
@@ -576,7 +574,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     public function requestIdAddedByDefault()
     {
         $this->response->send($this->memory);
-        callmap\verify($this->response, 'header')
+        verify($this->response, 'header')
                 ->receivedOn(3, 'X-Request-ID: example-request-id-foo');
     }
 
@@ -589,7 +587,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     {
         $this->response->headers()->requestId('another-request-id-bar');
         $this->response->send($this->memory);
-        callmap\verify($this->response, 'header')
+        verify($this->response, 'header')
                 ->receivedOn(2, 'X-Request-ID: another-request-id-bar');
     }
 }

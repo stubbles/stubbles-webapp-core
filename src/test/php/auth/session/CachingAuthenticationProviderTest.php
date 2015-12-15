@@ -8,13 +8,14 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\auth\session;
-use bovigo\callmap;
 use bovigo\callmap\NewInstance;
-use stubbles\lang\reflect;
 use stubbles\webapp\Request;
 use stubbles\webapp\auth\AuthenticationProvider;
 use stubbles\webapp\auth\User;
 use stubbles\webapp\session\Session;
+
+use function bovigo\callmap\verify;
+use function stubbles\lang\reflect\annotationsOfConstructorParameter;
 /**
  * Tests for stubbles\webapp\auth\session\CachingAuthenticationProvider
  *
@@ -59,7 +60,7 @@ class CachingAuthenticationProviderTest extends \PHPUnit_Framework_TestCase
      */
     public function annotationsPresentOnConstructor()
     {
-        $parameterAnnotations = reflect\annotationsOfConstructorParameter(
+        $parameterAnnotations = annotationsOfConstructorParameter(
                 'authenticationProvider',
                 $this->cachingAuthenticationProvider
         );
@@ -83,8 +84,7 @@ class CachingAuthenticationProviderTest extends \PHPUnit_Framework_TestCase
                         NewInstance::of(Request::class)
                 )
         );
-        callmap\verify($this->authenticationProvider, 'authenticate')
-                ->wasNeverCalled();
+        verify($this->authenticationProvider, 'authenticate')->wasNeverCalled();
     }
 
     /**
@@ -98,7 +98,7 @@ class CachingAuthenticationProviderTest extends \PHPUnit_Framework_TestCase
                         NewInstance::of(Request::class)
                 )
         );
-        callmap\verify($this->session, 'putValue')->wasNeverCalled();
+        verify($this->session, 'putValue')->wasNeverCalled();
     }
 
     /**
@@ -115,8 +115,7 @@ class CachingAuthenticationProviderTest extends \PHPUnit_Framework_TestCase
                         NewInstance::of(Request::class)
                 )
         );
-        callmap\verify($this->session, 'putValue')
-                ->received(User::SESSION_KEY, $user);
+        verify($this->session, 'putValue')->received(User::SESSION_KEY, $user);
     }
 
     /**

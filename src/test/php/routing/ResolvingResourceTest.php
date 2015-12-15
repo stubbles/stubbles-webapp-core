@@ -8,7 +8,6 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\routing;
-use bovigo\callmap;
 use bovigo\callmap\NewInstance;
 use stubbles\ioc\Injector;
 use stubbles\webapp\Request;
@@ -17,6 +16,8 @@ use stubbles\webapp\Target;
 use stubbles\webapp\UriPath;
 use stubbles\webapp\response\Error;
 use stubbles\webapp\routing\Interceptors;
+
+use function bovigo\callmap\verify;
 /**
  * Tests for stubbles\webapp\routing\ResolvingResource.
  *
@@ -145,7 +146,7 @@ class ResolvingResourceTest extends \PHPUnit_Framework_TestCase
                         }
                 )->resolve($this->request, $this->response)
         );
-        callmap\verify($this->response, 'setStatusCode')->received(418);
+        verify($this->response, 'setStatusCode')->received(418);
     }
 
     /**
@@ -170,7 +171,7 @@ class ResolvingResourceTest extends \PHPUnit_Framework_TestCase
                 $this->createResolvingResourceWithTarget([$this, 'theCallable'])
                         ->resolve($this->request, $this->response)
         );
-        callmap\verify($this->response, 'setStatusCode')->received(418);
+        verify($this->response, 'setStatusCode')->received(418);
     }
 
     /**
@@ -197,11 +198,10 @@ class ResolvingResourceTest extends \PHPUnit_Framework_TestCase
                 $this->createResolvingResourceWithTarget($target)
                         ->resolve($this->request, $this->response)
         );
-        callmap\verify($target, 'resolve')
-                ->received(
-                        $this->request,
-                        $this->response,
-                        new UriPath('/hello/{name}', '/hello/world')
+        verify($target, 'resolve')->received(
+                $this->request,
+                $this->response,
+                new UriPath('/hello/{name}', '/hello/world')
         );
     }
 

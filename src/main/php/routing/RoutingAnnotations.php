@@ -8,10 +8,11 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\routing;
-use stubbles\lang\reflect;
 use stubbles\webapp\routing\api\Header;
 use stubbles\webapp\routing\api\Parameter;
 use stubbles\webapp\routing\api\Status;
+
+use function stubbles\lang\reflect\annotationsOf;
 /**
  * Provides access to routing related annotations on a callback.
  *
@@ -34,7 +35,7 @@ class RoutingAnnotations
      */
     public function __construct($callback)
     {
-        $this->annotations = reflect\annotationsOf($callback);
+        $this->annotations = annotationsOf($callback);
     }
 
     /**

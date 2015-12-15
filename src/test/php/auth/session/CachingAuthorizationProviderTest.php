@@ -8,13 +8,14 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\auth\session;
-use bovigo\callmap;
 use bovigo\callmap\NewInstance;
-use stubbles\lang\reflect;
 use stubbles\webapp\auth\AuthorizationProvider;
 use stubbles\webapp\auth\Roles;
 use stubbles\webapp\auth\User;
 use stubbles\webapp\session\Session;
+
+use function bovigo\callmap\verify;
+use function stubbles\lang\reflect\annotationsOfConstructorParameter;
 /**
  * Tests for stubbles\webapp\auth\session\CachingAuthorizationProvider
  *
@@ -59,7 +60,7 @@ class CachingAuthorizationProviderTest extends \PHPUnit_Framework_TestCase
      */
     public function annotationsPresentOnConstructor()
     {
-        $annotations = reflect\annotationsOfConstructorParameter(
+        $annotations = annotationsOfConstructorParameter(
                 'authorizationProvider',
                 $this->cachingAuthorizationProvider
         );
@@ -83,7 +84,7 @@ class CachingAuthorizationProviderTest extends \PHPUnit_Framework_TestCase
                         NewInstance::of(User::class)
                 )
         );
-        callmap\verify($this->authorizationProvider, 'roles')->wasNeverCalled();
+        verify($this->authorizationProvider, 'roles')->wasNeverCalled();
     }
 
     /**
@@ -100,7 +101,6 @@ class CachingAuthorizationProviderTest extends \PHPUnit_Framework_TestCase
                         NewInstance::of(User::class)
                 )
         );
-        callmap\verify($this->session, 'putValue')
-                ->received(Roles::SESSION_KEY, $roles);
+        verify($this->session, 'putValue')->received(Roles::SESSION_KEY, $roles);
     }
 }

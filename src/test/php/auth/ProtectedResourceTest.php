@@ -8,7 +8,6 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\auth;
-use bovigo\callmap;
 use bovigo\callmap\NewInstance;
 use stubbles\ioc\Injector;
 use stubbles\peer\http\HttpUri;
@@ -19,6 +18,10 @@ use stubbles\webapp\request\WebRequest;
 use stubbles\webapp\response\Error;
 use stubbles\webapp\routing\RoutingAnnotations;
 use stubbles\webapp\routing\UriResource;
+
+use function bovigo\callmap\onConsecutiveCalls;
+use function bovigo\callmap\throws;
+use function bovigo\callmap\verify;
 /**
  * Tests for stubbles\webapp\auth\ProtectedResource.
  *
@@ -145,7 +148,7 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
     public function applyPreInterceptorsTriggersInternalServerErrorWhenAuthenticationThrowsInternalAuthProviderException()
     {
         $e = new InternalAuthProviderException('error');
-        $this->createAuthenticationProvider(['authenticate' => callmap\throws($e)]);
+        $this->createAuthenticationProvider(['authenticate' =>  throws($e)]);
         $this->response->mapCalls(['internalServerError' => Error::internalServerError($e)]);
         assertTrue(
                 $this->protectedResource->applyPreInterceptors(
@@ -160,8 +163,8 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
                         $this->response
                 )
         );
-        callmap\verify($this->actualResource, 'applyPreInterceptors')->wasNeverCalled();
-        callmap\verify($this->actualResource, 'resolve')->wasNeverCalled();
+        verify($this->actualResource, 'applyPreInterceptors')->wasNeverCalled();
+        verify($this->actualResource, 'resolve')->wasNeverCalled();
     }
 
     /**
@@ -172,7 +175,7 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
     public function applyPreInterceptorsTriggersStatusCode504WhenAuthenticationThrowsExternalAuthHandlerException()
     {
         $this->createAuthenticationProvider(
-                ['authenticate' => callmap\throws(new ExternalAuthProviderException('error'))]
+                ['authenticate' => throws(new ExternalAuthProviderException('error'))]
         );
         assertTrue(
                 $this->protectedResource->applyPreInterceptors(
@@ -187,9 +190,9 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
                         $this->response
                 )
         );
-        callmap\verify($this->response, 'setStatusCode')->received(504);
-        callmap\verify($this->actualResource, 'applyPreInterceptors')->wasNeverCalled();
-        callmap\verify($this->actualResource, 'resolve')->wasNeverCalled();
+        verify($this->response, 'setStatusCode')->received(504);
+        verify($this->actualResource, 'applyPreInterceptors')->wasNeverCalled();
+        verify($this->actualResource, 'resolve')->wasNeverCalled();
     }
 
     /**
@@ -210,11 +213,9 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
                         $this->response
                 )
         );
-        callmap\verify($this->response, 'redirect')
-                ->received('https://login.example.com/');
-        callmap\verify($this->actualResource, 'applyPreInterceptors')
-                ->wasNeverCalled();
-        callmap\verify($this->actualResource, 'resolve')->wasNeverCalled();
+        verify($this->response, 'redirect')->received('https://login.example.com/');
+        verify($this->actualResource, 'applyPreInterceptors')->wasNeverCalled();
+        verify($this->actualResource, 'resolve')->wasNeverCalled();
     }
 
     /**
@@ -240,8 +241,8 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
                         $this->response
                 )
         );
-        callmap\verify($this->actualResource, 'applyPreInterceptors')->wasNeverCalled();
-        callmap\verify($this->actualResource, 'resolve')->wasNeverCalled();
+        verify($this->actualResource, 'applyPreInterceptors')->wasNeverCalled();
+        verify($this->actualResource, 'resolve')->wasNeverCalled();
     }
 
     /**
@@ -261,7 +262,7 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
                         $this->response
                 )
         );
-        callmap\verify($this->actualResource, 'applyPreInterceptors')->wasCalledOnce();
+        verify($this->actualResource, 'applyPreInterceptors')->wasCalledOnce();
     }
 
     /**
@@ -289,7 +290,7 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
         $authorizationProvider = NewInstance::of(AuthorizationProvider::class)
                 ->mapCalls(['roles' => $roles]);
         $this->injector->mapCalls(
-                ['getInstance' => callmap\onConsecutiveCalls(
+                ['getInstance' => onConsecutiveCalls(
                                 $authenticationProvider,
                                 $authorizationProvider
                         )
@@ -306,7 +307,7 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
     {
         $e = new InternalAuthProviderException('error');
         $this->authConstraint->requireRole('admin');
-        $this->createAuthorizationProvider(callmap\throws($e));
+        $this->createAuthorizationProvider(throws($e));
         $this->response->mapCalls(['internalServerError' => Error::internalServerError($e)]);
         assertTrue(
                 $this->protectedResource->applyPreInterceptors(
@@ -321,8 +322,8 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
                         $this->response
                 )
         );
-        callmap\verify($this->actualResource, 'applyPreInterceptors')->wasNeverCalled();
-        callmap\verify($this->actualResource, 'resolve')->wasNeverCalled();
+        verify($this->actualResource, 'applyPreInterceptors')->wasNeverCalled();
+        verify($this->actualResource, 'resolve')->wasNeverCalled();
     }
 
     /**
@@ -334,7 +335,7 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
     {
         $this->authConstraint->requireRole('admin');
         $this->createAuthorizationProvider(
-                callmap\throws(new ExternalAuthProviderException('error'))
+                throws(new ExternalAuthProviderException('error'))
         );
         assertTrue(
                 $this->protectedResource->applyPreInterceptors(
@@ -349,9 +350,9 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
                         $this->response
                 )
         );
-        callmap\verify($this->response, 'setStatusCode')->received(504);
-        callmap\verify($this->actualResource, 'applyPreInterceptors')->wasNeverCalled();
-        callmap\verify($this->actualResource, 'resolve')->wasNeverCalled();
+        verify($this->response, 'setStatusCode')->received(504);
+        verify($this->actualResource, 'applyPreInterceptors')->wasNeverCalled();
+        verify($this->actualResource, 'resolve')->wasNeverCalled();
     }
 
     /**
@@ -375,8 +376,8 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
                         $this->response
                 )
         );
-        callmap\verify($this->actualResource, 'applyPreInterceptors')->wasNeverCalled();
-        callmap\verify($this->actualResource, 'resolve')->wasNeverCalled();
+        verify($this->actualResource, 'applyPreInterceptors')->wasNeverCalled();
+        verify($this->actualResource, 'resolve')->wasNeverCalled();
     }
 
     /**
@@ -393,7 +394,7 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
                         $this->response
                 )
         );
-        callmap\verify($this->actualResource, 'applyPreInterceptors')->wasCalledOnce();
+        verify($this->actualResource, 'applyPreInterceptors')->wasCalledOnce();
     }
 
     /**
@@ -439,7 +440,7 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
                         $this->response
                 )
         );
-        callmap\verify($this->actualResource, 'resolve')->wasNeverCalled();
+        verify($this->actualResource, 'resolve')->wasNeverCalled();
     }
 
     /**
@@ -484,8 +485,8 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
                 $this->request,
                 $this->response
         );
-        callmap\verify($this->actualResource, 'applyPreInterceptors')->wasNeverCalled();
-        callmap\verify($this->actualResource, 'applyPostInterceptors')->wasCalledOnce();
+        verify($this->actualResource, 'applyPreInterceptors')->wasNeverCalled();
+        verify($this->actualResource, 'applyPostInterceptors')->wasCalledOnce();
     }
 
     /**
@@ -508,7 +509,7 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
                 $this->request,
                 $this->response
         );
-        callmap\verify($this->actualResource, 'applyPreInterceptors')->wasCalledOnce();
-        callmap\verify($this->actualResource, 'applyPostInterceptors')->wasCalledOnce();
+        verify($this->actualResource, 'applyPreInterceptors')->wasCalledOnce();
+        verify($this->actualResource, 'applyPostInterceptors')->wasCalledOnce();
     }
 }

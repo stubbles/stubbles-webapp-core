@@ -8,7 +8,7 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\request;
-use stubbles\lang\reflect;
+use function stubbles\lang\reflect\annotationsOf;
 /**
  * Test for stubbles\webapp\request\UserAgent.
  *
@@ -37,10 +37,7 @@ class UserAgentTest extends \PHPUnit_Framework_TestCase
      */
     public function xmlAnnotationPresentClass()
     {
-        assertTrue(
-                reflect\annotationsOf($this->userAgent)
-                        ->contain('XmlTag')
-        );
+        assertTrue(annotationsOf($this->userAgent)->contain('XmlTag'));
     }
 
     /**
@@ -64,8 +61,7 @@ class UserAgentTest extends \PHPUnit_Framework_TestCase
     public function xmlAnnotationsPresentOnMethods($method, $annotation)
     {
         assertTrue(
-                reflect\annotationsOf($this->userAgent, $method)
-                        ->contain($annotation)
+                annotationsOf($this->userAgent, $method)->contain($annotation)
         );
     }
 

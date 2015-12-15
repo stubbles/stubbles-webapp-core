@@ -8,14 +8,16 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\response\mimetypes;
-use bovigo\callmap;
 use bovigo\callmap\NewInstance;
 use stubbles\img\Image as ImageSource;
 use stubbles\img\driver\DummyDriver;
-use stubbles\lang\reflect;
 use stubbles\lang\ResourceLoader;
 use stubbles\streams\memory\MemoryOutputStream;
 use stubbles\webapp\response\Error;
+
+use function bovigo\callmap\throws;
+use function bovigo\callmap\verify;
+use function stubbles\lang\reflect\annotationsOfConstructorParameter;
 /**
  * Tests for stubbles\webapp\response\mimetypes\Image.
  *
@@ -49,7 +51,7 @@ class ImageTest extends \PHPUnit_Framework_TestCase
      */
     public function annotationsPresent()
     {
-        $annotations = reflect\annotationsOfConstructorParameter(
+        $annotations = annotationsOfConstructorParameter(
                 'errorImgResource',
                 $this->image
         );
@@ -110,7 +112,7 @@ class ImageTest extends \PHPUnit_Framework_TestCase
         );
         $this->image->serialize(new Error('ups'), new MemoryOutputStream());
         assertEquals('fake', $dummyDriver->lastDisplayedHandle());
-        callmap\verify($this->resourceLoader, 'load')->received('error.png');
+        verify($this->resourceLoader, 'load')->received('error.png');
     }
 
     /**
@@ -124,7 +126,7 @@ class ImageTest extends \PHPUnit_Framework_TestCase
         );
         $this->image->serialize('pixel.png', new MemoryOutputStream());
         assertEquals('fake', $dummyDriver->lastDisplayedHandle());
-        callmap\verify($this->resourceLoader, 'load')->received('pixel.png');
+        verify($this->resourceLoader, 'load')->received('pixel.png');
     }
 
     /**
@@ -151,7 +153,7 @@ class ImageTest extends \PHPUnit_Framework_TestCase
     public function triggersUserErrorWhenImageLoadingFails()
     {
         $this->resourceLoader->mapCalls(
-                ['load' => callmap\throws(new \Exception('hm...'))]
+                ['load' => throws(new \Exception('hm...'))]
         );
         $this->image->serialize('pixel.png', new MemoryOutputStream());
     }

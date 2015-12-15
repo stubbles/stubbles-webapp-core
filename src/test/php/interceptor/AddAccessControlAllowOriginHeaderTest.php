@@ -8,12 +8,13 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\interceptor;
-use bovigo\callmap;
 use bovigo\callmap\NewInstance;
 use stubbles\input\ValueReader;
-use stubbles\lang\reflect;
 use stubbles\webapp\Request;
 use stubbles\webapp\Response;
+
+use function bovigo\callmap\verify;
+use function stubbles\lang\reflect\annotationsOfConstructor;
 /**
  * Tests for stubbles\webapp\interceptor\AddAccessControlAllowOriginHeader.
  *
@@ -49,7 +50,7 @@ class AddAccessControlAllowOriginHeaderTest extends \PHPUnit_Framework_TestCase
      */
     public function annotationsPresentOnConstructor()
     {
-        $annotations = reflect\annotationsOfConstructor(
+        $annotations = annotationsOfConstructor(
                 AddAccessControlAllowOriginHeader::class
         );
         assertTrue($annotations->contain('Property'));
@@ -83,7 +84,7 @@ class AddAccessControlAllowOriginHeaderTest extends \PHPUnit_Framework_TestCase
     public function doesNotAddHeaderWhenNoAllowedOriginHostConfigured($emptyConfig)
     {
         $this->apply($emptyConfig);
-        callmap\verify($this->response, 'addHeader')->wasNeverCalled();
+        verify($this->response, 'addHeader')->wasNeverCalled();
     }
 
     /**
@@ -93,7 +94,7 @@ class AddAccessControlAllowOriginHeaderTest extends \PHPUnit_Framework_TestCase
     {
         $this->request->mapCalls(['hasHeader' => false]);
         $this->apply('^http://[a-zA-Z0-9-\.]+example\.com(:[0-9]{4})?$');
-        callmap\verify($this->response, 'addHeader')->wasNeverCalled();
+        verify($this->response, 'addHeader')->wasNeverCalled();
     }
 
     /**
@@ -107,7 +108,7 @@ class AddAccessControlAllowOriginHeaderTest extends \PHPUnit_Framework_TestCase
                 ]
         );
         $this->apply('^http://[a-zA-Z0-9-\.]+example\.com(:[0-9]{4})?$');
-        callmap\verify($this->response, 'addHeader')->wasNeverCalled();
+        verify($this->response, 'addHeader')->wasNeverCalled();
     }
 
     /**
@@ -124,7 +125,7 @@ class AddAccessControlAllowOriginHeaderTest extends \PHPUnit_Framework_TestCase
                 '^http://[a-zA-Z0-9-\.]+example\.net(:[0-9]{4})?$'
                 . '|^http://[a-zA-Z0-9-\.]+example\.com(:[0-9]{4})?$'
         );
-        callmap\verify($this->response, 'addHeader')
+        verify($this->response, 'addHeader')
                 ->received(
                         'Access-Control-Allow-Origin',
                         'http://foo.example.com:9039'

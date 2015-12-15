@@ -10,13 +10,14 @@
 namespace stubbles\webapp\auth;
 use bovigo\callmap\NewInstance;
 use stubbles\ioc\Binder;
-use stubbles\lang;
 use stubbles\lang\Mode;
 use stubbles\webapp\auth\session\CachingAuthenticationProvider;
 use stubbles\webapp\auth\session\CachingAuthorizationProvider;
 use stubbles\webapp\auth\token\TokenAuthenticator;
 use stubbles\webapp\auth\token\TokenStore;
 use stubbles\webapp\session\Session;
+
+use function stubbles\lang\properties;
 /**
  * Tests for stubbles\webapp\auth\Auth.
  *
@@ -52,7 +53,7 @@ class AuthTest extends \PHPUnit_Framework_TestCase
         $this->binder->bind(Session::class)
                 ->toInstance(NewInstance::of(Session::class));
         $this->binder->bindProperties(
-                lang\properties(['config' => ['stubbles.webapp.auth.token.salt' => 'pepper']]),
+                properties(['config' => ['stubbles.webapp.auth.token.salt' => 'pepper']]),
                 NewInstance::of(Mode::class)
         );
     }

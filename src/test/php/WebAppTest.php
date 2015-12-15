@@ -8,7 +8,6 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp;
-use bovigo\callmap;
 use bovigo\callmap\NewInstance;
 use stubbles\ioc\Binder;
 use stubbles\ioc\Injector;
@@ -16,6 +15,9 @@ use stubbles\lang\errorhandler\ExceptionLogger;
 use stubbles\webapp\routing\Routing;
 use stubbles\webapp\routing\UriResource;
 use stubbles\webapp\session\Session;
+
+use function bovigo\callmap\throws;
+use function bovigo\callmap\verify;
 /**
  * Helper class for the test.
  */
@@ -180,9 +182,9 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
                 ]
         );
         $this->webApp->run();
-        callmap\verify($resource, 'applyPreInterceptors')->wasNeverCalled();
-        callmap\verify($resource, 'resolve')->wasNeverCalled();
-        callmap\verify($resource, 'applyPostInterceptors')->wasNeverCalled();
+        verify($resource, 'applyPreInterceptors')->wasNeverCalled();
+        verify($resource, 'resolve')->wasNeverCalled();
+        verify($resource, 'applyPostInterceptors')->wasNeverCalled();
 
     }
 
@@ -195,10 +197,9 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
         TestWebApp::$session = NewInstance::of(Session::class);
         $this->createNonHttpsResource();
         $this->webApp->run();
-        callmap\verify($this->injector, 'setSession')
-                ->received(
-                        TestWebApp::$session,
-                        Session::class
+        verify($this->injector, 'setSession')->received(
+                TestWebApp::$session,
+                Session::class
         );
     }
 
@@ -210,7 +211,7 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
     {
         $this->createNonHttpsResource();
         $this->webApp->run();
-        callmap\verify($this->injector, 'setSession')->wasNeverCalled();
+        verify($this->injector, 'setSession')->wasNeverCalled();
     }
 
     /**
@@ -220,8 +221,8 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
     {
         $resource = $this->createNonHttpsResource(['applyPreInterceptors' => false]);
         $this->webApp->run();
-        callmap\verify($resource, 'resolve')->wasNeverCalled();
-        callmap\verify($resource, 'applyPostInterceptors')->wasNeverCalled();
+        verify($resource, 'resolve')->wasNeverCalled();
+        verify($resource, 'applyPostInterceptors')->wasNeverCalled();
     }
 
     /**
@@ -242,14 +243,14 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
     {
         $exception = new \Exception('some error');
         $resource  = $this->createNonHttpsResource(
-                ['applyPreInterceptors' => callmap\throws($exception)]
+                ['applyPreInterceptors' => throws($exception)]
         );
         $exceptionLogger = $this->setUpExceptionLogger($exception);
         $response = $this->webApp->run();
         assertEquals(500, $response->statusCode());
-        callmap\verify($exceptionLogger, 'log')->received($exception);
-        callmap\verify($resource, 'resolve')->wasNeverCalled();
-        callmap\verify($resource, 'applyPostInterceptors')->wasNeverCalled();
+        verify($exceptionLogger, 'log')->received($exception);
+        verify($resource, 'resolve')->wasNeverCalled();
+        verify($resource, 'applyPostInterceptors')->wasNeverCalled();
     }
 
     /**
@@ -260,14 +261,14 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
         $exception = new \Exception('some error');
         $resource = $this->createNonHttpsResource(
                 ['applyPreInterceptors' => true,
-                 'resolve'              => callmap\throws($exception)
+                 'resolve'              => throws($exception)
                 ]
         );
         $exceptionLogger = $this->setUpExceptionLogger($exception);
         $response = $this->webApp->run();
         assertEquals(500, $response->statusCode());
-        callmap\verify($exceptionLogger, 'log')->received($exception);
-        callmap\verify($resource, 'applyPostInterceptors')->wasNeverCalled();
+        verify($exceptionLogger, 'log')->received($exception);
+        verify($resource, 'applyPostInterceptors')->wasNeverCalled();
     }
 
     /**
@@ -278,13 +279,13 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
         $exception = new \Exception('some error');
         $this->createNonHttpsResource(
                 ['applyPreInterceptors'  => true,
-                 'applyPostInterceptors' => callmap\throws($exception)
+                 'applyPostInterceptors' => throws($exception)
                 ]
         );
         $exceptionLogger = $this->setUpExceptionLogger($exception);
         $response = $this->webApp->run();
         assertEquals(500, $response->statusCode());
-        callmap\verify($exceptionLogger, 'log')->received($exception);
+        verify($exceptionLogger, 'log')->received($exception);
     }
 
     /**
@@ -296,8 +297,8 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
                 ['applyPreInterceptors' => true]
         );
         $this->webApp->run();
-        callmap\verify($resource, 'resolve')->wasCalledOnce();
-        callmap\verify($resource, 'applyPostInterceptors')->wasCalledOnce();
+        verify($resource, 'resolve')->wasCalledOnce();
+        verify($resource, 'applyPostInterceptors')->wasCalledOnce();
     }
 
     /**

@@ -8,10 +8,12 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\response\mimetypes;
-use stubbles\lang;
 use stubbles\lang\Sequence;
 use stubbles\streams\OutputStream;
 use stubbles\webapp\response\Error;
+
+use function stubbles\lang\castToArray;
+use function stubbles\lang\getType;
 /**
  * Can transform any iterable resource into csv format.
  */
@@ -78,10 +80,10 @@ class Csv extends MimeType
         } elseif (is_array($resource) || $resource instanceof \Traversable) {
             $this->serializeIterable($resource, $out);
         } elseif (is_object($resource)) {
-            $this->serializeIterable(lang\castToArray($resource), $out);
+            $this->serializeIterable(castToArray($resource), $out);
         } else {
             trigger_error(
-                    'Resource of type ' . lang\getType($resource)
+                    'Resource of type ' . getType($resource)
                     . ' can not be serialized to csv',
                     E_USER_ERROR
             );

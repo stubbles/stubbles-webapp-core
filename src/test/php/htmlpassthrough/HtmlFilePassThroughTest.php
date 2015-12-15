@@ -10,11 +10,12 @@
 namespace stubbles\webapp\htmlpassthrough;
 use bovigo\callmap\NewInstance;
 use org\bovigo\vfs\vfsStream;
-use stubbles\lang\reflect;
 use stubbles\webapp\Request;
 use stubbles\webapp\Response;
 use stubbles\webapp\UriPath;
 use stubbles\webapp\response\Error;
+
+use function stubbles\lang\reflect\annotationsOfConstructor;
 /**
  * Test for stubbles\webapp\htmlpassthrough\HtmlFilePassThrough.
  *
@@ -57,7 +58,7 @@ class HtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
      */
     public function annotationsPresentOnConstructor()
     {
-        $annotations = reflect\annotationsOfConstructor($this->htmlFilePassThrough);
+        $annotations = annotationsOfConstructor($this->htmlFilePassThrough);
         assertTrue($annotations->contain('Named'));
         assertEquals(
                 'stubbles.pages.path',

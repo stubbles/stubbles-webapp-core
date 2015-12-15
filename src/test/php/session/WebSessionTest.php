@@ -8,10 +8,12 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\session;
-use bovigo\callmap;
 use bovigo\callmap\NewInstance;
 use stubbles\webapp\session\id\SessionId;
 use stubbles\webapp\session\storage\SessionStorage;
+
+use function bovigo\callmap\onConsecutiveCalls;
+use function bovigo\callmap\verify;
 /**
  * Tests for stubbles\webapp\session\WebSession.
  *
@@ -77,7 +79,7 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
     public function regeneratesSessionIdWhenSessionIsNew()
     {
         $this->createWebSession('aFingerprint', null);
-        callmap\verify($this->sessionId, 'regenerate')->wasCalledOnce();
+        verify($this->sessionId, 'regenerate')->wasCalledOnce();
     }
 
     /**
@@ -86,7 +88,7 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
     public function storesFingerPrintWhenSessionIsNew()
     {
         $this->createWebSession('aFingerprint', null);
-        callmap\verify($this->sessionStorage, 'putValue')
+        verify($this->sessionStorage, 'putValue')
                 ->received(Session::FINGERPRINT, 'aFingerprint');
     }
 
@@ -96,7 +98,7 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
     public function regeneratesSessionIdWhenSessionIsHijacked()
     {
         $this->createWebSession('otherFingerprint');
-        callmap\verify($this->sessionId, 'regenerate')->wasCalledOnce();
+        verify($this->sessionId, 'regenerate')->wasCalledOnce();
     }
 
     /**
@@ -105,7 +107,7 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
     public function clearsSessionDataWhenSessionIsHijacked()
     {
         $this->createWebSession('otherFingerprint');
-        callmap\verify($this->sessionStorage, 'clear')->wasCalledOnce();
+        verify($this->sessionStorage, 'clear')->wasCalledOnce();
     }
 
     /**
@@ -114,7 +116,7 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
     public function storesGivenFingerPrintWhenSessionIsHijacked()
     {
         $this->createWebSession('otherFingerprint');
-        callmap\verify($this->sessionStorage, 'putValue')
+        verify($this->sessionStorage, 'putValue')
                 ->received(Session::FINGERPRINT, 'otherFingerprint');
     }
 
@@ -134,7 +136,7 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
     {
         $webSession = $this->createWebSession();
         assertEquals($webSession, $webSession->regenerateId());
-        callmap\verify($this->sessionId, 'regenerate')->wasCalledOnce();
+        verify($this->sessionId, 'regenerate')->wasCalledOnce();
     }
 
     /**
@@ -166,7 +168,7 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
     private function createInvalidWebSession()
     {
         $this->sessionStorage->mapCalls(
-                ['hasValue' => callmap\onConsecutiveCalls(true, false),
+                ['hasValue' => onConsecutiveCalls(true, false),
                  'value'    => 'aFingerprint'
                 ]
         );
@@ -191,7 +193,7 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
     {
         $webSession = $this->createWebSession();
         assertEquals($webSession, $webSession->invalidate());
-        callmap\verify($this->sessionStorage, 'clear')->wasCalledOnce();
+        verify($this->sessionStorage, 'clear')->wasCalledOnce();
     }
 
     /**
@@ -201,7 +203,7 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
     {
         $webSession = $this->createWebSession();
         assertEquals($webSession, $webSession->invalidate());
-        callmap\verify($this->sessionId, 'invalidate')->wasCalledOnce();
+        verify($this->sessionId, 'invalidate')->wasCalledOnce();
     }
 
     /**
@@ -229,7 +231,7 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
 
                             return null !== $value;
                         },
-                 'value'    => callmap\onConsecutiveCalls('aFingerprint', $value)
+                 'value'    => onConsecutiveCalls('aFingerprint', $value)
                 ]
         );
         return new WebSession(
@@ -301,8 +303,7 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
     {
         $webSession = $this->createWebSession();
         assertEquals($webSession, $webSession->putValue('foo', 'bar'));
-        callmap\verify($this->sessionStorage, 'putValue')
-                ->received('foo', 'bar');
+        verify($this->sessionStorage, 'putValue')->received('foo', 'bar');
     }
 
     /**
@@ -328,7 +329,7 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
     public function removeReturnsTrueIfValueWasNotStoredBefore()
     {
         assertTrue($this->createWebSessionWithValues('bar')->removeValue('foo'));
-        callmap\verify($this->sessionStorage, 'removeValue')->received('foo');
+        verify($this->sessionStorage, 'removeValue')->received('foo');
     }
 
     /**
