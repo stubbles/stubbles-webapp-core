@@ -3,7 +3,7 @@
 
 ### BC breaks
 
-  * Raised minimum required PHP version to 5.5
+  * Raised minimum required PHP version to 5.6
 
 
 6.2.2 (2015-07-06)
