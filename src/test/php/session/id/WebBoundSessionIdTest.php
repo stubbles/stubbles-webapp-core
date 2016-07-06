@@ -13,6 +13,11 @@ use stubbles\input\ValueReader;
 use stubbles\webapp\Request;
 use stubbles\webapp\Response;
 
+use function bovigo\assert\assert;
+use function bovigo\assert\predicate\equals;
+use function bovigo\assert\predicate\isNotEqualTo;
+use function bovigo\assert\predicate\isSameAs;
+use function bovigo\assert\predicate\matches;
 use function bovigo\callmap\verify;
 /**
  * Tests for stubbles\webapp\session\id\WebBoundSessionId.
@@ -61,7 +66,7 @@ class WebBoundSessionIdTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsGivenSessionName()
     {
-        assertEquals('foo', $this->webBoundSessionId->name());
+        assert($this->webBoundSessionId->name(), equals('foo'));
     }
 
     /**
@@ -70,9 +75,9 @@ class WebBoundSessionIdTest extends \PHPUnit_Framework_TestCase
     public function createsSessionIdIfNotInRequest()
     {
         $this->request->mapCalls(['hasParam' => false, 'hasCookie' => false]);
-        assertRegExp(
-                '/^([a-zA-Z0-9]{32})$/D',
-                (string) $this->webBoundSessionId
+        assert(
+                (string) $this->webBoundSessionId,
+                matches('/^([a-zA-Z0-9]{32})$/D')
         );
     }
 
@@ -97,9 +102,9 @@ class WebBoundSessionIdTest extends \PHPUnit_Framework_TestCase
                  'readParam' => ValueReader::forValue('invalid')
                 ]
         );
-        assertRegExp(
-                '/^([a-zA-Z0-9]{32})$/D',
-                (string) $this->webBoundSessionId
+        assert(
+                (string) $this->webBoundSessionId,
+                matches('/^([a-zA-Z0-9]{32})$/D')
         );
     }
 
@@ -113,9 +118,9 @@ class WebBoundSessionIdTest extends \PHPUnit_Framework_TestCase
                  'readParam' => ValueReader::forValue('abcdefghij1234567890abcdefghij12')
                 ]
         );
-        assertEquals(
-                'abcdefghij1234567890abcdefghij12',
-                (string) $this->webBoundSessionId
+        assert(
+                (string) $this->webBoundSessionId,
+                equals('abcdefghij1234567890abcdefghij12')
         );
     }
 
@@ -130,9 +135,9 @@ class WebBoundSessionIdTest extends \PHPUnit_Framework_TestCase
                  'readCookie' => ValueReader::forValue('invalid')
                 ]
         );
-        assertRegExp(
-                '/^([a-zA-Z0-9]{32})$/D',
-                (string) $this->webBoundSessionId
+        assert(
+                (string) $this->webBoundSessionId,
+                matches('/^([a-zA-Z0-9]{32})$/D')
         );
     }
 
@@ -147,9 +152,9 @@ class WebBoundSessionIdTest extends \PHPUnit_Framework_TestCase
                  'readCookie' => ValueReader::forValue('abcdefghij1234567890abcdefghij12')
                 ]
         );
-        assertEquals(
-                'abcdefghij1234567890abcdefghij12',
-                (string) $this->webBoundSessionId
+        assert(
+                (string) $this->webBoundSessionId,
+                equals('abcdefghij1234567890abcdefghij12')
         );
     }
 
@@ -159,9 +164,9 @@ class WebBoundSessionIdTest extends \PHPUnit_Framework_TestCase
     public function regenerateChangesSessionId()
     {
         $previous = (string) $this->webBoundSessionId;
-        assertNotEquals(
-                $previous,
-                (string) $this->webBoundSessionId->regenerate()
+        assert(
+                (string) $this->webBoundSessionId->regenerate(),
+                isNotEqualTo($previous)
         );
     }
 
@@ -170,9 +175,9 @@ class WebBoundSessionIdTest extends \PHPUnit_Framework_TestCase
      */
     public function regeneratedSessionIdIsValid()
     {
-        assertRegExp(
-                '/^([a-zA-Z0-9]{32})$/D',
-                (string) $this->webBoundSessionId->regenerate()
+        assert(
+                (string) $this->webBoundSessionId->regenerate(),
+                matches('/^([a-zA-Z0-9]{32})$/D')
         );
     }
 
@@ -190,9 +195,9 @@ class WebBoundSessionIdTest extends \PHPUnit_Framework_TestCase
      */
     public function invalidateRemovesSessionidCookie()
     {
-        assertSame(
-                $this->webBoundSessionId,
-                $this->webBoundSessionId->invalidate()
+        assert(
+                $this->webBoundSessionId->invalidate(),
+                isSameAs($this->webBoundSessionId)
         );
         verify($this->response, 'removeCookie')->received('foo');
     }

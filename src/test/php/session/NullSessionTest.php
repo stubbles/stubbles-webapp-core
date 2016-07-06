@@ -11,6 +11,12 @@ namespace stubbles\webapp\session;
 use bovigo\callmap\NewInstance;
 use stubbles\webapp\session\id\SessionId;
 
+use function bovigo\assert\assert;
+use function bovigo\assert\assertEmptyArray;
+use function bovigo\assert\assertFalse;
+use function bovigo\assert\assertNull;
+use function bovigo\assert\assertTrue;
+use function bovigo\assert\predicate\equals;
 use function bovigo\callmap\verify;
 /**
  * Tests for stubbles\webapp\session\NullSession.
@@ -56,7 +62,7 @@ class NullSessionTest extends \PHPUnit_Framework_TestCase
     public function idIsSessionId()
     {
         $this->sessionId->mapCalls(['__toString' => '303']);
-        assertEquals('303', $this->nullSession->id());
+        assert($this->nullSession->id(), equals('303'));
     }
 
     /**
@@ -64,9 +70,9 @@ class NullSessionTest extends \PHPUnit_Framework_TestCase
      */
     public function regenerateCreatesNewSessionId()
     {
-        assertEquals(
-                $this->nullSession,
-                $this->nullSession->regenerateId()
+        assert(
+                $this->nullSession->regenerateId(),
+                equals($this->nullSession)
         );
         verify($this->sessionId, 'regenerate')->wasCalledOnce();
     }
@@ -77,7 +83,7 @@ class NullSessionTest extends \PHPUnit_Framework_TestCase
     public function nameIsSessionIdName()
     {
         $this->sessionId->mapCalls(['name' => 'foo']);
-        assertEquals('foo', $this->nullSession->name());
+        assert($this->nullSession->name(), equals('foo'));
     }
 
     /**
@@ -93,9 +99,9 @@ class NullSessionTest extends \PHPUnit_Framework_TestCase
      */
     public function invalidateInvalidatesSessionId()
     {
-        assertEquals(
-                $this->nullSession,
-                $this->nullSession->invalidate()
+        assert(
+                $this->nullSession->invalidate(),
+                equals($this->nullSession)
         );
         verify($this->sessionId, 'invalidate')->wasCalledOnce();
     }
@@ -121,7 +127,7 @@ class NullSessionTest extends \PHPUnit_Framework_TestCase
      */
     public function alwaysReturnsDefaultValue()
     {
-        assertEquals('bar', $this->nullSession->value('foo', 'bar'));
+        assert($this->nullSession->value('foo', 'bar'), equals('bar'));
     }
 
     /**
@@ -129,9 +135,9 @@ class NullSessionTest extends \PHPUnit_Framework_TestCase
      */
     public function putValueDoesNothing()
     {
-        assertEquals(
-                $this->nullSession,
-                $this->nullSession->putValue('foo', 'bar')
+        assert(
+                $this->nullSession->putValue('foo', 'bar'),
+                equals($this->nullSession)
         );
     }
 
@@ -148,6 +154,6 @@ class NullSessionTest extends \PHPUnit_Framework_TestCase
      */
     public function hasNoValueKeys()
     {
-        assertEquals([], $this->nullSession->valueKeys());
+        assertEmptyArray($this->nullSession->valueKeys());
     }
 }

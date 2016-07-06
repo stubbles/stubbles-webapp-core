@@ -15,11 +15,15 @@ use stubbles\webapp\Response;
 use stubbles\webapp\UriPath;
 use stubbles\webapp\response\Error;
 
+use function bovigo\assert\assert;
+use function bovigo\assert\assertTrue;
+use function bovigo\assert\predicate\equals;
+use function bovigo\assert\predicate\isSameAs;
 use function stubbles\lang\reflect\annotationsOfConstructor;
 /**
  * Test for stubbles\webapp\htmlpassthrough\HtmlFilePassThrough.
  *
- * @group  processor
+ * @group  htmlpassthrough
  * @since  4.0.0
  */
 class HtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
@@ -47,9 +51,9 @@ class HtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
      */
     public function functionReturnsClassName()
     {
-        assertEquals(
-                get_class($this->htmlFilePassThrough),
-                \stubbles\webapp\htmlPassThrough()
+        assert(
+                \stubbles\webapp\htmlPassThrough(),
+                equals(get_class($this->htmlFilePassThrough))
         );
     }
 
@@ -60,9 +64,9 @@ class HtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
     {
         $annotations = annotationsOfConstructor($this->htmlFilePassThrough);
         assertTrue($annotations->contain('Named'));
-        assertEquals(
-                'stubbles.pages.path',
-                $annotations->firstNamed('Named')->getName()
+        assert(
+                $annotations->firstNamed('Named')->getName(),
+                equals('stubbles.pages.path')
         );
     }
 
@@ -72,14 +76,14 @@ class HtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
     public function requestForNonExistingFileWritesNotFoundResponse()
     {
         $error = Error::notFound();
-        assertSame(
-                $error,
+        assert(
                 $this->htmlFilePassThrough->resolve(
                         NewInstance::of(Request::class),
                         NewInstance::of(Response::class)
                                 ->mapCalls(['notFound' => $error]),
                         new UriPath('/', '/doesNotExist.html')
-                )
+                ),
+                isSameAs($error)
         );
     }
 
@@ -88,13 +92,13 @@ class HtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
      */
     public function selectsAvailableRoute()
     {
-        assertEquals(
-                'this is foo.html',
+        assert(
                 $this->htmlFilePassThrough->resolve(
                         NewInstance::of(Request::class),
                         NewInstance::of(Response::class),
                         new UriPath('/', '/foo.html')
-                )
+                ),
+                equals('this is foo.html')
         );
     }
 
@@ -103,13 +107,13 @@ class HtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
      */
     public function fallsBackToIndexFileIfRequestForSlashOnly()
     {
-        assertEquals(
-                'this is index.html',
+        assert(
                 $this->htmlFilePassThrough->resolve(
                         NewInstance::of(Request::class),
                         NewInstance::of(Response::class),
                         new UriPath('/', '/')
-                )
+                ),
+                equals('this is index.html')
         );
     }
 }

@@ -14,6 +14,7 @@ use stubbles\webapp\Request;
 use stubbles\webapp\Response;
 use stubbles\webapp\routing\Interceptors;
 
+use function bovigo\assert\assertFalse;
 use function bovigo\callmap\verify;
 /**
  * Tests for stubbles\webapp\routing\ResourceOptions.

@@ -8,6 +8,9 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\request;
+use function bovigo\assert\assert;
+use function bovigo\assert\assertTrue;
+use function bovigo\assert\predicate\equals;
 use function stubbles\lang\reflect\annotationsOf;
 /**
  * Test for stubbles\webapp\request\UserAgent.
@@ -70,7 +73,7 @@ class UserAgentTest extends \PHPUnit_Framework_TestCase
      */
     public function instanceReturnsGivenName()
     {
-        assertEquals('name', $this->userAgent->name());
+        assert($this->userAgent->name(), equals('name'));
     }
 
     /**
@@ -78,7 +81,7 @@ class UserAgentTest extends \PHPUnit_Framework_TestCase
      */
     public function castToStringReturnsName()
     {
-        assertEquals('name', (string) $this->userAgent);
+        assert((string) $this->userAgent, equals('name'));
     }
 
     /**

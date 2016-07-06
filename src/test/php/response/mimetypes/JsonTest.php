@@ -9,6 +9,9 @@
  */
 namespace stubbles\webapp\response\mimetypes;
 use stubbles\streams\memory\MemoryOutputStream;
+
+use function bovigo\assert\assert;
+use function bovigo\assert\predicate\equals;
 /**
  * Tests for stubbles\webapp\response\mimetypes\Json.
  *
@@ -36,10 +39,7 @@ class JsonTest extends \PHPUnit_Framework_TestCase
      */
     public function defaultMimeType()
     {
-        assertEquals(
-                'application/json',
-                (string) $this->json
-        );
+        assert((string) $this->json, equals('application/json'));
     }
 
     /**
@@ -47,9 +47,9 @@ class JsonTest extends \PHPUnit_Framework_TestCase
      */
     public function mimeTypeCanBeSpecialised()
     {
-        assertEquals(
-                'text/json',
-                (string) $this->json->specialise('text/json')
+        assert(
+                (string) $this->json->specialise('text/json'),
+                equals('text/json')
         );
     }
 
@@ -58,12 +58,12 @@ class JsonTest extends \PHPUnit_Framework_TestCase
      */
     public function serializesResourceToJson()
     {
-        assertEquals(
-                json_encode(['foo', 'bar' => 313]),
+        assert(
                 $this->json->serialize(
                         ['foo', 'bar' => 313],
                         new MemoryOutputStream()
-                )->buffer()
+                )->buffer(),
+                equals(json_encode(['foo', 'bar' => 313]))
         );
     }
 }

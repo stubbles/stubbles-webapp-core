@@ -11,6 +11,9 @@ namespace stubbles\webapp\response\mimetypes;
 use bovigo\callmap\NewInstance;
 use stubbles\streams\memory\MemoryOutputStream;
 use stubbles\xml\serializer\XmlSerializerFacade;
+
+use function bovigo\assert\assert;
+use function bovigo\assert\predicate\equals;
 /**
  * Tests for stubbles\webapp\response\mimetypes\Xml.
  *
@@ -44,10 +47,7 @@ class XmlTest extends \PHPUnit_Framework_TestCase
      */
     public function defaultMimeType()
     {
-        assertEquals(
-                'application/xml',
-                (string) $this->xml
-        );
+        assert((string) $this->xml, equals('application/xml'));
     }
 
     /**
@@ -55,9 +55,9 @@ class XmlTest extends \PHPUnit_Framework_TestCase
      */
     public function mimeTypeCanBeSpecialised()
     {
-        assertEquals(
-                'text/xml',
-                (string) $this->xml->specialise('text/xml')
+        assert(
+                (string) $this->xml->specialise('text/xml'),
+                equals('text/xml')
         );
     }
 
@@ -67,12 +67,12 @@ class XmlTest extends \PHPUnit_Framework_TestCase
     public function serializesResourceToXml()
     {
         $this->xmlSerializerFacade->mapCalls(['serializeToXml' => '<xml/>']);
-        assertEquals(
-                '<xml/>',
+        assert(
                 $this->xml->serialize(
                         'value',
                         new MemoryOutputStream()
-                )->buffer()
+                )->buffer(),
+                equals('<xml/>')
         );
     }
 }

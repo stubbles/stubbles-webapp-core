@@ -9,11 +9,18 @@
  */
 namespace stubbles\webapp\routing;
 use stubbles\peer\http\AcceptHeader;
+
+use function bovigo\assert\assert;
+use function bovigo\assert\assertEmptyArray;
+use function bovigo\assert\assertFalse;
+use function bovigo\assert\assertNull;
+use function bovigo\assert\assertTrue;
+use function bovigo\assert\predicate\equals;
 /**
  * Tests for stubbles\webapp\routing\SupportedMimeTypes.
  *
  * @since  2.2.0
- * @group  response
+ * @group  routing
  */
 class SupportedMimeTypesTest extends \PHPUnit_Framework_TestCase
 {
@@ -33,10 +40,10 @@ class SupportedMimeTypesTest extends \PHPUnit_Framework_TestCase
      */
     public function matchForDisabledContentNegotationIsAlwaysTextHtml()
     {
-        assertEquals(
-                'text/html',
+        assert(
                 SupportedMimeTypes::createWithDisabledContentNegotation()
-                        ->findMatch(new AcceptHeader())
+                        ->findMatch(new AcceptHeader()),
+                equals('text/html')
         );
     }
 
@@ -45,8 +52,7 @@ class SupportedMimeTypesTest extends \PHPUnit_Framework_TestCase
      */
     public function listOfSupportedMimeTypedWithDisabledContentNegotationIsEmpty()
     {
-        assertEquals(
-                [],
+        assertEmptyArray(
                 SupportedMimeTypes::createWithDisabledContentNegotation()
                         ->asArray()
         );
@@ -77,9 +83,9 @@ class SupportedMimeTypesTest extends \PHPUnit_Framework_TestCase
     public function returnsFirstMimeTypeFromGivenListWhenAcceptHeaderIsEmpty()
     {
 
-        assertEquals(
-                'application/xml',
-                $this->createInstance()->findMatch(new AcceptHeader())
+        assert(
+                $this->createInstance()->findMatch(new AcceptHeader()),
+                equals('application/xml')
         );
     }
 
@@ -88,11 +94,11 @@ class SupportedMimeTypesTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsMimeTypeWithGreatesPriorityAccordingToAcceptHeader()
     {
-        assertEquals(
-                'application/json',
+        assert(
                 $this->createInstance()->findMatch(
                         AcceptHeader::parse('text/*;q=0.3, text/html;q=0.7, application/json;q=0.4, */*;q=0.5')
-                )
+                ),
+                equals('application/json')
         );
     }
 
@@ -113,9 +119,9 @@ class SupportedMimeTypesTest extends \PHPUnit_Framework_TestCase
      */
     public function listOfSupportedMimeTypedContainsListFromCreation()
     {
-        assertEquals(
-                ['application/xml', 'application/json', 'application/foo'],
-                $this->createInstance()->asArray()
+        assert(
+                $this->createInstance()->asArray(),
+                equals(['application/xml', 'application/json', 'application/foo'])
         );
     }
 
@@ -195,9 +201,9 @@ class SupportedMimeTypesTest extends \PHPUnit_Framework_TestCase
      */
     public function defaultClassCanBeOverriden()
     {
-        assertEquals(
-                'example\SpecialMimeType',
-                $this->createInstance()->classFor('application/xml')
+        assert(
+                $this->createInstance()->classFor('application/xml'),
+                equals('example\SpecialMimeType')
         );
     }
 }

@@ -9,6 +9,9 @@
  */
 namespace stubbles\webapp\response\mimetypes;
 use stubbles\streams\memory\MemoryOutputStream;
+
+use function bovigo\assert\assert;
+use function bovigo\assert\predicate\equals;
 /**
  * Tests for stubbles\webapp\response\mimetypes\TextPlain.
  *
@@ -36,10 +39,7 @@ class TextPlainTest extends \PHPUnit_Framework_TestCase
      */
     public function defaultMimeType()
     {
-        assertEquals(
-                'text/plain',
-                (string) $this->textPlain
-        );
+        assert((string) $this->textPlain, equals('text/plain'));
     }
 
     /**
@@ -47,9 +47,9 @@ class TextPlainTest extends \PHPUnit_Framework_TestCase
      */
     public function mimeTypeCanBeSpecialised()
     {
-        assertEquals(
-                'text/foo',
-                (string) $this->textPlain->specialise('text/foo')
+        assert(
+                (string) $this->textPlain->specialise('text/foo'),
+                equals('text/foo')
         );
     }
 
@@ -77,12 +77,12 @@ class TextPlainTest extends \PHPUnit_Framework_TestCase
      */
     public function serializesResourceToText($resource, $expected)
     {
-        assertEquals(
-                $expected,
+        assert(
                 $this->textPlain->serialize(
                         $resource,
                         new MemoryOutputStream()
-                )->buffer()
+                )->buffer(),
+                equals($expected)
         );
     }
 }

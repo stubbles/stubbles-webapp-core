@@ -8,6 +8,8 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\response;
+use function bovigo\assert\assert;
+use function bovigo\assert\predicate\equals;
 /**
  * Tests for stubbles\webapp\response\CacheControl.
  *
@@ -37,7 +39,7 @@ class CacheControlTest extends \PHPUnit_Framework_TestCase
      */
     public function onlyPrivateEnabledByDefault()
     {
-        assertEquals('private', $this->cacheControl);
+        assert($this->cacheControl, equals('private'));
     }
 
     /**
@@ -45,7 +47,7 @@ class CacheControlTest extends \PHPUnit_Framework_TestCase
      */
     public function enablePublicDisablesPrivate()
     {
-        assertEquals('public', $this->cacheControl->enablePublic());
+        assert($this->cacheControl->enablePublic(), equals('public'));
     }
 
     /**
@@ -53,9 +55,9 @@ class CacheControlTest extends \PHPUnit_Framework_TestCase
      */
     public function mustRevalidateEnabled()
     {
-        assertEquals(
-                'must-revalidate',
-                $this->cacheControl->disablePrivate()->mustRevalidate()
+        assert(
+                $this->cacheControl->disablePrivate()->mustRevalidate(),
+                equals('must-revalidate')
         );
     }
 
@@ -64,9 +66,9 @@ class CacheControlTest extends \PHPUnit_Framework_TestCase
      */
     public function proxyRevalidateEnabled()
     {
-        assertEquals(
-                'proxy-revalidate',
-                $this->cacheControl->disablePrivate()->proxyRevalidate()
+        assert(
+                $this->cacheControl->disablePrivate()->proxyRevalidate(),
+                equals('proxy-revalidate')
         );
     }
 
@@ -75,9 +77,9 @@ class CacheControlTest extends \PHPUnit_Framework_TestCase
      */
     public function noCacheEnabled()
     {
-        assertEquals(
-                'no-cache',
-                $this->cacheControl->disablePrivate()->noCache()
+        assert(
+                $this->cacheControl->disablePrivate()->noCache(),
+                equals('no-cache')
         );
     }
 
@@ -86,9 +88,9 @@ class CacheControlTest extends \PHPUnit_Framework_TestCase
      */
     public function noStoreEnabled()
     {
-        assertEquals(
-                'no-store',
-                $this->cacheControl->disablePrivate()->noStore()
+        assert(
+                $this->cacheControl->disablePrivate()->noStore(),
+                equals('no-store')
         );
     }
 
@@ -97,9 +99,9 @@ class CacheControlTest extends \PHPUnit_Framework_TestCase
      */
     public function noTransformEnabled()
     {
-        assertEquals(
-                'no-transform',
-                $this->cacheControl->disablePrivate()->noTransform()
+        assert(
+                $this->cacheControl->disablePrivate()->noTransform(),
+                equals('no-transform')
         );
     }
 
@@ -108,9 +110,9 @@ class CacheControlTest extends \PHPUnit_Framework_TestCase
      */
     public function maxAgeSet()
     {
-        assertEquals(
-                'max-age=3',
-                $this->cacheControl->disablePrivate()->maxAge(3)
+        assert(
+                $this->cacheControl->disablePrivate()->maxAge(3),
+                equals('max-age=3')
         );
     }
 
@@ -119,9 +121,9 @@ class CacheControlTest extends \PHPUnit_Framework_TestCase
      */
     public function sMaxAgeSet()
     {
-        assertEquals(
-                's-maxage=3',
-                $this->cacheControl->disablePrivate()->sMaxAge(3)
+        assert(
+                $this->cacheControl->disablePrivate()->sMaxAge(3),
+                equals('s-maxage=3')
         );
     }
 
@@ -130,9 +132,9 @@ class CacheControlTest extends \PHPUnit_Framework_TestCase
      */
     public function severalDirectives()
     {
-        assertEquals(
-                'must-revalidate, no-cache, no-store, private',
-                $this->cacheControl->mustRevalidate()->noCache()->noStore()
+        assert(
+                $this->cacheControl->mustRevalidate()->noCache()->noStore(),
+                equals('must-revalidate, no-cache, no-store, private')
         );
     }
 }

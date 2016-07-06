@@ -9,10 +9,16 @@
  */
 namespace stubbles\webapp\auth;
 use bovigo\callmap\NewInstance;
+
+use function bovigo\assert\assert;
+use function bovigo\assert\assertTrue;
+use function bovigo\assert\predicate\equals;
+use function bovigo\assert\predicate\isSameAs;
 /**
  * Tests for stubbles\webapp\auth\Identity.
  *
  * @since  6.0.0
+ * @group  auth
  */
 class IdentityTest extends \PHPUnit_Framework_TestCase
 {
@@ -42,9 +48,9 @@ class IdentityTest extends \PHPUnit_Framework_TestCase
     public function isAssociatedWithGivenUser()
     {
         $user = $this->createUser();
-        assertSame(
-                $user,
-                $this->createIdentity($user)->user()
+        assert(
+                $this->createIdentity($user)->user(),
+                isSameAs($user)
         );
     }
 
@@ -61,9 +67,6 @@ class IdentityTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsGivenRoles()
     {
-        assertEquals(
-                new Roles(['admin']),
-                $this->createIdentity()->roles()
-        );
+        assert($this->createIdentity()->roles(), equals(new Roles(['admin'])));
     }
 }

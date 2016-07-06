@@ -15,14 +15,21 @@ use stubbles\webapp\auth\AuthenticationProvider;
 use stubbles\webapp\auth\Token;
 use stubbles\webapp\auth\TokenAwareUser;
 
+use function bovigo\assert\assert;
+use function bovigo\assert\assertNull;
+use function bovigo\assert\assertNotNull;
+use function bovigo\assert\assertTrue;
+use function bovigo\assert\predicate\equals;
+use function bovigo\assert\predicate\isNotEqualTo;
+use function bovigo\assert\predicate\isSameAs;
 use function bovigo\callmap\throws;
 use function bovigo\callmap\verify;
 use function stubbles\lang\reflect\annotationsOfConstructorParameter;
 /**
  * Test for stubbles\webapp\auth\token\TokenAuthenticator.
  *
- * @group  stubbles
- * @group  token
+ * @group  auth
+ * @group  auth_token
  * @since  2.1.0
  */
 class TokenAuthenticatorTest extends \PHPUnit_Framework_TestCase
@@ -77,9 +84,9 @@ class TokenAuthenticatorTest extends \PHPUnit_Framework_TestCase
                 $this->tokenAuthenticator
         );
         assertTrue($tokenSaltParamAnnotations->contain('Property'));
-        assertEquals(
-                'stubbles.webapp.auth.token.salt',
-                $tokenSaltParamAnnotations->firstNamed('Property')->getName()
+        assert(
+                $tokenSaltParamAnnotations->firstNamed('Property')->getName(),
+                equals('stubbles.webapp.auth.token.salt')
         );
 
         $loginProviderParamAnnotations = annotationsOfConstructorParameter(
@@ -87,9 +94,9 @@ class TokenAuthenticatorTest extends \PHPUnit_Framework_TestCase
                 $this->tokenAuthenticator
         );
         assertTrue($loginProviderParamAnnotations->contain('Named'));
-        assertEquals(
-                'stubbles.webapp.auth.token.loginProvider',
-                $loginProviderParamAnnotations->firstNamed('Named')->getName()
+        assert(
+                $loginProviderParamAnnotations->firstNamed('Named')->getName(),
+                equals('stubbles.webapp.auth.token.loginProvider')
         );
     }
 
@@ -156,9 +163,9 @@ class TokenAuthenticatorTest extends \PHPUnit_Framework_TestCase
         $user->mapCalls(['createToken' => $token]);
         $this->request->mapCalls(['hasRedirectHeader' => false]);
         $this->loginProvider->mapCalls(['authenticate' => $user]);
-        assertSame(
-                $user,
-                $this->tokenAuthenticator->authenticate($this->request)
+        assert(
+                $this->tokenAuthenticator->authenticate($this->request),
+                isSameAs($user)
         );
         verify($this->tokenStore, 'store')
                 ->received($this->request, $token, $user);
@@ -218,7 +225,10 @@ class TokenAuthenticatorTest extends \PHPUnit_Framework_TestCase
         );
         $user = $this->createTokenAwareUser();
         $this->tokenStore->mapCalls(['findUserByToken' => $user]);
-        assertSame($user, $this->tokenAuthenticator->authenticate($this->request));
+        assert(
+                $this->tokenAuthenticator->authenticate($this->request),
+                isSameAs($user)
+        );
         verify($this->tokenStore, 'findUserByToken')
                 ->received($this->request, new Token($tokenValue));
     }
@@ -237,9 +247,9 @@ class TokenAuthenticatorTest extends \PHPUnit_Framework_TestCase
         $user  = $this->createTokenAwareUser();
         $token = new Token($tokenValue);
         $this->tokenStore->mapCalls(['findUserByToken' => $user]);
-        assertEquals(
-                $token,
-                $this->tokenAuthenticator->authenticate($this->request)->token()
+        assert(
+                $this->tokenAuthenticator->authenticate($this->request)->token(),
+                equals($token)
         );
     }
 
@@ -271,9 +281,9 @@ class TokenAuthenticatorTest extends \PHPUnit_Framework_TestCase
         );
         $user  = $this->createTokenAwareUser();
         $this->loginProvider->mapCalls(['authenticate' => $user]);
-        assertSame(
-                $user,
-                $this->tokenAuthenticator->authenticate($this->request)
+        assert(
+                $this->tokenAuthenticator->authenticate($this->request),
+                isSameAs($user)
         );
         verify($this->tokenStore, 'findUserByToken')
                 ->received($this->request, new Token('someOtherToken'));
@@ -310,9 +320,9 @@ class TokenAuthenticatorTest extends \PHPUnit_Framework_TestCase
         );
         $user  = $this->createTokenAwareUser();
         $this->loginProvider->mapCalls(['authenticate' => $user]);
-        assertNotEquals(
-                new Token('someOtherToken'),
-                $this->tokenAuthenticator->authenticate($this->request)->token()
+        assert(
+                $this->tokenAuthenticator->authenticate($this->request)->token(),
+                isNotEqualTo(new Token('someOtherToken'))
         );
     }
 }

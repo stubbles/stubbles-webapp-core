@@ -10,6 +10,9 @@
 namespace stubbles\webapp\response\mimetypes;
 use stubbles\streams\memory\MemoryOutputStream;
 use stubbles\webapp\response\Error;
+
+use function bovigo\assert\assert;
+use function bovigo\assert\predicate\equals;
 /**
  * Tests for stubbles\webapp\response\mimetypes\PassThrough.
  *
@@ -37,10 +40,7 @@ class PassThroughTest extends \PHPUnit_Framework_TestCase
      */
     public function defaultMimeType()
     {
-        assertEquals(
-                'text/html',
-                (string) $this->passThrough
-        );
+        assert((string) $this->passThrough, equals('text/html'));
     }
 
     /**
@@ -48,9 +48,9 @@ class PassThroughTest extends \PHPUnit_Framework_TestCase
      */
     public function mimeTypeCanBeSpecialised()
     {
-        assertEquals(
-                'text/plain',
-                (string) $this->passThrough->specialise('text/plain')
+        assert(
+                (string) $this->passThrough->specialise('text/plain'),
+                equals('text/plain')
         );
     }
 
@@ -59,12 +59,12 @@ class PassThroughTest extends \PHPUnit_Framework_TestCase
      */
     public function serializesPassesThroughString()
     {
-        assertEquals(
-                'some string',
+        assert(
                 $this->passThrough->serialize(
                         'some string',
                         new MemoryOutputStream()
-                )->buffer()
+                )->buffer(),
+                equals('some string')
         );
     }
 
@@ -73,12 +73,12 @@ class PassThroughTest extends \PHPUnit_Framework_TestCase
      */
     public function serializesHandlesErrorAsString()
     {
-        assertEquals(
-                'Error: some error message',
+        assert(
                 $this->passThrough->serialize(
                         new Error('some error message'),
                         new MemoryOutputStream()
-                )->buffer()
+                )->buffer(),
+                equals('Error: some error message')
         );
     }
 }

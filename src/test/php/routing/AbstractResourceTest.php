@@ -20,6 +20,14 @@ use stubbles\webapp\response\WebResponse;
 use stubbles\webapp\response\mimetypes\Json;
 use stubbles\webapp\response\mimetypes\PassThrough;
 use stubbles\webapp\routing\Interceptors;
+
+use function bovigo\assert\assert;
+use function bovigo\assert\assertEmptyArray;
+use function bovigo\assert\assertFalse;
+use function bovigo\assert\assertTrue;
+use function bovigo\assert\predicate\equals;
+use function bovigo\assert\predicate\isInstanceOf;
+use function bovigo\assert\predicate\isSameAs;
 /**
  * Helper class for the test.
  */
@@ -129,9 +137,9 @@ class AbstractResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsHttpsUriFromCalledUri()
     {
-        assertEquals(
-                'https://example.com/hello/world',
-                (string) $this->createRoute()->httpsUri()
+        assert(
+                (string) $this->createRoute()->httpsUri(),
+                equals('https://example.com/hello/world')
         );
     }
 
@@ -149,10 +157,7 @@ class AbstractResourceTest extends \PHPUnit_Framework_TestCase
                         $this->response
                 )
         );
-        assertInstanceOf(
-                PassThrough::class,
-                $this->response->mimeType()
-        );
+        assert($this->response->mimeType(), isInstanceOf(PassThrough::class));
     }
 
     /**
@@ -170,7 +175,7 @@ class AbstractResourceTest extends \PHPUnit_Framework_TestCase
                         )
                 )->negotiateMimeType($request, $this->response)
         );
-        assertEquals(406, $this->response->statusCode());
+        assert($this->response->statusCode(), equals(406));
         assertTrue(
                 $this->response->containsHeader(
                         'X-Acceptable',
@@ -194,10 +199,10 @@ class AbstractResourceTest extends \PHPUnit_Framework_TestCase
                         )
                 )->negotiateMimeType($request, $this->response)
         );
-        assertEquals(500, $this->response->statusCode());
-        assertEquals(
-                'Internal Server Error: No mime type class defined for negotiated content type application/foo',
-                $this->response->send(new MemoryOutputStream())->buffer()
+        assert($this->response->statusCode(), equals(500));
+        assert(
+                $this->response->send(new MemoryOutputStream())->buffer(),
+                equals('Internal Server Error: No mime type class defined for negotiated content type application/foo')
         );
     }
 
@@ -218,10 +223,7 @@ class AbstractResourceTest extends \PHPUnit_Framework_TestCase
                         )
                 )->negotiateMimeType($request, $this->response)
         );
-        assertSame(
-                $mimeType,
-                $this->response->mimeType()
-        );
+        assert($this->response->mimeType(), isSameAs($mimeType));
     }
 
     /**
@@ -230,10 +232,7 @@ class AbstractResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsGivenListOfSupportedMimeTypes()
     {
-        assertEquals(
-                [],
-                $this->createRoute()->supportedMimeTypes()
-        );
+        assertEmptyArray($this->createRoute()->supportedMimeTypes());
     }
 
     /**

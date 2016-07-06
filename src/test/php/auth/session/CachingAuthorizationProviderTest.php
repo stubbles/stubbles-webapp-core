@@ -14,12 +14,20 @@ use stubbles\webapp\auth\Roles;
 use stubbles\webapp\auth\User;
 use stubbles\webapp\session\Session;
 
+use function bovigo\assert\assert;
+use function bovigo\assert\assertFalse;
+use function bovigo\assert\assertNull;
+use function bovigo\assert\assertTrue;
+use function bovigo\assert\predicate\equals;
+use function bovigo\assert\predicate\isSameAs;
 use function bovigo\callmap\verify;
 use function stubbles\lang\reflect\annotationsOfConstructorParameter;
 /**
  * Tests for stubbles\webapp\auth\session\CachingAuthorizationProvider
  *
  * @since  5.0.0
+ * @group  auth
+ * @group  auth_session
  */
 class CachingAuthorizationProviderTest extends \PHPUnit_Framework_TestCase
 {
@@ -65,9 +73,9 @@ class CachingAuthorizationProviderTest extends \PHPUnit_Framework_TestCase
                 $this->cachingAuthorizationProvider
         );
         assertTrue($annotations->contain('Named'));
-        assertEquals(
-                'original',
-                $annotations->firstNamed('Named')->getName()
+        assert(
+                $annotations->firstNamed('Named')->getName(),
+                equals('original')
         );
     }
 
@@ -78,11 +86,11 @@ class CachingAuthorizationProviderTest extends \PHPUnit_Framework_TestCase
     {
         $roles = new Roles(['admin']);
         $this->session->mapCalls(['hasValue' => true, 'value' => $roles]);
-        assertSame(
-                $roles,
+        assert(
                 $this->cachingAuthorizationProvider->roles(
                         NewInstance::of(User::class)
-                )
+                ),
+                isSameAs($roles)
         );
         verify($this->authorizationProvider, 'roles')->wasNeverCalled();
     }
@@ -95,11 +103,11 @@ class CachingAuthorizationProviderTest extends \PHPUnit_Framework_TestCase
         $roles = new Roles(['admin']);
         $this->session->mapCalls(['hasValue' => false]);
         $this->authorizationProvider->mapCalls(['roles' => $roles]);
-        assertSame(
-                $roles,
+        assert(
                 $this->cachingAuthorizationProvider->roles(
                         NewInstance::of(User::class)
-                )
+                ),
+                isSameAs($roles)
         );
         verify($this->session, 'putValue')->received(Roles::SESSION_KEY, $roles);
     }

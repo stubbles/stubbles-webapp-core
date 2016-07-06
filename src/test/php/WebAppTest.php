@@ -16,6 +16,10 @@ use stubbles\webapp\routing\Routing;
 use stubbles\webapp\routing\UriResource;
 use stubbles\webapp\session\Session;
 
+use function bovigo\assert\assert;
+use function bovigo\assert\assertTrue;
+use function bovigo\assert\predicate\equals;
+use function bovigo\assert\predicate\isInstanceOf;
 use function bovigo\callmap\throws;
 use function bovigo\callmap\verify;
 /**
@@ -137,14 +141,12 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
     private function createNonHttpsResource(array $callmap = [])
     {
         $resource = $this->createResource();
-        $resource->mapCalls(
-                array_merge(
-                        $callmap,
-                        ['requiresHttps'     => false,
-                         'negotiateMimeType' => true
-                        ]
-                )
-        );
+        $resource->mapCalls(array_merge(
+                $callmap,
+                ['requiresHttps'     => false,
+                 'negotiateMimeType' => true
+                ]
+        ));
         return $resource;
     }
 
@@ -154,13 +156,12 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
     public function respondsWithRedirectHttpsUriIfRequiresHttps()
     {
         $resource = $this->createResource();
-        $resource->mapCalls(
-                ['requiresHttps' => true,
-                 'httpsUri'      => 'https://example.net/admin'
-                ]
-        );
+        $resource->mapCalls([
+                'requiresHttps' => true,
+                'httpsUri'      => 'https://example.net/admin'
+        ]);
         $response = $this->webApp->run();
-        assertEquals(302, $response->statusCode());
+        assert($response->statusCode(), equals(302));
         assertTrue(
                 $response->containsHeader(
                         'Location',
@@ -176,11 +177,10 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
     {
         $resource = NewInstance::of(UriResource::class);
         $this->routing->mapCalls(['findResource' => $resource]);
-        $resource->mapCalls(
-                ['requiresHttps'     => false,
-                 'negotiateMimeType' => false
-                ]
-        );
+        $resource->mapCalls([
+                'requiresHttps'     => false,
+                'negotiateMimeType' => false
+        ]);
         $this->webApp->run();
         verify($resource, 'applyPreInterceptors')->wasNeverCalled();
         verify($resource, 'resolve')->wasNeverCalled();
@@ -247,7 +247,7 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
         );
         $exceptionLogger = $this->setUpExceptionLogger($exception);
         $response = $this->webApp->run();
-        assertEquals(500, $response->statusCode());
+        assert($response->statusCode(), equals(500));
         verify($exceptionLogger, 'log')->received($exception);
         verify($resource, 'resolve')->wasNeverCalled();
         verify($resource, 'applyPostInterceptors')->wasNeverCalled();
@@ -259,14 +259,13 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
     public function sendsInternalServerErrorIfExceptionThrownFromRoute()
     {
         $exception = new \Exception('some error');
-        $resource = $this->createNonHttpsResource(
-                ['applyPreInterceptors' => true,
-                 'resolve'              => throws($exception)
-                ]
-        );
+        $resource = $this->createNonHttpsResource([
+                'applyPreInterceptors' => true,
+                'resolve'              => throws($exception)
+        ]);
         $exceptionLogger = $this->setUpExceptionLogger($exception);
         $response = $this->webApp->run();
-        assertEquals(500, $response->statusCode());
+        assert($response->statusCode(), equals(500));
         verify($exceptionLogger, 'log')->received($exception);
         verify($resource, 'applyPostInterceptors')->wasNeverCalled();
     }
@@ -277,14 +276,14 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
     public function sendsInternalServerErrorIfExceptionThrownFromPostInterceptors()
     {
         $exception = new \Exception('some error');
-        $this->createNonHttpsResource(
-                ['applyPreInterceptors'  => true,
-                 'applyPostInterceptors' => throws($exception)
-                ]
-        );
+        $this->createNonHttpsResource([
+                'applyPreInterceptors'  => true,
+                'applyPostInterceptors' => throws($exception)
+
+        ]);
         $exceptionLogger = $this->setUpExceptionLogger($exception);
         $response = $this->webApp->run();
-        assertEquals(500, $response->statusCode());
+        assert($response->statusCode(), equals(500));
         verify($exceptionLogger, 'log')->received($exception);
     }
 
@@ -293,9 +292,9 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
      */
     public function executesEverythingIfRequestNotCancelled()
     {
-        $resource = $this->createNonHttpsResource(
-                ['applyPreInterceptors' => true]
-        );
+        $resource = $this->createNonHttpsResource([
+                'applyPreInterceptors' => true
+        ]);
         $this->webApp->run();
         verify($resource, 'resolve')->wasCalledOnce();
         verify($resource, 'applyPostInterceptors')->wasCalledOnce();
@@ -307,22 +306,7 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
      */
     public function createCreatesInstance()
     {
-        assertInstanceOf(
-                TestWebApp::class,
-                TestWebApp::create('projectPath')
-        );
-    }
-
-    /**
-     * @since  4.0.0
-     * @test
-     */
-    public function createInstanceCreatesInstance()
-    {
-        assertInstanceOf(
-                TestWebApp::class,
-                TestWebApp::create('projectPath')
-        );
+        assert(TestWebApp::create('projectPath'), isInstanceOf(TestWebApp::class));
     }
 
     /**
@@ -335,9 +319,6 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
         $_SERVER['REQUEST_URI'] = '/hello';
         $_SERVER['HTTP_HOST']   = '%&$§!&$!§invalid';
         $webApp  = new TestWebApp($this->injector, $this->routing);
-        assertEquals(
-                400,
-                $webApp->run()->statusCode()
-        );
+        assert($webApp->run()->statusCode(), equals(400));
     }
 }

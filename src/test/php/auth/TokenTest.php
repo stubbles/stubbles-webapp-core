@@ -9,6 +9,12 @@
  */
 namespace stubbles\webapp\auth;
 use bovigo\callmap\NewInstance;
+
+use function bovigo\assert\assert;
+use function bovigo\assert\assertFalse;
+use function bovigo\assert\assertTrue;
+use function bovigo\assert\predicate\equals;
+use function bovigo\assert\predicate\isInstanceOf;
 /**
  * Test for stubbles\webapp\auth\Token.
  *
@@ -22,12 +28,12 @@ class TokenTest extends \PHPUnit_Framework_TestCase
      */
     public function canCreateTokenFromUser()
     {
-        assertInstanceOf(
-                Token::class,
+        assert(
                 Token::create(
                         NewInstance::of(User::class),
                         'some caramel salt'
-                )
+                ),
+                isInstanceOf(Token::class)
         );
     }
 
@@ -49,7 +55,7 @@ class TokenTest extends \PHPUnit_Framework_TestCase
     public function tokenCanBeCastedToString($tokenValue)
     {
         $token = new Token($tokenValue);
-        assertEquals($tokenValue, (string) $token);
+        assert((string) $token, equals($tokenValue));
     }
 
     /**

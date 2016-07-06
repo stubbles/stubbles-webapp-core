@@ -13,6 +13,9 @@ use stubbles\input\ValueReader;
 use stubbles\webapp\Request;
 use stubbles\webapp\Response;
 
+use function bovigo\assert\assert;
+use function bovigo\assert\assertTrue;
+use function bovigo\assert\predicate\equals;
 use function bovigo\callmap\verify;
 use function stubbles\lang\reflect\annotationsOfConstructor;
 /**
@@ -54,9 +57,9 @@ class AddAccessControlAllowOriginHeaderTest extends \PHPUnit_Framework_TestCase
                 AddAccessControlAllowOriginHeader::class
         );
         assertTrue($annotations->contain('Property'));
-        assertEquals(
-                'stubbles.webapp.origin.hosts',
-                $annotations->firstNamed('Property')->getValue()
+        assert(
+                $annotations->firstNamed('Property')->getValue(),
+                equals('stubbles.webapp.origin.hosts')
         );
     }
 

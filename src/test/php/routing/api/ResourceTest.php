@@ -12,6 +12,11 @@ use bovigo\callmap\NewInstance;
 use stubbles\peer\http\HttpUri;
 use stubbles\webapp\auth\AuthConstraint;
 use stubbles\webapp\routing\RoutingAnnotations;
+
+use function bovigo\assert\assert;
+use function bovigo\assert\assertFalse;
+use function bovigo\assert\assertTrue;
+use function bovigo\assert\predicate\equals;
 /**
  * Test for stubbles\webapp\routing\api\Resource.
  *
@@ -54,7 +59,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsProvidedName()
     {
-        assertEquals('Orders', $this->resource->name());
+        assert($this->resource->name(), equals('Orders'));
     }
 
     /**
@@ -62,7 +67,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsProvidedRequestMethods()
     {
-        assertEquals(['GET'], $this->resource->requestMethods());
+        assert($this->resource->requestMethods(), equals(['GET']));
     }
 
     /**
@@ -92,9 +97,9 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
         $this->routingAnnotations->mapCalls(
                 ['description' => 'Endpoint for handling orders.']
         );
-        assertEquals(
-                'Endpoint for handling orders.',
-                $this->resource->description()
+        assert(
+                $this->resource->description(),
+                equals('Endpoint for handling orders.')
         );
     }
 
@@ -127,10 +132,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsProvidedListOfMimeTypes()
     {
-        assertEquals(
-                ['application/xml'],
-                $this->resource->mimeTypes()
-        );
+        assert($this->resource->mimeTypes(), equals(['application/xml']));
     }
 
     /**
@@ -165,9 +167,9 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
         $this->routingAnnotations->mapCalls(
                 ['statusCodes' => [new Status(200, 'Default response code')]]
         );
-        assertEquals(
-                [new Status(200, 'Default response code')],
-                $this->resource->statusCodes()
+        assert(
+                $this->resource->statusCodes(),
+                equals([new Status(200, 'Default response code')])
         );
     }
 
@@ -203,9 +205,9 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
         $this->routingAnnotations->mapCalls(
                 ['headers' => [new Header('X-Binford', 'More power!')]]
         );
-        assertEquals(
-                [new Header('X-Binford', 'More power!')],
-                $this->resource->headers()
+        assert(
+                $this->resource->headers(),
+                equals([new Header('X-Binford', 'More power!')])
         );
     }
 
@@ -241,9 +243,9 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
         $this->routingAnnotations->mapCalls(
                 ['parameters' => [new Parameter('binford', 'More power!', 'query')]]
         );
-        assertEquals(
-                [new Parameter('binford', 'More power!', 'query')],
-                $this->resource->parameters()
+        assert(
+                $this->resource->parameters(),
+                equals([new Parameter('binford', 'More power!', 'query')])
         );
     }
 
@@ -252,9 +254,9 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsProvidedAuthConstraint()
     {
-        assertEquals(
-                new AuthConstraint($this->routingAnnotations),
-                $this->resource->authConstraint()
+        assert(
+                $this->resource->authConstraint(),
+                equals(new AuthConstraint($this->routingAnnotations))
         );
     }
 
@@ -263,9 +265,9 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsLinksWithProvidedLinkAsSelf()
     {
-        assertEquals(
-                ['http://example.com/orders'],
-                $this->resource->links()->with('self')
+        assert(
+                $this->resource->links()->with('self'),
+                equals(['http://example.com/orders'])
         );
     }
 }

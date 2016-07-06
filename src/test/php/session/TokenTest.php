@@ -11,6 +11,10 @@ namespace stubbles\webapp\session;
 use bovigo\callmap\NewInstance;
 use stubbles\webapp\session\Session;
 
+use function bovigo\assert\assert;
+use function bovigo\assert\assertFalse;
+use function bovigo\assert\assertTrue;
+use function bovigo\assert\predicate\equals;
 use function bovigo\callmap\onConsecutiveCalls;
 use function bovigo\callmap\verify;
 use function stubbles\lang\reflect\annotationsOf;
@@ -97,7 +101,7 @@ class TokenTest extends \PHPUnit_Framework_TestCase
         $this->session->mapCalls(
                 ['value' => onConsecutiveCalls('aToken', 'nextToken')]
         );
-        assertEquals('nextToken', $this->token->next());
+        assert($this->token->next(), equals('nextToken'));
     }
 
     /**

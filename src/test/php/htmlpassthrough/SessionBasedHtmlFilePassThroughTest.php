@@ -17,11 +17,14 @@ use stubbles\webapp\request\UserAgent;
 use stubbles\webapp\response\Error;
 use stubbles\webapp\session\Session;
 
+use function bovigo\assert\assert;
+use function bovigo\assert\predicate\equals;
+use function bovigo\assert\predicate\isSameAs;
 use function bovigo\callmap\verify;
 /**
  * Test for stubbles\webapp\htmlpassthrough\SessionBasedHtmlFilePassThrough.
  *
- * @group  processor
+ * @group  htmlpassthrough
  */
 class SessionBasedHtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
 {
@@ -71,9 +74,9 @@ class SessionBasedHtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
      */
     public function functionReturnsClassName()
     {
-        assertEquals(
-                SessionBasedHtmlFilePassThrough::class,
-                \stubbles\webapp\sessionBasedHtmlPassThrough()
+        assert(
+                \stubbles\webapp\sessionBasedHtmlPassThrough(),
+                equals(SessionBasedHtmlFilePassThrough::class)
         );
     }
 
@@ -84,13 +87,13 @@ class SessionBasedHtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
     {
         $error = Error::notFound();
         $this->response->mapCalls(['notFound' => $error]);
-        assertSame(
-                $error,
+        assert(
                 $this->sessionBasedHtmlFilePassThrough->resolve(
                         $this->request,
                         $this->response,
                         new UriPath('/', '/doesNotExist.html')
-                )
+                ),
+                isSameAs($error)
         );
     }
 
@@ -100,13 +103,13 @@ class SessionBasedHtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
     public function selectsAvailableRoute()
     {
         $this->request->mapCalls(['userAgent' => new UserAgent('foo', true)]);
-        assertEquals(
-                'this is foo.html',
+        assert(
                 $this->sessionBasedHtmlFilePassThrough->resolve(
                         $this->request,
                         $this->response,
                         new UriPath('/', '/foo.html')
-                )
+                ),
+                equals('this is foo.html')
         );
     }
 
@@ -115,19 +118,19 @@ class SessionBasedHtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
      */
     public function fallsBackToIndexFileIfRequestForSlashOnly()
     {
-        $this->request->mapCalls(
-                ['userAgent'          => new UserAgent('foo', true),
-                 'hasSessionAttached' => true,
-                 'attachedSession'    => $this->session
-                ]
-        );
-        assertEquals(
-                'this is index.html',
+        $this->request->mapCalls([
+                'userAgent'          => new UserAgent('foo', true),
+                'hasSessionAttached' => true,
+                'attachedSession'    => $this->session
+
+        ]);
+        assert(
                 $this->sessionBasedHtmlFilePassThrough->resolve(
                         $this->request,
                         $this->response,
                         new UriPath('/', '/')
-                )
+                ),
+                equals('this is index.html')
         );
         verify($this->session, 'putValue')
                 ->received('stubbles.webapp.lastPage', 'index.html');
@@ -138,19 +141,19 @@ class SessionBasedHtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
      */
     public function writesNoSessionDataToOutputIfCookiesEnabled()
     {
-        $this->request->mapCalls(
-                ['userAgent'          => new UserAgent('foo', true),
-                 'hasSessionAttached' => true,
-                 'attachedSession'    => $this->session
-                ]
-        );
-        assertEquals(
-                'this is foo.html',
+        $this->request->mapCalls([
+                'userAgent'          => new UserAgent('foo', true),
+                'hasSessionAttached' => true,
+                'attachedSession'    => $this->session
+
+        ]);
+        assert(
                 $this->sessionBasedHtmlFilePassThrough->resolve(
                         $this->request,
                         $this->response,
                         new UriPath('/', '/foo.html')
-                )
+                ),
+                equals('this is foo.html')
         );
         verify($this->session, 'name')->wasNeverCalled();
         verify($this->session, 'id')->wasNeverCalled();
@@ -161,19 +164,19 @@ class SessionBasedHtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
      */
     public function writesSessionDataToOutputIfCookiesDisabled()
     {
-        $this->request->mapCalls(
-                ['userAgent'          => new UserAgent('foo', false),
-                 'hasSessionAttached' => true,
-                 'attachedSession'    => $this->session
-                ]
-        );
-        assertEquals(
-                'this is foo.html',
+        $this->request->mapCalls([
+                'userAgent'          => new UserAgent('foo', false),
+                'hasSessionAttached' => true,
+                'attachedSession'    => $this->session
+
+        ]);
+        assert(
                 $this->sessionBasedHtmlFilePassThrough->resolve(
                         $this->request,
                         $this->response,
                         new UriPath('/', '/foo.html')
-                )
+                ),
+                equals('this is foo.html')
         );
         verify($this->session, 'name')->wasCalledOnce();
         verify($this->session, 'id')->wasCalledOnce();

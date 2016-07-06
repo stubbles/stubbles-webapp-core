@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "7524f186ed1dec80a64ffa1e7f0e2af3",
-    "content-hash": "009cb9f41f7a6503db2dbd8cd1975f4a",
+    "hash": "9b370189672b7c8b73dc8ceb684b0a22",
+    "content-hash": "f35a72d647a4b3c060b2273bb7eec363",
     "packages": [
         {
             "name": "stubbles/core",
@@ -103,6 +103,51 @@
         }
     ],
     "packages-dev": [
+        {
+            "name": "bovigo/assert",
+            "version": "v1.7.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/mikey179/bovigo-assert.git",
+                "reference": "d93e10ece407dc91a777ab1877df46d05fabc8c1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/mikey179/bovigo-assert/zipball/d93e10ece407dc91a777ab1877df46d05fabc8c1",
+                "reference": "d93e10ece407dc91a777ab1877df46d05fabc8c1",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.6.0",
+                "sebastian/comparator": "^1.2",
+                "sebastian/exporter": "^1.2"
+            },
+            "require-dev": {
+                "mikey179/vfsstream": "^1.6",
+                "phpunit/phpunit": "^5.2"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.7.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "bovigo\\assert\\": "src/main/php"
+                },
+                "files": [
+                    "src/main/php/assert.php",
+                    "src/main/php/predicate/predicates.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "description": "Provides assertions for unit tests.",
+            "time": "2016-06-28 14:52:46"
+        },
         {
             "name": "bovigo/callmap",
             "version": "v1.1.0",

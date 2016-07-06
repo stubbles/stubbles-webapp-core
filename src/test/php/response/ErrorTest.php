@@ -13,11 +13,13 @@ use stubbles\input\errors\ParamErrors;
 use stubbles\input\errors\messages\LocalizedMessage;
 use stubbles\input\errors\messages\ParamErrorMessages;
 
+use function bovigo\assert\assert;
+use function bovigo\assert\predicate\equals;
 use function bovigo\callmap\onConsecutiveCalls;
 /**
  * Tests for stubbles\webapp\response\Error.
  *
- * @group  response
+ * @group  response_1
  * @since  6.2.0
  */
 class ErrorTest extends \PHPUnit_Framework_TestCase
@@ -31,17 +33,15 @@ class ErrorTest extends \PHPUnit_Framework_TestCase
         $paramErrors->append('foo', 'FIELD_EMPTY');
         $paramErrors->append('foo', 'STRING_TOO_SHORT', ['baz' => 303]);
         $paramErrors->append('bar', 'STRING_TOO_LONG');
-
         $errorMessages = NewInstance::of(ParamErrorMessages::class)
                 ->mapCalls(['messageFor' => onConsecutiveCalls(
                         new LocalizedMessage('en_*', 'foo empty'),
                         new LocalizedMessage('en_*', 'foo_too_short'),
                         new LocalizedMessage('en_*', 'bar_too_long')
                 )]);
-
-        assertEquals(
-                '{"error":{"foo":{"field":"foo","errors":[{"id":"FIELD_EMPTY","details":[],"message":"foo empty"},{"id":"STRING_TOO_SHORT","details":{"baz":303},"message":"foo_too_short"}]},"bar":{"field":"bar","errors":[{"id":"STRING_TOO_LONG","details":[],"message":"bar_too_long"}]}}}',
-                json_encode(Error::inParams($paramErrors, $errorMessages))
+        assert(
+                json_encode(Error::inParams($paramErrors, $errorMessages)),
+                equals('{"error":{"foo":{"field":"foo","errors":[{"id":"FIELD_EMPTY","details":[],"message":"foo empty"},{"id":"STRING_TOO_SHORT","details":{"baz":303},"message":"foo_too_short"}]},"bar":{"field":"bar","errors":[{"id":"STRING_TOO_LONG","details":[],"message":"bar_too_long"}]}}}')
         );
     }
 }

@@ -17,6 +17,11 @@ use stubbles\webapp\UriPath;
 use stubbles\webapp\response\Error;
 use stubbles\webapp\routing\Interceptors;
 
+use function bovigo\assert\assert;
+use function bovigo\assert\assertFalse;
+use function bovigo\assert\assertTrue;
+use function bovigo\assert\predicate\equals;
+use function bovigo\assert\predicate\isSameAs;
 use function bovigo\callmap\verify;
 /**
  * Tests for stubbles\webapp\routing\ResolvingResource.
@@ -111,10 +116,10 @@ class ResolvingResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsHttpsUriFromCalledUri()
     {
-        assertEquals(
-                'https://example.com/hello/world',
+        assert(
                 (string) $this->createResolvingResourceWithTarget(function() {})
-                        ->httpsUri()
+                        ->httpsUri(),
+                equals('https://example.com/hello/world')
         );
     }
 
@@ -136,15 +141,15 @@ class ResolvingResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function processCallsClosureGivenAsCallback()
     {
-        assertEquals(
-                'Hello world',
+        assert(
                 $this->createResolvingResourceWithTarget(
                         function(Request $request, Response $response, UriPath $uriPath)
                         {
                             $response->setStatusCode(418);
                             return 'Hello world';
                         }
-                )->resolve($this->request, $this->response)
+                )->resolve($this->request, $this->response),
+                equals('Hello world')
         );
         verify($this->response, 'setStatusCode')->received(418);
     }
@@ -166,10 +171,10 @@ class ResolvingResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function processCallsGivenCallback()
     {
-        assertEquals(
-                'Hello world',
+        assert(
                 $this->createResolvingResourceWithTarget([$this, 'theCallable'])
-                        ->resolve($this->request, $this->response)
+                        ->resolve($this->request, $this->response),
+                equals('Hello world')
         );
         verify($this->response, 'setStatusCode')->received(418);
     }
@@ -193,10 +198,10 @@ class ResolvingResourceTest extends \PHPUnit_Framework_TestCase
     {
         $target = NewInstance::of(Target::class);
         $target->mapCalls(['resolve' => 'Hello world']);
-        assertEquals(
-                'Hello world',
+        assert(
                 $this->createResolvingResourceWithTarget($target)
-                        ->resolve($this->request, $this->response)
+                        ->resolve($this->request, $this->response),
+                equals('Hello world')
         );
         verify($target, 'resolve')->received(
                 $this->request,
@@ -213,10 +218,10 @@ class ResolvingResourceTest extends \PHPUnit_Framework_TestCase
         $this->injector->mapCalls(['getInstance' => new \stdClass()]);
         $error = new Error('error');
         $this->response->mapCalls(['internalServerError' => $error]);
-        assertSame(
-                $error,
+        assert(
                 $this->createResolvingResourceWithTarget('\stdClass')
-                        ->resolve($this->request, $this->response)
+                        ->resolve($this->request, $this->response),
+                isSameAs($error)
         );
     }
 
@@ -228,10 +233,10 @@ class ResolvingResourceTest extends \PHPUnit_Framework_TestCase
         $target = NewInstance::of(Target::class);
         $target->mapCalls(['resolve' => 'Hello world']);
         $this->injector->mapCalls(['getInstance' => $target]);
-        assertEquals(
-                'Hello world',
+        assert(
                 $this->createResolvingResourceWithTarget(get_class($target))
-                        ->resolve($this->request, $this->response)
+                        ->resolve($this->request, $this->response),
+                equals('Hello world')
         );
     }
 }

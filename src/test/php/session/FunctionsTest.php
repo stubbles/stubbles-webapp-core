@@ -8,6 +8,8 @@
  * @package  stubbles\webapp\session
  */
 namespace stubbles\webapp\session;
+use function bovigo\assert\assert;
+use function bovigo\assert\predicate\isInstanceOf;
 /**
  * Tests for stubbles\webapp\session\*().
  *
@@ -21,9 +23,9 @@ class FunctionsTest extends \PHPUnit_Framework_TestCase
      */
     public function nativeCreatesWebSession()
     {
-        assertInstanceOf(
-                WebSession::class,
-                native('example', md5('example user agent'))
+        assert(
+                native('example', md5('example user agent')),
+                isInstanceOf(WebSession::class)
         );
     }
 
@@ -32,7 +34,7 @@ class FunctionsTest extends \PHPUnit_Framework_TestCase
      */
     public function noneDurableCreatesWebSession()
     {
-        assertInstanceOf(WebSession::class, noneDurable());
+        assert(noneDurable(), isInstanceOf(WebSession::class));
     }
 
     /**
@@ -41,6 +43,6 @@ class FunctionsTest extends \PHPUnit_Framework_TestCase
      */
     public function nullSessionCreatesNullSession()
     {
-        assertInstanceOf(NullSession::class, nullSession());
+        assert(nullSession(), isInstanceOf(NullSession::class));
     }
 }

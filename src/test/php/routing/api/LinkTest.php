@@ -9,6 +9,9 @@
  */
 namespace stubbles\webapp\routing\api;
 use stubbles\peer\http\HttpUri;
+
+use function bovigo\assert\assert;
+use function bovigo\assert\predicate\equals;
 /**
  * Test for stubbles\webapp\routing\api\Link.
  *
@@ -41,7 +44,7 @@ class LinkTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsProvidedRel()
     {
-        assertEquals('self', $this->link->rel());
+        assert($this->link->rel(), equals('self'));
     }
 
     /**
@@ -49,7 +52,7 @@ class LinkTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsProvidedUri()
     {
-        assertEquals('http://example.com/foo', $this->link->uri());
+        assert($this->link->uri(), equals('http://example.com/foo'));
     }
 
     /**
@@ -57,7 +60,7 @@ class LinkTest extends \PHPUnit_Framework_TestCase
      */
     public function stringRepresentationIsUri()
     {
-        assertEquals('http://example.com/foo', $this->link);
+        assert($this->link, equals('http://example.com/foo'));
     }
 
     /**
@@ -65,9 +68,9 @@ class LinkTest extends \PHPUnit_Framework_TestCase
      */
     public function canBeSerializedToJson()
     {
-        assertEquals(
-                '{"href":"http:\/\/example.com\/foo"}',
-                json_encode($this->link)
+        assert(
+                json_encode($this->link),
+                equals('{"href":"http:\/\/example.com\/foo"}')
         );
     }
 }

@@ -19,6 +19,16 @@ use stubbles\webapp\auth\Identity;
 use stubbles\webapp\auth\Roles;
 use stubbles\webapp\auth\User;
 use stubbles\webapp\session\Session;
+
+use function bovigo\assert\assert;
+use function bovigo\assert\assertFalse;
+use function bovigo\assert\assertNull;
+use function bovigo\assert\assertTrue;
+use function bovigo\assert\predicate\equals;
+use function bovigo\assert\predicate\isInstanceOf;
+use function bovigo\assert\predicate\isNotEqualTo;
+use function bovigo\assert\predicate\isOfSize;
+use function bovigo\assert\predicate\isSameAs;
 /**
  * Tests for stubbles\webapp\request\WebRequest.
  *
@@ -100,9 +110,9 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
     public function usesGetParamsFromRawSourceWhenRequestMethodIsGET()
     {
         $this->fillGlobals('GET');
-        assertEquals(
-                ['foo', 'roland'],
-                WebRequest::fromRawSource()->paramNames()
+        assert(
+                WebRequest::fromRawSource()->paramNames(),
+                equals(['foo', 'roland'])
         );
     }
 
@@ -112,9 +122,9 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
     public function usesPostParamsFromRawSourceWhenRequestMethodIsPOST()
     {
         $this->fillGlobals('POST');
-        assertEquals(
-                ['baz', 'donald'],
-                WebRequest::fromRawSource()->paramNames()
+        assert(
+                WebRequest::fromRawSource()->paramNames(),
+                equals(['baz', 'donald'])
         );
     }
 
@@ -124,9 +134,9 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
     public function usesServerForHeaderFromRawSource()
     {
         $this->fillGlobals();
-        assertEquals(
-                ['REQUEST_METHOD', 'HTTP_ACCEPT'],
-                WebRequest::fromRawSource()->headerNames()
+        assert(
+                WebRequest::fromRawSource()->headerNames(),
+                equals(['REQUEST_METHOD', 'HTTP_ACCEPT'])
         );
     }
 
@@ -136,9 +146,9 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
     public function usesCookieForCookieFromRawSource()
     {
         $this->fillGlobals();
-        assertEquals(
-                ['chocolateChip', 'master'],
-                WebRequest::fromRawSource()->cookieNames()
+        assert(
+                WebRequest::fromRawSource()->cookieNames(),
+                equals(['chocolateChip', 'master'])
         );
     }
 
@@ -147,7 +157,7 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsRequestMethodInUpperCase()
     {
-        assertEquals('POST', $this->webRequest->method());
+        assert($this->webRequest->method(), equals('POST'));
     }
 
     /**
@@ -176,9 +186,9 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
      */
     public function reportsVersion1_0WhenNoServerProtocolSet()
     {
-         assertEquals(
-                 HttpVersion::HTTP_1_0,
-                $this->createBaseWebRequest([], [])->protocolVersion()
+         assert(
+                $this->createBaseWebRequest([], [])->protocolVersion(),
+                equals(HttpVersion::HTTP_1_0)
         );
     }
 
@@ -216,10 +226,10 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
      */
     public function reportsParsedProtocolVersion($protocol)
     {
-         assertEquals(
-                HttpVersion::fromString($protocol),
+         assert(
                 $this->createBaseWebRequest([], ['SERVER_PROTOCOL' => $protocol])
-                        ->protocolVersion()
+                        ->protocolVersion(),
+                equals(HttpVersion::fromString($protocol))
         );
     }
 
@@ -240,7 +250,7 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
     {
         assertNull(
                 $this->createBaseWebRequest([], ['REMOTE_ADDR' => 'foo'])
-                     ->originatingIpAddress()
+                    ->originatingIpAddress()
         );
     }
 
@@ -257,7 +267,7 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
                          'HTTP_X_FORWARDED_FOR' => 'foo'
                         ]
                        )
-                     ->originatingIpAddress()
+                    ->originatingIpAddress()
         );
     }
 
@@ -267,10 +277,10 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
      */
     public function originatingIpAddressIsRemoteAddressWhenNoForwardedForHeaderPresent()
     {
-        assertEquals(
-                '127.0.0.1',
+        assert(
                 $this->createBaseWebRequest([], ['REMOTE_ADDR' => '127.0.0.1'])
-                     ->originatingIpAddress()
+                    ->originatingIpAddress(),
+                equals('127.0.0.1')
         );
     }
 
@@ -280,10 +290,10 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
      */
     public function originatingIpAddressIsInstanceOfIpAddress()
     {
-        assertInstanceOf(
-                IpAddress::class,
+        assert(
                 $this->createBaseWebRequest([], ['REMOTE_ADDR' => '127.0.0.1'])
-                     ->originatingIpAddress()
+                    ->originatingIpAddress(),
+                isInstanceOf(IpAddress::class)
         );
     }
 
@@ -293,15 +303,15 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
      */
     public function originatingIpAddressIsForwardedAddressWhenForwardedForHeaderPresent()
     {
-        assertEquals(
-                '172.19.120.122',
+        assert(
                 $this->createBaseWebRequest(
                         [],
                         ['REMOTE_ADDR'          => '127.0.0.1',
                          'HTTP_X_FORWARDED_FOR' => '172.19.120.122'
                         ]
                        )
-                     ->originatingIpAddress()
+                    ->originatingIpAddress(),
+                equals('172.19.120.122')
         );
     }
 
@@ -311,15 +321,15 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
      */
     public function originatingIpAddressIsFirstFromForwardedAddressesWhenForwardedForHeaderContainsList()
     {
-        assertEquals(
-                '172.19.120.122',
+        assert(
                 $this->createBaseWebRequest(
                         [],
                         ['REMOTE_ADDR'          => '127.0.0.1',
                          'HTTP_X_FORWARDED_FOR' => '172.19.120.122, 168.30.48.124'
                         ]
                        )
-                     ->originatingIpAddress()
+                    ->originatingIpAddress(),
+                equals('172.19.120.122')
         );
     }
 
@@ -337,8 +347,7 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
      */
     public function uriReturnsCompleteRequestUri()
     {
-        assertEquals(
-                'http://stubbles.net:80/index.php?foo=bar',
+        assert(
                 $this->createBaseWebRequest(
                         ['foo'         => 'bar'],
                         ['HTTPS'       => null,
@@ -346,9 +355,10 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
                          'SERVER_PORT' => 80,
                          'REQUEST_URI' => '/index.php?foo=bar'
                         ]
-                )
-                ->uri()
-                ->asString()
+                    )
+                    ->uri()
+                    ->asString(),
+                equals('http://stubbles.net:80/index.php?foo=bar')
         );
     }
 
@@ -358,8 +368,7 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
      */
     public function uriReturnsCompleteRequestUriWithoutDoublePortIfPortIsInHost()
     {
-        assertEquals(
-                'http://localhost:8080/index.php?foo=bar',
+        assert(
                 $this->createBaseWebRequest(
                         ['foo'         => 'bar'],
                         ['HTTPS'       => null,
@@ -367,9 +376,10 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
                          'SERVER_PORT' => 80,
                          'REQUEST_URI' => '/index.php?foo=bar'
                         ]
-                )
-                ->uri()
-                ->asString()
+                    )
+                    ->uri()
+                    ->asString(),
+                equals('http://localhost:8080/index.php?foo=bar')
         );
     }
 
@@ -379,8 +389,7 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
      */
     public function uriReturnsCompleteRequestUriWithNonDefaultPort()
     {
-        assertEquals(
-                'http://example.net:8080/index.php?foo=bar',
+        assert(
                 $this->createBaseWebRequest(
                         ['foo'         => 'bar'],
                         ['HTTPS'       => null,
@@ -388,9 +397,10 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
                          'SERVER_PORT' => 8080,
                          'REQUEST_URI' => '/index.php?foo=bar'
                         ]
-                )
-                ->uri()
-                ->asString()
+                    )
+                    ->uri()
+                    ->asString(),
+                equals('http://example.net:8080/index.php?foo=bar')
         );
     }
 
@@ -399,8 +409,7 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
      */
     public function uriReturnsCompleteRequestUriForHttps()
     {
-        assertEquals(
-                'https://stubbles.net:443/index.php?foo=bar',
+        assert(
                 $this->createBaseWebRequest(
                         ['foo'         => 'bar'],
                         ['HTTPS'       => true,
@@ -408,9 +417,10 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
                          'SERVER_PORT' => 443,
                          'REQUEST_URI' => '/index.php?foo=bar'
                         ]
-                )
-                ->uri()
-                ->asString()
+                    )
+                    ->uri()
+                    ->asString(),
+                equals('https://stubbles.net:443/index.php?foo=bar')
         );
     }
 
@@ -419,10 +429,7 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsListOfParamNames()
     {
-        assertEquals(
-                ['foo', 'roland'],
-                $this->webRequest->paramNames()
-        );
+        assert($this->webRequest->paramNames(), equals(['foo', 'roland']));
     }
 
     /**
@@ -446,9 +453,9 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
      */
     public function validateParamReturnsValueValidator()
     {
-        assertInstanceOf(
-                ValueValidator::class,
-                $this->webRequest->validateParam('foo')
+        assert(
+                $this->webRequest->validateParam('foo'),
+                isInstanceOf(ValueValidator::class)
         );
     }
 
@@ -457,9 +464,9 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
      */
     public function validateParamReturnsValueValidatorForNonExistingParam()
     {
-        assertInstanceOf(
-                ValueValidator::class,
-                $this->webRequest->validateParam('baz')
+        assert(
+                $this->webRequest->validateParam('baz'),
+                isInstanceOf(ValueValidator::class)
         );
     }
 
@@ -468,9 +475,9 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
      */
     public function readParamReturnsValueReader()
     {
-        assertInstanceOf(
-                ValueReader::class,
-                $this->webRequest->readParam('foo')
+        assert(
+                $this->webRequest->readParam('foo'),
+                isInstanceOf(ValueReader::class)
         );
     }
 
@@ -479,9 +486,9 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
      */
     public function readParamReturnsValueReaderForNonExistingParam()
     {
-        assertInstanceOf(
-                ValueReader::class,
-                $this->webRequest->readParam('baz')
+        assert(
+                $this->webRequest->readParam('baz'),
+                isInstanceOf(ValueReader::class)
         );
     }
 
@@ -490,9 +497,9 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsListOfHeaderNames()
     {
-        assertEquals(
-                ['HTTP_ACCEPT', 'REQUEST_METHOD'],
-                $this->webRequest->headerNames()
+        assert(
+                $this->webRequest->headerNames(),
+                equals(['HTTP_ACCEPT', 'REQUEST_METHOD'])
         );
     }
 
@@ -501,9 +508,9 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsHeaderErrors()
     {
-        assertInstanceOf(
-                ParamErrors::class,
-                $this->webRequest->headerErrors()
+        assert(
+                $this->webRequest->headerErrors(),
+                isInstanceOf(ParamErrors::class)
         );
     }
 
@@ -566,9 +573,9 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
      */
     public function validateHeaderReturnsValueValidator()
     {
-        assertInstanceOf(
-                ValueValidator::class,
-                $this->webRequest->validateHeader('HTTP_ACCEPT')
+        assert(
+                $this->webRequest->validateHeader('HTTP_ACCEPT'),
+                isInstanceOf(ValueValidator::class)
         );
     }
 
@@ -577,9 +584,9 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
      */
     public function validateHeaderReturnsValueValidatorForNonExistingParam()
     {
-        assertInstanceOf(
-                ValueValidator::class,
-                $this->webRequest->validateHeader('baz')
+        assert(
+                $this->webRequest->validateHeader('baz'),
+                isInstanceOf(ValueValidator::class)
         );
     }
 
@@ -591,9 +598,9 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
     public function validateRedirectHeaderReturnsValueValidatorForNonExistingHeader()
     {
         $webRequest = $this->createBaseWebRequest([], []);
-        assertInstanceOf(
-                ValueValidator::class,
-                $webRequest->validateRedirectHeader('HTTP_AUTHORIZATION')
+        assert(
+                $webRequest->validateRedirectHeader('HTTP_AUTHORIZATION'),
+                isInstanceOf(ValueValidator::class)
         );
     }
 
@@ -635,9 +642,9 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
      */
     public function readHeaderReturnsValueReader()
     {
-        assertInstanceOf(
-                ValueReader::class,
-                $this->webRequest->readHeader('HTTP_ACCEPT')
+        assert(
+                $this->webRequest->readHeader('HTTP_ACCEPT'),
+                isInstanceOf(ValueReader::class)
         );
     }
 
@@ -646,9 +653,9 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
      */
     public function readHeaderReturnsValueReaderForNonExistingParam()
     {
-        assertInstanceOf(
-                ValueReader::class,
-                $this->webRequest->readHeader('baz')
+        assert(
+                $this->webRequest->readHeader('baz'),
+                isInstanceOf(ValueReader::class)
         );
     }
 
@@ -673,9 +680,9 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
     public function readRedirectHeaderReturnsValueReaderWithOriginalHeaderIfRedirectHeaderNotPresent()
     {
         $webRequest = $this->createBaseWebRequest([], ['HTTP_AUTHORIZATION' => 'someCoolToken']);
-        assertEquals(
-                'someCoolToken',
-                $webRequest->readRedirectHeader('HTTP_AUTHORIZATION')->unsecure()
+        assert(
+                $webRequest->readRedirectHeader('HTTP_AUTHORIZATION')->unsecure(),
+                equals('someCoolToken')
         );
     }
 
@@ -692,9 +699,9 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
                  'REDIRECT_HTTP_AUTHORIZATION' => 'realToken'
                 ]
         );
-        assertEquals(
-                'realToken',
-                $webRequest->readRedirectHeader('HTTP_AUTHORIZATION')->unsecure()
+        assert(
+                $webRequest->readRedirectHeader('HTTP_AUTHORIZATION')->unsecure(),
+                equals('realToken')
         );
     }
 
@@ -703,10 +710,7 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsListOfCookieNames()
     {
-        assertEquals(
-                ['chocolateChip', 'master'],
-                $this->webRequest->cookieNames()
-        );
+        assert($this->webRequest->cookieNames(), equals(['chocolateChip', 'master']));
     }
 
     /**
@@ -714,9 +718,9 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsCookieErrors()
     {
-        assertInstanceOf(
-                ParamErrors::class,
-                $this->webRequest->cookieErrors()
+        assert(
+                $this->webRequest->cookieErrors(),
+                isInstanceOf(ParamErrors::class)
         );
     }
 
@@ -741,9 +745,9 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
      */
     public function validateCookieReturnsValueValidator()
     {
-        assertInstanceOf(
-                ValueValidator::class,
-                $this->webRequest->validateCookie('chocolateChip')
+        assert(
+                $this->webRequest->validateCookie('chocolateChip'),
+                isInstanceOf(ValueValidator::class)
         );
     }
 
@@ -752,9 +756,9 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
      */
     public function validateCookieReturnsValueValidatorForNonExistingParam()
     {
-        assertInstanceOf(
-                ValueValidator::class,
-                $this->webRequest->validateCookie('baz')
+        assert(
+                $this->webRequest->validateCookie('baz'),
+                isInstanceOf(ValueValidator::class)
         );
     }
 
@@ -763,9 +767,9 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
      */
     public function readCookieReturnsValueReader()
     {
-        assertInstanceOf(
-                ValueReader::class,
-                $this->webRequest->readCookie('chocolateChip')
+        assert(
+                $this->webRequest->readCookie('chocolateChip'),
+                isInstanceOf(ValueReader::class)
         );
     }
 
@@ -774,9 +778,9 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
      */
     public function readCookieReturnsValueReaderForNonExistingParam()
     {
-        assertInstanceOf(
-                ValueReader::class,
-                $this->webRequest->readCookie('baz')
+        assert(
+                $this->webRequest->readCookie('baz'),
+                isInstanceOf(ValueReader::class)
         );
     }
 
@@ -787,13 +791,13 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsUserAgent()
     {
-        assertEquals(
-                new UserAgent('foo', true),
+        assert(
                 $this->createBaseWebRequest(
                         [],
                         ['HTTP_USER_AGENT' => 'foo'],
                         ['chocolateChip' => 'someValue']
-                )->userAgent()
+                )->userAgent(),
+                equals(new UserAgent('foo', true))
         );
     }
 
@@ -804,13 +808,13 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsUserAgentWhenHeaderNotPresent()
     {
-        assertEquals(
-                new UserAgent(null, true),
+        assert(
                 $this->createBaseWebRequest(
                         [],
                         [],
                         ['chocolateChip' => 'someValue']
-                )->userAgent()
+                )->userAgent(),
+                equals(new UserAgent(null, true))
         );
     }
 
@@ -877,11 +881,7 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
      */
     public function generatesIdIfNoRequestIdHeaderPresent()
     {
-        assertEquals(
-                25,
-                strlen($this->createBaseWebRequest()->id()),
-                'Expected a generated id with 25 characters'
-        );
+        assert($this->createBaseWebRequest()->id(), isOfSize(25));
     }
 
     /**
@@ -892,10 +892,7 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
     public function generatedIdIsPersistentThroughoutRequest()
     {
         $request = $this->createBaseWebRequest();
-        assertEquals(
-                $request->id(),
-                $request->id()
-        );
+        assert($request->id(), equals($request->id()));
     }
 
     /**
@@ -919,9 +916,9 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
      */
     public function generatesIdIfRequestContainsInvalidValue($invalidValue)
     {
-        assertNotEquals(
-                $invalidValue,
-                $this->createBaseWebRequest([], ['HTTP_X_REQUEST_ID' => $invalidValue])->id()
+        assert(
+                $this->createBaseWebRequest([], ['HTTP_X_REQUEST_ID' => $invalidValue])->id(),
+                isNotEqualTo($invalidValue)
         );
     }
 
@@ -945,9 +942,9 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsValidValueFromHeader($validValue)
     {
-        assertEquals(
-                $validValue,
-                $this->createBaseWebRequest([], ['HTTP_X_REQUEST_ID' => $validValue])->id()
+        assert(
+                $this->createBaseWebRequest([], ['HTTP_X_REQUEST_ID' => $validValue])->id(),
+                equals($validValue)
         );
     }
 
@@ -957,9 +954,9 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
      */
     public function bodyReturnsInputStream()
     {
-        assertInstanceOf(
-                InputStream::class,
-                $this->createBaseWebRequest()->body()
+        assert(
+                $this->createBaseWebRequest()->body(),
+                isInstanceOf(InputStream::class)
         );
     }
 
@@ -1001,9 +998,9 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
     {
         $request = $this->createBaseWebRequest();
         $session = NewInstance::of(Session::class);
-        assertSame(
+        assert(
                 $request->attachSession($session),
-                $request->attachedSession()
+                isSameAs($request->attachedSession())
         );
     }
 
@@ -1046,11 +1043,11 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
     public function returnsAssociatedIdentity()
     {
         $identity = new Identity(NewInstance::of(User::class), Roles::none());
-        assertSame(
-                $identity,
+        assert(
                 $this->createBaseWebRequest()
                         ->associate($identity)
-                        ->identity()
+                        ->identity(),
+                isSameAs($identity)
         );
     }
 }

@@ -21,6 +21,13 @@ use stubbles\webapp\interceptor\PostInterceptor;
 use stubbles\webapp\routing\api\Header;
 use stubbles\webapp\routing\api\Parameter;
 use stubbles\webapp\routing\api\Status;
+
+use function bovigo\assert\assert;
+use function bovigo\assert\assertEmptyArray;
+use function bovigo\assert\assertFalse;
+use function bovigo\assert\assertTrue;
+use function bovigo\assert\expect;
+use function bovigo\assert\predicate\equals;
 /**
  * Class with annotations for tests.
  *
@@ -107,21 +114,21 @@ class RouteTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @test
-     * @expectedException  InvalidArgumentException
      */
     public function constructRouteWithInvalidCallbackThrowsIllegalArgumentException()
     {
-        new Route('/hello', 500, 'GET');
+        expect(function() { new Route('/hello', 500, 'GET'); })
+                ->throws(\InvalidArgumentException::class);
     }
 
     /**
      * @test
-     * @expectedException  InvalidArgumentException
      * @since  4.0.0
      */
     public function constructRouteWithInvalidRequestMethodThrowsIllegalArgumentException()
     {
-        new Route('/hello', function() {}, 500);
+        expect(function() { new Route('/hello', function() {}, 500); })
+                ->throws(\InvalidArgumentException::class);
     }
 
     /**
@@ -149,9 +156,9 @@ class RouteTest extends \PHPUnit_Framework_TestCase
      */
     public function allowedRequestMethodsContainAllIfNoneGiven()
     {
-        assertEquals(
-                ['GET', 'HEAD', 'POST', 'PUT', 'DELETE'],
-                $this->createRoute(null)->allowedRequestMethods()
+        assert(
+                $this->createRoute(null)->allowedRequestMethods(),
+                equals(['GET', 'HEAD', 'POST', 'PUT', 'DELETE'])
         );
     }
 
@@ -160,7 +167,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
      */
     public function allowedRequestMethodsContainGivenSingleMethodOnly()
     {
-        assertEquals(['GET'], $this->createRoute()->allowedRequestMethods());
+        assert($this->createRoute()->allowedRequestMethods(), equals(['GET']));
     }
 
     /**
@@ -169,10 +176,10 @@ class RouteTest extends \PHPUnit_Framework_TestCase
      */
     public function allowedRequestMethodsContainGivenListOfMethodOnly()
     {
-        assertEquals(
-                ['POST', 'PUT'],
-                $this->createRoute(['POST', 'PUT']
-        )->allowedRequestMethods());
+        assert(
+                $this->createRoute(['POST', 'PUT'])->allowedRequestMethods(),
+                equals(['POST', 'PUT'])
+        );
     }
 
     /**
@@ -252,10 +259,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsGivenPath()
     {
-        assertEquals(
-                '/hello/{name}',
-                $this->createRoute()->configuredPath()
-        );
+        assert($this->createRoute()->configuredPath(), equals('/hello/{name}'));
     }
 
     /**
@@ -264,7 +268,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     public function returnsGivenCallback()
     {
         $route = new Route('/hello/{name}', __CLASS__);
-        assertEquals(__CLASS__, $route->target());
+        assert($route->target(), equals(__CLASS__));
     }
 
     /**
@@ -272,16 +276,16 @@ class RouteTest extends \PHPUnit_Framework_TestCase
      */
     public function hasNoPreInterceptorsByDefault()
     {
-        assertEquals([], $this->createRoute()->preInterceptors());
+        assertEmptyArray($this->createRoute()->preInterceptors());
     }
 
     /**
      * @test
-     * @expectedException  InvalidArgumentException
      */
     public function addInvalidPreInterceptorThrowsIllegalArgumentException()
     {
-        $this->createRoute()->preIntercept(303);
+        expect(function() { $this->createRoute()->preIntercept(303); })
+                ->throws(\InvalidArgumentException::class);
     }
 
     /**
@@ -292,17 +296,18 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         $preInterceptorClosure  = function() {};
         $preInterceptor         = NewInstance::of(PreInterceptor::class);
         $preInterceptorFunction = 'array_map';
-        assertEquals(
-                [get_class($preInterceptor),
-                 $preInterceptorClosure,
-                 $preInterceptor,
-                 $preInterceptorFunction
-                ],
+        assert(
                 $this->createRoute()->preIntercept(get_class($preInterceptor))
                         ->preIntercept($preInterceptorClosure)
                         ->preIntercept($preInterceptor)
                         ->preIntercept($preInterceptorFunction)
-                        ->preInterceptors()
+                        ->preInterceptors(),
+                equals([
+                        get_class($preInterceptor),
+                        $preInterceptorClosure,
+                        $preInterceptor,
+                        $preInterceptorFunction
+                ])
         );
     }
 
@@ -311,16 +316,16 @@ class RouteTest extends \PHPUnit_Framework_TestCase
      */
     public function hasNoPostInterceptorsByDefault()
     {
-        assertEquals([], $this->createRoute()->postInterceptors());
+        assertEmptyArray($this->createRoute()->postInterceptors());
     }
 
     /**
      * @test
-     * @expectedException  InvalidArgumentException
      */
     public function addInvalidPostInterceptorThrowsIllegalArgumentException()
     {
-        $this->createRoute()->postIntercept(303);
+        expect(function() { $this->createRoute()->postIntercept(303); })
+                ->throws(\InvalidArgumentException::class);
     }
 
     /**
@@ -331,17 +336,18 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         $postInterceptorClosure  = function() {};
         $postInterceptor         = NewInstance::of(PostInterceptor::class);
         $postInterceptorFunction = 'array_map';
-        assertEquals(
-                [get_class($postInterceptor),
-                 $postInterceptorClosure,
-                 $postInterceptor,
-                 $postInterceptorFunction
-                ],
+        assert(
                 $this->createRoute()->postIntercept(get_class($postInterceptor))
                         ->postIntercept($postInterceptorClosure)
                         ->postIntercept($postInterceptor)
                         ->postIntercept($postInterceptorFunction)
-                        ->postInterceptors()
+                        ->postInterceptors(),
+                equals([
+                        get_class($postInterceptor),
+                        $postInterceptorClosure,
+                        $postInterceptor,
+                        $postInterceptorFunction
+                ])
         );
     }
 
@@ -702,20 +708,18 @@ class RouteTest extends \PHPUnit_Framework_TestCase
      */
     public function supportNoMimeTypeByDefault()
     {
-        assertEquals(
-                [],
-                $this->createRoute()->supportedMimeTypes()->asArray()
-        );
+        assertEmptyArray($this->createRoute()->supportedMimeTypes()->asArray());
     }
 
     /**
      * @test
-     * @expectedException  InvalidArgumentException
      * @since  5.0.0
      */
     public function addMimeTypeWithoutClassWhenNoDefaultClassIsKnownThrowsInvalidArgumentException()
     {
-        $this->createRoute()->supportsMimeType('application/foo');
+        expect(function() {
+                $this->createRoute()->supportsMimeType('application/foo');
+        })->throws(\InvalidArgumentException::class);
     }
 
     /**
@@ -723,13 +727,13 @@ class RouteTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsListOfAddedSupportedMimeTypes()
     {
-        assertEquals(
-                ['application/json', 'application/xml'],
+        assert(
                 $this->createRoute()
                         ->supportsMimeType('application/json')
                         ->supportsMimeType('application/xml')
                         ->supportedMimeTypes()
-                        ->asArray()
+                        ->asArray(),
+                equals(['application/json', 'application/xml'])
         );
     }
 
@@ -753,12 +757,12 @@ class RouteTest extends \PHPUnit_Framework_TestCase
      */
     public function supportedMimeTypesReturnSpecialClass()
     {
-        assertEquals(
-                'example\FooBar',
+        assert(
                 $this->createRoute()
                         ->supportsMimeType('foo/bar', 'example\FooBar')
                         ->supportedMimeTypes()
-                        ->classFor('foo/bar')
+                        ->classFor('foo/bar'),
+                equals('example\FooBar')
         );
     }
 
@@ -801,9 +805,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 OtherAnnotatedProcessor::class,
                 'GET'
         );
-        assertTrue(
-                $route->supportedMimeTypes()->isContentNegotationDisabled()
-        );
+        assertTrue($route->supportedMimeTypes()->isContentNegotationDisabled());
     }
 
     /**
@@ -818,9 +820,9 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 AnnotatedProcessor::class,
                 'GET'
         );
-        assertEquals(
-                ['text/plain', 'application/bar', 'application/baz'],
-                $route->supportedMimeTypes()->asArray()
+        assert(
+                $route->supportedMimeTypes()->asArray(),
+                equals(['text/plain', 'application/bar', 'application/baz'])
         );
     }
 
@@ -848,9 +850,9 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 AnnotatedProcessor::class,
                 'GET'
         );
-        assertEquals(
-                $expectedMimeTypeClass,
-                $route->supportedMimeTypes()->classFor($mimeType)
+        assert(
+                $route->supportedMimeTypes()->classFor($mimeType),
+                equals($expectedMimeTypeClass)
         );
     }
 
@@ -866,11 +868,11 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 AnnotatedProcessor::class,
                 'GET'
         );
-        assertEquals(
-                'example\OtherBar',
+        assert(
                 $route->supportsMimeType('application/bar', 'example\OtherBar')
-                      ->supportedMimeTypes()
-                      ->classFor('application/bar')
+                        ->supportedMimeTypes()
+                        ->classFor('application/bar'),
+                equals('example\OtherBar')
         );
     }
 
@@ -917,16 +919,16 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 'GET'
         );
         $annotations = new RoutingAnnotations($target);
-        assertEquals(
-                new api\Resource(
+        assert(
+                $route->asResource(HttpUri::fromString('https://example.com/')),
+                equals(new api\Resource(
                         $name,
                         ['GET'],
                         HttpUri::fromString('https://example.com/orders'),
                         $mimeTypes,
                         $annotations,
                         new AuthConstraint($annotations)
-                ),
-                $route->asResource(HttpUri::fromString('https://example.com/'))
+                ))
         );
     }
 
@@ -941,10 +943,10 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 AnnotatedProcessor::class,
                 'GET'
         );
-        assertEquals(
-                'https://example.com/orders/',
+        assert(
                 $route->asResource(HttpUri::fromString('http://example.com/'))
-                        ->links()->with('self')[0]->uri()
+                        ->links()->with('self')[0]->uri(),
+                equals('https://example.com/orders/')
         );
     }
 
@@ -960,10 +962,10 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 'GET'
         );
         $route->httpsOnly();
-        assertEquals(
-                'https://example.com/orders/',
+        assert(
                 $route->asResource(HttpUri::fromString('http://example.com/'))
-                        ->links()->with('self')[0]->uri()
+                        ->links()->with('self')[0]->uri(),
+                equals('https://example.com/orders/')
         );
     }
 
@@ -978,10 +980,10 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 OtherAnnotatedProcessor::class,
                 'GET'
         );
-        assertEquals(
-                'http://example.com/orders/',
+        assert(
                 $route->asResource(HttpUri::fromString('http://example.com/'))
-                        ->links()->with('self')[0]->uri()
+                        ->links()->with('self')[0]->uri(),
+                equals('http://example.com/orders/')
         );
     }
 
@@ -1039,14 +1041,15 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 'GET'
         );
         $route->supportsMimeType('application/xml');
-        assertEquals(
-                ['text/plain',
-                 'application/bar',
-                 'application/baz',
-                 'application/xml'
-                ],
+        assert(
                 $route->asResource(HttpUri::fromString('http://example.com/'))
-                        ->mimeTypes()
+                        ->mimeTypes(),
+                equals([
+                        'text/plain',
+                        'application/bar',
+                        'application/baz',
+                        'application/xml'
+                ])
         );
     }
 
@@ -1062,15 +1065,16 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 'GET'
         );
         $route->supportsMimeType('application/xml');
-        assertEquals(
-                ['text/plain',
-                 'application/bar',
-                 'application/baz',
-                 'application/xml',
-                 'application/foo'
-                ],
+        assert(
                 $route->asResource(HttpUri::fromString('http://example.com/'), ['application/foo'])
-                        ->mimeTypes()
+                        ->mimeTypes(),
+                equals([
+                        'text/plain',
+                        'application/bar',
+                        'application/baz',
+                        'application/xml',
+                        'application/foo'
+                ])
         );
     }
 
@@ -1085,10 +1089,13 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 AnnotatedProcessor::class,
                 'GET'
         );
-        assertEquals(
-                [new Status(200, 'Default status code'), new Status(404, 'No orders found')],
+        assert(
                 $route->asResource(HttpUri::fromString('http://example.com/'))
-                        ->statusCodes()
+                        ->statusCodes(),
+                equals([
+                        new Status(200, 'Default status code'),
+                        new Status(404, 'No orders found')
+                ])
         );
     }
 
@@ -1103,12 +1110,13 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 AnnotatedProcessor::class,
                 'GET'
         );
-        assertEquals(
-                [new Header('Last-Modified', 'Some explanation'),
-                 new Header('X-Binford', 'More power!')
-                ],
+        assert(
                 $route->asResource(HttpUri::fromString('http://example.com/'))
-                        ->headers()
+                        ->headers(),
+                equals([
+                        new Header('Last-Modified', 'Some explanation'),
+                        new Header('X-Binford', 'More power!')
+                ])
         );
     }
 
@@ -1123,12 +1131,13 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 AnnotatedProcessor::class,
                 'GET'
         );
-        assertEquals(
-                [(new Parameter('foo', 'Some path parameter', 'path'))->markRequired(),
-                 new Parameter('bar', 'A query parameter', 'query')
-                ],
+        assert(
                 $route->asResource(HttpUri::fromString('http://example.com/'))
-                        ->parameters()
+                        ->parameters(),
+                equals([
+                        (new Parameter('foo', 'Some path parameter', 'path'))->markRequired(),
+                        new Parameter('bar', 'A query parameter', 'query')
+                ])
         );
     }
 }

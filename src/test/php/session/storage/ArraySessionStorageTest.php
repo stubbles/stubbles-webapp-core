@@ -9,11 +9,21 @@
  */
 namespace stubbles\webapp\session\storage;
 use stubbles\webapp\session\Session;
+
+use function bovigo\assert\assert;
+use function bovigo\assert\assertEmptyArray;
+use function bovigo\assert\assertEmptyString;
+use function bovigo\assert\assertFalse;
+use function bovigo\assert\assertNull;
+use function bovigo\assert\assertTrue;
+use function bovigo\assert\predicate\equals;
+use function bovigo\assert\predicate\isSameAs;
 /**
  * Tests for stubbles\webapp\session\storage\ArraySessionStorage.
  *
  * @since  2.0.0
  * @group  session
+ * @group  storage
  */
 class ArraySessionStorageTest extends \PHPUnit_Framework_TestCase
 {
@@ -47,10 +57,7 @@ class ArraySessionStorageTest extends \PHPUnit_Framework_TestCase
      */
     public function fingerprintIsEmptyByDefault()
     {
-        assertEquals(
-                '',
-                $this->arraySessionStorage->value(Session::FINGERPRINT)
-        );
+        assertEmptyString($this->arraySessionStorage->value(Session::FINGERPRINT));
     }
 
     /**
@@ -58,8 +65,7 @@ class ArraySessionStorageTest extends \PHPUnit_Framework_TestCase
      */
     public function isEmptyAfterClear()
     {
-        assertEquals(
-                [],
+        assertEmptyArray(
                 $this->arraySessionStorage->putValue('foo', 'bar')
                         ->clear()
                         ->valueKeys()
@@ -87,9 +93,9 @@ class ArraySessionStorageTest extends \PHPUnit_Framework_TestCase
      */
     public function doesNothingWenRemovingNonExistingValue()
     {
-        assertSame(
-                $this->arraySessionStorage,
-                $this->arraySessionStorage->removeValue('foo')
+        assert(
+                $this->arraySessionStorage->removeValue('foo'),
+                isSameAs($this->arraySessionStorage)
         );
     }
 
@@ -109,10 +115,10 @@ class ArraySessionStorageTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsValueWhichWasSet()
     {
-        assertEquals(
-                'bar',
+        assert(
                 $this->arraySessionStorage->putValue('foo', 'bar')
-                        ->value('foo')
+                        ->value('foo'),
+                equals('bar')
         );
     }
 
@@ -133,9 +139,9 @@ class ArraySessionStorageTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsDefaultValueKeysAfterCreation()
     {
-        assertEquals(
-                [Session::FINGERPRINT],
-                $this->arraySessionStorage->valueKeys()
+        assert(
+                $this->arraySessionStorage->valueKeys(),
+                equals([Session::FINGERPRINT])
         );
     }
 
@@ -144,10 +150,10 @@ class ArraySessionStorageTest extends \PHPUnit_Framework_TestCase
      */
     public function valueKeysIncludeKeysOfAddedValues()
     {
-        assertEquals(
-                [Session::FINGERPRINT, 'foo'],
+        assert(
                 $this->arraySessionStorage->putValue('foo', 'bar')
-                        ->valueKeys()
+                        ->valueKeys(),
+                equals([Session::FINGERPRINT, 'foo'])
         );
     }
 }

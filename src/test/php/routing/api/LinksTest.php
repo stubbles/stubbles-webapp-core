@@ -9,6 +9,13 @@
  */
 namespace stubbles\webapp\routing\api;
 use stubbles\peer\http\HttpUri;
+
+use function bovigo\assert\assert;
+use function bovigo\assert\assertEmpty;
+use function bovigo\assert\assertEmptyArray;
+use function bovigo\assert\expect;
+use function bovigo\assert\predicate\equals;
+use function bovigo\assert\predicate\isOfSize;
 /**
  * Test for stubbles\webapp\routing\api\Links.
  *
@@ -18,16 +25,6 @@ use stubbles\peer\http\HttpUri;
  */
 class LinksTest extends \PHPUnit_Framework_TestCase
 {
-    /**
-     * creates an empty links collection
-     *
-     * @return  \stubbles\webapp\routing\api\Links
-     */
-    private function createEmpty()
-    {
-        return new Links();
-    }
-
     /**
      * creates a links collection with a default link
      *
@@ -42,7 +39,7 @@ class LinksTest extends \PHPUnit_Framework_TestCase
      */
     public function hasNoLinksByDefault()
     {
-        assertEquals(0, count($this->createEmpty()));
+        assertEmpty(new Links());
     }
 
     /**
@@ -50,16 +47,16 @@ class LinksTest extends \PHPUnit_Framework_TestCase
      */
     public function hasLinkWhenInitiallyProvided()
     {
-        assertEquals(1, count($this->createPrefilled()));
+        assert($this->createPrefilled(), isOfSize(1));
     }
 
     /**
      * @test
-     * @expectedException  InvalidArgumentException
      */
     public function canNotCreatePrefilledWithoutUri()
     {
-        new Links('self');
+        expect(function() { new Links('self'); })
+                ->throws(\InvalidArgumentException::class);
     }
 
     /**
@@ -67,15 +64,9 @@ class LinksTest extends \PHPUnit_Framework_TestCase
      */
     public function canAddNewLink()
     {
-        assertEquals(
-                1,
-                count($this->createEmpty()
-                        ->add(
-                                'self',
-                                HttpUri::fromString('http://example.com/foo')
-                        )
-                )
-        );
+        $links = new Links();
+        $links->add('self', HttpUri::fromString('http://example.com/foo'));
+        assert($links, isOfSize(1));
     }
 
     /**
@@ -83,7 +74,7 @@ class LinksTest extends \PHPUnit_Framework_TestCase
      */
     public function relWithoutLinks()
     {
-        assertEquals([], $this->createEmpty()->with('self'));
+        assertEmptyArray((new Links())->with('self'));
     }
 
     /**
@@ -91,14 +82,14 @@ class LinksTest extends \PHPUnit_Framework_TestCase
      */
     public function relWithOneLink()
     {
-        $links = $this->createEmpty();
+        $links = new Links();
         $links->add(
                 'self',
                 HttpUri::fromString('http://example.com/foo')
         );
-        assertEquals(
-                [new Link('self', HttpUri::fromString('http://example.com/foo'))],
-                $links->with('self')
+        assert(
+                $links->with('self'),
+                equals([new Link('self', HttpUri::fromString('http://example.com/foo'))])
         );
     }
 
@@ -107,7 +98,7 @@ class LinksTest extends \PHPUnit_Framework_TestCase
      */
     public function relWithSeveralLinks()
     {
-        $links = $this->createEmpty();
+        $links = new Links();
         $links->add(
                 'other',
                 HttpUri::fromString('http://example.com/foo')
@@ -116,11 +107,12 @@ class LinksTest extends \PHPUnit_Framework_TestCase
                 'other',
                 HttpUri::fromString('http://example.com/bar')
         );
-        assertEquals(
-                [new Link('other', HttpUri::fromString('http://example.com/foo')),
-                 new Link('other', HttpUri::fromString('http://example.com/bar'))
-                ],
-                $links->with('other')
+        assert(
+                $links->with('other'),
+                equals([
+                        new Link('other', HttpUri::fromString('http://example.com/foo')),
+                        new Link('other', HttpUri::fromString('http://example.com/bar'))
+                ])
         );
     }
 
@@ -142,9 +134,9 @@ class LinksTest extends \PHPUnit_Framework_TestCase
                 'items',
                 HttpUri::fromString('http://example.com/item3')
         );
-        assertEquals(
-                '{"self":{"href":"http:\/\/example.com\/foo"},"items":[{"href":"http:\/\/example.com\/item1"},{"href":"http:\/\/example.com\/item2"},{"href":"http:\/\/example.com\/item3"}]}',
-                json_encode($links)
+        assert(
+                json_encode($links),
+                equals('{"self":{"href":"http:\/\/example.com\/foo"},"items":[{"href":"http:\/\/example.com\/item1"},{"href":"http:\/\/example.com\/item2"},{"href":"http:\/\/example.com\/item3"}]}')
         );
     }
 }

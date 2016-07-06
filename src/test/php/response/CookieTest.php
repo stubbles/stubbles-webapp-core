@@ -8,6 +8,12 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\response;
+use function bovigo\assert\assert;
+use function bovigo\assert\assertFalse;
+use function bovigo\assert\assertNull;
+use function bovigo\assert\assertTrue;
+use function bovigo\assert\predicate\equals;
+use function bovigo\assert\predicate\isGreaterThanOrEqualTo;
 /**
  * Tests for stubbles\webapp\response\Cookie.
  *
@@ -20,7 +26,7 @@ class CookieTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsGivenName()
     {
-        assertEquals('foo', Cookie::create('foo', 'bar')->name());
+        assert(Cookie::create('foo', 'bar')->name(), equals('foo'));
     }
 
     /**
@@ -28,7 +34,7 @@ class CookieTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsGivenValue()
     {
-        assertEquals('bar', Cookie::create('foo', 'bar')->value());
+        assert(Cookie::create('foo', 'bar')->value(), equals('bar'));
     }
 
     /**
@@ -36,7 +42,7 @@ class CookieTest extends \PHPUnit_Framework_TestCase
      */
     public function hasNoExpirationDateByDefault()
     {
-        assertEquals(0, Cookie::create('foo', 'bar')->expiration());
+        assert(Cookie::create('foo', 'bar')->expiration(), equals(0));
     }
 
     /**
@@ -77,9 +83,9 @@ class CookieTest extends \PHPUnit_Framework_TestCase
     public function expiresAtUsesGivenTimestamp()
     {
         $expires = time() + 100; // expire after 100 seconds
-        assertEquals(
-                $expires,
-                Cookie::create('foo', 'bar')->expiringAt($expires)->expiration()
+        assert(
+                Cookie::create('foo', 'bar')->expiringAt($expires)->expiration(),
+                equals($expires)
         );
     }
 
@@ -89,9 +95,9 @@ class CookieTest extends \PHPUnit_Framework_TestCase
      */
     public function expiresInAddsCurrentTime()
     {
-        assertGreaterThanOrEqual(
-                time() + 100,
-                Cookie::create('foo', 'bar')->expiringIn(100)->expiration()
+        assert(
+                Cookie::create('foo', 'bar')->expiringIn(100)->expiration(),
+                isGreaterThanOrEqualTo(time() + 100)
         );
     }
 
@@ -100,9 +106,9 @@ class CookieTest extends \PHPUnit_Framework_TestCase
      */
     public function usesGivenPath()
     {
-        assertEquals(
-                'bar',
-                Cookie::create('foo', 'bar')->forPath('bar')->path()
+        assert(
+                Cookie::create('foo', 'bar')->forPath('bar')->path(),
+                equals('bar')
         );
     }
 
@@ -111,9 +117,9 @@ class CookieTest extends \PHPUnit_Framework_TestCase
      */
     public function usesGivenDomain()
     {
-        assertEquals(
-                '.example.org',
-                Cookie::create('foo', 'bar')->forDomain('.example.org')->domain()
+        assert(
+                Cookie::create('foo', 'bar')->forDomain('.example.org')->domain(),
+                equals('.example.org')
         );
     }
 

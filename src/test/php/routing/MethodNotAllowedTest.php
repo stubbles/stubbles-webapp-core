@@ -15,6 +15,10 @@ use stubbles\webapp\Request;
 use stubbles\webapp\response\Error;
 use stubbles\webapp\response\WebResponse;
 use stubbles\webapp\routing\Interceptors;
+
+use function bovigo\assert\assert;
+use function bovigo\assert\assertFalse;
+use function bovigo\assert\predicate\equals;
 /**
  * Tests for stubbles\webapp\routing\MethodNotAllowed.
  *
@@ -61,12 +65,12 @@ class MethodNotAllowedTest extends \PHPUnit_Framework_TestCase
                 ['method' => 'DELETE', 'protocolVersion' => new HttpVersion(1, 1)]
         );
         $response = new WebResponse($request);
-        assertEquals(
-                Error::methodNotAllowed(
+        assert(
+                $this->methodNotAllowed->resolve($request, $response),
+                equals(Error::methodNotAllowed(
                         'DELETE',
                         ['GET', 'POST', 'HEAD', 'OPTIONS']
-                ),
-                $this->methodNotAllowed->resolve($request, $response)
+                ))
         );
     }
 
@@ -80,6 +84,6 @@ class MethodNotAllowedTest extends \PHPUnit_Framework_TestCase
         );
         $response = new WebResponse($request);
         $this->methodNotAllowed->resolve($request, $response);
-        assertEquals(405, $response->statusCode());
+        assert($response->statusCode(), equals(405));
     }
 }

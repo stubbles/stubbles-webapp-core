@@ -8,6 +8,12 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\auth;
+use function bovigo\assert\assert;
+use function bovigo\assert\assertEmpty;
+use function bovigo\assert\assertFalse;
+use function bovigo\assert\assertTrue;
+use function bovigo\assert\predicate\equals;
+use function bovigo\assert\predicate\isOfSize;
 /**
  * Tests for stubbles\webapp\auth\Roles.
  *
@@ -21,7 +27,7 @@ class RolesTest extends \PHPUnit_Framework_TestCase
      */
     public function noneYieldsNoRoles()
     {
-        assertEquals(0, count(Roles::none()));
+        assertEmpty(Roles::none());
     }
 
     /**
@@ -29,7 +35,7 @@ class RolesTest extends \PHPUnit_Framework_TestCase
      */
     public function hasAmountOfInitialRoles()
     {
-        assertEquals(1, count(new Roles(['admin'])));
+        assert(new Roles(['admin']), isOfSize(1));
     }
 
     /**
@@ -61,6 +67,6 @@ class RolesTest extends \PHPUnit_Framework_TestCase
             $result[] = $role;
         }
 
-        assertEquals($expected, $result);
+        assert($result, equals($expected));
     }
 }

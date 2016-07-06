@@ -19,6 +19,11 @@ use stubbles\webapp\response\Error;
 use stubbles\webapp\routing\RoutingAnnotations;
 use stubbles\webapp\routing\UriResource;
 
+use function bovigo\assert\assert;
+use function bovigo\assert\assertNull;
+use function bovigo\assert\assertTrue;
+use function bovigo\assert\predicate\equals;
+use function bovigo\assert\predicate\isSameAs;
 use function bovigo\callmap\onConsecutiveCalls;
 use function bovigo\callmap\throws;
 use function bovigo\callmap\verify;
@@ -100,7 +105,7 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
     {
         $httpsUri = HttpUri::fromString('https://example.com/hello');
         $this->actualResource->mapCalls(['httpsUri' => $httpsUri]);
-        assertSame($httpsUri, $this->protectedResource->httpsUri());
+        assert($this->protectedResource->httpsUri(), isSameAs($httpsUri));
     }
 
     /**
@@ -124,9 +129,9 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
     public function returnsSupportedMimeTypesOfActualRoute()
     {
         $this->actualResource->mapCalls(['supportedMimeTypes' => ['application/foo']]);
-        assertEquals(
-                ['application/foo'],
-                $this->protectedResource->supportedMimeTypes()
+        assert(
+                $this->protectedResource->supportedMimeTypes(),
+                equals(['application/foo'])
         );
     }
 
@@ -156,12 +161,12 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
                         $this->response
                 )
         );
-        assertEquals(
-                Error::internalServerError($e),
+        assert(
                 $this->protectedResource->resolve(
                         $this->request,
                         $this->response
-                )
+                ),
+                equals(Error::internalServerError($e))
         );
         verify($this->actualResource, 'applyPreInterceptors')->wasNeverCalled();
         verify($this->actualResource, 'resolve')->wasNeverCalled();
@@ -183,12 +188,12 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
                         $this->response
                 )
         );
-        assertEquals(
-                new Error('error'),
+        assert(
                 $this->protectedResource->resolve(
                         $this->request,
                         $this->response
-                )
+                ),
+                equals(new Error('error'))
         );
         verify($this->response, 'setStatusCode')->received(504);
         verify($this->actualResource, 'applyPreInterceptors')->wasNeverCalled();
@@ -234,12 +239,12 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
                         $this->response
                 )
         );
-        assertEquals(
-                Error::forbidden(),
+        assert(
                 $this->protectedResource->resolve(
                         $this->request,
                         $this->response
-                )
+                ),
+                equals(Error::forbidden())
         );
         verify($this->actualResource, 'applyPreInterceptors')->wasNeverCalled();
         verify($this->actualResource, 'resolve')->wasNeverCalled();
@@ -275,7 +280,7 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
         $this->createAuthenticationProvider(['authenticate' => $user]);
         $request = WebRequest::fromRawSource();
         $this->protectedResource->applyPreInterceptors($request, $this->response);
-        assertSame($user, $request->identity()->user());
+        assert($request->identity()->user(), isSameAs($user));
     }
 
     /**
@@ -289,13 +294,12 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
                 ->mapCalls(['authenticate' => ($user === null) ? NewInstance::of(User::class) : $user]);
         $authorizationProvider = NewInstance::of(AuthorizationProvider::class)
                 ->mapCalls(['roles' => $roles]);
-        $this->injector->mapCalls(
-                ['getInstance' => onConsecutiveCalls(
+        $this->injector->mapCalls([
+                'getInstance' => onConsecutiveCalls(
                                 $authenticationProvider,
                                 $authorizationProvider
-                        )
-                ]
-        );
+                )
+        ]);
         return $authorizationProvider;
     }
 
@@ -315,12 +319,12 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
                         $this->response
                 )
         );
-        assertEquals(
-                Error::internalServerError($e),
+        assert(
                 $this->protectedResource->resolve(
                         $this->request,
                         $this->response
-                )
+                ),
+                equals(Error::internalServerError($e))
         );
         verify($this->actualResource, 'applyPreInterceptors')->wasNeverCalled();
         verify($this->actualResource, 'resolve')->wasNeverCalled();
@@ -343,12 +347,12 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
                         $this->response
                 )
         );
-        assertEquals(
-                new Error('error'),
+        assert(
                 $this->protectedResource->resolve(
                         $this->request,
                         $this->response
-                )
+                ),
+                equals(new Error('error'))
         );
         verify($this->response, 'setStatusCode')->received(504);
         verify($this->actualResource, 'applyPreInterceptors')->wasNeverCalled();
@@ -369,12 +373,12 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
                         $this->response
                 )
         );
-        assertEquals(
-                Error::forbidden(),
+        assert(
                 $this->protectedResource->resolve(
                         $this->request,
                         $this->response
-                )
+                ),
+                equals(Error::forbidden())
         );
         verify($this->actualResource, 'applyPreInterceptors')->wasNeverCalled();
         verify($this->actualResource, 'resolve')->wasNeverCalled();
@@ -410,7 +414,7 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
                 $request,
                 $this->response
         );
-        assertSame($user, $request->identity()->user());
+        assert($request->identity()->user(), isSameAs($user));
     }
 
     /**
@@ -426,7 +430,7 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
                 $request,
                 $this->response
         );
-        assertSame($roles, $request->identity()->roles());
+        assert($request->identity()->roles(), isSameAs($roles));
     }
 
     /**
@@ -459,12 +463,12 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
                         $this->response
                 )
         );
-        assertEquals(
-                'foo',
+        assert(
                 $this->protectedResource->resolve(
                         $this->request,
                         $this->response
-                )
+                ),
+                equals('foo')
         );
     }
 

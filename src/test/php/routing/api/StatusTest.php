@@ -10,6 +10,9 @@
 namespace stubbles\webapp\routing\api;
 use stubbles\ioc\Binder;
 use stubbles\xml\serializer\XmlSerializerFacade;
+
+use function bovigo\assert\assert;
+use function bovigo\assert\predicate\equals;
 /**
  * Test for stubbles\webapp\routing\api\Status.
  *
@@ -37,7 +40,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsProvidedStatusCode()
     {
-        assertEquals(200, $this->status->code());
+        assert($this->status->code(), equals(200));
     }
 
     /**
@@ -45,7 +48,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsProvidedDescription()
     {
-        assertEquals('Default <b>response</b> code', $this->status->description());
+        assert($this->status->description(), equals('Default <b>response</b> code'));
     }
 
     /**
@@ -53,9 +56,9 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function canBeSerializedToJson()
     {
-        assertEquals(
-                '{"code":200,"description":"Default <b>response<\/b> code"}',
-                json_encode($this->status)
+        assert(
+                json_encode($this->status),
+                equals('{"code":200,"description":"Default <b>response<\/b> code"}')
         );
     }
 
@@ -65,12 +68,12 @@ class StatusTest extends \PHPUnit_Framework_TestCase
     public function canBeSerializedToXml()
     {
         $binder = new Binder();
-        assertEquals(
-                '<?xml version="1.0" encoding="UTF-8"?>
-<status code="200"><description>Default <b>response</b> code</description></status>',
+        assert(
                 $binder->getInjector()
                         ->getInstance(XmlSerializerFacade::class)
-                        ->serializeToXml($this->status)
+                        ->serializeToXml($this->status),
+                equals('<?xml version="1.0" encoding="UTF-8"?>
+<status code="200"><description>Default <b>response</b> code</description></status>')
         );
     }
 }

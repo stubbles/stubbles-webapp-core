@@ -14,12 +14,19 @@ use stubbles\webapp\auth\AuthenticationProvider;
 use stubbles\webapp\auth\User;
 use stubbles\webapp\session\Session;
 
+use function bovigo\assert\assert;
+use function bovigo\assert\assertNull;
+use function bovigo\assert\assertTrue;
+use function bovigo\assert\predicate\equals;
+use function bovigo\assert\predicate\isSameAs;
 use function bovigo\callmap\verify;
 use function stubbles\lang\reflect\annotationsOfConstructorParameter;
 /**
  * Tests for stubbles\webapp\auth\session\CachingAuthenticationProvider
  *
  * @since  5.0.0
+ * @group  auth
+ * @group  auth_session
  */
 class CachingAuthenticationProviderTest extends \PHPUnit_Framework_TestCase
 {
@@ -65,9 +72,9 @@ class CachingAuthenticationProviderTest extends \PHPUnit_Framework_TestCase
                 $this->cachingAuthenticationProvider
         );
         assertTrue($parameterAnnotations->contain('Named'));
-        assertEquals(
-                'original',
-                $parameterAnnotations->firstNamed('Named')->getName()
+        assert(
+                $parameterAnnotations->firstNamed('Named')->getName(),
+                equals('original')
         );
     }
 
@@ -78,11 +85,11 @@ class CachingAuthenticationProviderTest extends \PHPUnit_Framework_TestCase
     {
         $user = NewInstance::of(User::class);
         $this->session->mapCalls(['hasValue' => true, 'value' => $user]);
-        assertSame(
-                $user,
+        assert(
                 $this->cachingAuthenticationProvider->authenticate(
                         NewInstance::of(Request::class)
-                )
+                ),
+                isSameAs($user)
         );
         verify($this->authenticationProvider, 'authenticate')->wasNeverCalled();
     }
@@ -109,11 +116,11 @@ class CachingAuthenticationProviderTest extends \PHPUnit_Framework_TestCase
         $user = NewInstance::of(User::class);
         $this->session->mapCalls(['hasValue' => false]);
         $this->authenticationProvider->mapCalls(['authenticate' => $user]);
-        assertSame(
-                $user,
+        assert(
                 $this->cachingAuthenticationProvider->authenticate(
                         NewInstance::of(Request::class)
-                )
+                ),
+                isSameAs($user)
         );
         verify($this->session, 'putValue')->received(User::SESSION_KEY, $user);
     }
@@ -126,11 +133,11 @@ class CachingAuthenticationProviderTest extends \PHPUnit_Framework_TestCase
         $this->authenticationProvider->mapCalls(
                 ['loginUri' => 'http://login.example.net/']
         );
-        assertEquals(
-                'http://login.example.net/',
+        assert(
                 $this->cachingAuthenticationProvider->loginUri(
                         NewInstance::of(Request::class)
-                )
+                ),
+                equals('http://login.example.net/')
         );
     }
 }

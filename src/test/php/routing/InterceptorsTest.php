@@ -15,6 +15,8 @@ use stubbles\webapp\Response;
 use stubbles\webapp\interceptor\PreInterceptor;
 use stubbles\webapp\interceptor\PostInterceptor;
 
+use function bovigo\assert\assertFalse;
+use function bovigo\assert\assertTrue;
 use function bovigo\callmap\verify;
 /**
  * Tests for stubbles\webapp\routing\Interceptors.

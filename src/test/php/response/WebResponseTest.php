@@ -16,6 +16,11 @@ use stubbles\streams\memory\MemoryOutputStream;
 use stubbles\webapp\Request;
 use stubbles\webapp\response\mimetypes\PassThrough;
 
+use function bovigo\assert\assert;
+use function bovigo\assert\assertFalse;
+use function bovigo\assert\assertNull;
+use function bovigo\assert\assertTrue;
+use function bovigo\assert\predicate\equals;
 use function bovigo\callmap\verify;
 /**
  * Tests for stubbles\webapp\response\WebResponse.
@@ -92,7 +97,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function statusCodeIs200ByDefault()
     {
-        assertEquals(200, $this->response->statusCode());
+        assert($this->response->statusCode(), equals(200));
     }
 
     /**
@@ -101,7 +106,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function statusCodeCanBeChanged()
     {
-        assertEquals(404, $this->response->setStatusCode(404)->statusCode());
+        assert($this->response->setStatusCode(404)->statusCode(), equals(404));
     }
 
     /**
@@ -131,7 +136,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
         $this->response->addHeader('name', 'value1')
                 ->addHeader('name', 'value2')
                 ->send();
-        assertEquals('value2', $this->response->headers()['name']);
+        assert($this->response->headers()['name'], equals('value2'));
     }
 
     /**
@@ -284,9 +289,9 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function bodyIsSend()
     {
-        assertEquals(
-                'foo',
-                $this->response->write('foo')->send($this->memory)->buffer()
+        assert(
+                $this->response->write('foo')->send($this->memory)->buffer(),
+                equals('foo')
         );
     }
 
@@ -358,7 +363,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function forbiddenReturnsErrorInstance()
     {
-        assertEquals(Error::forbidden(), $this->response->forbidden());
+        assert($this->response->forbidden(), equals(Error::forbidden()));
     }
 
     /**
@@ -389,7 +394,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function notFoundReturnsErrorInstance()
     {
-        assertEquals(Error::notFound(), $this->response->notFound());
+        assert($this->response->notFound(), equals(Error::notFound()));
     }
 
     /**
@@ -423,9 +428,9 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function methodNotAllowedReturnsErrorInstance()
     {
-        assertEquals(
-                Error::methodNotAllowed('POST', ['GET', 'HEAD']),
-                $this->response->methodNotAllowed('POST', ['GET', 'HEAD'])
+        assert(
+                $this->response->methodNotAllowed('POST', ['GET', 'HEAD']),
+                equals(Error::methodNotAllowed('POST', ['GET', 'HEAD']))
         );
     }
 
@@ -494,9 +499,9 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function internalServerErrorReturnsErrorInstance()
     {
-        assertEquals(
-                Error::internalServerError('ups!'),
-                $this->response->internalServerError('ups!')
+        assert(
+                $this->response->internalServerError('ups!'),
+                equals(Error::internalServerError('ups!'))
         );
     }
 
@@ -518,9 +523,9 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     public function httpVersionNotSupportedSetsStatusCodeTo505()
     {
         $this->response->httpVersionNotSupported();
-        assertEquals(
-                'Error: Unsupported HTTP protocol version, expected HTTP/1.0 or HTTP/1.1',
-                $this->response->send($this->memory)->buffer()
+        assert(
+                $this->response->send($this->memory)->buffer(),
+                equals('Error: Unsupported HTTP protocol version, expected HTTP/1.0 or HTTP/1.1')
         );
         verify($this->response, 'header')
                 ->received('HTTP/1.1 505 HTTP Version Not Supported');
@@ -558,9 +563,9 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     {
         $response = $this->createResponse($unsupportedHttpVersion);
         assertTrue($response->isFixed());
-        assertEquals(
-                'Error: Unsupported HTTP protocol version, expected HTTP/1.0 or HTTP/1.1',
-                $response->send($this->memory)->buffer()
+        assert(
+                $response->send($this->memory)->buffer(),
+                equals('Error: Unsupported HTTP protocol version, expected HTTP/1.0 or HTTP/1.1')
         );
         verify($response, 'header')
                 ->received('HTTP/1.1 505 HTTP Version Not Supported');

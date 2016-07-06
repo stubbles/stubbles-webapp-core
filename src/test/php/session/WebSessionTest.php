@@ -12,6 +12,12 @@ use bovigo\callmap\NewInstance;
 use stubbles\webapp\session\id\SessionId;
 use stubbles\webapp\session\storage\SessionStorage;
 
+use function bovigo\assert\assert;;
+use function bovigo\assert\assertFalse;
+use function bovigo\assert\assertNull;
+use function bovigo\assert\assertTrue;
+use function bovigo\assert\expect;
+use function bovigo\assert\predicate\equals;
 use function bovigo\callmap\onConsecutiveCalls;
 use function bovigo\callmap\verify;
 /**
@@ -126,7 +132,7 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
     public function idIsSessionId()
     {
         $this->sessionId->mapCalls(['__toString' => '303']);
-        assertEquals('303', $this->createWebSession()->id());
+        assert($this->createWebSession()->id(), equals('303'));
     }
 
     /**
@@ -135,7 +141,7 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
     public function regenerateCreatesNewSessionId()
     {
         $webSession = $this->createWebSession();
-        assertEquals($webSession, $webSession->regenerateId());
+        assert($webSession->regenerateId(), equals($webSession));
         verify($this->sessionId, 'regenerate')->wasCalledOnce();
     }
 
@@ -145,7 +151,7 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
     public function nameIsSessionIdName()
     {
         $this->sessionId->mapCalls(['name' => 'foo']);
-        assertEquals('foo', $this->createWebSession()->name());
+        assert($this->createWebSession()->name(), equals('foo'));
     }
 
     /**
@@ -192,7 +198,7 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
     public function invalidateClearsSessionData()
     {
         $webSession = $this->createWebSession();
-        assertEquals($webSession, $webSession->invalidate());
+        assert($webSession->invalidate(), equals($webSession));
         verify($this->sessionStorage, 'clear')->wasCalledOnce();
     }
 
@@ -202,7 +208,7 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
     public function invalidateInvalidatesSessionId()
     {
         $webSession = $this->createWebSession();
-        assertEquals($webSession, $webSession->invalidate());
+        assert($webSession->invalidate(), equals($webSession));
         verify($this->sessionId, 'invalidate')->wasCalledOnce();
     }
 
@@ -270,9 +276,9 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
      */
     public function getValueReturnsDefaultIfValueNotStoredAndDefaultGiven()
     {
-        assertEquals(
-                'bar',
-                $this->createWebSessionWithValues()->value('foo', 'bar')
+        assert(
+                $this->createWebSessionWithValues()->value('foo', 'bar'),
+                equals('bar')
         );
     }
 
@@ -281,19 +287,19 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
      */
     public function getValueReturnsStoredValue()
     {
-        assertEquals(
-                'baz',
-                $this->createWebSessionWithValues('baz')->value('foo', 'bar')
+        assert(
+                $this->createWebSessionWithValues('baz')->value('foo', 'bar'),
+                equals('baz')
         );
     }
 
     /**
      * @test
-     * @expectedException  LogicException
      */
     public function getValueThrowsIllegalStateExceptionFalseOnInvalidSession()
     {
-        $this->createInvalidWebSession()->value('foo');
+        expect(function() { $this->createInvalidWebSession()->value('foo'); })
+                ->throws(\LogicException::class);
     }
 
     /**
@@ -302,17 +308,18 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
     public function putValueStoresValue()
     {
         $webSession = $this->createWebSession();
-        assertEquals($webSession, $webSession->putValue('foo', 'bar'));
+        assert($webSession->putValue('foo', 'bar'), equals($webSession));
         verify($this->sessionStorage, 'putValue')->received('foo', 'bar');
     }
 
     /**
      * @test
-     * @expectedException  LogicException
      */
     public function putValueThrowsIllegalStateExceptionFalseOnInvalidSession()
     {
-        $this->createInvalidWebSession()->putValue('foo', 'bar');
+        expect(function() {
+                $this->createInvalidWebSession()->putValue('foo', 'bar');
+        })->throws(\LogicException::class);
     }
 
     /**
@@ -334,11 +341,11 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @expectedException  LogicException
      */
     public function removeValueThrowsIllegalStateExceptionFalseOnInvalidSession()
     {
-        $this->createInvalidWebSession()->removeValue('foo');
+        expect(function() { $this->createInvalidWebSession()->removeValue('foo'); })
+                ->throws(\LogicException::class);
     }
 
     /**
@@ -350,18 +357,15 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
         $this->sessionStorage->mapCalls(
                 ['hasValue' => true, 'valueKeys' => [Session::FINGERPRINT, 'foo']]
         );
-        assertEquals(
-                ['foo'],
-                $session->valueKeys()
-        );
+        assert($session->valueKeys(), equals(['foo']));
     }
 
     /**
      * @test
-     * @expectedException  LogicException
      */
     public function getValueKeysThrowsIllegalStateExceptionFalseOnInvalidSession()
     {
-        $this->createInvalidWebSession()->valueKeys();
+        expect(function() { $this->createInvalidWebSession()->valueKeys(); })
+                ->throws(\LogicException::class);
     }
 }

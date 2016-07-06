@@ -15,6 +15,10 @@ use stubbles\lang\ResourceLoader;
 use stubbles\streams\memory\MemoryOutputStream;
 use stubbles\webapp\response\Error;
 
+use function bovigo\assert\assert;
+use function bovigo\assert\assertTrue;
+use function bovigo\assert\expect;
+use function bovigo\assert\predicate\equals;
 use function bovigo\callmap\throws;
 use function bovigo\callmap\verify;
 use function stubbles\lang\reflect\annotationsOfConstructorParameter;
@@ -56,9 +60,9 @@ class ImageTest extends \PHPUnit_Framework_TestCase
                 $this->image
         );
         assertTrue($annotations->contain('Property'));
-        assertEquals(
-                'stubbles.img.error',
-                $annotations->firstNamed('Property')->getName()
+        assert(
+                $annotations->firstNamed('Property')->getName(),
+                equals('stubbles.img.error')
         );
     }
 
@@ -67,10 +71,7 @@ class ImageTest extends \PHPUnit_Framework_TestCase
      */
     public function defaultMimeType()
     {
-        assertEquals(
-                'image/*',
-                (string) $this->image
-        );
+        assert((string) $this->image, equals('image/*'));
     }
 
     /**
@@ -78,9 +79,9 @@ class ImageTest extends \PHPUnit_Framework_TestCase
      */
     public function mimeTypeCanBeSpecialised()
     {
-        assertEquals(
-                'image/png',
-                (string) $this->image->specialise('image/png')
+        assert(
+                (string) $this->image->specialise('image/png'),
+                equals('image/png')
         );
     }
 
@@ -111,7 +112,7 @@ class ImageTest extends \PHPUnit_Framework_TestCase
                 ['load' => ImageSource::load('error.png', $dummyDriver)]
         );
         $this->image->serialize(new Error('ups'), new MemoryOutputStream());
-        assertEquals('fake', $dummyDriver->lastDisplayedHandle());
+        assert($dummyDriver->lastDisplayedHandle(), equals('fake'));
         verify($this->resourceLoader, 'load')->received('error.png');
     }
 
@@ -125,7 +126,7 @@ class ImageTest extends \PHPUnit_Framework_TestCase
                 ['load' => ImageSource::load('error.png', $dummyDriver)]
         );
         $this->image->serialize('pixel.png', new MemoryOutputStream());
-        assertEquals('fake', $dummyDriver->lastDisplayedHandle());
+        assert($dummyDriver->lastDisplayedHandle(), equals('fake'));
         verify($this->resourceLoader, 'load')->received('pixel.png');
     }
 
@@ -142,19 +143,21 @@ class ImageTest extends \PHPUnit_Framework_TestCase
                 ),
                 new MemoryOutputStream()
         );
-        assertEquals('fake', $dummyDriver->lastDisplayedHandle());
+        assert($dummyDriver->lastDisplayedHandle(), equals('fake'));
     }
 
     /**
      * @test
-     * @expectedException  PHPUnit_Framework_Error
-     * @expectedExceptionMessage  Can not load image "pixel.png": hm...
      */
     public function triggersUserErrorWhenImageLoadingFails()
     {
         $this->resourceLoader->mapCalls(
                 ['load' => throws(new \Exception('hm...'))]
         );
-        $this->image->serialize('pixel.png', new MemoryOutputStream());
+        expect(function() {
+                $this->image->serialize('pixel.png', new MemoryOutputStream());
+        })
+                ->throws(\PHPUnit_Framework_Error::class)
+                ->withMessage('Can not load image "pixel.png": hm...');
     }
 }

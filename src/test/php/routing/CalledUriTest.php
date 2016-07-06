@@ -10,11 +10,18 @@
 namespace stubbles\webapp\routing;
 use bovigo\callmap\NewInstance;
 use stubbles\peer\http\HttpUri;
+
+use function bovigo\assert\assert;
+use function bovigo\assert\assertFalse;
+use function bovigo\assert\assertTrue;
+use function bovigo\assert\expect;
+use function bovigo\assert\predicate\equals;
+use function bovigo\assert\predicate\isSameAs;
 /**
  * Tests for stubbles\webapp\CalledUri.
  *
  * @since  1.7.0
- * @group  core
+ * @group  routing
  */
 class CalledUriTest extends \PHPUnit_Framework_TestCase
 {
@@ -54,11 +61,11 @@ class CalledUriTest extends \PHPUnit_Framework_TestCase
      * @param  string  $empty
      * @test
      * @dataProvider  emptyRequestMethods
-     * @expectedException  InvalidArgumentException
      */
     public function createInstanceWithEmptyRequestMethodThrowsIllegalArgumentException($empty)
     {
-        new CalledUri($this->httpUri, $empty);
+        expect(function() use ($empty) { new CalledUri($this->httpUri, $empty); })
+                ->throws(\InvalidArgumentException::class);
     }
 
     /**
@@ -67,9 +74,9 @@ class CalledUriTest extends \PHPUnit_Framework_TestCase
      */
     public function castFromOtherInstanceReturnsInstance()
     {
-        assertSame(
-                $this->calledUri,
-                CalledUri::castFrom($this->calledUri, null)
+        assert(
+                CalledUri::castFrom($this->calledUri, null),
+                isSameAs($this->calledUri)
         );
     }
 
@@ -79,21 +86,21 @@ class CalledUriTest extends \PHPUnit_Framework_TestCase
      */
     public function castFromHttpUriInstanceReturnsInstance()
     {
-        assertEquals(
-                $this->calledUri,
-                CalledUri::castFrom($this->httpUri, 'GET')
+        assert(
+                CalledUri::castFrom($this->httpUri, 'GET'),
+                equals($this->calledUri)
         );
     }
 
     /**
      * @test
      * @dataProvider  emptyRequestMethods
-     * @expectedException  InvalidArgumentException
      * @since  4.0.0
      */
     public function castFromHttpUriInstanceWithoutRequestMethodThrowsIllegalArgumentException($empty)
     {
-        CalledUri::castFrom($this->httpUri, $empty);
+        expect(function() use ($empty) { CalledUri::castFrom($this->httpUri, $empty); })
+                ->throws(\InvalidArgumentException::class);
     }
 
     /**
@@ -103,21 +110,21 @@ class CalledUriTest extends \PHPUnit_Framework_TestCase
     public function castFromHttpUriStringReturnsInstance()
     {
 
-        assertEquals(
-                new CalledUri('http://example.net/', 'GET'),
-                CalledUri::castFrom('http://example.net/', 'GET')
+        assert(
+                CalledUri::castFrom('http://example.net/', 'GET'),
+                equals(new CalledUri('http://example.net/', 'GET'))
         );
     }
 
     /**
      * @test
      * @dataProvider  emptyRequestMethods
-     * @expectedException  InvalidArgumentException
      * @since  4.0.0
      */
     public function castFromHttpUriStringWithoutRequestMethodThrowsIllegalArgumentException($empty)
     {
-        CalledUri::castFrom('http://example.net/', $empty);
+        expect(function() use ($empty) { CalledUri::castFrom('http://example.net/', $empty); })
+                ->throws(\InvalidArgumentException::class);
     }
 
     /**
@@ -227,7 +234,7 @@ class CalledUriTest extends \PHPUnit_Framework_TestCase
     {
         $httpUri = NewInstance::stub(HttpUri::class);
         $this->httpUri->mapCalls(['toHttp' => $httpUri]);
-        assertSame($httpUri, $this->calledUri->toHttp());
+        assert($this->calledUri->toHttp(), isSameAs($httpUri));
     }
 
     /**
@@ -238,7 +245,7 @@ class CalledUriTest extends \PHPUnit_Framework_TestCase
     {
         $httpUri = NewInstance::stub(HttpUri::class);
         $this->httpUri->mapCalls(['toHttps' => $httpUri]);
-        assertSame($httpUri, $this->calledUri->toHttps());
+        assert($this->calledUri->toHttps(), isSameAs($httpUri));
     }
 
     /**
@@ -248,9 +255,6 @@ class CalledUriTest extends \PHPUnit_Framework_TestCase
     public function returnsStringRepresentationOfUri()
     {
         $this->httpUri->mapCalls(['__toString' => 'http://example.net/foo/bar']);
-        assertEquals(
-                'http://example.net/foo/bar',
-                (string) $this->calledUri
-        );
+        assert((string) $this->calledUri, equals('http://example.net/foo/bar'));
     }
 }

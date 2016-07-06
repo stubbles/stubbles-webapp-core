@@ -10,6 +10,11 @@
 namespace stubbles\webapp\response\mimetypes;
 use stubbles\streams\memory\MemoryOutputStream;
 use stubbles\webapp\response\Error;
+
+use function bovigo\assert\assert;
+use function bovigo\assert\expect;
+use function bovigo\assert\predicate\equals;
+use function bovigo\assert\predicate\isEmpty;
 /**
  * Helper class for the test.
  */
@@ -68,10 +73,7 @@ class CsvTest extends \PHPUnit_Framework_TestCase
      */
     public function defaultMimeType()
     {
-        assertEquals(
-                'text/csv',
-                (string) $this->csv
-        );
+        assert((string) $this->csv, equals('text/csv'));
     }
 
     /**
@@ -79,9 +81,9 @@ class CsvTest extends \PHPUnit_Framework_TestCase
      */
     public function mimeTypeCanBeSpecialised()
     {
-        assertEquals(
-                'text/vendor-csv',
-                (string) $this->csv->specialise('text/vendor-csv')
+        assert(
+                (string) $this->csv->specialise('text/vendor-csv'),
+                equals('text/vendor-csv')
         );
     }
 
@@ -100,9 +102,9 @@ class CsvTest extends \PHPUnit_Framework_TestCase
      */
     public function scalarResourcesAreConvertedToOneLineCsv($scalarValue, $expected)
     {
-        assertEquals(
-                $expected . "\n",
-                $this->csv->serialize($scalarValue, $this->memory)->buffer()
+        assert(
+                $this->csv->serialize($scalarValue, $this->memory)->buffer(),
+                equals($expected . "\n")
         );
     }
 
@@ -111,24 +113,23 @@ class CsvTest extends \PHPUnit_Framework_TestCase
      */
     public function errorResourceIsConvertedToOneLineCsv()
     {
-        assertEquals(
-                "Error: ups\n",
-                $this->csv->serialize(new Error('ups'), $this->memory)->buffer()
+        assert(
+                $this->csv->serialize(new Error('ups'), $this->memory)->buffer(),
+                equals("Error: ups\n")
         );
     }
 
     /**
      * @test
-     * @expectedException  PHPUnit_Framework_Error
-     * @expectedExceptionMessage  Resource of type resource[stream] can not be serialized to csv
      */
     public function incompatibleResourceTriggersError()
     {
-        assertEquals(
-                '',
-                $this->csv->serialize(fopen(__FILE__, 'r'), $this->memory)
-                        ->buffer()
-        );
+        expect(function() {
+                $this->csv->serialize(fopen(__FILE__, 'r'), $this->memory);
+        })
+                ->throws(\PHPUnit_Framework_Error::class)
+                ->withMessage('Resource of type resource[stream] can not be serialized to csv')
+                ->after($this->memory->buffer(), isEmpty());
     }
 
     /**
@@ -139,9 +140,9 @@ class CsvTest extends \PHPUnit_Framework_TestCase
         $object = new \stdClass();
         $object->column1 = 'bar';
         $object->column2 = 'baz';
-        assertEquals(
-                "column1,column2\nbar,baz\n",
-                $this->csv->serialize($object, $this->memory)->buffer()
+        assert(
+                $this->csv->serialize($object, $this->memory)->buffer(),
+                equals("column1,column2\nbar,baz\n")
         );
     }
 
@@ -150,12 +151,12 @@ class CsvTest extends \PHPUnit_Framework_TestCase
      */
     public function serializeSimpleListWritesOneLine()
     {
-        assertEquals(
-                "bar,baz\n",
+        assert(
                 $this->csv->serialize(
                         ['bar', 'baz'],
                         $this->memory
-                )->buffer()
+                )->buffer(),
+                equals("bar,baz\n")
         );
     }
 
@@ -168,12 +169,12 @@ class CsvTest extends \PHPUnit_Framework_TestCase
      */
     public function serializeSimpleTravsersableListWritesOneLineForEachEntry()
     {
-        assertEquals(
-                "bar\nbaz\n",
+        assert(
                 $this->csv->serialize(
                         new \ArrayIterator(['bar', 'baz']),
                         $this->memory
-                )->buffer()
+                )->buffer(),
+                equals("bar\nbaz\n")
         );
     }
 
@@ -182,12 +183,12 @@ class CsvTest extends \PHPUnit_Framework_TestCase
      */
     public function serializeSimpleMapWritesHeaderLineAndOneValueLine()
     {
-        assertEquals(
-                "column1,column2\nbar,baz\n",
+        assert(
                 $this->csv->serialize(
                         ['column1' => 'bar', 'column2' => 'baz'],
                         $this->memory
-                )->buffer()
+                )->buffer(),
+                equals("column1,column2\nbar,baz\n")
         );
     }
 
@@ -196,12 +197,12 @@ class CsvTest extends \PHPUnit_Framework_TestCase
      */
     public function serializeNestedArray()
     {
-        assertEquals(
-                "bar,baz\nfoo,dummy\n",
+        assert(
                 $this->csv->serialize(
                         [['bar', 'baz'], ['foo', 'dummy']],
                         $this->memory
-                )->buffer()
+                )->buffer(),
+                equals("bar,baz\nfoo,dummy\n")
         );
     }
 
@@ -210,14 +211,14 @@ class CsvTest extends \PHPUnit_Framework_TestCase
      */
     public function serializeNestedAssociativeArray()
     {
-        assertEquals(
-                "column1,column2\nbar,baz\nfoo,dummy\n",
+        assert(
                 $this->csv->serialize(
                         [['column1' => 'bar', 'column2' => 'baz'],
                          ['column1' => 'foo', 'column2' => 'dummy']
                         ],
                         $this->memory
-                )->buffer()
+                )->buffer(),
+                equals("column1,column2\nbar,baz\nfoo,dummy\n")
         );
     }
 
@@ -232,12 +233,12 @@ class CsvTest extends \PHPUnit_Framework_TestCase
         $object2 = new \stdClass();
         $object2->column1 = 'foo';
         $object2->column2 = 'dummy';
-        assertEquals(
-                "column1,column2\nbar,baz\nfoo,dummy\n",
+        assert(
                 $this->csv->serialize(
                         [$object1, $object2],
                         $this->memory
-                )->buffer()
+                )->buffer(),
+                equals("column1,column2\nbar,baz\nfoo,dummy\n")
         );
     }
 
@@ -252,12 +253,12 @@ class CsvTest extends \PHPUnit_Framework_TestCase
         $object2 = new \stdClass();
         $object2->column1 = 'foo';
         $object2->column2 = 'dummy';
-        assertEquals(
-                "column1,column2\nbar,baz\nfoo,dummy\n",
+        assert(
                 $this->csv->serialize(
                         new \ArrayIterator([$object1, $object2]),
                         $this->memory
-                )->buffer()
+                )->buffer(),
+                equals("column1,column2\nbar,baz\nfoo,dummy\n")
         );
     }
 
@@ -266,8 +267,7 @@ class CsvTest extends \PHPUnit_Framework_TestCase
      */
     public function serializeTraversable()
     {
-        assertEquals(
-                "column1,column2\nbar,baz\nfoo,dummy\n",
+        assert(
                 $this->csv->serialize(
                         new \ArrayIterator(
                                 [['column1' => 'bar', 'column2' => 'baz'],
@@ -275,7 +275,8 @@ class CsvTest extends \PHPUnit_Framework_TestCase
                                 ]
                         ),
                         $this->memory
-                )->buffer()
+                )->buffer(),
+                equals("column1,column2\nbar,baz\nfoo,dummy\n")
         );
     }
 
@@ -284,12 +285,12 @@ class CsvTest extends \PHPUnit_Framework_TestCase
      */
     public function serializeNonAssociativeTraversable()
     {
-        assertEquals(
-                "bar,baz\nfoo,dummy\n",
+        assert(
                 $this->csv->serialize(
                         new \ArrayIterator([['bar', 'baz'], ['foo', 'dummy']]),
                         $this->memory
-                )->buffer()
+                )->buffer(),
+                equals("bar,baz\nfoo,dummy\n")
         );
     }
 
@@ -298,8 +299,7 @@ class CsvTest extends \PHPUnit_Framework_TestCase
      */
     public function serializeNestedTraversable()
     {
-        assertEquals(
-                "column1,column2\nbar,baz\nfoo,dummy\n",
+        assert(
                 $this->csv->serialize(
                         new \ArrayIterator(
                                 [new \ArrayIterator(['column1' => 'bar', 'column2' => 'baz']),
@@ -307,7 +307,8 @@ class CsvTest extends \PHPUnit_Framework_TestCase
                                 ]
                         ),
                         $this->memory
-                )->buffer()
+                )->buffer(),
+                equals("column1,column2\nbar,baz\nfoo,dummy\n")
         );
     }
 
@@ -316,12 +317,12 @@ class CsvTest extends \PHPUnit_Framework_TestCase
      */
     public function supportsToArrayOnObjects()
     {
-        assertEquals(
-                "column1,column2\nfoo,bar\n",
+        assert(
                 $this->csv->serialize(
                         new ToArray(),
                         $this->memory
-                )->buffer()
+                )->buffer(),
+                equals("column1,column2\nfoo,bar\n")
         );
     }
 
@@ -330,12 +331,12 @@ class CsvTest extends \PHPUnit_Framework_TestCase
      */
     public function supportsNestedToArrayOnObjects()
     {
-        assertEquals(
-                "column1,column2\nfoo,bar\nfoo,bar\n",
+        assert(
                 $this->csv->serialize(
                         [new ToArray(), new ToArray()],
                         $this->memory
-                )->buffer()
+                )->buffer(),
+                equals("column1,column2\nfoo,bar\nfoo,bar\n")
         );
     }
 
@@ -344,12 +345,12 @@ class CsvTest extends \PHPUnit_Framework_TestCase
      */
     public function supportsAsArrayOnObjects()
     {
-        assertEquals(
-                "column1,column2\nfoo,bar\n",
+        assert(
                 $this->csv->serialize(
                         new AsArray(),
                         $this->memory
-                )->buffer()
+                )->buffer(),
+                equals("column1,column2\nfoo,bar\n")
         );
     }
 
@@ -358,12 +359,12 @@ class CsvTest extends \PHPUnit_Framework_TestCase
      */
     public function supportsNestedAsArrayOnObjects()
     {
-        assertEquals(
-                "column1,column2\nfoo,bar\nfoo,bar\n",
+        assert(
                 $this->csv->serialize(
                         [new AsArray(), new AsArray()],
                         $this->memory
-                )->buffer()
+                )->buffer(),
+                equals("column1,column2\nfoo,bar\nfoo,bar\n")
         );
     }
 
@@ -372,11 +373,11 @@ class CsvTest extends \PHPUnit_Framework_TestCase
      */
     public function serializeWithChangedDelimiter()
     {
-        assertEquals(
-                "bar;baz\n",
+        assert(
                 $this->csv->changeDelimiterTo(';')
                         ->serialize(['bar', 'baz'], $this->memory)
-                        ->buffer()
+                        ->buffer(),
+                equals("bar;baz\n")
         );
     }
 
@@ -385,11 +386,11 @@ class CsvTest extends \PHPUnit_Framework_TestCase
      */
     public function serializeWithChangedEnclosure()
     {
-        assertEquals(
-                "bar,/b//az/\n",
+        assert(
                 $this->csv->changeEnclosureTo('/')
                         ->serialize(['bar', 'b/az'], $this->memory)
-                        ->buffer()
+                        ->buffer(),
+                equals("bar,/b//az/\n")
         );
     }
 }

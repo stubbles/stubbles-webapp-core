@@ -8,11 +8,21 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\session\storage;
+use function bovigo\assert\assert;
+use function bovigo\assert\assertEmptyArray;;
+use function bovigo\assert\assertFalse;
+use function bovigo\assert\assertNotEmpty;
+use function bovigo\assert\assertNull;
+use function bovigo\assert\assertTrue;
+use function bovigo\assert\predicate\equals;
+use function bovigo\assert\predicate\isNotEqualTo;
+use function bovigo\assert\predicate\isSameAs;
 /**
  * Tests for stubbles\webapp\session\storage\NativeSessionStorage.
  *
  * @since  2.0.0
  * @group  session
+ * @group  storage
  */
 class NativeSessionStorageTest extends \PHPUnit_Framework_TestCase
 {
@@ -57,7 +67,7 @@ class NativeSessionStorageTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsGivenSessionName()
     {
-        assertEquals('foo', $this->nativeSessionStorage->name());
+        assert($this->nativeSessionStorage->name(), equals('foo'));
     }
 
     /**
@@ -82,9 +92,9 @@ class NativeSessionStorageTest extends \PHPUnit_Framework_TestCase
             );
         }
 
-        assertNotEquals(
-                (string) $this->nativeSessionStorage,
-                (string) $this->nativeSessionStorage->regenerate()
+        assert(
+                (string) $this->nativeSessionStorage->regenerate(),
+                isNotEqualTo((string) $this->nativeSessionStorage)
         );
     }
 
@@ -93,10 +103,10 @@ class NativeSessionStorageTest extends \PHPUnit_Framework_TestCase
      */
     public function invalidateCreatesNewSessionId()
     {
-        assertNotEquals(
-                (string) $this->nativeSessionStorage,
-                (string) $this->nativeSessionStorage->invalidate()
-        );
+        // order is important, invalidate() changes session id
+        $validId   = (string) $this->nativeSessionStorage;
+        $invalidId = (string) $this->nativeSessionStorage->invalidate();
+        assert($invalidId, isNotEqualTo($validId));
     }
 
     /**
@@ -104,8 +114,7 @@ class NativeSessionStorageTest extends \PHPUnit_Framework_TestCase
      */
     public function isEmptyAfterClear()
     {
-        assertEquals(
-                [],
+        assertEmptyArray(
                 $this->nativeSessionStorage->putValue('foo', 'bar')
                         ->clear()
                         ->valueKeys()
@@ -133,9 +142,9 @@ class NativeSessionStorageTest extends \PHPUnit_Framework_TestCase
      */
     public function doesNothingWenRemovingNonExistingValue()
     {
-        assertSame(
-                $this->nativeSessionStorage,
-                $this->nativeSessionStorage->removeValue('foo')
+        assert(
+                $this->nativeSessionStorage->removeValue('foo'),
+                isSameAs($this->nativeSessionStorage)
         );
     }
 
@@ -155,10 +164,10 @@ class NativeSessionStorageTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsValueWhichWasSet()
     {
-        assertEquals(
-                'bar',
+        assert(
                 $this->nativeSessionStorage->putValue('foo', 'bar')
-                        ->value('foo')
+                        ->value('foo'),
+                equals('bar')
         );
     }
 
@@ -179,10 +188,7 @@ class NativeSessionStorageTest extends \PHPUnit_Framework_TestCase
      */
     public function hasNoValueKeysByDefault()
     {
-        assertEquals(
-                [],
-                $this->nativeSessionStorage->valueKeys()
-        );
+        assertEmptyArray($this->nativeSessionStorage->valueKeys());
     }
 
     /**
@@ -190,10 +196,10 @@ class NativeSessionStorageTest extends \PHPUnit_Framework_TestCase
      */
     public function valueKeysIncludeKeysOfAddedValues()
     {
-        assertEquals(
-                ['foo'],
+        assert(
                 $this->nativeSessionStorage->putValue('foo', 'bar')
-                        ->valueKeys()
+                        ->valueKeys(),
+                equals(['foo'])
         );
     }
 }
