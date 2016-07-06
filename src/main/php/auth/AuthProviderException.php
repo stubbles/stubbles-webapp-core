@@ -8,13 +8,12 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\auth;
-use stubbles\lang\exception\Exception;
 /**
  * Can be thrown when an auth provider experiences a problem which it can not solve.
  *
  * @since  2.3.0
  */
-abstract class AuthProviderException extends Exception
+abstract class AuthProviderException extends \Exception
 {
     /**
      * internal error
@@ -28,14 +27,13 @@ abstract class AuthProviderException extends Exception
     /**
      * constructor
      *
-     * @param  int         $type
      * @param  string      $message
      * @param  \Exception  $cause
      * @param  int         $code
      */
     public function __construct($message, \Exception $cause = null, $code = 0)
     {
-        parent::__construct($message, $cause, $code);
+        parent::__construct($message, $code, $cause);
 
     }
 

@@ -10,7 +10,7 @@
 namespace stubbles\webapp\response;
 use stubbles\input\errors\ParamErrors;
 use stubbles\input\errors\messages\ParamErrorMessages;
-use stubbles\lang\Sequence;
+use stubbles\sequence\Sequence;
 /**
  * Represents an error.
  *

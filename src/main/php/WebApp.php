@@ -8,10 +8,10 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp;
-use stubbles\ioc\App;
+use stubbles\App;
+use stubbles\ExceptionLogger;
 use stubbles\ioc\Injector;
-use stubbles\lang\errorhandler\ExceptionLogger;
-use stubbles\peer\MalformedUriException;
+use stubbles\peer\MalformedUri;
 use stubbles\webapp\interceptor\AddAccessControlAllowOriginHeader;
 use stubbles\webapp\request\WebRequest;
 use stubbles\webapp\response\WebResponse;
@@ -64,7 +64,7 @@ abstract class WebApp extends App
 
         try {
             $requestUri = $request->uri();
-        } catch (MalformedUriException $mue) {
+        } catch (MalformedUri $mue) {
             $response->status()->badRequest();
             return $response;
         }

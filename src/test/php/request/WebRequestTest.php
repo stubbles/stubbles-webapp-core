@@ -13,6 +13,7 @@ use stubbles\input\ValueReader;
 use stubbles\input\ValueValidator;
 use stubbles\input\errors\ParamErrors;
 use stubbles\peer\IpAddress;
+use stubbles\peer\MalformedUri;
 use stubbles\peer\http\HttpVersion;
 use stubbles\streams\InputStream;
 use stubbles\webapp\auth\Identity;
@@ -24,6 +25,7 @@ use function bovigo\assert\assert;
 use function bovigo\assert\assertFalse;
 use function bovigo\assert\assertNull;
 use function bovigo\assert\assertTrue;
+use function bovigo\assert\expect;
 use function bovigo\assert\predicate\equals;
 use function bovigo\assert\predicate\isInstanceOf;
 use function bovigo\assert\predicate\isNotEqualTo;
@@ -335,11 +337,11 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @expectedException  stubbles\peer\MalformedUriException
      */
     public function uriThrowsMalformedUriExceptionOnInvalidRequestUri()
     {
-        $this->createBaseWebRequest([], [])->uri();
+        expect(function() { $this->createBaseWebRequest([], [])->uri(); })
+                ->throws(MalformedUri::class);
     }
 
     /**

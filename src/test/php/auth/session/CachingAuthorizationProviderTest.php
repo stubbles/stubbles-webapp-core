@@ -21,7 +21,7 @@ use function bovigo\assert\assertTrue;
 use function bovigo\assert\predicate\equals;
 use function bovigo\assert\predicate\isSameAs;
 use function bovigo\callmap\verify;
-use function stubbles\lang\reflect\annotationsOfConstructorParameter;
+use function stubbles\reflect\annotationsOfConstructorParameter;
 /**
  * Tests for stubbles\webapp\auth\session\CachingAuthorizationProvider
  *

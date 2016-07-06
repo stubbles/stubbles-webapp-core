@@ -306,7 +306,7 @@ class WebRequest extends AbstractRequest implements Request
      */
     public function validateHeader($headerName)
     {
-        return new ValueValidator($this->headers->get($headerName));
+        return new ValueValidator($this->headers->value($headerName));
     }
 
     /**
@@ -409,7 +409,7 @@ class WebRequest extends AbstractRequest implements Request
      */
     public function validateCookie($cookieName)
     {
-        return new ValueValidator($this->cookies->get($cookieName));
+        return new ValueValidator($this->cookies->value($cookieName));
     }
 
     /**

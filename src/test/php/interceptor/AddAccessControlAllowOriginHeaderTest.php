@@ -17,7 +17,7 @@ use function bovigo\assert\assert;
 use function bovigo\assert\assertTrue;
 use function bovigo\assert\predicate\equals;
 use function bovigo\callmap\verify;
-use function stubbles\lang\reflect\annotationsOfConstructor;
+use function stubbles\reflect\annotationsOfConstructor;
 /**
  * Tests for stubbles\webapp\interceptor\AddAccessControlAllowOriginHeader.
  *

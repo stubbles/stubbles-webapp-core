@@ -11,7 +11,7 @@ namespace stubbles\webapp\request;
 use function bovigo\assert\assert;
 use function bovigo\assert\assertTrue;
 use function bovigo\assert\predicate\equals;
-use function stubbles\lang\reflect\annotationsOf;
+use function stubbles\reflect\annotationsOf;
 /**
  * Test for stubbles\webapp\request\UserAgent.
  *

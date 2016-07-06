@@ -8,12 +8,12 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\response\mimetypes;
-use stubbles\lang\Sequence;
+use stubbles\sequence\Sequence;
 use stubbles\streams\OutputStream;
 use stubbles\webapp\response\Error;
 
-use function stubbles\lang\castToArray;
-use function stubbles\lang\getType;
+use function stubbles\sequence\castToArray;
+use function stubbles\values\typeOf;
 /**
  * Can transform any iterable resource into csv format.
  */
@@ -83,7 +83,7 @@ class Csv extends MimeType
             $this->serializeIterable(castToArray($resource), $out);
         } else {
             trigger_error(
-                    'Resource of type ' . getType($resource)
+                    'Resource of type ' . typeOf($resource)
                     . ' can not be serialized to csv',
                     E_USER_ERROR
             );
@@ -109,7 +109,7 @@ class Csv extends MimeType
             $out->write($this->toCsvLine($resource, $memory));
         } else {
             $head = true;
-            foreach (Sequence::of($resource)->map('stubbles\lang\castToArray') as $elements) {
+            foreach (Sequence::of($resource)->map('stubbles\sequence\castToArray') as $elements) {
                 if ($head && !is_numeric(key($elements))) {
                     $out->write($this->toCsvLine(array_keys($elements), $memory));
                 }

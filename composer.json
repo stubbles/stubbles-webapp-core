@@ -6,8 +6,13 @@
     "description": "Base classes for Stubbles based web applications.",
     "require": {
         "php": ">=5.6.0",
-        "stubbles/core": "^7.0",
-        "stubbles/input": "^6.0"
+        "stubbles/ioc": "^7.1",
+        "stubbles/input": "^6.0",
+        "stubbles/peer": "^7.1",
+        "stubbles/reflect": "^7.0",
+        "stubbles/sequence": "^7.0",
+        "stubbles/streams": "^7.0",
+        "stubbles/values": "^7.2"
     },
     "suggest": {
         "stubbles/xml": "^5.0",

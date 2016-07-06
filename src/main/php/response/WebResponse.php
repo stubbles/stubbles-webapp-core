@@ -10,12 +10,12 @@
 namespace stubbles\webapp\response;
 use stubbles\peer\http\Http;
 use stubbles\peer\http\HttpVersion;
+use stubbles\streams\OutputStream;
+use stubbles\streams\StandardOutputStream;
 use stubbles\webapp\Request;
 use stubbles\webapp\Response;
 use stubbles\webapp\response\mimetypes\MimeType;
 use stubbles\webapp\response\mimetypes\PassThrough;
-use stubbles\streams\OutputStream;
-use stubbles\streams\StandardOutputStream;
 
 /**
  * Base class for a response to a request.

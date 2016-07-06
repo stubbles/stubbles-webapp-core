@@ -9,9 +9,9 @@
  */
 namespace stubbles\webapp;
 use bovigo\callmap\NewInstance;
+use stubbles\ExceptionLogger;
 use stubbles\ioc\Binder;
 use stubbles\ioc\Injector;
-use stubbles\lang\errorhandler\ExceptionLogger;
 use stubbles\webapp\routing\Routing;
 use stubbles\webapp\routing\UriResource;
 use stubbles\webapp\session\Session;

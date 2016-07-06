@@ -9,7 +9,7 @@
  */
 namespace stubbles\webapp\response\mimetypes;
 use stubbles\img\Image as ImageSource;
-use stubbles\lang\ResourceLoader;
+use stubbles\values\ResourceLoader;
 use stubbles\streams\OutputStream;
 use stubbles\webapp\response\Error;
 /**
@@ -84,7 +84,7 @@ class Image extends MimeType
             ob_end_clean();
             $out->write($result);
         }
-        
+
         return $out;
     }
 

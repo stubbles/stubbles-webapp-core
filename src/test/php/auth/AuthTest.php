@@ -9,8 +9,9 @@
  */
 namespace stubbles\webapp\auth;
 use bovigo\callmap\NewInstance;
+use stubbles\Environment;
 use stubbles\ioc\Binder;
-use stubbles\lang\Mode;
+use stubbles\values\Properties;
 use stubbles\webapp\auth\session\CachingAuthenticationProvider;
 use stubbles\webapp\auth\session\CachingAuthorizationProvider;
 use stubbles\webapp\auth\token\TokenAuthenticator;
@@ -21,7 +22,6 @@ use function bovigo\assert\assert;
 use function bovigo\assert\assertFalse;
 use function bovigo\assert\predicate\equals;
 use function bovigo\assert\predicate\isInstanceOf;
-use function stubbles\lang\properties;
 /**
  * Tests for stubbles\webapp\auth\Auth.
  *
@@ -58,8 +58,8 @@ class AuthTest extends \PHPUnit_Framework_TestCase
         $this->binder->bind(Session::class)
                 ->toInstance(NewInstance::of(Session::class));
         $this->binder->bindProperties(
-                properties(['config' => ['stubbles.webapp.auth.token.salt' => 'pepper']]),
-                NewInstance::of(Mode::class)
+                new Properties(['config' => ['stubbles.webapp.auth.token.salt' => 'pepper']]),
+                'development'
         );
     }
     /**

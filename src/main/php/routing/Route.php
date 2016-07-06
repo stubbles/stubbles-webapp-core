@@ -16,7 +16,7 @@ use stubbles\webapp\interceptor\PreInterceptor;
 use stubbles\webapp\interceptor\PostInterceptor;
 use stubbles\webapp\routing\api\Resource;
 
-use function stubbles\lang\getType;
+use function stubbles\values\typeOf;
 /**
  * Represents information about a route that can be called.
  *
@@ -145,7 +145,7 @@ class Route implements ConfigurableRoute
             return $requestMethod;
         }
 
-        throw new \InvalidArgumentException('Given request method must be null, a string or an array, but received ' . getType($requestMethod));
+        throw new \InvalidArgumentException('Given request method must be null, a string or an array, but received ' . typeOf($requestMethod));
     }
 
     /**

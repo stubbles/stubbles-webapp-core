@@ -24,7 +24,7 @@ use function bovigo\assert\predicate\isNotEqualTo;
 use function bovigo\assert\predicate\isSameAs;
 use function bovigo\callmap\throws;
 use function bovigo\callmap\verify;
-use function stubbles\lang\reflect\annotationsOfConstructorParameter;
+use function stubbles\reflect\annotationsOfConstructorParameter;
 /**
  * Test for stubbles\webapp\auth\token\TokenAuthenticator.
  *

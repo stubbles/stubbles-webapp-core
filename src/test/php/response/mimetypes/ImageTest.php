@@ -11,8 +11,8 @@ namespace stubbles\webapp\response\mimetypes;
 use bovigo\callmap\NewInstance;
 use stubbles\img\Image as ImageSource;
 use stubbles\img\driver\DummyDriver;
-use stubbles\lang\ResourceLoader;
 use stubbles\streams\memory\MemoryOutputStream;
+use stubbles\values\ResourceLoader;
 use stubbles\webapp\response\Error;
 
 use function bovigo\assert\assert;
@@ -21,7 +21,7 @@ use function bovigo\assert\expect;
 use function bovigo\assert\predicate\equals;
 use function bovigo\callmap\throws;
 use function bovigo\callmap\verify;
-use function stubbles\lang\reflect\annotationsOfConstructorParameter;
+use function stubbles\reflect\annotationsOfConstructorParameter;
 /**
  * Tests for stubbles\webapp\response\mimetypes\Image.
  *

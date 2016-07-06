@@ -12,7 +12,7 @@ use stubbles\webapp\routing\api\Header;
 use stubbles\webapp\routing\api\Parameter;
 use stubbles\webapp\routing\api\Status;
 
-use function stubbles\lang\reflect\annotationsOf;
+use function stubbles\reflect\annotationsOf;
 /**
  * Provides access to routing related annotations on a callback.
  *

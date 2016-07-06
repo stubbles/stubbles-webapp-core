@@ -19,7 +19,7 @@ use function bovigo\assert\assert;
 use function bovigo\assert\assertTrue;
 use function bovigo\assert\predicate\equals;
 use function bovigo\assert\predicate\isSameAs;
-use function stubbles\lang\reflect\annotationsOfConstructor;
+use function stubbles\reflect\annotationsOfConstructor;
 /**
  * Test for stubbles\webapp\htmlpassthrough\HtmlFilePassThrough.
  *
