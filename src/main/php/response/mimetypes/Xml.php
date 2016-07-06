@@ -28,7 +28,6 @@ class Xml extends MimeType
      * constructor
      *
      * @param  \stubbles\xml\serializer\XmlSerializerFacade  $xmlSerializerFacade
-     * @Inject
      */
     public function __construct(XmlSerializerFacade $xmlSerializerFacade)
     {

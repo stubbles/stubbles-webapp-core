@@ -43,7 +43,6 @@ class AddAccessControlAllowOriginHeader implements PostInterceptor
      * constructor
      *
      * @param   string[]  $allowedOriginHosts
-     * @Inject
      * @Property('stubbles.webapp.origin.hosts')
      */
     public function __construct($allowedOriginHosts)

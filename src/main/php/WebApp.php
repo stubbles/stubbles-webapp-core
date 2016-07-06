@@ -41,7 +41,6 @@ abstract class WebApp extends App
      *
      * @param  \stubbles\ioc\Injector            $injector
      * @param  \stubbles\webapp\routing\Routing  $routing   routes to logic based on request
-     * @Inject
      */
     public function __construct(Injector $injector, Routing $routing)
     {

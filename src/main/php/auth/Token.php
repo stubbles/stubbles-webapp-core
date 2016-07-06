@@ -41,15 +41,13 @@ class Token
      */
     public static function create(User $user, $salt)
     {
-        return new self(md5($salt . serialize([$user->name(),
-                                               $user->firstName(),
-                                               $user->lastName(),
-                                               $user->mailAddress(),
-                                               self::createRandomContent()
-                                              ]
-                                    )
-                           )
-        );
+        return new self(md5($salt . serialize([
+                $user->name(),
+                $user->firstName(),
+                $user->lastName(),
+                $user->mailAddress(),
+                self::createRandomContent()
+        ])));
     }
 
     /**

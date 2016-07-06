@@ -83,7 +83,10 @@ class ResolvingResource extends AbstractResource
 
         $targetInstance = $this->injector->getInstance($target);
         if (!($targetInstance instanceof Target)) {
-            return $response->internalServerError('Configured target class ' . $target . ' for route ' . $uriPath . ' is not an instance of stubbles\webapp\Target');
+            return $response->internalServerError(
+                    'Configured target class ' . $target . ' for route ' . $uriPath
+                    . ' is not an instance of ' . Target::class
+            );
         }
 
         return $targetInstance->resolve($request, $response, $uriPath);

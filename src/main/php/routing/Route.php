@@ -114,8 +114,8 @@ class Route implements ConfigurableRoute
         if (!is_callable($target) && !($target instanceof Target) && !class_exists($target)) {
             throw new \InvalidArgumentException(
                     'Given target for path "' . $path . '" must be a callable,'
-                    . ' an instance of stubbles\webapp\Target or a class name of'
-                    . ' an existing stubbles\webapp\Target implementation'
+                    . ' an instance of ' . Target::class . ' or a classname of'
+                    . ' an existing ' . Target::class . ' implementation'
             );
         }
 
@@ -145,7 +145,10 @@ class Route implements ConfigurableRoute
             return $requestMethod;
         }
 
-        throw new \InvalidArgumentException('Given request method must be null, a string or an array, but received ' . typeOf($requestMethod));
+        throw new \InvalidArgumentException(
+                'Given request method must be null, a string or an array, but received '
+                . typeOf($requestMethod)
+        );
     }
 
     /**
@@ -222,7 +225,11 @@ class Route implements ConfigurableRoute
     public function preIntercept($preInterceptor)
     {
         if (!is_callable($preInterceptor) && !($preInterceptor instanceof PreInterceptor) && !class_exists($preInterceptor)) {
-            throw new \InvalidArgumentException('Given pre interceptor must be a callable, an instance of stubbles\webapp\interceptor\PreInterceptor or a class name of an existing pre interceptor class');
+            throw new \InvalidArgumentException(
+                    'Given pre interceptor must be a callable, an instance of '
+                    . PreInterceptor::class
+                    . ' or a class name of an existing pre interceptor class'
+            );
         }
 
         $this->preInterceptors[] = $preInterceptor;
@@ -249,7 +256,11 @@ class Route implements ConfigurableRoute
     public function postIntercept($postInterceptor)
     {
         if (!is_callable($postInterceptor) && !($postInterceptor instanceof PostInterceptor) && !class_exists($postInterceptor)) {
-            throw new \InvalidArgumentException('Given pre interceptor must be a callable, an instance of stubbles\webapp\interceptor\PostInterceptor or a class name of an existing post interceptor class');
+            throw new \InvalidArgumentException(
+                    'Given pre interceptor must be a callable, an instance of '
+                    . PostInterceptor::class
+                    . ' or a class name of an existing post interceptor class'
+            );
         }
 
         $this->postInterceptors[] = $postInterceptor;
@@ -368,7 +379,10 @@ class Route implements ConfigurableRoute
     public function supportsMimeType($mimeType, $class = null)
     {
         if (null === $class && !SupportedMimeTypes::provideDefaultClassFor($mimeType)) {
-            throw new \InvalidArgumentException('No default class known for mime type ' . $mimeType . ', please provide a class');
+            throw new \InvalidArgumentException(
+                    'No default class known for mime type ' . $mimeType
+                    . ', please provide a class'
+            );
         }
 
         $this->mimeTypes[] = $mimeType;

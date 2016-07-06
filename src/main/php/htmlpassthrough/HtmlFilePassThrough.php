@@ -30,7 +30,6 @@ class HtmlFilePassThrough implements Target
      * constructor
      *
      * @param  string  $routePath  path to html files
-     * @Inject
      * @Named('stubbles.pages.path')
      */
     public function __construct($routePath)

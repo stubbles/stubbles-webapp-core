@@ -39,21 +39,23 @@ class SupportedMimeTypes
      *
      * @type  array
      */
-    private static $supported = ['application/json' => Json::class,
-                                 'text/json'        => Json::class,
-                                 'text/plain'       => TextPlain::class,
-                                 'text/html'        => PassThrough::class,
-                                 'text/csv'         => Csv::class
-                                ];
+    private static $supported = [
+            'application/json' => Json::class,
+            'text/json'        => Json::class,
+            'text/plain'       => TextPlain::class,
+            'text/html'        => PassThrough::class,
+            'text/csv'         => Csv::class
+    ];
     /**
      * map of xml mime type classes
      *
      * @type  array
      */
-    private static $xml = ['text/xml'            => Xml::class,
-                           'application/xml'     => Xml::class,
-                           'application/rss+xml' => Xml::class
-                          ];
+    private static $xml = [
+            'text/xml'            => Xml::class,
+            'application/xml'     => Xml::class,
+            'application/rss+xml' => Xml::class
+    ];
     /**
      * map of image mime type classes
      *

@@ -37,7 +37,6 @@ class CachingAuthenticationProvider implements AuthenticationProvider
      *
      * @param  \stubbles\webapp\session\Session              $session
      * @param  \stubbles\webapp\auth\AuthenticationProvider  $authenticationProvider
-     * @Inject
      * @Named{authenticationProvider}('original')
      */
     public function __construct(Session $session, AuthenticationProvider $authenticationProvider)

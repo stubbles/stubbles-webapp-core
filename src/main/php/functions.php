@@ -39,7 +39,7 @@ namespace stubbles\webapp\session {
     use stubbles\webapp\session\NullSession;
     use stubbles\webapp\session\WebSession;
     use stubbles\webapp\session\id\NoneDurableSessionId;
-    use stubbles\webapp\websession\WebBoundSessionId;
+    use stubbles\webapp\session\id\WebBoundSessionId;
     use stubbles\webapp\session\storage\ArraySessionStorage;
     use stubbles\webapp\session\storage\NativeSessionStorage;
 
@@ -105,4 +105,3 @@ namespace stubbles\webapp\session {
         );
     }
 }
-

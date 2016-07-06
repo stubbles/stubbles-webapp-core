@@ -57,7 +57,10 @@ class Headers implements \IteratorAggregate, \ArrayAccess
      */
     public function location($uri)
     {
-        return $this->add('Location', (($uri instanceof HttpUri) ? ($uri->asStringWithNonDefaultPort()) : ($uri)));
+        return $this->add(
+                'Location',
+                (($uri instanceof HttpUri) ? ($uri->asStringWithNonDefaultPort()) : ($uri))
+        );
     }
 
     /**

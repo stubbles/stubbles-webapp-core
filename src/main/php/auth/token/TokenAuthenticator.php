@@ -43,7 +43,6 @@ class TokenAuthenticator implements AuthenticationProvider
      * @param  \stubbles\webapp\auth\token\TokenStore        $tokenStore
      * @param  string                                        $tokenSalt
      * @param  \stubbles\webapp\auth\AuthenticationProvider  $loginProvider
-     * @Inject
      * @Property{tokenSalt}('stubbles.webapp.auth.token.salt')
      * @Named{loginProvider}('stubbles.webapp.auth.token.loginProvider')
      */

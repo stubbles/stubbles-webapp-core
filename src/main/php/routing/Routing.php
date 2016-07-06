@@ -382,13 +382,18 @@ class Routing implements RoutingConfigurator
     public function preIntercept($preInterceptor, $path = null, $requestMethod = null)
     {
         if (!is_callable($preInterceptor) && !($preInterceptor instanceof PreInterceptor) && !class_exists($preInterceptor)) {
-            throw new \InvalidArgumentException('Given pre interceptor must be a callable, an instance of stubbles\webapp\interceptor\PreInterceptor or a class name of an existing pre interceptor class');
+            throw new \InvalidArgumentException(
+                    'Given pre interceptor must be a callable, an instance of '
+                    . PreInterceptor::class
+                    . ' or a class name of an existing pre interceptor class'
+            );
         }
 
-        $this->preInterceptors[] = ['interceptor'   => $preInterceptor,
-                                    'requestMethod' => $requestMethod,
-                                    'path'          => $path
-                                   ];
+        $this->preInterceptors[] = [
+                'interceptor'   => $preInterceptor,
+                'requestMethod' => $requestMethod,
+                'path'          => $path
+        ];
         return $this;
     }
 
@@ -464,13 +469,18 @@ class Routing implements RoutingConfigurator
     public function postIntercept($postInterceptor, $path = null, $requestMethod = null)
     {
         if (!is_callable($postInterceptor) && !($postInterceptor instanceof PostInterceptor) && !class_exists($postInterceptor)) {
-            throw new \InvalidArgumentException('Given pre interceptor must be a callable, an instance of stubbles\webapp\interceptor\PostInterceptor or a class name of an existing post interceptor class');
+            throw new \InvalidArgumentException(
+                    'Given pre interceptor must be a callable, an instance of '
+                    . PostInterceptor::class
+                    . ' or a class name of an existing post interceptor class'
+            );
         }
 
-        $this->postInterceptors[] = ['interceptor'   => $postInterceptor,
-                                     'requestMethod' => $requestMethod,
-                                     'path'          => $path
-                                    ];
+        $this->postInterceptors[] = [
+                'interceptor'   => $postInterceptor,
+                'requestMethod' => $requestMethod,
+                'path'          => $path
+        ];
         return $this;
     }
 
@@ -568,7 +578,10 @@ class Routing implements RoutingConfigurator
     public function supportsMimeType($mimeType, $mimeTypeClass = null)
     {
         if (null === $mimeTypeClass && !SupportedMimeTypes::provideDefaultClassFor($mimeType)) {
-            throw new \InvalidArgumentException('No default class known for mime type ' . $mimeType . ', please provide a class');
+            throw new \InvalidArgumentException(
+                    'No default class known for mime type ' . $mimeType
+                    . ', please provide a class'
+            );
         }
 
         $this->mimeTypes[] = $mimeType;

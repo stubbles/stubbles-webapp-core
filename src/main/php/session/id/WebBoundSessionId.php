@@ -99,9 +99,9 @@ class WebBoundSessionId implements SessionId
     private function read()
     {
         if ($this->request->hasParam($this->sessionName)) {
-            return $this->request->readParam($this->sessionName)->ifSatisfiesRegex(self::SESSION_ID_REGEX);
+            return $this->request->readParam($this->sessionName)->ifMatches(self::SESSION_ID_REGEX);
         } elseif ($this->request->hasCookie($this->sessionName)) {
-            return $this->request->readCookie($this->sessionName)->ifSatisfiesRegex(self::SESSION_ID_REGEX);
+            return $this->request->readCookie($this->sessionName)->ifMatches(self::SESSION_ID_REGEX);
         }
 
         return null;
@@ -126,8 +126,7 @@ class WebBoundSessionId implements SessionId
     {
         $this->id = $this->create();
         $this->response->addCookie(
-                Cookie::create($this->sessionName, $this->id)
-                        ->forPath('/')
+                Cookie::create($this->sessionName, $this->id)->forPath('/')
         );
         return $this;
     }

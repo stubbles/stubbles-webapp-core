@@ -108,7 +108,7 @@ class WebRequest extends AbstractRequest implements Request
 
         if ($this->headers->contain('HTTP_X_REQUEST_ID')) {
             $this->id = $this->readHeader('HTTP_X_REQUEST_ID')
-                    ->ifSatisfiesRegex('~^([a-zA-Z0-9+/=-]{20,200})$~');
+                    ->ifMatches('~^([a-zA-Z0-9+/=-]{20,200})$~');
         }
 
         if (null === $this->id) {
@@ -217,7 +217,7 @@ class WebRequest extends AbstractRequest implements Request
     public function userAgent($botSignatures = [])
     {
         return new UserAgent(
-                $this->headers->get('HTTP_USER_AGENT')->value(),
+                $this->headers->value('HTTP_USER_AGENT'),
                 $this->cookies->count() > 0,
                 $botSignatures
         );

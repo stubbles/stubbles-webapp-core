@@ -246,14 +246,12 @@ class WebSession implements Session
             throw new \LogicException('Session is in an invalid state.');
         }
 
-        return array_values(
-                array_filter(
-                        $this->storage->valueKeys(),
-                        function($valueKey)
-                        {
-                            return substr($valueKey, 0, 11) !== '__stubbles_';
-                        }
-                )
-        );
+        return array_values(array_filter(
+                $this->storage->valueKeys(),
+                function($valueKey)
+                {
+                    return substr($valueKey, 0, 11) !== '__stubbles_';
+                }
+        ));
     }
 }

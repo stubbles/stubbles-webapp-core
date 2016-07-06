@@ -94,7 +94,7 @@ class Interceptors
             $response->write(
                     $response->internalServerError(
                             'Configured pre interceptor ' . $preInterceptor
-                            . ' is not an instance of stubbles\webapp\interceptor\PreInterceptor'
+                            . ' is not an instance of ' . PreInterceptor::class
                     )
             );
             return false;
@@ -144,7 +144,7 @@ class Interceptors
             $response->write(
                     $response->internalServerError(
                             'Configured post interceptor ' . $postInterceptor
-                            . ' is not an instance of stubbles\webapp\interceptor\PostInterceptor'
+                            . ' is not an instance of ' . PostInterceptor::class
                     )
             );
             return false;

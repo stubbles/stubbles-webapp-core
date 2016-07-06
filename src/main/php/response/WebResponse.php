@@ -226,8 +226,8 @@ class WebResponse implements Response
      */
     public function removeCookie($name)
     {
-        $this->addCookie(Cookie::create($name, 'remove')
-                               ->expiringAt(time() - 86400)
+        $this->addCookie(
+                Cookie::create($name, 'remove')->expiringAt(time() - 86400)
         );
         return $this;
     }
@@ -368,7 +368,9 @@ class WebResponse implements Response
     public function httpVersionNotSupported()
     {
         $this->status->httpVersionNotSupported();
-        $this->resource = new Error('Unsupported HTTP protocol version, expected HTTP/1.0 or HTTP/1.1');
+        $this->resource = new Error(
+                'Unsupported HTTP protocol version, expected HTTP/1.0 or HTTP/1.1'
+        );
     }
 
     /**

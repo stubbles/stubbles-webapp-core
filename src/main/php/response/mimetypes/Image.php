@@ -33,9 +33,8 @@ class Image extends MimeType
     /**
      * constructor
      *
-     * @param  \stubbles\lang\ResourceLoader  $resourceLoader
-     * @param  string                         $errorImgResource  optional  image to be displayed in case of errors
-     * @Inject
+     * @param  \stubbles\values\ResourceLoader  $resourceLoader
+     * @param  string                           $errorImgResource  optional  image to be displayed in case of errors
      * @Property{errorImgResource}('stubbles.img.error')
      */
     public function __construct(
