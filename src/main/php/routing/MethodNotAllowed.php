@@ -10,6 +10,7 @@ declare(strict_types=1);
  */
 namespace stubbles\webapp\routing;
 use stubbles\ioc\Injector;
+use stubbles\peer\http\Http;
 use stubbles\webapp\Request;
 use stubbles\webapp\Response;
 /**
@@ -40,12 +41,12 @@ class MethodNotAllowed extends AbstractResource
             CalledUri $calledUri,
             Interceptors $interceptors,
             SupportedMimeTypes $supportedMimeTypes,
-            array $allowedMethods)
-    {
+            array $allowedMethods
+    ) {
         parent::__construct($injector, $calledUri, $interceptors, $supportedMimeTypes);
         $this->allowedMethods = $allowedMethods;
-        if (!in_array('OPTIONS', $this->allowedMethods)) {
-            $this->allowedMethods[] = 'OPTIONS';
+        if (!in_array(Http::OPTIONS, $this->allowedMethods)) {
+            $this->allowedMethods[] = Http::OPTIONS;
         }
     }
 

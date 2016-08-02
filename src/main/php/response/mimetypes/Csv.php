@@ -96,8 +96,8 @@ class Csv extends MimeType
     /**
      * serializes iterable to csv
      *
-     * @param   iterable  $resource
-     * @param   \stubbles\streams\OutputStream  $out
+     * @param  iterable  $resource
+     * @param  \stubbles\streams\OutputStream  $out
      */
     private function serializeIterable($resource, OutputStream $out)
     {

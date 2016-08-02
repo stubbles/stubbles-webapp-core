@@ -10,12 +10,14 @@ declare(strict_types=1);
  */
 namespace stubbles\webapp\routing;
 use stubbles\peer\http\AcceptHeader;
-use stubbles\webapp\response\mimetypes\Csv;
-use stubbles\webapp\response\mimetypes\Image;
-use stubbles\webapp\response\mimetypes\Json;
-use stubbles\webapp\response\mimetypes\PassThrough;
-use stubbles\webapp\response\mimetypes\TextPlain;
-use stubbles\webapp\response\mimetypes\Xml;
+use stubbles\webapp\response\mimetypes\{
+    Csv,
+    Image,
+    Json,
+    PassThrough,
+    TextPlain,
+    Xml
+};
 /**
  * Handles list of supported mime types.
  *

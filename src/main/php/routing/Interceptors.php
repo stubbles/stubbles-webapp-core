@@ -83,7 +83,7 @@ class Interceptors
     private function executePreInterceptor($preInterceptor, Request $request, Response $response)
     {
         if (is_callable($preInterceptor)) {
-            return call_user_func_array($preInterceptor, [$request, $response]);
+            return $preInterceptor($request, $response);
         }
 
         if ($preInterceptor instanceof PreInterceptor) {
@@ -133,7 +133,7 @@ class Interceptors
     private function executePostInterceptor($postInterceptor, Request $request, Response $response)
     {
         if (is_callable($postInterceptor)) {
-            return call_user_func_array($postInterceptor, [$request, $response]);
+            return $postInterceptor($request, $response);
         }
 
         if ($postInterceptor instanceof PostInterceptor) {

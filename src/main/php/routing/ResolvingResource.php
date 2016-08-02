@@ -75,7 +75,7 @@ class ResolvingResource extends AbstractResource
         $uriPath = $this->calledUri->path($this->route->configuredPath());
         $target  = $this->route->target();
         if (is_callable($target)) {
-            return call_user_func_array($target, [$request, $response, $uriPath]);
+            return $target($request, $response, $uriPath);
         }
 
         if ($target instanceof Target) {

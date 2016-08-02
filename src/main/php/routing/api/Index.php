@@ -9,11 +9,13 @@ declare(strict_types=1);
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\routing\api;
-use stubbles\webapp\Request;
-use stubbles\webapp\Response;
-use stubbles\webapp\Target;
-use stubbles\webapp\UriPath;
-use stubbles\webapp\routing\Routes;
+use stubbles\webapp\{
+    Request,
+    Response,
+    Target,
+    UriPath,
+    routing\Routes
+};
 /**
  * Provides an index over all available resources.
  *

@@ -73,12 +73,7 @@ class TokenAuthenticator implements AuthenticationProvider
 
         try {
             $user = $this->tokenStore->findUserByToken($request, $token);
-            if (null === $user) {
-                return $this->login($request);
-            }
-
-            $user->setToken($token);
-            return $user;
+            return null === $user ? $this->login($request) : $user->setToken($token);
         } catch (\Exception $e) {
             throw new InternalAuthProviderException(
                     'Error while trying to find user by token: ' . $e->getMessage(),

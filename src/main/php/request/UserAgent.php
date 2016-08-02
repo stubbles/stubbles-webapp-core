@@ -34,14 +34,15 @@ class UserAgent
      *
      * @type  array
      */
-    private $botSignatures = ['google'       => '~Googlebot~',
-                              'msnbot'       => '~msnbot~',
-                              'bing'         => '~bingbot~',
-                              'bing preview' => '~BingPreview~',
-                              'slurp'        => '~Slurp~',
-                              'pingdom'      => '~pingdom~',
-                              'yandex'       => '~YandexBot~'
-                             ];
+    private $botSignatures = [
+            'google'       => '~Googlebot~',
+            'msnbot'       => '~msnbot~',
+            'bing'         => '~bingbot~',
+            'bing preview' => '~BingPreview~',
+            'slurp'        => '~Slurp~',
+            'pingdom'      => '~pingdom~',
+            'yandex'       => '~YandexBot~'
+    ];
     /**
      * whether user agent accepts cookies or not
      *

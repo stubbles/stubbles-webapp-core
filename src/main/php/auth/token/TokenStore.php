@@ -25,17 +25,17 @@ interface TokenStore
     /**
      * store token for given user
      *
-     * @param  \stubbles\webapp\Request  $request  request the token was issued with
-     * @param  \stubbles\webapp\auth\Token       $token    actual token
-     * @param  \stubbles\webapp\auth\User        $user     user the the token is for
+     * @param  \stubbles\webapp\Request     $request  request the token was issued with
+     * @param  \stubbles\webapp\auth\Token  $token    actual token
+     * @param  \stubbles\webapp\auth\User   $user     user the the token is for
      */
     public function store(Request $request, Token $token, User $user);
 
     /**
      * returns the user for the given token if it is valid
      *
-     * @param   \stubbles\webapp\Request  $request  request the token was provided with
-     * @param   \stubbles\webapp\auth\Token       $token    actual token
+     * @param   \stubbles\webapp\Request     $request  request the token was provided with
+     * @param   \stubbles\webapp\auth\Token  $token    actual token
      * @return  \stubbles\webapp\auth\User
      */
     public function findUserByToken(Request $request, Token $token);

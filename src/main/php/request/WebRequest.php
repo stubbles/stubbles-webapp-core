@@ -83,7 +83,7 @@ class WebRequest extends ParamRequest implements Request
      * @api
      * @return  \stubbles\webapp\Request
      */
-    public static function fromRawSource()
+    public static function fromRawSource(): Request
     {
         if (isset($_SERVER['REQUEST_METHOD'])
                 && strtoupper(trim($_SERVER['REQUEST_METHOD'])) === Http::POST) {
@@ -213,7 +213,7 @@ class WebRequest extends ParamRequest implements Request
      * Please be aware that user agents can fake their appearance.
      *
      * The bot recognition will recognize Googlebot, Bing (including former
-     * msnbot, Yahoo! Slurp, Pingdom and Yandex by default. Additional
+     * msnbot), Yahoo! Slurp, Pingdom and Yandex by default. Additional
      * signatures can be passed, they must contain a regular expression which
      * matches the user agent of a bot.
      *
@@ -246,9 +246,9 @@ class WebRequest extends ParamRequest implements Request
     {
         $host = (string) $this->headers->value('HTTP_HOST')->value();
         return HttpUri::fromParts(
-                (($this->headers->contain('HTTPS')) ? (Http::SCHEME_SSL) : (Http::SCHEME)),
+                $this->headers->contain('HTTPS') ? Http::SCHEME_SSL : Http::SCHEME,
                 $host,
-                (strstr($host, ':') === false ? $this->headers->value('SERVER_PORT')->value() : null),
+                strstr($host, ':') === false ? $this->headers->value('SERVER_PORT')->value() : null,
                 (string) $this->headers->value('REQUEST_URI')->value() // already contains query string
         );
     }

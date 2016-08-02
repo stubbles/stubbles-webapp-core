@@ -26,6 +26,5 @@ class ExternalAuthProviderException extends AuthProviderException
     public function __construct(string $message, \Exception $cause = null)
     {
         parent::__construct($message, $cause, AuthProviderException::EXTERNAL);
-
     }
 }
