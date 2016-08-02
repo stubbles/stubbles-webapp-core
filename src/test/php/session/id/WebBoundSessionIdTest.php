@@ -163,6 +163,7 @@ class WebBoundSessionIdTest extends \PHPUnit_Framework_TestCase
      */
     public function regenerateChangesSessionId()
     {
+        $this->request->mapCalls(['hasParam' => false]);
         $previous = (string) $this->webBoundSessionId;
         assert(
                 (string) $this->webBoundSessionId->regenerate(),

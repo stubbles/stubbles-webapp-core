@@ -832,7 +832,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     public function mimeTypeClasses()
     {
         return [
-            ['example\Bar', 'application/bar'],
+            ['example\\\Bar', 'application/bar'],
             [Baz::class, 'application/baz']
         ];
     }

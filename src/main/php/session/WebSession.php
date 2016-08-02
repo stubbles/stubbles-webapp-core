@@ -165,7 +165,7 @@ class WebSession implements Session
      * @param   string  $key  key where value is stored under
      * @return  bool
      */
-    public function hasValue($key)
+    public function hasValue(string $key): bool
     {
         if (!$this->isValid()) {
             return false;
@@ -182,7 +182,7 @@ class WebSession implements Session
      * @return  mixed
      * @throws  \LogicException
      */
-    public function value($key, $default = null)
+    public function value(string $key, $default = null)
     {
         if (!$this->isValid()) {
             throw new \LogicException('Session is in an invalid state.');
@@ -203,7 +203,7 @@ class WebSession implements Session
      * @return  \stubbles\webapp\session\Session
      * @throws  \LogicException
      */
-    public function putValue($key, $value)
+    public function putValue(string $key, $value): Session
     {
         if (!$this->isValid()) {
             throw new \LogicException('Session is in an invalid state.');
@@ -240,7 +240,7 @@ class WebSession implements Session
      * @return  string[]
      * @throws  \LogicException
      */
-    public function valueKeys()
+    public function valueKeys(): array
     {
         if (!$this->isValid()) {
             throw new \LogicException('Session is in an invalid state.');

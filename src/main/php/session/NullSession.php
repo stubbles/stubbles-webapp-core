@@ -104,7 +104,7 @@ class NullSession implements Session
      * @param   string  $key  key where value is stored under
      * @return  bool
      */
-    public function hasValue($key)
+    public function hasValue(string $key): bool
     {
         return false;
     }
@@ -116,7 +116,7 @@ class NullSession implements Session
      * @param   mixed   $default  optional  return this if no data is associated with $key
      * @return  mixed
      */
-    public function value($key, $default = null)
+    public function value(string $key, $default = null)
     {
         return $default;
     }
@@ -128,7 +128,7 @@ class NullSession implements Session
      * @param   mixed   $value  data to store
      * @return  Session
      */
-    public function putValue($key, $value)
+    public function putValue(string $key, $value)
     {
         return $this;
     }

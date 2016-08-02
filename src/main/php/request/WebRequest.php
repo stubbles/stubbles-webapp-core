@@ -8,7 +8,7 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\request;
-use stubbles\input\AbstractRequest;
+use stubbles\input\ParamRequest;
 use stubbles\input\Params;
 use stubbles\input\ValueReader;
 use stubbles\input\ValueValidator;
@@ -23,7 +23,7 @@ use stubbles\webapp\session\Session;
 /**
  * Request implementation for web applications.
  */
-class WebRequest extends AbstractRequest implements Request
+class WebRequest extends ParamRequest implements Request
 {
     /**
      * generated id for request if no or an invalid X-Request-ID header is present
@@ -65,7 +65,7 @@ class WebRequest extends AbstractRequest implements Request
      */
     public function __construct(array $params, array $headers, array $cookies)
     {
-        parent::__construct(new Params($params));
+        parent::__construct($params);
         $this->headers = new Params($headers);
         $this->cookies = new Params($cookies);
     }
@@ -123,9 +123,9 @@ class WebRequest extends AbstractRequest implements Request
      *
      * @return  string
      */
-    public function method()
+    public function method(): string
     {
-        return strtoupper($this->headers->value('REQUEST_METHOD'));
+        return strtoupper($this->headers->value('REQUEST_METHOD')->value());
     }
 
     /**
@@ -156,7 +156,7 @@ class WebRequest extends AbstractRequest implements Request
         }
 
         try {
-            return HttpVersion::fromString($this->headers->value('SERVER_PROTOCOL'));
+            return HttpVersion::fromString($this->headers->value('SERVER_PROTOCOL')->value());
         } catch (\InvalidArgumentException $ex) {
             return null;
         }
@@ -186,12 +186,12 @@ class WebRequest extends AbstractRequest implements Request
     {
         try {
             if ($this->headers->contain('HTTP_X_FORWARDED_FOR')) {
-                $remoteAddresses = explode(',', $this->headers->value('HTTP_X_FORWARDED_FOR'));
+                $remoteAddresses = explode(',', $this->headers->value('HTTP_X_FORWARDED_FOR')->value());
                 return new IpAddress(trim($remoteAddresses[0]));
             }
 
             if ($this->headers->contain('REMOTE_ADDR')) {
-                return new IpAddress($this->headers->value('REMOTE_ADDR'));
+                return new IpAddress($this->headers->value('REMOTE_ADDR')->value());
             }
         } catch (\InvalidArgumentException $iae) {
             // treat as if no ip address available
@@ -217,7 +217,7 @@ class WebRequest extends AbstractRequest implements Request
     public function userAgent($botSignatures = [])
     {
         return new UserAgent(
-                $this->headers->value('HTTP_USER_AGENT'),
+                $this->headers->value('HTTP_USER_AGENT')->value(),
                 $this->cookies->count() > 0,
                 $botSignatures
         );
@@ -237,12 +237,12 @@ class WebRequest extends AbstractRequest implements Request
      */
     public function uri()
     {
-        $host = $this->headers->value('HTTP_HOST');
+        $host = (string) $this->headers->value('HTTP_HOST')->value();
         return HttpUri::fromParts(
                 (($this->headers->contain('HTTPS')) ? (Http::SCHEME_SSL) : (Http::SCHEME)),
                 $host,
-                (strstr($host, ':') === false ? $this->headers->value('SERVER_PORT') : null),
-                $this->headers->value('REQUEST_URI') // already contains query string
+                (strstr($host, ':') === false ? $this->headers->value('SERVER_PORT')->value() : null),
+                (string) $this->headers->value('REQUEST_URI')->value() // already contains query string
         );
     }
 
@@ -341,7 +341,8 @@ class WebRequest extends AbstractRequest implements Request
     {
         return new ValueReader(
                 $this->headers->errors(),
-                $this->headers->get($headerName)
+                $headerName,
+                $this->headers->value($headerName)
         );
     }
 
@@ -423,7 +424,8 @@ class WebRequest extends AbstractRequest implements Request
     {
         return new ValueReader(
                 $this->cookies->errors(),
-                $this->cookies->get($cookieName)
+                $cookieName,
+                $this->cookies->value($cookieName)
         );
     }
 

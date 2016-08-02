@@ -106,8 +106,10 @@ class AbstractResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->request = NewInstance::of(Request::class)
-                ->mapCalls(['protocolVersion' => new HttpVersion(1, 1)]);
+        $this->request = NewInstance::of(Request::class)->mapCalls([
+                'protocolVersion' => new HttpVersion(1, 1),
+                'method'          => 'TEST'
+        ]);
         $this->response = NewInstance::of(WebResponse::class, [$this->request])
                 ->mapCalls(['header' => false]);
         $this->injector     = NewInstance::stub(Injector::class);
@@ -190,8 +192,10 @@ class AbstractResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function missingMimeTypeClassForNegotiatedMimeTypeTriggersInternalServerError()
     {
-        $request = NewInstance::of(Request::class)
-                ->mapCalls(['readHeader' => ValueReader::forValue('application/foo')]);
+        $request = NewInstance::of(Request::class)->mapCalls([
+                'readHeader' => ValueReader::forValue('application/foo'),
+                'method'     => 'TEST'
+        ]);
         assertFalse(
                 $this->createRoute(
                         new SupportedMimeTypes(
@@ -212,8 +216,10 @@ class AbstractResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function createsNegotiatedMimeType()
     {
-        $request = NewInstance::of(Request::class)
-                ->mapCalls(['readHeader' => ValueReader::forValue('application/json')]);
+        $request = NewInstance::of(Request::class)->mapCalls([
+                'readHeader' => ValueReader::forValue('application/json'),
+                'method'     => 'TEST'
+        ]);
         $mimeType = new Json();
         $this->injector->mapCalls(['getInstance' => $mimeType]);
         assertTrue(

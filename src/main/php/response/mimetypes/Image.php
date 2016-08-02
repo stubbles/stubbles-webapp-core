@@ -64,6 +64,10 @@ class Image extends MimeType
      */
     public function serialize($resource, OutputStream $out)
     {
+        if (null === $resource) {
+            return $out;
+        }
+
         if ($resource instanceof Error) {
             $image = $this->loadImage($this->errorImgResource);
         } elseif (!($resource instanceof ImageSource)) {
@@ -100,11 +104,11 @@ class Image extends MimeType
                     $resource,
                     function($fileName) { return ImageSource::load($fileName); }
             );
-        } catch (\Exception $e) {
+        } catch (\Throwable $t) {
             // not allowed to throw exceptions, as we are outside any catching
             // mechanism
             trigger_error(
-                    'Can not load image "' . $resource . '": ' . $e->getMessage(),
+                    'Can not load image "' . $resource . '": ' . $t->getMessage(),
                     E_USER_ERROR
             );
             return null;
