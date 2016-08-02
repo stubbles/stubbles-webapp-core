@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -32,7 +33,7 @@ class HtmlFilePassThrough implements Target
      * @param  string  $routePath  path to html files
      * @Named('stubbles.pages.path')
      */
-    public function __construct($routePath)
+    public function __construct(string $routePath)
     {
         $this->routePath = $routePath . DIRECTORY_SEPARATOR;
     }
@@ -63,14 +64,18 @@ class HtmlFilePassThrough implements Target
     /**
      * hook to modify the content before passing it to the response
      *
-     * @param  \stubbles\webapp\Request   $request   current request
-     * @param  \stubbles\webapp\Response  $response  response to send
-     * @param   string                    $content    actual content for response
-     * @param   string                    $routeName  name of the route
+     * @param   \stubbles\webapp\Request   $request   current request
+     * @param   \stubbles\webapp\Response  $response  response to send
+     * @param   string                     $content    actual content for response
+     * @param   string                     $routeName  name of the route
      * @return  string
      */
-    protected function modifyContent(Request $request, Response $response, $content, $routeName)
-    {
+    protected function modifyContent(
+            Request $request,
+            Response $response,
+            string $content,
+            string $routeName
+    ): string {
         return $content;
     }
 }

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -53,10 +54,7 @@ class TextPlainTest extends \PHPUnit_Framework_TestCase
         );
     }
 
-    /**
-     * @return  array
-     */
-    public function serializableResources()
+    public function serializableResources(): array
     {
         $stdClass = new \stdClass();
         $stdClass->foo = 'bar';
@@ -75,7 +73,7 @@ class TextPlainTest extends \PHPUnit_Framework_TestCase
      * @test
      * @dataProvider  serializableResources
      */
-    public function serializesResourceToText($resource, $expected)
+    public function serializesResourceToText($resource, string $expected)
     {
         assert(
                 $this->textPlain->serialize(

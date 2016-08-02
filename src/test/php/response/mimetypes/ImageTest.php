@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -85,10 +86,7 @@ class ImageTest extends \PHPUnit_Framework_TestCase
         );
     }
 
-    /**
-     * @return  array
-     */
-    public function emptyValues()
+    public function emptyValues(): array
     {
         return [[null], ['']];
     }

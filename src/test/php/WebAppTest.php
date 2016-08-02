@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -12,6 +13,7 @@ use bovigo\callmap\NewInstance;
 use stubbles\ExceptionLogger;
 use stubbles\ioc\Binder;
 use stubbles\ioc\Injector;
+use stubbles\peer\http\HttpUri;
 use stubbles\webapp\routing\Routing;
 use stubbles\webapp\routing\UriResource;
 use stubbles\webapp\session\Session;
@@ -39,7 +41,7 @@ class TestWebApp extends WebApp
      *
      * @return  array
      */
-    public static function __bindings()
+    public static function __bindings(): array
     {
         return [function(Binder $binder)
                 {
@@ -124,28 +126,23 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
         restore_error_handler();
     }
 
-    /**
-     * @return  \bovigo\callmap\Proxy
-     */
-    private function createResource()
+    private function createResource(): UriResource
     {
         $resource = NewInstance::of(UriResource::class);
         $this->routing->mapCalls(['findResource' => $resource]);
         return $resource;
     }
 
-    /**
-     * @param   array  $callmap  optional
-     * @return  \bovigo\callmap\Proxy
-     */
-    private function createNonHttpsResource(array $callmap = [])
+    private function createNonHttpsResource(array $callmap = []): UriResource
     {
         $resource = $this->createResource();
         $resource->mapCalls(array_merge(
-                $callmap,
-                ['requiresHttps'     => false,
-                 'negotiateMimeType' => true
-                ]
+                ['requiresHttps'         => false,
+                 'negotiateMimeType'     => true,
+                 'applyPreInterceptors'  => true,
+                 'applyPostInterceptors' => true
+                ],
+                $callmap
         ));
         return $resource;
     }
@@ -158,7 +155,7 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
         $resource = $this->createResource();
         $resource->mapCalls([
                 'requiresHttps' => true,
-                'httpsUri'      => 'https://example.net/admin'
+                'httpsUri'      => HttpUri::fromString('https://example.net/admin')
         ]);
         $response = $this->webApp->run();
         assert($response->statusCode(), equals(302));

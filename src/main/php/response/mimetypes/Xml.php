@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -39,7 +40,7 @@ class Xml extends MimeType
      *
      * @return  string
      */
-    protected function defaultName()
+    protected function defaultName(): string
     {
         return 'application/xml';
     }
@@ -51,7 +52,7 @@ class Xml extends MimeType
      * @param   \stubbles\streams\OutputStream  $out
      * @return  \stubbles\streams\OutputStream
      */
-    public function serialize($resource, OutputStream $out)
+    public function serialize($resource, OutputStream $out): OutputStream
     {
         $out->write($this->xmlSerializerFacade->serializeToXml($resource));
         return $out;

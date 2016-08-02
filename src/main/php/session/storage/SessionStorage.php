@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -20,7 +21,7 @@ interface SessionStorage
      *
      * @return  SessionStorage
      */
-    public function clear();
+    public function clear(): self;
 
     /**
      * checks whether a value associated with key exists
@@ -28,7 +29,7 @@ interface SessionStorage
      * @param   string  $key  key where value is stored under
      * @return  bool
      */
-    public function hasValue($key);
+    public function hasValue(string $key): bool;
 
     /**
      * returns a value associated with the key or the default value
@@ -36,7 +37,7 @@ interface SessionStorage
      * @param   string  $key  key where value is stored under
      * @return  mixed
      */
-    public function value($key);
+    public function value(string $key);
 
     /**
      * stores a value associated with the key
@@ -45,7 +46,7 @@ interface SessionStorage
      * @param   mixed   $value  data to store
      * @return  \stubbles\webapp\session\storage\SessionStorage
      */
-    public function putValue($key, $value);
+    public function putValue(string $key, $value): self;
 
     /**
      * removes a value from the storage
@@ -53,12 +54,12 @@ interface SessionStorage
      * @param   string  $key  key where value is stored under
      * @return  \stubbles\webapp\session\storage\SessionStorage
      */
-    public function removeValue($key);
+    public function removeValue(string $key): self;
 
     /**
      * return an array of all keys registered in this storage
      *
      * @return  string[]
      */
-    public function valueKeys();
+    public function valueKeys(): array;
 }

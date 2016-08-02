@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -21,7 +22,7 @@ class Json extends MimeType
      *
      * @return  string
      */
-    protected function defaultName()
+    protected function defaultName(): string
     {
         return 'application/json';
     }
@@ -33,7 +34,7 @@ class Json extends MimeType
      * @param   \stubbles\streams\OutputStream  $out
      * @return  \stubbles\streams\OutputStream
      */
-    public function serialize($resource, OutputStream $out)
+    public function serialize($resource, OutputStream $out): OutputStream
     {
         $out->write(json_encode($resource));
         return $out;

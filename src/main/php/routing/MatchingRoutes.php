@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -47,9 +48,9 @@ class MatchingRoutes
     /**
      * returns the first route
      *
-     * @return  \stubbles\webapp\routing\Route
+     * @return  bool
      */
-    public function hasExactMatch()
+    public function hasExactMatch(): bool
     {
         return isset($this->routes['exact']);
     }
@@ -59,7 +60,7 @@ class MatchingRoutes
      *
      * @return  \stubbles\webapp\routing\Route
      */
-    public function exactMatch()
+    public function exactMatch(): Route
     {
         if ($this->hasExactMatch()) {
             return $this->routes['exact'];
@@ -73,7 +74,7 @@ class MatchingRoutes
      *
      * @return  bool
      */
-    public function exist()
+    public function exist(): bool
     {
         return count($this->routes) > 0;
     }
@@ -83,9 +84,8 @@ class MatchingRoutes
      *
      * @return  string[]
      */
-    public function allowedMethods()
+    public function allowedMethods(): array
     {
         return $this->allowedMethods;
     }
 }
-

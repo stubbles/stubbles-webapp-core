@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -109,6 +110,7 @@ class TokenTest extends \PHPUnit_Framework_TestCase
      */
     public function nextStoresNextTokenInSession()
     {
+        $this->session->mapCalls(['value' => 'nextToken']);
         $this->token->next();
         verify($this->session, 'putValue')->wasCalledOnce();
     }

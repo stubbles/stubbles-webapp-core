@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -71,8 +72,10 @@ class Auth implements BindingModule
      * @param   string  $authorizationProvider   optional
      * @return  \stubbles\webapp\ioc\Auth
      */
-    public static function with($authenticationProvider, $authorizationProvider = null)
-    {
+    public static function with(
+            string $authenticationProvider,
+            string $authorizationProvider = null
+    ): self {
         return new self($authenticationProvider, $authorizationProvider);
     }
 
@@ -83,8 +86,11 @@ class Auth implements BindingModule
      * @param   string  $authorizationProvider  optional
      * @return  \stubbles\webapp\ioc\Auth
      */
-    public static function usingTokens($tokenStore, $loginProvider, $authorizationProvider = null)
-    {
+    public static function usingTokens(
+            string $tokenStore,
+            string $loginProvider,
+            string $authorizationProvider = null
+    ): self {
         $self = new self(TokenAuthenticator::class, $authorizationProvider);
         $self->loginProvider = $loginProvider;
         $self->tokenStore    = $tokenStore;
@@ -96,7 +102,7 @@ class Auth implements BindingModule
      *
      * @return  \stubbles\webapp\ioc\Auth
      */
-    public function enableSessionCaching()
+    public function enableSessionCaching(): self
     {
         $this->enableSessionCaching = true;
         return $this;

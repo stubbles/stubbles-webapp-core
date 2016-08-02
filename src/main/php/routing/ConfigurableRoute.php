@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -22,7 +23,7 @@ interface ConfigurableRoute
      * @param   string|callback|\stubbles\webapp\interceptor\PreInterceptor  $preInterceptor
      * @return  \stubbles\webapp\routing\ConfigurableRoute
      */
-    public function preIntercept($preInterceptor);
+    public function preIntercept($preInterceptor): self;
 
     /**
      * add a post interceptor for this route
@@ -30,14 +31,14 @@ interface ConfigurableRoute
      * @param   string|callback|\stubbles\webapp\interceptor\PostInterceptor  $postInterceptor
      * @return  \stubbles\webapp\routing\ConfigurableRoute
      */
-    public function postIntercept($postInterceptor);
+    public function postIntercept($postInterceptor): self;
 
     /**
      * make route only available via ssl
      *
      * @return  \stubbles\webapp\routing\ConfigurableRoute
      */
-    public function httpsOnly();
+    public function httpsOnly(): self;
 
     /**
      * makes route only available if a user is logged in
@@ -45,7 +46,7 @@ interface ConfigurableRoute
      * @return  \stubbles\webapp\routing\ConfigurableRoute
      * @since   3.0.0
      */
-    public function withLoginOnly();
+    public function withLoginOnly(): self;
 
     /**
      * forbid the actual login
@@ -58,7 +59,7 @@ interface ConfigurableRoute
      * @return  \stubbles\webapp\routing\ConfigurableRoute
      * @since   5.0.0
      */
-    public function forbiddenWhenNotAlreadyLoggedIn();
+    public function forbiddenWhenNotAlreadyLoggedIn(): self;
 
     /**
      * adds a role which is only available via ssl
@@ -66,15 +67,16 @@ interface ConfigurableRoute
      * @param   string  $role
      * @return  \stubbles\webapp\routing\ConfigurableRoute
      */
-    public function withRoleOnly($role);
+    public function withRoleOnly(string $role): self;
 
     /**
      * add a mime type which this route supports
      *
      * @param   string  $mimeType
+     * @param   string  $class     optional  special class to be used for given mime type on this route
      * @return  \stubbles\webapp\routing\ConfigurableRoute
      */
-    public function supportsMimeType($mimeType);
+    public function supportsMimeType(string $mimeType, string $class = null): self;
 
     /**
      * disables content negotation
@@ -82,7 +84,7 @@ interface ConfigurableRoute
      * @return  \stubbles\webapp\routing\ConfigurableRoute
      * @since   2.1.1
      */
-    public function disableContentNegotiation();
+    public function disableContentNegotiation(): self;
 
     /**
      * hides route in API index
@@ -90,5 +92,5 @@ interface ConfigurableRoute
      * @return  \stubbles\webapp\routing\ConfigurableRoute
      * @since   6.1.0
      */
-    public function excludeFromApiIndex();
+    public function excludeFromApiIndex(): self;
 }

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -37,19 +38,19 @@ class SessionBasedHtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
     /**
      * mocked session to use
      *
-     * @type  \bovigo\callmap\Proxy
+     * @type  \stubbles\webapp\session\Session
      */
     private $session;
     /**
      * mocked request instance
      *
-     * @type  \bovigo\callmap\Proxy
+     * @type  \stubbles\webapp\Request
      */
     private $request;
     /**
      * mocked response instance
      *
-     * @type  \bovigo\callmap\Proxy
+     * @type  \stubbles\webapp\Response
      */
     private $response;
 
@@ -61,7 +62,9 @@ class SessionBasedHtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
         $root = vfsStream::setup();
         vfsStream::newFile('index.html')->withContent('this is index.html')->at($root);
         vfsStream::newFile('foo.html')->withContent('this is foo.html')->at($root);
-        $this->session  = NewInstance::of(Session::class);
+        $this->session  = NewInstance::of(Session::class)->mapCalls([
+                'name' => 'psessid', 'id' => '313'
+        ]);
         $this->request  = NewInstance::of(Request::class);
         $this->response = NewInstance::of(Response::class);
         $this->sessionBasedHtmlFilePassThrough = new SessionBasedHtmlFilePassThrough(
@@ -102,7 +105,10 @@ class SessionBasedHtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
      */
     public function selectsAvailableRoute()
     {
-        $this->request->mapCalls(['userAgent' => new UserAgent('foo', true)]);
+        $this->request->mapCalls([
+                'userAgent'          => new UserAgent('foo', true),
+                'hasSessionAttached' => false
+        ]);
         assert(
                 $this->sessionBasedHtmlFilePassThrough->resolve(
                         $this->request,

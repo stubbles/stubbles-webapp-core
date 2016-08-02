@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -41,7 +42,7 @@ class NullSession implements Session
      *
      * @return  bool  true if session has been started, else false
      */
-    public function isNew()
+    public function isNew(): bool
     {
         return true;
     }
@@ -51,7 +52,7 @@ class NullSession implements Session
      *
      * @return  string  the session id
      */
-    public function id()
+    public function id(): string
     {
         return (string) $this->id;
     }
@@ -61,7 +62,7 @@ class NullSession implements Session
      *
      * @return  Session
      */
-    public function regenerateId()
+    public function regenerateId(): Session
     {
         $this->id->regenerate();
         return $this;
@@ -72,7 +73,7 @@ class NullSession implements Session
      *
      * @return  string
      */
-    public function name()
+    public function name(): string
     {
         return $this->id->name();
     }
@@ -82,7 +83,7 @@ class NullSession implements Session
      *
      * @return  bool
      */
-    public function isValid()
+    public function isValid(): bool
     {
         return true;
     }
@@ -92,7 +93,7 @@ class NullSession implements Session
      *
      * @return  Session
      */
-    public function invalidate()
+    public function invalidate(): Session
     {
         $this->id->invalidate();
         return $this;
@@ -128,7 +129,7 @@ class NullSession implements Session
      * @param   mixed   $value  data to store
      * @return  Session
      */
-    public function putValue(string $key, $value)
+    public function putValue(string $key, $value): Session
     {
         return $this;
     }
@@ -139,7 +140,7 @@ class NullSession implements Session
      * @param   string  $key  key where value is stored under
      * @return  bool    true if value existed and was removed, else false
      */
-    public function removeValue($key)
+    public function removeValue(string $key): bool
     {
         return false;
     }
@@ -149,7 +150,7 @@ class NullSession implements Session
      *
      * @return  string[]
      */
-    public function valueKeys()
+    public function valueKeys(): array
     {
         return [];
     }

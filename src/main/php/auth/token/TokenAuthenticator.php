@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -48,7 +49,7 @@ class TokenAuthenticator implements AuthenticationProvider
      */
     public function __construct(
             TokenStore $tokenStore,
-            $tokenSalt,
+            string $tokenSalt,
             AuthenticationProvider $loginProvider)
     {
         $this->tokenStore    = $tokenStore;
@@ -60,7 +61,7 @@ class TokenAuthenticator implements AuthenticationProvider
      * authenticates that the given request is valid
      *
      * @param   \stubbles\webapp\Request  $request
-     * @return  \stubbles\webapp\auth\User
+     * @return  \stubbles\webapp\auth\User|null
      * @throws  \stubbles\webapp\auth\InternalAuthProviderException
      */
     public function authenticate(Request $request)
@@ -90,7 +91,7 @@ class TokenAuthenticator implements AuthenticationProvider
      * performs login when token not found or invalid
      *
      * @param   \stubbles\webapp\Request $request
-     * @return  \stubbles\webapp\auth\User
+     * @return  \stubbles\webapp\auth\User|null
      * @throws  \stubbles\webapp\auth\InternalAuthProviderException
      */
     private function login(Request $request)
@@ -116,7 +117,7 @@ class TokenAuthenticator implements AuthenticationProvider
      * reads token from authorization header
      *
      * @param   \stubbles\webapp\Request  $request  current request
-     * @return  \stubbles\webapp\auth\Token
+     * @return  \stubbles\webapp\auth\Token|null
      */
     private function readToken(Request $request)
     {

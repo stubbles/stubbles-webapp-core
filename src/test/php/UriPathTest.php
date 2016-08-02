@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -62,12 +63,7 @@ class UriPathTest extends \PHPUnit_Framework_TestCase
         assert((string) $this->uriPath, equals('/hello/world/foo'));
     }
 
-    /**
-     * data provider for satisfying path pattern tests
-     *
-     * @return  array
-     */
-    public function providePathArguments()
+    public function providePathArguments(): array
     {
         return [['/hello/mikey', '/hello/{name}', ['name' => 'mikey']],
                 ['/hello/303/mikey', '/hello/{id}/{name}', ['id' => '303', 'name' => 'mikey']]
@@ -78,8 +74,11 @@ class UriPathTest extends \PHPUnit_Framework_TestCase
      * @test
      * @dataProvider  providePathArguments
      */
-    public function returnsPathArguments($calledPath, $configuredPath, array $expectedArguments)
-    {
+    public function returnsPathArguments(
+            string $calledPath,
+            string $configuredPath,
+            array $expectedArguments
+    ) {
         $uriPath = new UriPath($configuredPath, $calledPath);
         foreach ($expectedArguments as $name => $value) {
             assertTrue($uriPath->hasArgument($name));
@@ -103,12 +102,7 @@ class UriPathTest extends \PHPUnit_Framework_TestCase
         assertNull($this->uriPath->readArgument('id')->unsecure());
     }
 
-    /**
-     * data provider for remaining path tests
-     *
-     * @return  array
-     */
-    public function provideRemainingPath()
+    public function provideRemainingPath(): array
     {
         return [['/hello/mikey', '/hello/{name}', null],
                 ['/hello/303/mikey', '/hello/{id}/{name}', null],
@@ -124,8 +118,11 @@ class UriPathTest extends \PHPUnit_Framework_TestCase
      * @test
      * @dataProvider  provideRemainingPath
      */
-    public function returnsRemainingPath($calledPath, $configuredPath, $expected)
-    {
+    public function returnsRemainingPath(
+            string $calledPath,
+            string $configuredPath,
+            $expected
+    ) {
         $uriPath = new UriPath($configuredPath, $calledPath);
         assert($uriPath->remaining(), equals($expected));
     }

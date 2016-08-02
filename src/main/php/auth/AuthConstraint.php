@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -58,7 +59,7 @@ class AuthConstraint implements \JsonSerializable
      * @return  \stubbles\webapp\auth\AuthConstraint
      * @XmlIgnore
      */
-    public function requireLogin()
+    public function requireLogin(): self
     {
         $this->requiresLogin = true;
         return $this;
@@ -75,7 +76,7 @@ class AuthConstraint implements \JsonSerializable
      * @return  \stubbles\webapp\auth\AuthConstraint
      * @XmlIgnore
      */
-    public function forbiddenWhenNotAlreadyLoggedIn()
+    public function forbiddenWhenNotAlreadyLoggedIn(): self
     {
         $this->loginAllowed = false;
         return $this;
@@ -87,7 +88,7 @@ class AuthConstraint implements \JsonSerializable
      * @return  bool
      * @XmlIgnore
      */
-    public function loginAllowed()
+    public function loginAllowed(): bool
     {
         return $this->loginAllowed;
     }
@@ -98,7 +99,7 @@ class AuthConstraint implements \JsonSerializable
      * @return  bool
      * @XmlAttribute(attributeName='requiresLogin')
      */
-    private function requiresLogin()
+    private function requiresLogin(): bool
     {
         if ($this->requiresLogin) {
             return true;
@@ -114,7 +115,7 @@ class AuthConstraint implements \JsonSerializable
      * @param   string  $role
      * @return  \stubbles\webapp\auth\AuthConstraint
      */
-    public function requireRole($role)
+    public function requireRole(string $role): self
     {
         $this->requiredRole = $role;
         return $this;
@@ -126,7 +127,7 @@ class AuthConstraint implements \JsonSerializable
      * @return  bool
      * @XmlAttribute(attributeName='required')
      */
-    public function requiresAuth()
+    public function requiresAuth(): bool
     {
         return $this->requiresLogin() || $this->requiresRoles();
     }
@@ -137,7 +138,7 @@ class AuthConstraint implements \JsonSerializable
      * @return  bool
      * @XmlAttribute(attributeName='requiresRoles')
      */
-    public function requiresRoles()
+    public function requiresRoles(): bool
     {
         return (null !== $this->requiredRole()) || $this->callbackAnnotatedWith->rolesAware();
     }
@@ -145,7 +146,7 @@ class AuthConstraint implements \JsonSerializable
     /**
      * returns required role for this route
      *
-     * @return  string
+     * @return  string|null
      * @XmlAttribute(attributeName='role', skipEmpty=true)
      */
     public function requiredRole()
@@ -163,7 +164,7 @@ class AuthConstraint implements \JsonSerializable
      * @param   \stubbles\webapp\auth\Roles  $roles
      * @return  bool
      */
-    public function satisfiedByRoles(Roles $roles = null)
+    public function satisfiedByRoles(Roles $roles = null): bool
     {
         if (null === $roles) {
             return false;
@@ -183,7 +184,7 @@ class AuthConstraint implements \JsonSerializable
      * @since   6.1.0
      * @XmlIgnore
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         $data = ['required' => $this->requiresAuth()];
         if ($this->requiresAuth()) {

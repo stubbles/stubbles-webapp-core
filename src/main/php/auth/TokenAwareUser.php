@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -28,7 +29,7 @@ abstract class TokenAwareUser implements User
      * @param   \stubbles\webapp\auth\Token  $token
      * @return  \stubbles\webapp\auth\User
      */
-    public function setToken(Token $token)
+    public function setToken(Token $token): User
     {
         $this->token = $token;
         return $this;
@@ -43,7 +44,7 @@ abstract class TokenAwareUser implements User
      * @param   string  $tokenSalt
      * @return  \stubbles\webapp\auth\Token
      */
-    public function createToken($tokenSalt)
+    public function createToken(string $tokenSalt): Token
     {
         $this->setToken(Token::create($this, $tokenSalt));
         return $this->token();
@@ -52,7 +53,7 @@ abstract class TokenAwareUser implements User
     /**
      * returns token for the user
      *
-     * @return  \stubbles\webapp\auth\Token
+     * @return  \stubbles\webapp\auth\Token|null
      */
     public function token()
     {

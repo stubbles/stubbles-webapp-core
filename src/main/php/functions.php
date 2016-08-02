@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -16,7 +17,7 @@ namespace stubbles\webapp {
      * @return  string
      * @since   4.0.0
      */
-    function htmlPassThrough()
+    function htmlPassThrough(): string
     {
         return HtmlFilePassThrough::class;
     }
@@ -27,7 +28,7 @@ namespace stubbles\webapp {
      * @return  string
      * @since   4.0.0
      */
-    function sessionBasedHtmlPassThrough()
+    function sessionBasedHtmlPassThrough(): string
     {
         return SessionBasedHtmlFilePassThrough::class;
     }
@@ -51,7 +52,7 @@ namespace stubbles\webapp\session {
      * @return  \stubbles\webapp\session\WebSession
      * @since   4.0.0
      */
-    function native($sessionName, $fingerPrint)
+    function native(string $sessionName, string $fingerPrint): WebSession
     {
         $native = new NativeSessionStorage($sessionName);
         return new WebSession($native, $native, $fingerPrint);
@@ -66,7 +67,7 @@ namespace stubbles\webapp\session {
      * @return  \stubbles\webapp\session\WebSession
      * @since   4.0.0
      */
-    function noneDurable()
+    function noneDurable(): WebSession
     {
         return new WebSession(
                 new ArraySessionStorage(),
@@ -81,7 +82,7 @@ namespace stubbles\webapp\session {
      * @return  \stubbles\webapp\session\NullSession
      * @since   5.0.0
      */
-    function nullSession()
+    function nullSession(): NullSession
     {
         return new NullSession(new NoneDurableSessionId());
     }
@@ -98,7 +99,7 @@ namespace stubbles\webapp\session {
      * @return  \stubbles\webapp\session\NullSession
      * @since   4.0.0
      */
-    function noneStoring(Request $request, Response $response, $sessionCookieName)
+    function noneStoring(Request $request, Response $response, string $sessionCookieName): NullSession
     {
         return new NullSession(
                 new WebBoundSessionId($request, $response, $sessionCookieName)

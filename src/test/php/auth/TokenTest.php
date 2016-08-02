@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -30,17 +31,19 @@ class TokenTest extends \PHPUnit_Framework_TestCase
     {
         assert(
                 Token::create(
-                        NewInstance::of(User::class),
+                        NewInstance::of(User::class)->mapCalls([
+                                'name'        => 'Heinz Mustermann',
+                                'firstName'   => 'Heinz',
+                                'lastName'    => 'Mustermann',
+                                'mailAddress' => 'mm@example.com'
+                        ]),
                         'some caramel salt'
                 ),
                 isInstanceOf(Token::class)
         );
     }
 
-    /**
-     * @return  array
-     */
-    public function tokenValues()
+    public function tokenValues(): array
     {
         $tokenValues = $this->emptyValues();
         $tokenValues[] = ['someTokenValue'];
@@ -58,10 +61,7 @@ class TokenTest extends \PHPUnit_Framework_TestCase
         assert((string) $token, equals($tokenValue));
     }
 
-    /**
-     * @return  array
-     */
-    public function emptyValues()
+    public function emptyValues(): array
     {
         return [[null], ['']];
     }

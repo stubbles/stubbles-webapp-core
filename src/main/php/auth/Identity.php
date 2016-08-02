@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -41,7 +42,7 @@ class Identity
      *
      * @return  \stubbles\webapp\auth\User
      */
-    public function user()
+    public function user(): User
     {
         return $this->user;
     }
@@ -52,7 +53,7 @@ class Identity
      * @param   string  $roleName
      * @return  bool
      */
-    public function hasRole($roleName)
+    public function hasRole(string $roleName): bool
     {
         return $this->roles->contain($roleName);
     }
@@ -62,7 +63,7 @@ class Identity
      *
      * @return  \stubbles\webapp\auth\Roles
      */
-    public function roles()
+    public function roles(): Roles
     {
         return $this->roles;
     }

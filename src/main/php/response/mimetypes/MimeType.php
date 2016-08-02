@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -26,7 +27,7 @@ abstract class MimeType
      *
      * @return  string
      */
-    protected abstract function defaultName();
+    protected abstract function defaultName(): string;
 
     /**
      * specialises to specific mime type
@@ -34,7 +35,7 @@ abstract class MimeType
      * @param   string  $mimeType
      * @return  \stubbles\webapp\response\mimetypes\MimeType
      */
-    public function specialise($mimeType)
+    public function specialise(string $mimeType): self
     {
         $this->name = $mimeType;
         return $this;
@@ -49,14 +50,14 @@ abstract class MimeType
      * @param   \stubbles\streams\OutputStream  $out
      * @return  \stubbles\streams\OutputStream
      */
-    public abstract function serialize($resource, OutputStream $out);
+    public abstract function serialize($resource, OutputStream $out): OutputStream;
 
     /**
      * returns string representation of mime type
      *
      * @return  string
      */
-    public function __toString()
+    public function __toString(): string
     {
         return null !== $this->name ? $this->name : $this->defaultName();
     }

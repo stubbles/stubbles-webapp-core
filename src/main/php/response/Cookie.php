@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -69,7 +70,7 @@ class Cookie
      * @param  string  $name   name of the cookie
      * @param  string  $value  value of the cookie
      */
-    public function __construct($name, $value)
+    public function __construct(string $name, string $value = null)
     {
         $this->name  = $name;
         $this->value = $value;
@@ -82,7 +83,7 @@ class Cookie
      * @param   string  $value  value of the cookie
      * @return  \stubbles\webapp\response\Cookie
      */
-    public static function create($name, $value)
+    public static function create(string $name, string $value = null): self
     {
         return new self($name, $value);
     }
@@ -95,7 +96,7 @@ class Cookie
      * @param   int  $expires  timestamp in seconds since 1970
      * @return  \stubbles\webapp\response\Cookie
      */
-    public function expiringAt($expires)
+    public function expiringAt(int $expires): self
     {
         $this->expires = $expires;
         return $this;
@@ -110,7 +111,7 @@ class Cookie
      * @return  \stubbles\webapp\response\Cookie
      * @since   1.5.0
      */
-    public function expiringIn($seconds)
+    public function expiringIn(int $seconds): self
     {
         $this->expires = time() + $seconds;
         return $this;
@@ -122,7 +123,7 @@ class Cookie
      * @param   string  $path
      * @return  \stubbles\webapp\response\Cookie
      */
-    public function forPath($path)
+    public function forPath(string $path): self
     {
         $this->path = $path;
         return $this;
@@ -134,7 +135,7 @@ class Cookie
      * @param   string  $domain
      * @return  \stubbles\webapp\response\Cookie
      */
-    public function forDomain($domain)
+    public function forDomain(string $domain): self
     {
         $this->domain = $domain;
         return $this;
@@ -145,7 +146,7 @@ class Cookie
      *
      * @return  Cookie
      */
-    public function restrictToSsl()
+    public function restrictToSsl(): self
     {
         $this->secure = true;
         return $this;
@@ -156,7 +157,7 @@ class Cookie
      *
      * @return  \stubbles\webapp\response\Cookie
      */
-    public function disableHttpOnly()
+    public function disableHttpOnly(): self
     {
         $this->httpOnly = false;
         return $this;
@@ -167,7 +168,7 @@ class Cookie
      *
      * @return  string
      */
-    public function name()
+    public function name(): string
     {
         return $this->name;
     }
@@ -175,7 +176,7 @@ class Cookie
     /**
      * returns value of cookie
      *
-     * @return  string
+     * @return  string|null
      */
     public function value()
     {
@@ -187,7 +188,7 @@ class Cookie
      *
      * @return  int
      */
-    public function expiration()
+    public function expiration(): int
     {
         return $this->expires;
     }
@@ -195,7 +196,7 @@ class Cookie
     /**
      * returns path of cookie
      *
-     * @return  string
+     * @return  string|null
      */
     public function path()
     {
@@ -205,7 +206,7 @@ class Cookie
     /**
      * returns domain of cookie
      *
-     * @return  string
+     * @return  string|null
      */
     public function domain()
     {
@@ -217,7 +218,7 @@ class Cookie
      *
      * @return  bool
      */
-    public function isRestrictedToSsl()
+    public function isRestrictedToSsl(): bool
     {
         return $this->secure;
     }
@@ -227,7 +228,7 @@ class Cookie
      *
      * @return  bool
      */
-    public function isHttpOnly()
+    public function isHttpOnly(): bool
     {
         return $this->httpOnly;
     }

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -42,7 +43,7 @@ class Redirect implements Target
      * @param   int                                 $statusCode  status code for redirect
      * @throws  \InvalidArgumentException
      */
-    public function __construct($target, $statusCode)
+    public function __construct($target, int $statusCode)
     {
         if ($target instanceof HttpUri) {
             $this->target = $target;

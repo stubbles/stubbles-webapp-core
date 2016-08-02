@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -60,7 +61,7 @@ class Interceptors
      * @param   \stubbles\webapp\Response  $response  response to send
      * @return  bool
      */
-    public function preProcess(Request $request, Response $response)
+    public function preProcess(Request $request, Response $response): bool
     {
         foreach ($this->preInterceptors as $preInterceptor) {
             if (false === $this->executePreInterceptor($preInterceptor, $request, $response)) {
@@ -77,7 +78,7 @@ class Interceptors
      * @param   mixed                      $preInterceptor
      * @param   \stubbles\webapp\Request   $request         current request
      * @param   \stubbles\webapp\Response  $response        response to send
-     * @return  bool
+     * @return  bool|null
      */
     private function executePreInterceptor($preInterceptor, Request $request, Response $response)
     {
@@ -110,7 +111,7 @@ class Interceptors
      * @param   \stubbles\webapp\Response  $response  response to send
      * @return  bool
      */
-    public function postProcess(Request $request, Response $response)
+    public function postProcess(Request $request, Response $response): bool
     {
         foreach ($this->postInterceptors as $postInterceptor) {
             if (false === $this->executePostInterceptor($postInterceptor, $request, $response)) {
@@ -127,7 +128,7 @@ class Interceptors
      * @param   mixed                      $postInterceptor
      * @param   \stubbles\webapp\Request   $request          current request
      * @param   \stubbles\webapp\Response  $response         response to send
-     * @return  bool
+     * @return  bool|null
      */
     private function executePostInterceptor($postInterceptor, Request $request, Response $response)
     {

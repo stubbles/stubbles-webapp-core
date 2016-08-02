@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -37,7 +38,7 @@ class NativeSessionStorage implements SessionStorage, SessionId
      *
      * @param  string  $sessionName  name of the session
      */
-    public function __construct($sessionName)
+    public function __construct(string $sessionName)
     {
         $this->sessionName = $sessionName;
         session_name($this->sessionName);
@@ -61,7 +62,7 @@ class NativeSessionStorage implements SessionStorage, SessionId
      *
      * @return  string
      */
-    public function name()
+    public function name(): string
     {
         return $this->sessionName;
     }
@@ -71,7 +72,7 @@ class NativeSessionStorage implements SessionStorage, SessionId
      *
      * @return  string  the session id
      */
-    public function __toString()
+    public function __toString(): string
     {
         $this->init();
         return session_id();
@@ -80,9 +81,9 @@ class NativeSessionStorage implements SessionStorage, SessionId
     /**
      * regenerates the session id but leaves session data
      *
-     * @return  \stubbles\webapp\session\storage\SessionStorage
+     * @return  \stubbles\webapp\session\id\SessionId
      */
-    public function regenerate()
+    public function regenerate(): SessionId
     {
         $this->init();
         @session_regenerate_id(true);
@@ -92,9 +93,9 @@ class NativeSessionStorage implements SessionStorage, SessionId
     /**
      * invalidates current session
      *
-     * @return  \stubbles\webapp\session\storage\SessionStorage
+     * @return  \stubbles\webapp\session\id\SessionId
      */
-    public function invalidate()
+    public function invalidate(): SessionId
     {
         if ($this->initialized && session_status() === PHP_SESSION_ACTIVE) {
             session_destroy();
@@ -108,7 +109,7 @@ class NativeSessionStorage implements SessionStorage, SessionId
      *
      * @return  \stubbles\webapp\session\storage\SessionStorage
      */
-    public function clear()
+    public function clear(): SessionStorage
     {
         $_SESSION = [];
         return $this;
@@ -120,7 +121,7 @@ class NativeSessionStorage implements SessionStorage, SessionId
      * @param   string  $key  key where value is stored under
      * @return  bool
      */
-    public function hasValue($key)
+    public function hasValue(string $key): bool
     {
         $this->init();
         return isset($_SESSION[$key]);
@@ -132,14 +133,10 @@ class NativeSessionStorage implements SessionStorage, SessionId
      * @param   string  $key  key where value is stored under
      * @return  mixed
      */
-    public function value($key)
+    public function value(string $key)
     {
         $this->init();
-        if (isset($_SESSION[$key])) {
-            return $_SESSION[$key];
-        }
-
-        return null;
+        return $_SESSION[$key] ?? null;
     }
 
     /**
@@ -149,7 +146,7 @@ class NativeSessionStorage implements SessionStorage, SessionId
      * @param   mixed   $value  data to store
      * @return  \stubbles\webapp\session\storage\SessionStorage
      */
-    public function putValue($key, $value)
+    public function putValue(string $key, $value): SessionStorage
     {
         $this->init();
         $_SESSION[$key] = $value;
@@ -162,7 +159,7 @@ class NativeSessionStorage implements SessionStorage, SessionId
      * @param   string  $key  key where value is stored under
      * @return  \stubbles\webapp\session\storage\SessionStorage
      */
-    public function removeValue($key)
+    public function removeValue(string $key): SessionStorage
     {
         $this->init();
         unset($_SESSION[$key]);
@@ -174,7 +171,7 @@ class NativeSessionStorage implements SessionStorage, SessionId
      *
      * @return  string[]
      */
-    public function valueKeys()
+    public function valueKeys(): array
     {
         $this->init();
         return array_keys($_SESSION);

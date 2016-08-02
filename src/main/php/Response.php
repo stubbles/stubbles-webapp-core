@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -9,7 +10,11 @@
  */
 namespace stubbles\webapp;
 use stubbles\webapp\response\Cookie;
+use stubbles\webapp\response\Error;
+use stubbles\webapp\response\Headers;
 use stubbles\webapp\response\SendableResponse;
+use stubbles\webapp\response\Status;
+use stubbles\webapp\response\mimetypes\MimeType;
 /**
  * Interface for a response to a request.
  *
@@ -23,7 +28,7 @@ interface Response extends SendableResponse
      *
      * @return  \stubbles\webapp\response\mimetypes\MimeType
      */
-    public function mimeType();
+    public function mimeType(): MimeType;
 
     /**
      * sets the status code to be send
@@ -38,7 +43,7 @@ interface Response extends SendableResponse
      * @param   string  $reasonPhrase  optional
      * @return  \stubbles\webapp\Response
      */
-    public function setStatusCode($statusCode, $reasonPhrase = null);
+    public function setStatusCode(int $statusCode, string $reasonPhrase = null): self;
 
     /**
      * provide direct access to set a status code
@@ -46,7 +51,7 @@ interface Response extends SendableResponse
      * @return  \stubbles\webapp\response\Status
      * @since   5.1.0
      */
-    public function status();
+    public function status(): Status;
 
     /**
      * add a header to the response
@@ -55,7 +60,7 @@ interface Response extends SendableResponse
      * @param   string  $value  the value of the header
      * @return  \stubbles\webapp\Response
      */
-    public function addHeader($name, $value);
+    public function addHeader(string $name, string $value): Response;
 
     /**
      * returns list of headers
@@ -63,7 +68,7 @@ interface Response extends SendableResponse
      * @return  \stubbles\webapp\response\Headers
      * @since   4.0.0
      */
-    public function headers();
+    public function headers(): Headers;
 
     /**
      * add a cookie to the response
@@ -71,7 +76,7 @@ interface Response extends SendableResponse
      * @param   \stubbles\webapp\response\Cookie  $cookie  the cookie to set
      * @return  \stubbles\webapp\Response
      */
-    public function addCookie(Cookie $cookie);
+    public function addCookie(Cookie $cookie): self;
 
     /**
      * removes cookie with given name
@@ -80,7 +85,7 @@ interface Response extends SendableResponse
      * @return  \stubbles\webapp\Response
      * @since   2.0.0
      */
-    public function removeCookie($name);
+    public function removeCookie(string $name): self;
 
     /**
      * write body into the response
@@ -88,7 +93,7 @@ interface Response extends SendableResponse
      * @param   string  $body
      * @return  \stubbles\webapp\Response
      */
-    public function write($body);
+    public function write($body): self;
 
     /**
      * a response is fixed when a final status has been set
@@ -104,7 +109,7 @@ interface Response extends SendableResponse
      * @return  bool
      * @since   3.1.0
      */
-    public function isFixed();
+    public function isFixed(): bool;
 
     /**
      * creates a Location header which causes a redirect when the response is send
@@ -115,7 +120,7 @@ interface Response extends SendableResponse
      * @param   int                                 $statusCode  HTTP status code to redirect with (301, 302, ...)
      * @since   1.3.0
      */
-    public function redirect($uri, $statusCode = 302);
+    public function redirect($uri, int $statusCode = 302);
 
     /**
      * creates a 403 Forbidden message
@@ -123,7 +128,7 @@ interface Response extends SendableResponse
      * @return  \stubbles\webapp\response\Error
      * @since   2.0.0
      */
-    public function forbidden();
+    public function forbidden(): Error;
 
     /**
      * creates a 404 Not Found message into
@@ -131,7 +136,7 @@ interface Response extends SendableResponse
      * @return  \stubbles\webapp\response\Error
      * @since   2.0.0
      */
-    public function notFound();
+    public function notFound(): Error;
 
     /**
      * creates a 405 Method Not Allowed message
@@ -141,7 +146,7 @@ interface Response extends SendableResponse
      * @return  \stubbles\webapp\response\Error
      * @since   2.0.0
      */
-    public function methodNotAllowed($requestMethod, array $allowedMethods);
+    public function methodNotAllowed(string $requestMethod, array $allowedMethods): Error;
 
     /**
      * creates a 406 Not Acceptable message
@@ -158,7 +163,7 @@ interface Response extends SendableResponse
      * @return  \stubbles\webapp\response\Error
      * @since   2.0.0
      */
-    public function internalServerError($error);
+    public function internalServerError($error): Error;
 
     /**
      * creates a 505 HTTP Version Not Supported message

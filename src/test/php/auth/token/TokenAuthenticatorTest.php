@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -128,12 +129,14 @@ class TokenAuthenticatorTest extends \PHPUnit_Framework_TestCase
         verify($this->loginProvider, 'authenticate')->wasCalledOnce();
     }
 
-    /**
-     * @return  \bovigo\callmap\Proxy
-     */
-    private function createTokenAwareUser()
+    private function createTokenAwareUser(): TokenAwareUser
     {
-        return NewInstance::of(TokenAwareUser::class);
+        return NewInstance::of(TokenAwareUser::class)->mapCalls([
+                'name'        => 'Heinz Mustermann',
+                'firstName'   => 'Heinz',
+                'lastName'    => 'Mustermann',
+                'mailAddress' => 'mm@example.com'
+        ]);
     }
 
     /**
@@ -202,10 +205,7 @@ class TokenAuthenticatorTest extends \PHPUnit_Framework_TestCase
         $this->tokenAuthenticator->authenticate($this->request);
     }
 
-    /**
-     * @return  array
-     */
-    public function validTokens()
+    public function validTokens(): array
     {
         return [['Bearer 123456789012345678901234567890ab', '123456789012345678901234567890ab'],
                 ['someOtherToken', 'someOtherToken']
@@ -216,8 +216,10 @@ class TokenAuthenticatorTest extends \PHPUnit_Framework_TestCase
      * @test
      * @dataProvider  validTokens
      */
-    public function returnsUserWhenAuthorizationHeaderContainsValidToken($headerValue, $tokenValue)
-    {
+    public function returnsUserWhenAuthorizationHeaderContainsValidToken(
+            string $headerValue,
+            string $tokenValue
+    ) {
         $this->request->mapCalls(
                 ['hasRedirectHeader'  => true,
                  'readRedirectHeader' => ValueReader::forValue($headerValue)
@@ -237,8 +239,10 @@ class TokenAuthenticatorTest extends \PHPUnit_Framework_TestCase
      * @test
      * @dataProvider  validTokens
      */
-    public function returnedUserFromValidTokenHasToken($headerValue, $tokenValue)
-    {
+    public function returnedUserFromValidTokenHasToken(
+            string $headerValue,
+            string $tokenValue
+    ) {
         $this->request->mapCalls(
                 ['hasRedirectHeader'  => true,
                  'readRedirectHeader' => ValueReader::forValue($headerValue)

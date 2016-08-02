@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -9,6 +10,7 @@
  */
 namespace stubbles\webapp;
 use stubbles\webapp\htmlpassthrough\HtmlFilePassThrough;
+use stubbles\webapp\routing\ConfigurableRoute;
 use stubbles\webapp\routing\Route;
 /**
  * Contains routing information and decides which route is applicable for given request.
@@ -25,7 +27,7 @@ interface RoutingConfigurator
      * @param   string|callable|\stubbles\webapp\Target  $target  code to be executed when the route is active
      * @return  \stubbles\webapp\routing\ConfigurableRoute
      */
-    public function onGet($path, $target);
+    public function onGet(string $path, $target): ConfigurableRoute;
 
     /**
      * reply with HTML file stored in pages path
@@ -35,7 +37,10 @@ interface RoutingConfigurator
      * @return  \stubbles\webapp\routing\ConfigurableRoute
      * @since   4.0.0
      */
-    public function passThroughOnGet($path = '/*\.html$', $target = HtmlFilePassThrough::class);
+    public function passThroughOnGet(
+            string $path = '/[a-zA-Z0-9-_]+.html$',
+            $target = HtmlFilePassThrough::class
+    ): ConfigurableRoute;
 
     /**
      * reply with API index overview
@@ -44,7 +49,7 @@ interface RoutingConfigurator
      * @return  \stubbles\webapp\routing\ConfigurableRoute
      * @since   6.1.0
      */
-    public function apiIndexOnGet($path);
+    public function apiIndexOnGet(string $path): ConfigurableRoute;
 
 
     /**
@@ -60,7 +65,7 @@ interface RoutingConfigurator
      * @return  \stubbles\webapp\routing\ConfigurableRoute
      * @since   6.1.0
      */
-    public function redirectOnGet($path, $target, $statusCode = 302);
+    public function redirectOnGet(string $path, $target, int $statusCode = 302): ConfigurableRoute;
 
     /**
      * reply with given class or callable for HEAD request on given path
@@ -69,7 +74,7 @@ interface RoutingConfigurator
      * @param   string|callable|\stubbles\webapp\Target  $target  code to be executed when the route is active
      * @return  \stubbles\webapp\routing\ConfigurableRoute
      */
-    public function onHead($path, $target);
+    public function onHead(string $path, $target): ConfigurableRoute;
 
     /**
      * reply with given class or callable for POST request on given path
@@ -78,7 +83,7 @@ interface RoutingConfigurator
      * @param   string|callable|\stubbles\webapp\Target  $target  code to be executed when the route is active
      * @return  \stubbles\webapp\routing\ConfigurableRoute
      */
-    public function onPost($path, $target);
+    public function onPost(string $path, $target): ConfigurableRoute;
 
     /**
      * reply with given class or callable for PUT request on given path
@@ -87,7 +92,7 @@ interface RoutingConfigurator
      * @param   string|callable|\stubbles\webapp\Target  $target  code to be executed when the route is active
      * @return  \stubbles\webapp\routing\ConfigurableRoute
      */
-    public function onPut($path, $target);
+    public function onPut(string $path, $target): ConfigurableRoute;
 
     /**
      * reply with given class or callable for DELETE request on given path
@@ -96,7 +101,7 @@ interface RoutingConfigurator
      * @param   string|callable|\stubbles\webapp\Target  $target  code to be executed when the route is active
      * @return  \stubbles\webapp\routing\ConfigurableRoute
      */
-    public function onDelete($path, $target);
+    public function onDelete(string $path, $target): ConfigurableRoute;
 
     /**
      * reply with given class or callable for given request method(s) on given path
@@ -110,7 +115,7 @@ interface RoutingConfigurator
      * @return  \stubbles\webapp\ConfigurableRoute
      * @since   4.0.0
      */
-    public function onAll($path, $target, $requestMethod = null);
+    public function onAll(string $path, $target, $requestMethod = null): ConfigurableRoute;
 
     /**
      * add a route definition
@@ -118,7 +123,7 @@ interface RoutingConfigurator
      * @param   \stubbles\webapp\Route  $route
      * @return  \stubbles\webapp\ConfigurableRoute
      */
-    public function addRoute(Route $route);
+    public function addRoute(Route $route): ConfigurableRoute;
 
     /**
      * pre intercept with given class or callable on all GET requests
@@ -127,7 +132,7 @@ interface RoutingConfigurator
      * @param   string                                                       $path            optional  path for which pre interceptor should be executed
      * @return  \stubbles\webapp\RoutingConfigurator
      */
-    public function preInterceptOnGet($preInterceptor, $path = null);
+    public function preInterceptOnGet($preInterceptor, string $path = null): self;
 
     /**
      * pre intercept with given class or callable on all HEAD requests
@@ -136,7 +141,7 @@ interface RoutingConfigurator
      * @param   string                                                       $path            optional  path for which pre interceptor should be executed
      * @return  \stubbles\webapp\RoutingConfigurator
      */
-    public function preInterceptOnHead($preInterceptor, $path = null);
+    public function preInterceptOnHead($preInterceptor, string $path = null): self;
 
     /**
      * pre intercept with given class or callable on all POST requests
@@ -145,7 +150,7 @@ interface RoutingConfigurator
      * @param   string                                                       $path            optional  path for which pre interceptor should be executed
      * @return  \stubbles\webapp\RoutingConfigurator
      */
-    public function preInterceptOnPost($preInterceptor, $path = null);
+    public function preInterceptOnPost($preInterceptor, string $path = null): self;
 
     /**
      * pre intercept with given class or callable on all PUT requests
@@ -154,7 +159,7 @@ interface RoutingConfigurator
      * @param   string                                                       $path            optional  path for which pre interceptor should be executed
      * @return  \stubbles\webapp\RoutingConfigurator
      */
-    public function preInterceptOnPut($preInterceptor, $path = null);
+    public function preInterceptOnPut($preInterceptor, string $path = null): self;
 
     /**
      * pre intercept with given class or callable on all DELETE requests
@@ -163,7 +168,7 @@ interface RoutingConfigurator
      * @param   string                                                       $path            optional  path for which pre interceptor should be executed
      * @return  \stubbles\webapp\RoutingConfigurator
      */
-    public function preInterceptOnDelete($preInterceptor, $path = null);
+    public function preInterceptOnDelete($preInterceptor, string $path = null): self;
 
     /**
      * pre intercept with given class or callable on all requests
@@ -174,7 +179,7 @@ interface RoutingConfigurator
      * @return  \stubbles\webapp\RoutingConfigurator
      * @throws  \stubbles\lang\exception\IllegalArgumentException
      */
-    public function preIntercept($preInterceptor, $path = null, $requestMethod = null);
+    public function preIntercept($preInterceptor, string $path = null, string $requestMethod = null): self;
 
     /**
      * post intercept with given class or callable on all GET requests
@@ -183,7 +188,7 @@ interface RoutingConfigurator
      * @param   string                                                        $path             optional  path for which post interceptor should be executed
      * @return  \stubbles\webapp\RoutingConfigurator
      */
-    public function postInterceptOnGet($postInterceptor, $path = null);
+    public function postInterceptOnGet($postInterceptor, string $path = null): self;
 
     /**
      * post intercept with given class or callable on all HEAD requests
@@ -192,7 +197,7 @@ interface RoutingConfigurator
      * @param   string                                                        $path             optional  path for which post interceptor should be executed
      * @return  \stubbles\webapp\RoutingConfigurator
      */
-    public function postInterceptOnHead($postInterceptor, $path = null);
+    public function postInterceptOnHead($postInterceptor, string $path = null): self;
 
     /**
      * post intercept with given class or callable on all POST requests
@@ -201,7 +206,7 @@ interface RoutingConfigurator
      * @param   string                                                        $path             optional  path for which post interceptor should be executed
      * @return  \stubbles\webapp\RoutingConfigurator
      */
-    public function postInterceptOnPost($postInterceptor, $path = null);
+    public function postInterceptOnPost($postInterceptor, string $path = null): self;
 
     /**
      * post intercept with given class or callable on all PUT requests
@@ -210,7 +215,7 @@ interface RoutingConfigurator
      * @param   string                                                        $path             optional  path for which post interceptor should be executed
      * @return  \stubbles\webapp\RoutingConfigurator
      */
-    public function postInterceptOnPut($postInterceptor, $path = null);
+    public function postInterceptOnPut($postInterceptor, string $path = null): self;
 
     /**
      * post intercept with given class or callable on all DELETE requests
@@ -219,7 +224,7 @@ interface RoutingConfigurator
      * @param   string                                                        $path             optional  path for which post interceptor should be executed
      * @return  \stubbles\webapp\RoutingConfigurator
      */
-    public function postInterceptOnDelete($postInterceptor, $path = null);
+    public function postInterceptOnDelete($postInterceptor, string $path = null): self;
 
     /**
      * post intercept with given class or callable on all requests
@@ -230,17 +235,17 @@ interface RoutingConfigurator
      * @return  \stubbles\webapp\RoutingConfigurator
      * @throws  IllegalArgumentException
      */
-    public function postIntercept($postInterceptor, $path = null, $requestMethod = null);
+    public function postIntercept($postInterceptor, string $path = null, string $requestMethod = null): self;
 
     /**
      * sets a default mime type class for given mime type, but doesn't mark the mime type as supported for all routes
      *
      * @param   string  $mimeType       mime type to set default class for
      * @param   string  $mimeTypeClass  class to use
-     * @return  \stubbles\webapp\routing\Routing
+     * @return  \stubbles\webapp\RoutingConfigurator
      * @since   5.1.0
      */
-    public function setDefaultMimeTypeClass($mimeType, $mimeTypeClass);
+    public function setDefaultMimeTypeClass(string $mimeType, $mimeTypeClass): self;
 
     /**
      * add a supported mime type
@@ -249,7 +254,7 @@ interface RoutingConfigurator
      * @param   string  $mimeTypeClass  optional  special class to be used for given mime type on this route
      * @return  \stubbles\webapp\RoutingConfigurator
      */
-    public function supportsMimeType($mimeType, $mimeTypeClass = null);
+    public function supportsMimeType(string $mimeType, $mimeTypeClass = null): self;
 
     /**
      * disables content negotation
@@ -257,5 +262,5 @@ interface RoutingConfigurator
      * @return  \stubbles\webapp\RoutingConfigurator
      * @since   2.1.1
      */
-    public function disableContentNegotiation();
+    public function disableContentNegotiation(): self;
 }

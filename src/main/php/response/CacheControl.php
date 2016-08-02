@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -85,7 +86,7 @@ class CacheControl
      *
      * @return  \stubbles\webapp\response\CacheControl
      */
-    public function mustRevalidate()
+    public function mustRevalidate(): self
     {
         $this->mustRevalidate = true;
         return $this;
@@ -96,7 +97,7 @@ class CacheControl
      *
      * @return  \stubbles\webapp\response\CacheControl
      */
-    public function noCache()
+    public function noCache(): self
     {
         $this->noCache = true;
         return $this;
@@ -107,7 +108,7 @@ class CacheControl
      *
      * @return \stubbles\webapp\response\CacheControl
      */
-    public function noStore()
+    public function noStore(): self
     {
         $this->noStore = true;
         return $this;
@@ -118,7 +119,7 @@ class CacheControl
      *
      * @return  \stubbles\webapp\response\CacheControl
      */
-    public function noTransform()
+    public function noTransform(): self
     {
         $this->noTransform = true;
         return $this;
@@ -130,7 +131,7 @@ class CacheControl
      *
      * @return  \stubbles\webapp\response\CacheControl
      */
-    public function enablePublic()
+    public function enablePublic(): self
     {
         $this->public  = true;
         $this->private = false;
@@ -142,7 +143,7 @@ class CacheControl
      *
      * @return  \stubbles\webapp\response\CacheControl
      */
-    public function disablePrivate()
+    public function disablePrivate(): self
     {
         $this->private = false;
         return $this;
@@ -153,7 +154,7 @@ class CacheControl
      *
      * @return  \stubbles\webapp\response\CacheControl
      */
-    public function proxyRevalidate()
+    public function proxyRevalidate(): self
     {
         $this->proxyRevalidate = true;
         return $this;
@@ -165,7 +166,7 @@ class CacheControl
      * @param   int  $seconds
      * @return  \stubbles\webapp\response\CacheControl
      */
-    public function maxAge($seconds)
+    public function maxAge(int $seconds): self
     {
         $this->maxAge = $seconds;
         return $this;
@@ -177,7 +178,7 @@ class CacheControl
      * @param   int  $seconds
      * @return  \stubbles\webapp\response\CacheControl
      */
-    public function sMaxAge($seconds)
+    public function sMaxAge(int $seconds): self
     {
         $this->sMaxAge = $seconds;
         return $this;
@@ -188,7 +189,7 @@ class CacheControl
      *
      * @return  string
      */
-    public function __toString()
+    public function __toString(): string
     {
         $values = [];
         if ($this->mustRevalidate) {

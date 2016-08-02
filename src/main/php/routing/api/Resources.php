@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -40,7 +41,7 @@ class Resources implements \IteratorAggregate, \JsonSerializable
      *
      * @return  \Traversable
      */
-    public function getIterator()
+    public function getIterator(): \Traversable
     {
         return new \ArrayIterator($this->resources);
     }
@@ -51,9 +52,8 @@ class Resources implements \IteratorAggregate, \JsonSerializable
      * @return  array
      * @XmlIgnore
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return $this->resources;
     }
 }
-

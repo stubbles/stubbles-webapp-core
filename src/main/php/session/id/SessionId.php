@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -20,26 +21,26 @@ interface SessionId
      *
      * @return  string
      */
-    public function name();
+    public function name(): string;
 
     /**
      * stores session id for given session name
      *
      * @return  \stubbles\webapp\session\id\SessionId
      */
-    public function regenerate();
+    public function regenerate(): self;
 
     /**
      * invalidates session id
      *
      * @return  \stubbles\webapp\session\id\SessionId
      */
-    public function invalidate();
+    public function invalidate(): self;
 
     /**
      * returns session id
      *
      * @return  string
      */
-    public function __toString();
+    public function __toString(): string;
 }

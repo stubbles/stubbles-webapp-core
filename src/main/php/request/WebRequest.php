@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -8,16 +9,22 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\request;
-use stubbles\input\ParamRequest;
-use stubbles\input\Params;
-use stubbles\input\ValueReader;
-use stubbles\input\ValueValidator;
-use stubbles\peer\IpAddress;
-use stubbles\peer\http\Http;
-use stubbles\peer\http\HttpUri;
-use stubbles\peer\http\HttpVersion;
-use stubbles\webapp\Request;
+use stubbles\input\{
+    ParamRequest,
+    Params,
+    ValueReader,
+    ValueValidator,
+    errors\ParamErrors
+};
+use stubbles\peer\{
+    IpAddress,
+    http\Http,
+    http\HttpUri,
+    http\HttpVersion
+};
+use stubbles\streams\InputStream;
 use stubbles\streams\StandardInputStream;
+use stubbles\webapp\Request;
 use stubbles\webapp\auth\Identity;
 use stubbles\webapp\session\Session;
 /**
@@ -100,7 +107,7 @@ class WebRequest extends ParamRequest implements Request
      * @since   4.2.0
      * @see     https://devcenter.heroku.com/articles/http-request-id
      */
-    public function id()
+    public function id(): string
     {
         if (null !== $this->id) {
             return $this->id;
@@ -133,7 +140,7 @@ class WebRequest extends ParamRequest implements Request
      *
      * @return  bool
      */
-    public function isSsl()
+    public function isSsl(): bool
     {
         return $this->headers->contain('HTTPS');
     }
@@ -214,7 +221,7 @@ class WebRequest extends ParamRequest implements Request
      * @return  \stubbles\webapp\request\UserAgent
      * @since   4.1.0
      */
-    public function userAgent($botSignatures = [])
+    public function userAgent(array $botSignatures = []): UserAgent
     {
         return new UserAgent(
                 $this->headers->value('HTTP_USER_AGENT')->value(),
@@ -235,7 +242,7 @@ class WebRequest extends ParamRequest implements Request
      *
      * @return  \stubbles\peer\http\HttpUri
      */
-    public function uri()
+    public function uri(): HttpUri
     {
         $host = (string) $this->headers->value('HTTP_HOST')->value();
         return HttpUri::fromParts(
@@ -252,7 +259,7 @@ class WebRequest extends ParamRequest implements Request
      * @return  string[]
      * @since   1.3.0
      */
-    public function headerNames()
+    public function headerNames(): array
     {
         return $this->headers->names();
     }
@@ -264,7 +271,7 @@ class WebRequest extends ParamRequest implements Request
      * @return  bool
      * @since   1.3.0
      */
-    public function hasHeader($headerName)
+    public function hasHeader(string $headerName): bool
     {
         return $this->headers->contain($headerName);
     }
@@ -281,7 +288,7 @@ class WebRequest extends ParamRequest implements Request
      * @return  bool
      * @since   3.1.1
      */
-    public function hasRedirectHeader($headerName)
+    public function hasRedirectHeader(string $headerName): bool
     {
         return $this->hasHeader('REDIRECT_' . $headerName) || $this->hasHeader($headerName);
     }
@@ -292,7 +299,7 @@ class WebRequest extends ParamRequest implements Request
      * @return  \stubbles\input\errors\ParamErrors
      * @since   1.3.0
      */
-    public function headerErrors()
+    public function headerErrors(): ParamErrors
     {
         return $this->headers->errors();
     }
@@ -304,7 +311,7 @@ class WebRequest extends ParamRequest implements Request
      * @return  \stubbles\input\ValueValidator
      * @since   1.3.0
      */
-    public function validateHeader($headerName)
+    public function validateHeader(string $headerName): ValueValidator
     {
         return new ValueValidator($this->headers->value($headerName));
     }
@@ -321,7 +328,7 @@ class WebRequest extends ParamRequest implements Request
      * @return  \stubbles\input\ValueValidator
      * @since   3.1.0
      */
-    public function validateRedirectHeader($headerName)
+    public function validateRedirectHeader(string $headerName): ValueValidator
     {
         if ($this->headers->contain('REDIRECT_' . $headerName)) {
             return $this->validateHeader('REDIRECT_' . $headerName);
@@ -337,7 +344,7 @@ class WebRequest extends ParamRequest implements Request
      * @return  \stubbles\input\ValueReader
      * @since   1.3.0
      */
-    public function readHeader($headerName)
+    public function readHeader(string $headerName): ValueReader
     {
         return new ValueReader(
                 $this->headers->errors(),
@@ -358,7 +365,7 @@ class WebRequest extends ParamRequest implements Request
      * @return  \stubbles\input\ValueReader
      * @since   3.1.0
      */
-    public function readRedirectHeader($headerName)
+    public function readRedirectHeader(string $headerName): ValueReader
     {
         if ($this->headers->contain('REDIRECT_' . $headerName)) {
             return $this->readHeader('REDIRECT_' . $headerName);
@@ -373,7 +380,7 @@ class WebRequest extends ParamRequest implements Request
      * @return  string[]
      * @since   1.3.0
      */
-    public function cookieNames()
+    public function cookieNames(): array
     {
         return $this->cookies->names();
     }
@@ -385,7 +392,7 @@ class WebRequest extends ParamRequest implements Request
      * @return  bool
      * @since   1.3.0
      */
-    public function hasCookie($cookieName)
+    public function hasCookie(string $cookieName): bool
     {
         return $this->cookies->contain($cookieName);
     }
@@ -396,7 +403,7 @@ class WebRequest extends ParamRequest implements Request
      * @return  \stubbles\input\errors\ParamErrors
      * @since   1.3.0
      */
-    public function cookieErrors()
+    public function cookieErrors(): ParamErrors
     {
         return $this->cookies->errors();
     }
@@ -408,7 +415,7 @@ class WebRequest extends ParamRequest implements Request
      * @return  \stubbles\input\ValueValidator
      * @since   1.3.0
      */
-    public function validateCookie($cookieName)
+    public function validateCookie(string $cookieName): ValueValidator
     {
         return new ValueValidator($this->cookies->value($cookieName));
     }
@@ -420,7 +427,7 @@ class WebRequest extends ParamRequest implements Request
      * @return  \stubbles\input\ValueReader
      * @since   1.3.0
      */
-    public function readCookie($cookieName)
+    public function readCookie(string $cookieName): ValueReader
     {
         return new ValueReader(
                 $this->cookies->errors(),
@@ -438,7 +445,7 @@ class WebRequest extends ParamRequest implements Request
      * @since   6.0.0
      * @return  \stubbles\streams\InputStream
      */
-    public function body()
+    public function body(): InputStream
     {
         return new StandardInputStream();
     }
@@ -451,7 +458,7 @@ class WebRequest extends ParamRequest implements Request
      * @return  \stubbles\webapp\session\Session
      * @since   6.0.0
      */
-    public function attachSession(Session $session)
+    public function attachSession(Session $session): Session
     {
         $this->session = $session;
         return $session;
@@ -463,7 +470,7 @@ class WebRequest extends ParamRequest implements Request
      * @return  bool
      * @since   6.0.0
      */
-    public function hasSessionAttached()
+    public function hasSessionAttached(): bool
     {
         return null !== $this->session;
     }
@@ -486,7 +493,7 @@ class WebRequest extends ParamRequest implements Request
      * @return  \stubbles\webapp\Request
      * @since   6.0.0
      */
-    public function associate(Identity $identity)
+    public function associate(Identity $identity): Request
     {
         $this->identity = $identity;
         return $this;
@@ -498,7 +505,7 @@ class WebRequest extends ParamRequest implements Request
      * @return  bool
      * @since   6.0.0
      */
-    public function hasAssociatedIdentity()
+    public function hasAssociatedIdentity(): bool
     {
         return null !== $this->identity;
     }

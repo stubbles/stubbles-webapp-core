@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -67,7 +68,7 @@ class WebSession implements Session
      *
      * @return  bool
      */
-    private function isSessionNew()
+    private function isSessionNew(): bool
     {
         return !$this->storage->hasValue(Session::FINGERPRINT);
     }
@@ -78,7 +79,7 @@ class WebSession implements Session
      * @param   string  $fingerPrint
      * @return  bool
      */
-    private function isHijacked($fingerPrint)
+    private function isHijacked($fingerPrint): bool
     {
         return $this->storage->value(Session::FINGERPRINT) !== $fingerPrint;
     }
@@ -88,7 +89,7 @@ class WebSession implements Session
      *
      * @param  string  $fingerPrint
      */
-    private function init($fingerPrint)
+    private function init(string $fingerPrint)
     {
         $this->storage->putValue(Session::FINGERPRINT, $fingerPrint);
     }
@@ -101,7 +102,7 @@ class WebSession implements Session
      *
      * @return  bool  true if session has been started, else false
      */
-    public function isNew()
+    public function isNew(): bool
     {
         return $this->isNew;
     }
@@ -111,7 +112,7 @@ class WebSession implements Session
      *
      * @return  string  the session id
      */
-    public function id()
+    public function id(): string
     {
         return (string) $this->id;
     }
@@ -121,7 +122,7 @@ class WebSession implements Session
      *
      * @return  \stubbles\webapp\session\Session
      */
-    public function regenerateId()
+    public function regenerateId(): Session
     {
         $this->id->regenerate();
         return $this;
@@ -132,7 +133,7 @@ class WebSession implements Session
      *
      * @return  string
      */
-    public function name()
+    public function name(): string
     {
         return $this->id->name();
     }
@@ -142,7 +143,7 @@ class WebSession implements Session
      *
      * @return  bool
      */
-    public function isValid()
+    public function isValid(): bool
     {
         return $this->storage->hasValue(Session::FINGERPRINT);
     }
@@ -152,7 +153,7 @@ class WebSession implements Session
      *
      * @return  \stubbles\webapp\session\Session
      */
-    public function invalidate()
+    public function invalidate(): Session
     {
         $this->storage->clear();
         $this->id->invalidate();
@@ -220,7 +221,7 @@ class WebSession implements Session
      * @return  bool    true if value existed and was removed, else false
      * @throws  \LogicException
      */
-    public function removeValue($key)
+    public function removeValue(string $key): bool
     {
         if (!$this->isValid()) {
             throw new \LogicException('Session is in an invalid state.');

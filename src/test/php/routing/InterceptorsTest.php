@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -14,6 +15,7 @@ use stubbles\webapp\Request;
 use stubbles\webapp\Response;
 use stubbles\webapp\interceptor\PreInterceptor;
 use stubbles\webapp\interceptor\PostInterceptor;
+use stubbles\webapp\response\Error;
 
 use function bovigo\assert\assertFalse;
 use function bovigo\assert\assertTrue;
@@ -55,24 +57,13 @@ class InterceptorsTest extends \PHPUnit_Framework_TestCase
         $this->injector = NewInstance::stub(Injector::class);
     }
 
-    /**
-     * creates instance to test
-     *
-     * @param   array         $preInterceptors
-     * @param   array         $postInterceptors
-     * @return  Interceptors
-     */
-    private function createInterceptors(array $preInterceptors = [], array $postInterceptors = [])
-    {
+    private function createInterceptors(
+            array $preInterceptors = [],
+            array $postInterceptors = []
+    ): Interceptors {
         return new Interceptors($this->injector, $preInterceptors, $postInterceptors);
     }
 
-    /**
-     * a callback
-     *
-     * @param  \stubbles\webapp\Request   $request
-     * @param  \stubbles\webapp\Response  $response
-     */
     public function callableMethod(Request $request, Response $response)
     {
         $response->addHeader('X-Binford', '6100 (More power!)');
@@ -83,6 +74,7 @@ class InterceptorsTest extends \PHPUnit_Framework_TestCase
      */
     public function respondsWithInternalServerErrorIfPreInterceptorDoesNotImplementInterface()
     {
+        $this->response->mapCalls(['internalServerError' => Error::internalServerError('')]);
         $this->injector->mapCalls(['getInstance' => new \stdClass()]);
         assertFalse(
                 $this->createInterceptors(
@@ -91,8 +83,10 @@ class InterceptorsTest extends \PHPUnit_Framework_TestCase
                         ]
                 )->preProcess($this->request, $this->response)
         );
-        verify($this->response, 'internalServerError')
-                ->received('Configured pre interceptor some\PreInterceptor is not an instance of stubbles\webapp\interceptor\PreInterceptor');
+        verify($this->response, 'internalServerError')->received(
+                'Configured pre interceptor some\PreInterceptor is not an instance of '
+                . PreInterceptor::class
+        );
         verify($this->response, 'write')->wasCalledOnce();
     }
 
@@ -141,6 +135,7 @@ class InterceptorsTest extends \PHPUnit_Framework_TestCase
      */
     public function respondsWithInternalServerErrorIfPostInterceptorDoesNotImplementInterface()
     {
+        $this->response->mapCalls(['internalServerError' => Error::internalServerError('')]);
         $this->injector->mapCalls(['getInstance' => new \stdClass()]);
         assertFalse(
                 $this->createInterceptors(
@@ -148,8 +143,10 @@ class InterceptorsTest extends \PHPUnit_Framework_TestCase
                         ['some\PostInterceptor',  'other\PostInterceptor']
                 )->postProcess($this->request, $this->response)
         );
-        verify($this->response, 'internalServerError')
-                ->received('Configured post interceptor some\PostInterceptor is not an instance of stubbles\webapp\interceptor\PostInterceptor');
+        verify($this->response, 'internalServerError')->received(
+                'Configured post interceptor some\PostInterceptor is not an instance of '
+                . PostInterceptor::class
+        );
         verify($this->response, 'write')->wasCalledOnce();
     }
 

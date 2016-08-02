@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -58,10 +59,7 @@ class SupportedMimeTypesTest extends \PHPUnit_Framework_TestCase
         );
     }
 
-    /**
-     * set up test environment
-     */
-    private function createInstance()
+    private function createInstance(): SupportedMimeTypes
     {
         return new SupportedMimeTypes(
                 ['application/xml', 'application/json', 'application/foo'],
@@ -125,10 +123,7 @@ class SupportedMimeTypesTest extends \PHPUnit_Framework_TestCase
         );
     }
 
-    /**
-     * @return  array
-     */
-    public function predefinedMimeTypes()
+    public function predefinedMimeTypes(): array
     {
         return [
             ['application/json'],
@@ -145,7 +140,7 @@ class SupportedMimeTypesTest extends \PHPUnit_Framework_TestCase
      * @dataProvider  predefinedMimeTypes
      * @since  5.0.0
      */
-    public function hasClassForAllPredefinedMimeTypes($mimeType)
+    public function hasClassForAllPredefinedMimeTypes(string $mimeType)
     {
         assertTrue($this->createInstance()->provideClass($mimeType));
     }

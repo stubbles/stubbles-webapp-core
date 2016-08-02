@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -36,7 +37,7 @@ class Link implements \JsonSerializable
      * @param  string                       $rel  relation of this link to the resource
      * @param  \stubbles\peer\http\HttpUri  $uri  actual uri
      */
-    public function __construct($rel, HttpUri $uri)
+    public function __construct(string $rel, HttpUri $uri)
     {
         $this->rel = $rel;
         $this->uri = $uri;
@@ -48,7 +49,7 @@ class Link implements \JsonSerializable
      * @XmlAttribute(attributeName='rel')
      * @return  string
      */
-    public function rel()
+    public function rel(): string
     {
         return $this->rel;
     }
@@ -59,7 +60,7 @@ class Link implements \JsonSerializable
      * @XmlAttribute(attributeName='href')
      * @return  string
      */
-    public function uri()
+    public function uri(): string
     {
         return $this->uri->asStringWithNonDefaultPort();
     }
@@ -69,7 +70,7 @@ class Link implements \JsonSerializable
      *
      * @return  string
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->uri->asStringWithNonDefaultPort();
     }
@@ -80,7 +81,7 @@ class Link implements \JsonSerializable
      * @return  array
      * @XmlIgnore
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return ['href' => $this->uri->asString()];
     }

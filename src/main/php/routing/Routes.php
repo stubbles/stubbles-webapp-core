@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -28,7 +29,7 @@ class Routes implements \IteratorAggregate
      * @param   \stubbles\webapp\routing\Route  $route
      * @return  \stubbles\webapp\routing\Route
      */
-    public function add(Route $route)
+    public function add(Route $route): Route
     {
         $this->routes[] = $route;
         return $route;
@@ -40,7 +41,7 @@ class Routes implements \IteratorAggregate
      * @param   \stubbles\webapp\routing\CalledUri  $calledUri
      * @return  \stubbles\webapp\routing\MatchingRoutes
      */
-    public function match(CalledUri $calledUri)
+    public function match(CalledUri $calledUri): MatchingRoutes
     {
         $allowedMethods = [];
         $matching       = [];
@@ -69,7 +70,7 @@ class Routes implements \IteratorAggregate
      * @return  \Traversable
      * @since   6.1.0
      */
-    public function getIterator()
+    public function getIterator(): \Traversable
     {
         $routes = $this->routes;
         usort(
@@ -82,4 +83,3 @@ class Routes implements \IteratorAggregate
         return new \ArrayIterator($routes);
     }
 }
-

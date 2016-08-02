@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -24,7 +25,7 @@ interface AuthenticationProvider
      * not resolve it should throw an stubbles\webapp\auth\AuthProviderException.
      *
      * @param   \stubbles\webapp\Request  $request
-     * @return  \stubbles\webapp\auth\User
+     * @return  \stubbles\webapp\auth\User|null
      * @throws  \stubbles\webapp\auth\AuthProviderException
      */
     public function authenticate(Request $request);

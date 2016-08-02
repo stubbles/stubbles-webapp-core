@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -38,14 +39,14 @@ class TestAbstractResource extends AbstractResource
      *
      * @return  bool
      */
-    public function requiresHttps() {}
+    public function requiresHttps(): bool { return false; }
 
     /**
      * checks if access to this route required authorization
      *
      * @return  bool
      */
-    public function requiresAuth() {}
+    public function requiresAuth(): bool { return false;}
 
     /**
      * checks whether this is an authorized request to this route
@@ -53,7 +54,7 @@ class TestAbstractResource extends AbstractResource
      * @param   AuthHandler  $authHandler
      * @return  bool
      */
-    public function isAuthorized(AuthHandler $authHandler) {}
+    public function isAuthorized(AuthHandler $authHandler): bool { return false; }
 
     /**
      * checks whether route required login
@@ -61,7 +62,7 @@ class TestAbstractResource extends AbstractResource
      * @param   AuthHandler  $authHandler
      * @return  bool
      */
-    public function requiresLogin(AuthHandler $authHandler) {}
+    public function requiresLogin(AuthHandler $authHandler): bool { return false; }
 
     /**
      * creates processor instance
@@ -107,6 +108,7 @@ class AbstractResourceTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->request = NewInstance::of(Request::class)->mapCalls([
+                'id'              => '313',
                 'protocolVersion' => new HttpVersion(1, 1),
                 'method'          => 'TEST'
         ]);
@@ -116,14 +118,7 @@ class AbstractResourceTest extends \PHPUnit_Framework_TestCase
         $this->interceptors = NewInstance::stub(Interceptors::class);
     }
 
-    /**
-     * creates instance to test
-     *
-     * @param   array     $preInterceptors
-     * @param   array     $postInterceptors
-     * @return  \stubbles\webapp\routing\AbstractResource
-     */
-    private function createRoute(SupportedMimeTypes $mimeTypes = null)
+    private function createRoute(SupportedMimeTypes $mimeTypes = null): AbstractResource
     {
         return new TestAbstractResource(
                 $this->injector,

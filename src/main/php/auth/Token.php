@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -39,7 +40,7 @@ class Token
      * @param   string                      $salt  salt to use for token creation
      * @return  \stubbles\webapp\auth\Token
      */
-    public static function create(User $user, $salt)
+    public static function create(User $user, string $salt): self
     {
         return new self(md5($salt . serialize([
                 $user->name(),
@@ -55,7 +56,7 @@ class Token
      *
      * @return  string
      */
-    private static function createRandomContent()
+    private static function createRandomContent(): string
     {
         return uniqid('', true);
     }
@@ -65,7 +66,7 @@ class Token
      *
      * @return  bool
      */
-    public function isEmpty()
+    public function isEmpty(): bool
     {
         return null == $this->value;
     }
@@ -75,7 +76,7 @@ class Token
      *
      * @return  strings
      */
-    public function __toString()
+    public function __toString(): string
     {
         return (string) $this->value;
     }

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -43,7 +44,7 @@ class RoutingAnnotations
      *
      * @return  bool
      */
-    public function requiresHttps()
+    public function requiresHttps(): bool
     {
         return $this->annotations->contain('RequiresHttps');
     }
@@ -53,7 +54,7 @@ class RoutingAnnotations
      *
      * @return  bool
      */
-    public function requiresLogin()
+    public function requiresLogin(): bool
     {
         return $this->annotations->contain('RequiresLogin');
     }
@@ -67,7 +68,7 @@ class RoutingAnnotations
      *
      * @return  bool
      */
-    public function rolesAware()
+    public function rolesAware(): bool
     {
         return $this->annotations->contain('RolesAware');
     }
@@ -75,7 +76,7 @@ class RoutingAnnotations
     /**
      * returns role value if callback is annotated with @RequiresRole('someRole')
      *
-     * @return  string
+     * @return  string|null
      */
     public function requiredRole()
     {
@@ -92,7 +93,7 @@ class RoutingAnnotations
      * @return  bool
      * @since   5.1.0
      */
-    public function isContentNegotiationDisabled()
+    public function isContentNegotiationDisabled(): bool
     {
         return $this->annotations->contain('DisableContentNegotiation');
     }
@@ -103,7 +104,7 @@ class RoutingAnnotations
      * @return  string[]
      * @since   5.1.0
      */
-    public function mimeTypes()
+    public function mimeTypes(): array
     {
         $mimeTypes = [];
         foreach ($this->annotations->named('SupportsMimeType') as $supportedMimeType) {
@@ -119,7 +120,7 @@ class RoutingAnnotations
      * @return  string[]
      * @since   5.1.0
      */
-    public function mimeTypeClasses()
+    public function mimeTypeClasses(): array
     {
         $mimeTypeClasses = [];
         foreach ($this->annotations->named('SupportsMimeType') as $supportedMimeType) {
@@ -134,10 +135,10 @@ class RoutingAnnotations
     /**
      * returns class name of mime type class
      *
-     * @param   \ReflectionClass  $class
+     * @param   string|\ReflectionClass  $class
      * @return  string
      */
-    private function nameForMimeTypeClass($class)
+    private function nameForMimeTypeClass($class): string
     {
         if ($class instanceof \ReflectionClass) {
             return $class->getName();
@@ -152,7 +153,7 @@ class RoutingAnnotations
      * @return  bool
      * @since   6.1.0
      */
-    public function shouldBeIgnoredInApiIndex()
+    public function shouldBeIgnoredInApiIndex(): bool
     {
         return $this->annotations->contain('ExcludeFromApiIndex');
     }
@@ -163,7 +164,7 @@ class RoutingAnnotations
      * @return  bool
      * @since   6.1.0
      */
-    public function hasName()
+    public function hasName(): bool
     {
         return $this->annotations->contain('Name');
     }
@@ -171,7 +172,7 @@ class RoutingAnnotations
     /**
      * returns description of resource
      *
-     * @return  string
+     * @return  string|null
      * @since   6.1.0
      */
     public function name()
@@ -186,7 +187,7 @@ class RoutingAnnotations
     /**
      * returns description of resource
      *
-     * @return  string
+     * @return  string|null
      * @since   6.1.0
      */
     public function description()
@@ -204,7 +205,7 @@ class RoutingAnnotations
      * @return  bool
      * @since   6.1.0
      */
-    public function containStatusCodes()
+    public function containStatusCodes(): bool
     {
         return $this->annotations->contain('Status');
     }
@@ -215,7 +216,7 @@ class RoutingAnnotations
      * @return  stubbles\webapp\routing\api\Status[]
      * @since   6.1.0
      */
-    public function statusCodes()
+    public function statusCodes(): array
     {
         $codes = [];
         foreach ($this->annotations->named('Status') as $status) {
@@ -231,7 +232,7 @@ class RoutingAnnotations
      * @return  bool
      * @since   6.1.0
      */
-    public function containHeaders()
+    public function containHeaders(): bool
     {
         return $this->annotations->contain('Header');
     }
@@ -242,7 +243,7 @@ class RoutingAnnotations
      * @return  \stubbles\webapp\routing\api\Header[]
      * @since   6.1.0
      */
-    public function headers()
+    public function headers(): array
     {
         $headers = [];
         foreach ($this->annotations->named('Header') as $header) {
@@ -258,7 +259,7 @@ class RoutingAnnotations
      * @return  bool
      * @since   6.1.0
      */
-    public function containParameters()
+    public function containParameters(): bool
     {
         return $this->annotations->contain('Parameter');
     }
@@ -269,7 +270,7 @@ class RoutingAnnotations
      * @return  \stubbles\webapp\routing\api\Parameter[]
      * @since   6.1.0
      */
-    public function parameters()
+    public function parameters(): array
     {
         $parameters = [];
         foreach ($this->annotations->named('Parameter') as $parameter) {

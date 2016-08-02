@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -60,14 +61,10 @@ class ResolvingResourceTest extends \PHPUnit_Framework_TestCase
         $this->injector = NewInstance::stub(Injector::class);
     }
 
-    /**
-     * creates instance to test
-     *
-     * @param   \stubbles\webapp\routing\Route  $route
-     * @return  \stubbles\webapp\routing\ResolvingResource
-     */
-    private function createResolvingResource(Route $route, $uri = 'http://example.com/hello/world')
-    {
+    private function createResolvingResource(
+            Route $route,
+            $uri = 'http://example.com/hello/world'
+    ): ResolvingResource {
         return new ResolvingResource(
                 $this->injector,
                 new CalledUri($uri, 'GET'),
@@ -123,13 +120,7 @@ class ResolvingResourceTest extends \PHPUnit_Framework_TestCase
         );
     }
 
-    /**
-     * creates instance to test
-     *
-     * @param   callable  $target
-     * @return  \stubbles\webapp\routing\ResolvingResource
-     */
-    private function createResolvingResourceWithTarget($target)
+    private function createResolvingResourceWithTarget($target): ResolvingResource
     {
         return $this->createResolvingResource(
                 new Route('/hello/{name}', $target, 'GET')

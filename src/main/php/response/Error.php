@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -31,10 +32,10 @@ class Error implements \JsonSerializable
     /**
      * constructor
      *
-     * @param  string  $message  error message
+     * @param  mixed   $message  error message
      * @param  string  $type     error type     optional
      */
-    public function __construct($message, $type = 'Error')
+    public function __construct($message, string $type = 'Error')
     {
         $this->message = $message;
         $this->type    = $type;
@@ -45,7 +46,7 @@ class Error implements \JsonSerializable
      *
      * @return  \stubbles\webapp\response\Error
      */
-    public static function forbidden()
+    public static function forbidden(): self
     {
         return new self(
                 'You are not allowed to access this resource.',
@@ -58,7 +59,7 @@ class Error implements \JsonSerializable
      *
      * @return  \stubbles\webapp\response\Error
      */
-    public static function notFound()
+    public static function notFound(): self
     {
         return new self('Requested resource could not be found.', 'Not Found');
     }
@@ -70,7 +71,7 @@ class Error implements \JsonSerializable
      * @param   string[]  $allowedMethods  list of allowed request methods
      * @return  \stubbles\webapp\response\Error
      */
-    public static function methodNotAllowed($requestMethod, array $allowedMethods)
+    public static function methodNotAllowed(string $requestMethod, array $allowedMethods): self
     {
         return new self(
                 'The given request method '
@@ -87,7 +88,7 @@ class Error implements \JsonSerializable
      * @param   string|\Exception  $error
      * @return  \stubbles\webapp\response\Error
      */
-    public static function internalServerError($error)
+    public static function internalServerError($error): self
     {
         return new self(
                 $error instanceof \Exception ? $error->getMessage() : $error,
@@ -100,7 +101,7 @@ class Error implements \JsonSerializable
      *
      * @return  \stubbles\webapp\response\Error
      */
-    public static function httpVersionNotSupported()
+    public static function httpVersionNotSupported(): self
     {
         return new self(
                 'Unsupported HTTP protocol version, expected HTTP/1.0 or HTTP/1.1.'
@@ -113,7 +114,7 @@ class Error implements \JsonSerializable
      * @return  string
      * @XmlAttribute(attributeName='type')
      */
-    public function type()
+    public function type(): string
     {
         return $this->type;
     }
@@ -124,7 +125,7 @@ class Error implements \JsonSerializable
      * @return  string
      * @XmlFragment
      */
-    public function message()
+    public function message(): string
     {
         return $this->message;
     }
@@ -137,10 +138,10 @@ class Error implements \JsonSerializable
      * @return  self
      * @since   6.2.0
      */
-    public static function inParams(ParamErrors $errors, ParamErrorMessages $errorMessages)
+    public static function inParams(ParamErrors $errors, ParamErrorMessages $errorMessages): self
     {
         return new self(Sequence::of($errors)->map(
-                function(array $errors, $paramName) use ($errorMessages)
+                function(array $errors, $paramName) use ($errorMessages): array
                 {
                     $resolved = ['field' => $paramName, 'errors' => []];
                     foreach ($errors as $id => $error) {
@@ -162,7 +163,7 @@ class Error implements \JsonSerializable
      * @return  string
      * @XmlIgnore
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->type . ': ' . $this->message;
     }
@@ -173,7 +174,7 @@ class Error implements \JsonSerializable
      * @return  array
      * @XmlIgnore
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return ['error' => $this->message];
     }

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -29,7 +30,7 @@ class Links implements \IteratorAggregate, \JsonSerializable, \Countable
      * @param   \stubbles\peer\http\HttpUri  $uri  uri for this relation                  optional
      * @throws  \InvalidArgumentException  in case $uri is empty but $rel is not
      */
-    public function __construct($rel = null, HttpUri $uri = null)
+    public function __construct(string $rel = null, HttpUri $uri = null)
     {
         if (null !== $rel) {
             if (null === $uri) {
@@ -49,7 +50,7 @@ class Links implements \IteratorAggregate, \JsonSerializable, \Countable
      * @param   \stubbles\peer\http\HttpUri  $uri
      * @return  \stubbles\webapp\routing\api\Link
      */
-    public function add($rel, HttpUri $uri)
+    public function add(string $rel, HttpUri $uri): Link
     {
         $link = new Link($rel, $uri);
         if (isset($this->links[$rel])) {
@@ -71,7 +72,7 @@ class Links implements \IteratorAggregate, \JsonSerializable, \Countable
      * @param   string  $rel
      * @return  \stubbles\webapp\routing\api\Link[]
      */
-    public function with($rel)
+    public function with(string $rel): array
     {
         if (isset($this->links[$rel])) {
             if (is_array($this->links[$rel])) {
@@ -89,7 +90,7 @@ class Links implements \IteratorAggregate, \JsonSerializable, \Countable
      *
      * @return  \Traversable
      */
-    public function getIterator()
+    public function getIterator(): \Traversable
     {
         $result = [];
         foreach ($this->links as $link) {
@@ -109,7 +110,7 @@ class Links implements \IteratorAggregate, \JsonSerializable, \Countable
      * @return  array
      * @XmlIgnore
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return $this->links;
     }
@@ -120,7 +121,7 @@ class Links implements \IteratorAggregate, \JsonSerializable, \Countable
      * @return  int
      * @XmlIgnore
      */
-    public function count()
+    public function count(): int
     {
         return count($this->links);
     }

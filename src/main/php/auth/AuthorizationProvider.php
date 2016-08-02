@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -25,7 +26,7 @@ interface AuthorizationProvider
      * stubbles\webapp\auth\AuthProviderException.
      *
      * @param   \stubbles\webapp\auth\User  $user
-     * @return  \stubbles\webapp\auth\Roles
+     * @return  \stubbles\webapp\auth\Roles|null
      * @throws  \stubbles\webapp\auth\AuthProviderException
      */
     public function roles(User $user);

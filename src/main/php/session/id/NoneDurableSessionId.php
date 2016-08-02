@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -35,7 +36,7 @@ class NoneDurableSessionId implements SessionId
      * @param  string  $id           actual id        optional  will be created automatically when not provided
      * @since  5.0.1
      */
-    public function __construct($sessionName = null, $id = null)
+    public function __construct(string $sessionName = null, string $id = null)
     {
         $this->sessionName = $sessionName;
         $this->id          = $id;
@@ -46,7 +47,7 @@ class NoneDurableSessionId implements SessionId
      *
      * @return  string
      */
-    public function name()
+    public function name(): string
     {
         if (null === $this->sessionName) {
             $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -64,7 +65,7 @@ class NoneDurableSessionId implements SessionId
      *
      * @return  string
      */
-    public function __toString()
+    public function __toString(): string
     {
         if (null === $this->id) {
             $this->id = $this->create();
@@ -78,9 +79,9 @@ class NoneDurableSessionId implements SessionId
      *
      * @return  string
      */
-    private function create()
+    private function create(): string
     {
-        return md5(uniqid(rand(), true));
+        return md5(uniqid((string) rand(), true));
     }
 
     /**
@@ -88,7 +89,7 @@ class NoneDurableSessionId implements SessionId
      *
      * @return  \stubbles\webapp\session\id\SessionId
      */
-    public function regenerate()
+    public function regenerate(): SessionId
     {
         $this->id = $this->create();
         return $this;
@@ -99,7 +100,7 @@ class NoneDurableSessionId implements SessionId
      *
      * @return  \stubbles\webapp\session\id\SessionId
      */
-    public function invalidate()
+    public function invalidate(): SessionId
     {
         return $this;
     }

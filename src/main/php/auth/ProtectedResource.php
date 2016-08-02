@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -9,6 +10,7 @@
  */
 namespace stubbles\webapp\auth;
 use stubbles\ioc\Injector;
+use stubbles\peer\http\HttpUri;
 use stubbles\webapp\Request;
 use stubbles\webapp\Response;
 use stubbles\webapp\response\Error;
@@ -71,7 +73,7 @@ class ProtectedResource implements UriResource
      *
      * @return  bool
      */
-    public function requiresHttps()
+    public function requiresHttps(): bool
     {
         return $this->actualResource->requiresHttps();
     }
@@ -81,7 +83,7 @@ class ProtectedResource implements UriResource
      *
      * @return  \stubbles\peer\http\HttpUri
      */
-    public function httpsUri()
+    public function httpsUri(): HttpUri
     {
         return $this->actualResource->httpsUri();
     }
@@ -94,7 +96,7 @@ class ProtectedResource implements UriResource
      * @return  bool
      * @since   6.0.0
      */
-    public function negotiateMimeType(Request $request, Response $response)
+    public function negotiateMimeType(Request $request, Response $response): bool
     {
         return $this->actualResource->negotiateMimeType($request, $response);
     }
@@ -104,7 +106,7 @@ class ProtectedResource implements UriResource
      *
      * @return  string[]
      */
-    public function supportedMimeTypes()
+    public function supportedMimeTypes(): array
     {
         return $this->actualResource->supportedMimeTypes();
     }
@@ -119,7 +121,7 @@ class ProtectedResource implements UriResource
      * @param   \stubbles\webapp\Response  $response  response to send
      * @return  bool
      */
-    public function applyPreInterceptors(Request $request, Response $response)
+    public function applyPreInterceptors(Request $request, Response $response): bool
     {
         if ($this->isAuthorized($request, $response)) {
             return $this->actualResource->applyPreInterceptors($request, $response);
@@ -135,7 +137,7 @@ class ProtectedResource implements UriResource
      * @param   \stubbles\webapp\Response  $response  response to send
      * @return  bool
      */
-    private function isAuthorized(Request $request, Response $response)
+    private function isAuthorized(Request $request, Response $response): bool
     {
         $this->authorized = false;
         $user = $this->authenticate($request, $response);
@@ -160,7 +162,7 @@ class ProtectedResource implements UriResource
      *
      * @param   \stubbles\webapp\Request   $request   current request
      * @param   \stubbles\webapp\Response  $response  response to send
-     * @return  \stubbles\webapp\auth\User
+     * @return  \stubbles\webapp\auth\User|null
      */
     private function authenticate(Request $request, Response $response)
     {
@@ -188,7 +190,7 @@ class ProtectedResource implements UriResource
      *
      * @param   \stubbles\webapp\Response   $response  response to send
      * @param   \stubbles\webapp\auth\User  $user
-     * @return  \stubbles\webapp\auth\Roles
+     * @return  \stubbles\webapp\auth\Roles|null
      */
     private function roles(Response $response, User $user)
     {
@@ -245,7 +247,7 @@ class ProtectedResource implements UriResource
      * @param   \stubbles\webapp\Response  $response  response to send
      * @return  bool
      */
-    public function applyPostInterceptors(Request $request, Response $response)
+    public function applyPostInterceptors(Request $request, Response $response): bool
     {
         return $this->actualResource->applyPostInterceptors($request, $response);
     }

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -93,7 +94,7 @@ class SupportedMimeTypes
      *
      * @return  \stubbles\webapp\routing\SupportedMimeTypes
      */
-    public static function createWithDisabledContentNegotation()
+    public static function createWithDisabledContentNegotation(): self
     {
         $self = new self([]);
         $self->disableContentNegotation = true;
@@ -105,7 +106,7 @@ class SupportedMimeTypes
      *
      * @return  bool
      */
-    public function isContentNegotationDisabled()
+    public function isContentNegotationDisabled(): bool
     {
         return $this->disableContentNegotation;
     }
@@ -114,7 +115,7 @@ class SupportedMimeTypes
      * finds best matching mime type based on accept header
      *
      * @param   \stubbles\peer\http\AcceptHeader  $acceptedMimeTypes
-     * @return  string
+     * @return  string|null
      */
     public function findMatch(AcceptHeader $acceptedMimeTypes)
     {
@@ -137,7 +138,7 @@ class SupportedMimeTypes
      * @param  string  $mimeTypeClass
      * @since  5.1.1
      */
-    public static function setDefaultMimeTypeClass($mimeType, $mimeTypeClass)
+    public static function setDefaultMimeTypeClass(string $mimeType, $mimeTypeClass)
     {
         self::$supported[$mimeType] = $mimeTypeClass;
     }
@@ -148,7 +149,7 @@ class SupportedMimeTypes
      * @param  string  $mimeType
      * @since  5.1.1
      */
-    public static function removeDefaultMimeTypeClass($mimeType)
+    public static function removeDefaultMimeTypeClass(string $mimeType)
     {
         if (isset(self::$supported[$mimeType])) {
             unset(self::$supported[$mimeType]);
@@ -162,7 +163,7 @@ class SupportedMimeTypes
      * @return  bool
      * @since   5.0.0
      */
-    public static function provideDefaultClassFor($mimeType)
+    public static function provideDefaultClassFor(string $mimeType): bool
     {
         if (in_array($mimeType, array_keys(self::$supported))) {
             return true;
@@ -186,7 +187,7 @@ class SupportedMimeTypes
      * @return  bool
      * @since   3.2.0
      */
-    public function provideClass($mimeType)
+    public function provideClass(string $mimeType): bool
     {
         return isset($this->mimeTypeClasses[$mimeType]);
     }
@@ -195,10 +196,10 @@ class SupportedMimeTypes
      * returns special class which was defined for given mime type or null if none defined
      *
      * @param   string  $mimeType
-     * @return  string
+     * @return  string|null
      * @since   3.2.0
      */
-    public function classFor($mimeType)
+    public function classFor(string $mimeType)
     {
         if ($this->provideClass($mimeType)) {
             return $this->mimeTypeClasses[$mimeType];
@@ -212,7 +213,7 @@ class SupportedMimeTypes
      *
      * @return  string[]
      */
-    public function asArray()
+    public function asArray(): array
     {
         return $this->mimeTypes;
     }

@@ -4,6 +4,7 @@
 ### BC breaks
 
   * Raised minimum required PHP version to 7.0
+  * introduced scalar type hints and strict type checking
 
 
 6.2.2 (2015-07-06)

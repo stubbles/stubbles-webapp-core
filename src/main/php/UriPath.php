@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -41,7 +42,7 @@ class UriPath
      * @param   string  $path
      * @return  string
      */
-    public static function pattern($path)
+    public static function pattern(string $path)
     {
         return preg_replace('/[{][^}]*[}]/', '([^\/]+)', str_replace('/', '\/', $path));
     }
@@ -52,7 +53,7 @@ class UriPath
      * @param  string  $configuredPath  path configured in routing
      * @param  string  $calledPath      complete called path from request
      */
-    public function __construct($configuredPath, $calledPath)
+    public function __construct(string $configuredPath, string $calledPath)
     {
         $this->configuredPath = $configuredPath;
         $this->calledPath     = $calledPath;
@@ -63,7 +64,7 @@ class UriPath
      *
      * @return  string
      */
-    public function configured()
+    public function configured(): string
     {
         return $this->configuredPath;
     }
@@ -74,7 +75,7 @@ class UriPath
      * @return  string
      * @since   4.0.0
      */
-    public function actual()
+    public function actual(): string
     {
         return $this->calledPath;
     }
@@ -84,7 +85,7 @@ class UriPath
      *
      * @return  string
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->actual();
     }
@@ -95,7 +96,7 @@ class UriPath
      * @param   string  $name
      * @return  bool
      */
-    public function hasArgument($name)
+    public function hasArgument(string $name): bool
     {
         $this->parsePathArguments();
         return isset($this->arguments[$name]);
@@ -108,7 +109,7 @@ class UriPath
      * @return  \stubbles\input\ValueReader
      * @since   3.3.0
      */
-    public function readArgument($name)
+    public function readArgument(string $name): ValueReader
     {
         $this->parsePathArguments();
         if (isset($this->arguments[$name])) {
@@ -146,7 +147,7 @@ class UriPath
      * @param   string  $default
      * @return  string
      */
-    public function remaining($default = null)
+    public function remaining(string $default = null)
     {
         $matches = [];
         preg_match('/(' . self::pattern($this->configuredPath) . ')([^?]*)?/', $this->calledPath, $matches);

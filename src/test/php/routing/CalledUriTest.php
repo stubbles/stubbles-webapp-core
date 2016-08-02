@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -49,22 +50,11 @@ class CalledUriTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @since  4.0.0
-     * @return  array
-     */
-    public function emptyRequestMethods()
-    {
-        return [[null], ['']];
-    }
-
-    /**
-     * @since  4.0.0
-     * @param  string  $empty
      * @test
-     * @dataProvider  emptyRequestMethods
      */
-    public function createInstanceWithEmptyRequestMethodThrowsIllegalArgumentException($empty)
+    public function createInstanceWithEmptyRequestMethodThrowsIllegalArgumentException()
     {
-        expect(function() use ($empty) { new CalledUri($this->httpUri, $empty); })
+        expect(function() { new CalledUri($this->httpUri, ''); })
                 ->throws(\InvalidArgumentException::class);
     }
 
@@ -94,12 +84,11 @@ class CalledUriTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @dataProvider  emptyRequestMethods
      * @since  4.0.0
      */
-    public function castFromHttpUriInstanceWithoutRequestMethodThrowsIllegalArgumentException($empty)
+    public function castFromHttpUriInstanceWithoutRequestMethodThrowsIllegalArgumentException()
     {
-        expect(function() use ($empty) { CalledUri::castFrom($this->httpUri, $empty); })
+        expect(function() { CalledUri::castFrom($this->httpUri, ''); })
                 ->throws(\InvalidArgumentException::class);
     }
 
@@ -118,12 +107,11 @@ class CalledUriTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
-     * @dataProvider  emptyRequestMethods
      * @since  4.0.0
      */
-    public function castFromHttpUriStringWithoutRequestMethodThrowsIllegalArgumentException($empty)
+    public function castFromHttpUriStringWithoutRequestMethodThrowsIllegalArgumentException()
     {
-        expect(function() use ($empty) { CalledUri::castFrom('http://example.net/', $empty); })
+        expect(function()  { CalledUri::castFrom('http://example.net/', ''); })
                 ->throws(\InvalidArgumentException::class);
     }
 
@@ -163,12 +151,7 @@ class CalledUriTest extends \PHPUnit_Framework_TestCase
         assertFalse($this->calledUri->methodEquals('POST'));
     }
 
-    /**
-     * data provider for satisfying path pattern tests
-     *
-     * @return  array
-     */
-    public function provideSatisfiedPathPattern()
+    public function provideSatisfiedPathPattern(): array
     {
         return [
             ['/hello/mikey', '/hello/{name}$'],
@@ -185,18 +168,13 @@ class CalledUriTest extends \PHPUnit_Framework_TestCase
      * @test
      * @dataProvider  provideSatisfiedPathPattern
      */
-    public function returnsTrueForSatisfiedPathPattern($path, $pathPattern)
+    public function returnsTrueForSatisfiedPathPattern(string $path, string $pathPattern = null)
     {
         $this->httpUri->mapCalls(['path' => $path]);
         assertTrue($this->calledUri->satisfiesPath($pathPattern));
     }
 
-    /**
-     * data provider for non satisfying path pattern tests
-     *
-     * @return  array
-     */
-    public function provideNonSatisfiedPathPattern()
+    public function provideNonSatisfiedPathPattern(): array
     {
         return [['/rss/articles', '/hello/{name}'],
                 ['/hello/mikey', '/hello$'],
@@ -210,7 +188,7 @@ class CalledUriTest extends \PHPUnit_Framework_TestCase
      * @test
      * @dataProvider  provideNonSatisfiedPathPattern
      */
-    public function returnsFalseForNonSatisfiedCondition($path, $pathPattern)
+    public function returnsFalseForNonSatisfiedCondition(string $path, string $pathPattern)
     {
         $this->httpUri->mapCalls(['path' => $path]);
         assertFalse($this->calledUri->satisfiesPath($pathPattern));

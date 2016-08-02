@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -27,10 +28,10 @@ class Headers implements \IteratorAggregate, \ArrayAccess
      * adds header with given name
      *
      * @param   string  $name
-     * @param   string  $value
+     * @param   mixed   $value
      * @return  \stubbles\webapp\response\Headers
      */
-    public function add($name, $value)
+    public function add(string $name, $value): self
     {
         $this->headers[$name] = $value;
         return $this;
@@ -44,7 +45,7 @@ class Headers implements \IteratorAggregate, \ArrayAccess
      * @since   5.1.0
      * @see     https://devcenter.heroku.com/articles/http-request-id
      */
-    public function requestId($requestId)
+    public function requestId(string $requestId): self
     {
         return $this->add('X-Request-ID', $requestId);
     }
@@ -55,7 +56,7 @@ class Headers implements \IteratorAggregate, \ArrayAccess
      * @param   string|\stubbles\peer\http\HttpUri  $uri
      * @return  \stubbles\webapp\response\Headers
      */
-    public function location($uri)
+    public function location($uri): self
     {
         return $this->add(
                 'Location',
@@ -69,7 +70,7 @@ class Headers implements \IteratorAggregate, \ArrayAccess
      * @param   string[]  $allowedMethods
      * @return  \stubbles\webapp\response\Headers
      */
-    public function allow(array $allowedMethods)
+    public function allow(array $allowedMethods): self
     {
         return $this->add('Allow', join(', ', $allowedMethods));
     }
@@ -80,7 +81,7 @@ class Headers implements \IteratorAggregate, \ArrayAccess
      * @param   string[]  $supportedMimeTypes
      * @return  \stubbles\webapp\response\Headers
      */
-    public function acceptable(array $supportedMimeTypes)
+    public function acceptable(array $supportedMimeTypes): self
     {
         if (count($supportedMimeTypes) > 0) {
             $this->add('X-Acceptable', join(', ', $supportedMimeTypes));
@@ -95,7 +96,7 @@ class Headers implements \IteratorAggregate, \ArrayAccess
      * @param   string  $filename
      * @return  \stubbles\webapp\response\Headers
      */
-    public function forceDownload($filename)
+    public function forceDownload(string $filename): self
     {
         return $this->add('Content-Disposition', 'attachment; filename="' . $filename . '"');
     }
@@ -111,7 +112,7 @@ class Headers implements \IteratorAggregate, \ArrayAccess
      * @see     http://tools.ietf.org/html/rfc7234#section-5.2
      * @since   5.1.0
      */
-    public function cacheControl()
+    public function cacheControl(): CacheControl
     {
         $cacheControl = new CacheControl();
         $this->add(CacheControl::HEADER_NAME, $cacheControl);
@@ -126,7 +127,7 @@ class Headers implements \IteratorAggregate, \ArrayAccess
      * @see     http://tools.ietf.org/html/rfc7234#section-5.1
      * @since   5.1.0
      */
-    public function age($seconds)
+    public function age(int $seconds): self
     {
         return $this->add('Age', $seconds);
     }
@@ -139,7 +140,7 @@ class Headers implements \IteratorAggregate, \ArrayAccess
      * @param   string  $name  name of header to check for
      * @return  bool
      */
-    public function contain($name)
+    public function contain(string $name): bool
     {
         return isset($this->headers[$name]);
     }
@@ -149,7 +150,7 @@ class Headers implements \IteratorAggregate, \ArrayAccess
      *
      * @return  \Traversable
      */
-    public function getIterator()
+    public function getIterator(): \Traversable
     {
         return new \ArrayIterator($this->headers);
     }
@@ -170,6 +171,7 @@ class Headers implements \IteratorAggregate, \ArrayAccess
     /**
      * returns header with given name
      *
+     * @param   string  $offset  name of header to retrieve
      * @return  string
      */
     public function offsetGet($offset)

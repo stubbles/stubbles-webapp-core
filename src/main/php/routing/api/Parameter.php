@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -36,11 +37,11 @@ class Parameter implements \JsonSerializable
     /**
      * constructor
      *
-     * @param  int     $name         header name
+     * @param  string  $name         header name
      * @param  string  $description  description of header
      * @param  string  $in           where parameter can be used: path, query, header, body
      */
-    public function __construct($name, $description, $in)
+    public function __construct(string $name, string $description, string $in)
     {
         $this->name        = $name;
         $this->description = $description;
@@ -50,10 +51,10 @@ class Parameter implements \JsonSerializable
     /**
      * returns header name
      *
-     * @return  int
-     * 
+     * @return  string
+     *
      */
-    public function name()
+    public function name(): string
     {
         return $this->name;
     }
@@ -64,7 +65,7 @@ class Parameter implements \JsonSerializable
      * @return  string
      * @XmlFragment(tagName='description')
      */
-    public function description()
+    public function description(): string
     {
         return $this->description;
     }
@@ -74,7 +75,7 @@ class Parameter implements \JsonSerializable
      *
      * @return  string
      */
-    public function place()
+    public function place(): string
     {
         return $this->in;
     }
@@ -85,7 +86,7 @@ class Parameter implements \JsonSerializable
      * @return  \stubbles\webapp\routing\api\Parameter
      * @XmlIgnore
      */
-    public function markRequired()
+    public function markRequired(): self
     {
         $this->required = true;
         return $this;
@@ -97,7 +98,7 @@ class Parameter implements \JsonSerializable
      * @return  bool
      * @XmlAttribute(attributeName='required')
      */
-    public function isRequired()
+    public function isRequired(): bool
     {
         return $this->required;
     }
@@ -108,7 +109,7 @@ class Parameter implements \JsonSerializable
      * @return  array
      * @XmlIgnore
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return [
                 'name'        => $this->name,

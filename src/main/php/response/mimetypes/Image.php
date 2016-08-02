@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -39,8 +40,8 @@ class Image extends MimeType
      */
     public function __construct(
             ResourceLoader $resourceLoader,
-            $errorImgResource = 'pixel.png')
-    {
+            string $errorImgResource = 'pixel.png'
+    ) {
         $this->resourceLoader   = $resourceLoader;
         $this->errorImgResource = $errorImgResource;
     }
@@ -50,7 +51,7 @@ class Image extends MimeType
      *
      * @return  string
      */
-    protected function defaultName()
+    protected function defaultName(): string
     {
         return 'image/*';
     }
@@ -62,7 +63,7 @@ class Image extends MimeType
      * @param   \stubbles\streams\OutputStream  $out
      * @return  \stubbles\streams\OutputStream
      */
-    public function serialize($resource, OutputStream $out)
+    public function serialize($resource, OutputStream $out): OutputStream
     {
         if (null === $resource) {
             return $out;
@@ -95,9 +96,9 @@ class Image extends MimeType
      * loads image from resource pathes
      *
      * @param   string  $resource
-     * @return  \stubbles\img\Image
+     * @return  \stubbles\img\Image|null
      */
-    private function loadImage($resource)
+    private function loadImage(string $resource)
     {
         try {
             return $this->resourceLoader->load(

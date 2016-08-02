@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -49,7 +50,7 @@ class CachingAuthenticationProvider implements AuthenticationProvider
      * authenticates that the given request is valid
      *
      * @param   \stubbles\webapp\Request  $request
-     * @return  \stubbles\webapp\auth\User
+     * @return  \stubbles\webapp\auth\User|null
      */
     public function authenticate(Request $request)
     {

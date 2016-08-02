@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -51,7 +52,7 @@ class Token
      * @param   string  $token
      * @return  bool
      */
-    public function isValid($token)
+    public function isValid(string $token): bool
     {
         $this->init();
         return $token === $this->current;
@@ -62,7 +63,7 @@ class Token
      *
      * @return  string
      */
-    public function next()
+    public function next(): string
     {
         $this->init();
         return $this->session->value(self::NEXT_TOKEN);
@@ -74,8 +75,8 @@ class Token
     private function init()
     {
         if (null === $this->current) {
-            $this->current = $this->session->value(self::NEXT_TOKEN, md5(uniqid(rand())));
-            $this->session->putValue(self::NEXT_TOKEN, md5(uniqid(rand())));
+            $this->current = $this->session->value(self::NEXT_TOKEN, md5(uniqid((string) rand())));
+            $this->session->putValue(self::NEXT_TOKEN, md5(uniqid((string) rand())));
         }
     }
 }

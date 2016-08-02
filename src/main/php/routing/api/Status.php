@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -31,7 +32,7 @@ class Status implements \JsonSerializable
      * @param  int     $code         actual status code
      * @param  string  $description  description of status code
      */
-    public function __construct($code, $description)
+    public function __construct(int $code, string $description)
     {
         $this->code        = $code;
         $this->description = $description;
@@ -43,7 +44,7 @@ class Status implements \JsonSerializable
      * @return  int
      * @XmlAttribute(attributeName='code')
      */
-    public function code()
+    public function code(): int
     {
         return $this->code;
     }
@@ -54,7 +55,7 @@ class Status implements \JsonSerializable
      * @return  string
      * @XmlFragment(tagName='description')
      */
-    public function description()
+    public function description(): string
     {
         return $this->description;
     }
@@ -65,7 +66,7 @@ class Status implements \JsonSerializable
      * @return  array
      * @XmlIgnore
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return ['code' => $this->code, 'description' => $this->description];
     }

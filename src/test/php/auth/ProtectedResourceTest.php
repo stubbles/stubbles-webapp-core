@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -135,11 +136,7 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
         );
     }
 
-    /**
-     * @param   array  $callmap  optional
-     * @return  \stubbles\webapp\auth\AuthenticationProvider
-     */
-    private function createAuthenticationProvider(array $callmap = [])
+    private function createAuthenticationProvider(array $callmap = []): AuthenticationProvider
     {
         $authenticationProvider = NewInstance::of(AuthenticationProvider::class);
         $this->injector->mapCalls(['getInstance' => $authenticationProvider]);
@@ -279,16 +276,12 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
         $this->authConstraint->requireLogin();
         $this->createAuthenticationProvider(['authenticate' => $user]);
         $request = WebRequest::fromRawSource();
+        $this->actualResource->mapCalls(['applyPreInterceptors' => true]);
         $this->protectedResource->applyPreInterceptors($request, $this->response);
         assert($request->identity()->user(), isSameAs($user));
     }
 
-    /**
-     * @param   \stubbles\webapp\auth\Roles|\bovigo\callmap\Throwable  $roles
-     * @param   \stubbles\webapp\auth\User   $user
-     * @return  \stubbles\webapp\auth\AuthorizationProvider
-     */
-    private function createAuthorizationProvider($roles, User $user = null)
+    private function createAuthorizationProvider($roles, User $user = null): AuthorizationProvider
     {
         $authenticationProvider = NewInstance::of(AuthenticationProvider::class)
                 ->mapCalls(['authenticate' => ($user === null) ? NewInstance::of(User::class) : $user]);
@@ -410,6 +403,7 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
         $this->authConstraint->requireRole('admin');
         $this->createAuthorizationProvider(new Roles(['admin']), $user);
         $request = WebRequest::fromRawSource();
+        $this->actualResource->mapCalls(['applyPreInterceptors' => true]);
         $this->protectedResource->applyPreInterceptors(
                 $request,
                 $this->response
@@ -426,6 +420,7 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
         $roles = new Roles(['admin']);
         $this->createAuthorizationProvider($roles);
         $request = WebRequest::fromRawSource();
+        $this->actualResource->mapCalls(['applyPreInterceptors' => true]);
         $this->protectedResource->applyPreInterceptors(
                 $request,
                 $this->response
@@ -479,6 +474,8 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
     {
         $this->authConstraint->requireRole('admin');
         $this->createAuthorizationProvider(Roles::none());
+        $this->actualResource->mapCalls(['applyPostInterceptors' => true]);
+        $this->response->mapCalls(['forbidden' => Error::forbidden()]);
         assertTrue(
                 $this->protectedResource->applyPreInterceptors(
                         $this->request,
@@ -500,9 +497,11 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
     {
         $this->authConstraint->requireRole('admin');
         $this->createAuthorizationProvider(new Roles(['admin']));
-        $this->actualResource->mapCalls(
-                ['applyPreInterceptors' => true, 'resolve' => 'foo']
-        );
+        $this->actualResource->mapCalls([
+                'applyPreInterceptors'  => true,
+                'resolve'               => 'foo',
+                'applyPostInterceptors' => true
+        ]);
         assertTrue(
                 $this->protectedResource->applyPreInterceptors(
                         $this->request,

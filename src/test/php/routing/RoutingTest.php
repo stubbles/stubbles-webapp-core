@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -176,21 +177,12 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
                 ->received('Allow', 'GET, HEAD, POST, PUT, DELETE, OPTIONS');
     }
 
-    /**
-     * creates processable route with given list of pre and post interceptors
-     *
-     * @param   Route   $route
-     * @param   array   $preInterceptors
-     * @param   array   $postInterceptors
-     * @param   string  $path
-     * @return  \stubbles\webapp\routing\ResolvingResource
-     */
     private function createResolvingResource(
             Route $route,
             array $preInterceptors = [],
             array $postInterceptors = [],
-            $path = 'hello')
-    {
+            string $path = 'hello'
+    ): ResolvingResource {
         $injector = NewInstance::stub(Injector::class);
         return new ResolvingResource(
                 $injector,
@@ -546,10 +538,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
         verify($response, 'adjustMimeType')->wasNeverCalled();
     }
 
-    /**
-     * @return  array
-     */
-    public function calledHtmlUris()
+    public function calledHtmlUris(): array
     {
         return [
             ['index.html'],
@@ -559,12 +548,11 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param  string  $htmlFile
      * @test
      * @dataProvider  calledHtmlUris
      * @since  4.0.0
      */
-    public function passThroughOnGetAppliesForHtmlFilesWithDefaultPath($htmlFile)
+    public function passThroughOnGetAppliesForHtmlFilesWithDefaultPath(string $htmlFile)
     {
         $expected = $this->createResolvingResource(
                 $this->routing->passThroughOnGet(),

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -26,42 +27,42 @@ interface Session extends \stubbles\ioc\binding\Session
      *
      * @return  bool  true if session has been started, else false
      */
-    public function isNew();
+    public function isNew(): bool;
 
     /**
      * returns session id
      *
      * @return  string  the session id
      */
-    public function id();
+    public function id(): string;
 
     /**
      * regenerates the session id but leaves session data
      *
      * @return  Session
      */
-    public function regenerateId();
+    public function regenerateId(): self;
 
     /**
      * returns the name of the session
      *
      * @return  string
      */
-    public function name();
+    public function name(): string;
 
     /**
      * checks if this session is valid
      *
      * @return  bool
      */
-    public function isValid();
+    public function isValid(): bool;
 
     /**
      * invalidates current session and creates a new one
      *
      * @return  Session
      */
-    public function invalidate();
+    public function invalidate(): self;
 
     /**
      * removes a value from the session
@@ -69,12 +70,12 @@ interface Session extends \stubbles\ioc\binding\Session
      * @param   string  $name  key where value is stored under
      * @return  bool    true if value existed and was removed, else false
      */
-    public function removeValue($name);
+    public function removeValue(string $name): bool;
 
     /**
      * return an array of all keys registered in this session
      *
      * @return  string[]
      */
-    public function valueKeys();
+    public function valueKeys(): array;
 }

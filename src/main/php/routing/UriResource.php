@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -8,6 +9,7 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\routing;
+use stubbles\peer\http\HttpUri;
 use stubbles\webapp\Request;
 use stubbles\webapp\Response;
 /**
@@ -22,14 +24,14 @@ interface UriResource
      *
      * @return  bool
      */
-    public function requiresHttps();
+    public function requiresHttps(): bool;
 
     /**
      * returns https uri of current route
      *
      * @return  \stubbles\peer\http\HttpUri
      */
-    public function httpsUri();
+    public function httpsUri(): HttpUri;
 
     /**
      * negotiates proper mime type for given request
@@ -39,14 +41,14 @@ interface UriResource
      * @return  bool
      * @since   6.0.0
      */
-    public function negotiateMimeType(Request $request, Response $response);
+    public function negotiateMimeType(Request $request, Response $response): bool;
 
     /**
      * returns list of supported mime types
      *
-     * @return  \stubbles\webapp\routing\SupportedMimeTypes
+     * @return  string[]
      */
-    public function supportedMimeTypes();
+    public function supportedMimeTypes(): array;
 
     /**
      * apply pre interceptors
@@ -57,7 +59,7 @@ interface UriResource
      * @param   \stubbles\webapp\Response  $response  response to send
      * @return  bool
      */
-    public function applyPreInterceptors(Request $request, Response $response);
+    public function applyPreInterceptors(Request $request, Response $response): bool;
 
     /**
      * returns the resource data model
@@ -75,5 +77,5 @@ interface UriResource
      * @param   \stubbles\webapp\Response  $response  response to send
      * @return  bool
      */
-    public function applyPostInterceptors(Request $request, Response $response);
+    public function applyPostInterceptors(Request $request, Response $response): bool;
 }

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -21,7 +22,7 @@ interface SendableResponse
      *
      * @return  int
      */
-    public function statusCode();
+    public function statusCode(): int;
 
     /**
      * check if response contains a certain header
@@ -30,7 +31,7 @@ interface SendableResponse
      * @param   string  $value  optional  if given the value is checked as well
      * @return  bool
      */
-    public function containsHeader($name, $value = null);
+    public function containsHeader(string $name, string $value = null): bool;
 
     /**
      * checks if response contains a certain cookie
@@ -39,7 +40,7 @@ interface SendableResponse
      * @param   string  $value  optional  if given the value is checked as well
      * @return  bool
      */
-    public function containsCookie($name, $value = null);
+    public function containsCookie(string $name, string $value = null): bool;
 
     /**
      * sends response
@@ -54,7 +55,7 @@ interface SendableResponse
      * created in such a case.
      *
      * @param   \stubbles\streams\OutputStream  $out  optional  where to write response body to
-     * @return  \stubbles\streams\OutputStream
+     * @return  \stubbles\streams\OutputStream|null
      */
     public function send(OutputStream $out = null);
 }

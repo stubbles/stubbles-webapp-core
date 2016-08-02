@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -22,11 +23,7 @@ use function bovigo\assert\predicate\isSameAs;
  */
 class IdentityTest extends \PHPUnit_Framework_TestCase
 {
-    /**
-     * @param   \stubbles\webapp\auth\User
-     * @return  \stubbles\webapp\auth\Identity
-     */
-    private function createIdentity(User $user = null)
+    private function createIdentity(User $user = null): Identity
     {
         return new Identity(
                 null === $user ? $this->createUser() : $user,
@@ -34,10 +31,7 @@ class IdentityTest extends \PHPUnit_Framework_TestCase
         );
     }
 
-    /**
-     * @return  \stubbles\webapp\auth\User
-     */
-    private function createUser()
+    private function createUser(): User
     {
         return NewInstance::of(User::class);
     }

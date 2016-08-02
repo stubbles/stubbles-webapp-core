@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -131,13 +132,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 ->throws(\InvalidArgumentException::class);
     }
 
-    /**
-     * creates instance to test
-     *
-     * @param   string  $method
-     * @return  \stubbles\webapp\Route
-     */
-    private function createRoute($method = 'GET')
+    private function createRoute($method = 'GET'): Route
     {
         return new Route(
                 '/hello/{name}',
@@ -826,10 +821,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         );
     }
 
-    /**
-     * @return
-     */
-    public function mimeTypeClasses()
+    public function mimeTypeClasses(): array
     {
         return [
             ['example\\\Bar', 'application/bar'],
@@ -843,8 +835,10 @@ class RouteTest extends \PHPUnit_Framework_TestCase
      * @dataProvider  mimeTypeClasses
      * @since  5.1.0
      */
-    public function listOfSupportedMimeTypesContainsClassForAnnotatedMimeTypes($expectedMimeTypeClass, $mimeType)
-    {
+    public function listOfSupportedMimeTypesContainsClassForAnnotatedMimeTypes(
+            string $expectedMimeTypeClass,
+            string $mimeType
+    ) {
         $route = new Route(
                 '/hello',
                 AnnotatedProcessor::class,
@@ -876,10 +870,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         );
     }
 
-    /**
-     * @return  array
-     */
-    public function resources()
+    public function resources(): array
     {
         return [
             [

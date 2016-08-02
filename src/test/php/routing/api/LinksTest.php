@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -25,12 +26,7 @@ use function bovigo\assert\predicate\isOfSize;
  */
 class LinksTest extends \PHPUnit_Framework_TestCase
 {
-    /**
-     * creates a links collection with a default link
-     *
-     * @return  \stubbles\webapp\routing\api\Links
-     */
-    private function createPrefilled()
+    private function createPrefilled(): Links
     {
         return new Links('self', HttpUri::fromString('http://example.com/foo'));
     }

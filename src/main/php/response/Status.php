@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -68,7 +69,7 @@ class Status
      * @param   string  $reasonPhrase  optional
      * @return  \stubbles\webapp\response\Status
      */
-    public function setCode($code, $reasonPhrase = null)
+    public function setCode(int $code, string $reasonPhrase = null): self
     {
         $this->code         = $code;
         $this->reasonPhrase = null === $reasonPhrase ? Http::reasonPhraseFor($code) : $reasonPhrase;
@@ -81,7 +82,7 @@ class Status
      * @param   int  $code
      * @return  \stubbles\webapp\response\Status
      */
-    private function fixateCode($code)
+    private function fixateCode(int $code): self
     {
         $this->setCode($code);
         $this->fixed = true;
@@ -95,7 +96,7 @@ class Status
      * @param   string                              $etag  optional  entity-tag of the newly created resource's representation
      * @return  \stubbles\webapp\response\Status
      */
-    public function created($uri, $etag = null)
+    public function created($uri, string $etag = null): self
     {
         $this->headers->location($uri);
         if (null !== $etag) {
@@ -110,7 +111,7 @@ class Status
      *
      * @return  \stubbles\webapp\response\Status
      */
-    public function accepted()
+    public function accepted(): self
     {
         return $this->fixateCode(202);
     }
@@ -120,7 +121,7 @@ class Status
      *
      * @return  \stubbles\webapp\response\Status
      */
-    public function noContent()
+    public function noContent(): self
     {
         $this->allowsPayload = false;
         $this->headers->add('Content-Length', 0);
@@ -132,7 +133,7 @@ class Status
      *
      * @return  \stubbles\webapp\response\Status
      */
-    public function resetContent()
+    public function resetContent(): self
     {
         $this->allowsPayload = false;
         $this->headers->add('Content-Length', 0);
@@ -142,13 +143,13 @@ class Status
     /**
      * sets status code to 206 Partial Content
      *
-     * @param   int         $lower      lower border of range
-     * @param   int         $upper      upper border of range
+     * @param   int|string  $lower      lower border of range
+     * @param   int|string  $upper      upper border of range
      * @param   int|string  $total      optional    total length of content, defaults to * for "unknown"
      * @param   string      $rangeUnit  optional    range unit, defaults to "bytes"
      * @return  \stubbles\webapp\response\Status
      */
-    public function partialContent($lower, $upper, $total = '*', $rangeUnit = 'bytes')
+    public function partialContent($lower, $upper, $total = '*', string $rangeUnit = 'bytes'): self
     {
         $this->headers->add(
                 'Content-Range',
@@ -164,7 +165,7 @@ class Status
      * @param   int                                 $statusCode  HTTP status code to redirect with (301, 302, ...)
      * @return  \stubbles\webapp\response\Status
      */
-    public function redirect($uri, $statusCode = 302)
+    public function redirect($uri, int $statusCode = 302): self
     {
         $this->headers->location($uri);
         return $this->fixateCode($statusCode);
@@ -176,7 +177,7 @@ class Status
      * @return  \stubbles\webapp\response\Status
      * @todo enforce any of Cache-Control, Content-Location, Date, ETag, Expires, and Vary.
      */
-    public function notModified()
+    public function notModified(): self
     {
         return $this->fixateCode(304);
     }
@@ -186,7 +187,7 @@ class Status
      *
      * @return  \stubbles\webapp\response\Status
      */
-    public function badRequest()
+    public function badRequest(): self
     {
         return $this->fixateCode(400);
     }
@@ -198,7 +199,7 @@ class Status
      * @return  \stubbles\webapp\response\Status
      * @throws  \InvalidArgumentException  in case $challenges is empty
      */
-    public function unauthorized(array $challenges)
+    public function unauthorized(array $challenges): self
     {
         if (count($challenges) === 0) {
             throw new \InvalidArgumentException('Challenges must contain at least one entry');
@@ -213,7 +214,7 @@ class Status
      *
      * @return  \stubbles\webapp\response\Status
      */
-    public function forbidden()
+    public function forbidden(): self
     {
         return $this->fixateCode(403);
     }
@@ -223,7 +224,7 @@ class Status
      *
      * @return  \stubbles\webapp\response\Status
      */
-    public function notFound()
+    public function notFound(): self
     {
         return $this->fixateCode(404);
     }
@@ -231,11 +232,10 @@ class Status
     /**
      * sets status to 405 Method Not Allowed
      *
-     * @param   string    $requestMethod
      * @param   string[]  $allowedMethods
      * @return  \stubbles\webapp\response\Status
      */
-    public function methodNotAllowed(array $allowedMethods)
+    public function methodNotAllowed(array $allowedMethods): self
     {
         $this->headers->allow($allowedMethods);
         return $this->fixateCode(405);
@@ -247,7 +247,7 @@ class Status
      * @param   string[]  $supportedMimeTypes  list of supported mime types
      * @return  \stubbles\webapp\response\Status
      */
-    public function notAcceptable(array $supportedMimeTypes = [])
+    public function notAcceptable(array $supportedMimeTypes = []): self
     {
         $this->headers->acceptable($supportedMimeTypes);
         return $this->fixateCode(406);
@@ -258,7 +258,7 @@ class Status
      *
      * @return  \stubbles\webapp\response\Status
      */
-    public function conflict()
+    public function conflict(): self
     {
         return $this->fixateCode(409);
     }
@@ -268,7 +268,7 @@ class Status
      *
      * @return  \stubbles\webapp\response\Status
      */
-    public function gone()
+    public function gone(): self
     {
         return $this->fixateCode(410);
     }
@@ -278,7 +278,7 @@ class Status
      *
      * @return  \stubbles\webapp\response\Status
      */
-    public function lengthRequired()
+    public function lengthRequired(): self
     {
         return $this->fixateCode(411);
     }
@@ -288,7 +288,7 @@ class Status
      *
      * @return  \stubbles\webapp\response\Status
      */
-    public function preconditionFailed()
+    public function preconditionFailed(): self
     {
         return $this->fixateCode(412);
     }
@@ -298,7 +298,7 @@ class Status
      *
      * @return  \stubbles\webapp\response\Status
      */
-    public function unsupportedMediaType()
+    public function unsupportedMediaType(): self
     {
         return $this->fixateCode(415);
     }
@@ -306,11 +306,11 @@ class Status
     /**
      * sets status to 416 Range Not Satisfiable
      *
-     * @param   int     $total      total length of content
-     * @param   string  $rangeUnit  optional  range unit, defaults to "bytes"
+     * @param   int|string  $total      total length of content
+     * @param   string      $rangeUnit  optional  range unit, defaults to "bytes"
      * @return  \stubbles\webapp\response\Status
      */
-    public function rangeNotSatisfiable($total, $rangeUnit = 'bytes')
+    public function rangeNotSatisfiable($total, string $rangeUnit = 'bytes'): self
     {
         $this->headers->add('Content-Range', $rangeUnit . ' */' . $total);
         return $this->fixateCode(416);
@@ -321,7 +321,7 @@ class Status
      *
      * @return  \stubbles\webapp\response\Status
      */
-    public function internalServerError()
+    public function internalServerError(): self
     {
         return $this->fixateCode(500);
     }
@@ -331,7 +331,7 @@ class Status
      *
      * @return  \stubbles\webapp\response\Status
      */
-    public function notImplemented()
+    public function notImplemented(): self
     {
         return $this->fixateCode(501);
     }
@@ -341,7 +341,7 @@ class Status
      *
      * @return  \stubbles\webapp\response\Status
      */
-    public function serviceUnavailable()
+    public function serviceUnavailable(): self
     {
         return $this->fixateCode(503);
     }
@@ -351,7 +351,7 @@ class Status
      *
      * @return  \stubbles\webapp\response\Status
      */
-    public function httpVersionNotSupported()
+    public function httpVersionNotSupported(): self
     {
         return $this->fixateCode(505);
     }
@@ -361,7 +361,7 @@ class Status
      *
      * @return  int
      */
-    public function code()
+    public function code(): int
     {
         return $this->code;
     }
@@ -371,7 +371,7 @@ class Status
      *
      * @return  bool
      */
-    public function isFixed()
+    public function isFixed(): bool
     {
         return $this->fixed;
     }
@@ -383,7 +383,7 @@ class Status
      * @param   string  $sapi         optional
      * @return  string
      */
-    public function line($httpVersion, $sapi = PHP_SAPI)
+    public function line($httpVersion, string $sapi = PHP_SAPI): string
     {
         if ('cgi' === $sapi) {
             return 'Status: ' . $this->code . ' ' . $this->reasonPhrase;
@@ -397,7 +397,7 @@ class Status
      *
      * @return  bool
      */
-    public function allowsPayload()
+    public function allowsPayload(): bool
     {
         return $this->allowsPayload;
     }

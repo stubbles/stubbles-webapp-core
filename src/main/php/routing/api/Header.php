@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -28,10 +29,10 @@ class Header implements \JsonSerializable
     /**
      * constructor
      *
-     * @param  int     $name         header name
+     * @param  string  $name         header name
      * @param  string  $description  description of header
      */
-    public function __construct($name, $description)
+    public function __construct(string $name, string $description)
     {
         $this->name        = $name;
         $this->description = $description;
@@ -40,10 +41,10 @@ class Header implements \JsonSerializable
     /**
      * returns header name
      *
-     * @return  int
+     * @return  string
      * @XmlAttribute(attributeName='name')
      */
-    public function name()
+    public function name(): string
     {
         return $this->name;
     }
@@ -54,7 +55,7 @@ class Header implements \JsonSerializable
      * @return  string
      * @XmlFragment(tagName='description')
      */
-    public function description()
+    public function description(): string
     {
         return $this->description;
     }
@@ -65,7 +66,7 @@ class Header implements \JsonSerializable
      * @return  array
      * @XmlIgnore
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return ['name' => $this->name, 'description' => $this->description];
     }

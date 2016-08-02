@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -25,28 +26,28 @@ interface User
      *
      * @return  string
      */
-    public function name();
+    public function name(): string;
 
     /**
      * first name of the user
      *
      * @return  string
      */
-    public function firstName();
+    public function firstName(): string;
 
     /**
      * last name of the user
      *
      * @return  string
      */
-    public function lastName();
+    public function lastName(): string;
 
     /**
      * mail address of the user
      *
      * @return  string
      */
-    public function mailAddress();
+    public function mailAddress(): string;
 
     /**
      * sets token for the user
@@ -54,7 +55,7 @@ interface User
      * @param   \stubbles\webapp\auth\Token  $token
      * @return  \stubbles\webapp\auth\User
      */
-    public function setToken(Token $token);
+    public function setToken(Token $token): self;
 
     /**
      * creates new token for the user with given token salt
@@ -65,12 +66,12 @@ interface User
      * @param  string  $tokenSalt
      * @return  \stubbles\webapp\auth\Token
      */
-    public function createToken($tokenSalt);
+    public function createToken(string $tokenSalt): Token;
 
     /**
      * returns token for the user
      *
-     * @return  \stubbles\webapp\auth\Token
+     * @return  \stubbles\webapp\auth\Token|null
      */
     public function token();
 }

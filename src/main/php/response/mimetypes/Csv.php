@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -38,7 +39,7 @@ class Csv extends MimeType
      * @param   char  $delimiter
      * @return  \stubbles\webapp\response\mimetypes\Csv
      */
-    public function changeDelimiterTo($delimiter)
+    public function changeDelimiterTo(string $delimiter): self
     {
         $this->delimiter = $delimiter;
         return $this;
@@ -50,7 +51,7 @@ class Csv extends MimeType
      * @param   char  $enclosure
      * @return  \stubbles\webapp\response\mimetypes\Csv
      */
-    public function changeEnclosureTo($enclosure)
+    public function changeEnclosureTo(string $enclosure): self
     {
         $this->enclosure = $enclosure;
         return $this;
@@ -61,7 +62,7 @@ class Csv extends MimeType
      *
      * @return  string
      */
-    protected function defaultName()
+    protected function defaultName(): string
     {
         return 'text/csv';
     }
@@ -73,7 +74,7 @@ class Csv extends MimeType
      * @param   \stubbles\streams\OutputStream  $out
      * @return  \stubbles\streams\OutputStream
      */
-    public function serialize($resource, OutputStream $out)
+    public function serialize($resource, OutputStream $out): OutputStream
     {
         if (is_scalar($resource) || $resource instanceof Error) {
             $out->writeLine((string) $resource);
@@ -129,7 +130,7 @@ class Csv extends MimeType
      * @param   resource  $memory
      * @return  string
      */
-    private function toCsvLine(array $elements, $memory)
+    private function toCsvLine(array $elements, $memory): string
     {
         ftruncate($memory, 0);
         rewind($memory);

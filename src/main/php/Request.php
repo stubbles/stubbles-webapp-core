@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -8,7 +9,13 @@
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp;
+use stubbles\input\ValueReader;
+use stubbles\input\ValueValidator;
+use stubbles\input\errors\ParamErrors;
+use stubbles\peer\http\HttpUri;
+use stubbles\streams\InputStream;
 use stubbles\webapp\auth\Identity;
+use stubbles\webapp\request\UserAgent;
 use stubbles\webapp\session\Session;
 /**
  * Interface for web applications requests.
@@ -29,14 +36,14 @@ interface Request extends \stubbles\input\Request
      * @since   4.2.0
      * @see     https://devcenter.heroku.com/articles/http-request-id
      */
-    public function id();
+    public function id(): string;
 
     /**
      * checks whether request was made using ssl
      *
      * @return  bool
      */
-    public function isSsl();
+    public function isSsl(): bool;
 
     /**
      * returns HTTP protocol version of request
@@ -87,7 +94,7 @@ interface Request extends \stubbles\input\Request
      * @return  \stubbles\webapp\request\UserAgent
      * @since   4.1.0
      */
-    public function userAgent($botSignatures = []);
+    public function userAgent(array $botSignatures = []): UserAgent;
 
     /**
      * returns the uri of the request
@@ -98,7 +105,7 @@ interface Request extends \stubbles\input\Request
      *
      * @return  \stubbles\peer\http\HttpUri
      */
-    public function uri();
+    public function uri(): HttpUri;
 
     /**
      * return a list of all header names registered in this request
@@ -106,7 +113,7 @@ interface Request extends \stubbles\input\Request
      * @return  string[]
      * @since   1.3.0
      */
-    public function headerNames();
+    public function headerNames(): array;
 
     /**
      * checks whether a request header is set
@@ -115,7 +122,7 @@ interface Request extends \stubbles\input\Request
      * @return  bool
      * @since   1.3.0
      */
-    public function hasHeader($headerName);
+    public function hasHeader(string $headerName): bool;
 
     /**
      * checks whether a request header or it's redirect equivalent is set
@@ -129,7 +136,7 @@ interface Request extends \stubbles\input\Request
      * @return  bool
      * @since   3.1.1
      */
-    public function hasRedirectHeader($headerName);
+    public function hasRedirectHeader(string $headerName): bool;
 
     /**
      * returns error collection for request headers
@@ -137,7 +144,7 @@ interface Request extends \stubbles\input\Request
      * @return  \stubbles\input\errors\ParamErrors
      * @since   1.3.0
      */
-    public function headerErrors();
+    public function headerErrors(): ParamErrors;
 
     /**
      * checks whether a request value from headers is valid or not
@@ -146,7 +153,7 @@ interface Request extends \stubbles\input\Request
      * @return  \stubbles\input\ValueValidator
      * @since   1.3.0
      */
-    public function validateHeader($headerName);
+    public function validateHeader(string $headerName): ValueValidator;
 
     /**
      * checks whether a request value from redirect headers is valid or not
@@ -160,7 +167,7 @@ interface Request extends \stubbles\input\Request
      * @return  \stubbles\input\ValueValidator
      * @since   3.1.0
      */
-    public function validateRedirectHeader($headerName);
+    public function validateRedirectHeader(string $headerName): ValueValidator;
 
     /**
      * returns request value from headers for filtering or validation
@@ -169,7 +176,7 @@ interface Request extends \stubbles\input\Request
      * @return  \stubbles\input\ValueReader
      * @since   1.3.0
      */
-    public function readHeader($headerName);
+    public function readHeader(string $headerName): ValueReader;
 
     /**
      * returns request value from headers for filtering or validation
@@ -183,7 +190,7 @@ interface Request extends \stubbles\input\Request
      * @return  \stubbles\input\ValueReader
      * @since   3.1.0
      */
-    public function readRedirectHeader($headerName);
+    public function readRedirectHeader(string $headerName): ValueReader;
 
     /**
      * return an array of all cookie names registered in this request
@@ -191,7 +198,7 @@ interface Request extends \stubbles\input\Request
      * @return  string[]
      * @since   1.3.0
      */
-    public function cookieNames();
+    public function cookieNames(): array;
 
     /**
      * checks whether a request cookie is set
@@ -200,7 +207,7 @@ interface Request extends \stubbles\input\Request
      * @return  bool
      * @since   1.3.0
      */
-    public function hasCookie($cookieName);
+    public function hasCookie(string $cookieName): bool;
 
     /**
      * returns error collection for request cookies
@@ -208,7 +215,7 @@ interface Request extends \stubbles\input\Request
      * @return  \stubbles\input\errors\ParamErrors
      * @since   1.3.0
      */
-    public function cookieErrors();
+    public function cookieErrors(): ParamErrors;
 
     /**
      * checks whether a request value from cookie is valid or not
@@ -217,7 +224,7 @@ interface Request extends \stubbles\input\Request
      * @return  \stubbles\input\ValueValidator
      * @since   1.3.0
      */
-    public function validateCookie($cookieName);
+    public function validateCookie(string $cookieName): ValueValidator;
 
     /**
      * returns request value from cookies for filtering or validation
@@ -226,7 +233,7 @@ interface Request extends \stubbles\input\Request
      * @return  \stubbles\input\ValueReader
      * @since   1.3.0
      */
-    public function readCookie($cookieName);
+    public function readCookie(string $cookieName): ValueReader;
 
     /**
      * returns an input stream which allows to read the request body
@@ -237,7 +244,7 @@ interface Request extends \stubbles\input\Request
      * @since   6.0.0
      * @return  \stubbles\streams\InputStream
      */
-    public function body();
+    public function body(): InputStream;
 
     /**
      * attaches session to request
@@ -247,7 +254,7 @@ interface Request extends \stubbles\input\Request
      * @return  \stubbles\webapp\session\Session
      * @since   6.0.0
      */
-    public function attachSession(Session $session);
+    public function attachSession(Session $session): Session;
 
     /**
      * checks if a session is attached to the request
@@ -255,7 +262,7 @@ interface Request extends \stubbles\input\Request
      * @return  bool
      * @since   6.0.0
      */
-    public function hasSessionAttached();
+    public function hasSessionAttached(): bool;
 
     /**
      * returns attached session
@@ -272,7 +279,7 @@ interface Request extends \stubbles\input\Request
      * @return  \stubbles\webapp\Request
      * @since   6.0.0
      */
-    public function associate(Identity $identity);
+    public function associate(Identity $identity): self;
 
     /**
      * checks whether request was issued by a confirmed identity
@@ -280,7 +287,7 @@ interface Request extends \stubbles\input\Request
      * @return  bool
      * @since   6.0.0
      */
-    public function hasAssociatedIdentity();
+    public function hasAssociatedIdentity(): bool;
 
     /**
      * returns the identity associated with this request

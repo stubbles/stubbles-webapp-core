@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -26,8 +27,12 @@ class SessionBasedHtmlFilePassThrough extends HtmlFilePassThrough
      * @param   string                    $routeName  name of the route
      * @return  string
      */
-    protected function modifyContent(Request $request, Response $response, $content, $routeName)
-    {
+    protected function modifyContent(
+            Request $request,
+            Response $response,
+            string $content,
+            string $routeName
+    ): string {
         if ($request->hasSessionAttached()) {
             $request->attachedSession()->putValue('stubbles.webapp.lastPage', $routeName);
         }

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -41,7 +42,7 @@ class Roles implements \Countable, \IteratorAggregate
      *
      * @return  \stubbles\webapp\auth\Roles
      */
-    public static function none()
+    public static function none(): self
     {
         return new self([]);
     }
@@ -52,7 +53,7 @@ class Roles implements \Countable, \IteratorAggregate
      * @param   string  $roleName
      * @return  bool
      */
-    public function contain($roleName)
+    public function contain(string $roleName): bool
     {
         return isset($this->roles[$roleName]);
     }
@@ -62,7 +63,7 @@ class Roles implements \Countable, \IteratorAggregate
      *
      * @return  int
      */
-    public function count()
+    public function count(): int
     {
         return count($this->roles);
     }
@@ -72,7 +73,7 @@ class Roles implements \Countable, \IteratorAggregate
      *
      * @return  \ArrayIterator
      */
-    public function getIterator()
+    public function getIterator(): \Traversable
     {
         return new \ArrayIterator(array_flip($this->roles));
     }

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -36,7 +37,7 @@ class ArraySessionStorage implements SessionStorage
      *
      * @return  \stubbles\webapp\session\storage\SessionStorage
      */
-    public function clear()
+    public function clear(): SessionStorage
     {
         $this->data = [];
         return $this;
@@ -48,7 +49,7 @@ class ArraySessionStorage implements SessionStorage
      * @param   string  $key  key where value is stored under
      * @return  bool
      */
-    public function hasValue($key)
+    public function hasValue(string $key): bool
     {
         return isset($this->data[$key]);
     }
@@ -59,13 +60,9 @@ class ArraySessionStorage implements SessionStorage
      * @param   string  $key  key where value is stored under
      * @return  mixed
      */
-    public function value($key)
+    public function value(string $key)
     {
-        if (isset($this->data[$key])) {
-            return $this->data[$key];
-        }
-
-        return null;
+        return $this->data[$key] ?? null;
     }
 
     /**
@@ -75,7 +72,7 @@ class ArraySessionStorage implements SessionStorage
      * @param   mixed   $value  data to store
      * @return  \stubbles\webapp\session\storage\SessionStorage
      */
-    public function putValue($key, $value)
+    public function putValue(string $key, $value): SessionStorage
     {
         $this->data[$key] = $value;
         return $this;
@@ -87,7 +84,7 @@ class ArraySessionStorage implements SessionStorage
      * @param   string  $key  key where value is stored under
      * @return  \stubbles\webapp\session\storage\SessionStorage
      */
-    public function removeValue($key)
+    public function removeValue(string $key): SessionStorage
     {
         unset($this->data[$key]);
         return $this;
@@ -98,7 +95,7 @@ class ArraySessionStorage implements SessionStorage
      *
      * @return  string[]
      */
-    public function valueKeys()
+    public function valueKeys(): array
     {
         return array_keys($this->data);
     }

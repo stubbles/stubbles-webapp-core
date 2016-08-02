@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -56,9 +57,10 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
      * @param   string  $storageFingerprint
      * @return  \stubbles\webapp\session\WebSession
      */
-    private function createWebSession($givenFingerprint = 'aFingerprint',
-                                      $storageFingerprint = 'aFingerprint')
-    {
+    private function createWebSession(
+            string $givenFingerprint = 'aFingerprint',
+            $storageFingerprint = 'aFingerprint'
+    ): WebSession {
         $this->sessionStorage->mapCalls(
                 ['hasValue' => null !== $storageFingerprint,
                  'value'    => $storageFingerprint

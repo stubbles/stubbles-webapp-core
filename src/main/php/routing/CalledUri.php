@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -37,7 +38,7 @@ class CalledUri
      * @param   string                              $requestMethod
      * @throws  \InvalidArgumentException
      */
-    public function __construct($requestUri, $requestMethod)
+    public function __construct($requestUri, string $requestMethod)
     {
         if (empty($requestMethod)) {
             throw new \InvalidArgumentException('Request method can not be empty');
@@ -55,13 +56,13 @@ class CalledUri
      * @return  \stubbles\webapp\routing\CalledUri
      * @since   4.0.0
      */
-    public static function castFrom($requestUri, $requestMethod)
+    public static function castFrom($requestUri, string $requestMethod = null)
     {
         if ($requestUri instanceof self) {
             return $requestUri;
         }
 
-        return new self($requestUri, $requestMethod);
+        return new self($requestUri, (string) $requestMethod);
     }
 
     /**
@@ -70,7 +71,7 @@ class CalledUri
      * @return  string
      * @since   4.0.0
      */
-    public function method()
+    public function method(): string
     {
         return $this->method;
     }
@@ -81,7 +82,7 @@ class CalledUri
      * @param   string  $method
      * @return  bool
      */
-    public function methodEquals($method)
+    public function methodEquals(string $method = null): bool
     {
         if (empty($method)) {
             return true;
@@ -96,7 +97,7 @@ class CalledUri
      * @param   string  $expectedPath
      * @return  bool
      */
-    public function satisfiesPath($expectedPath)
+    public function satisfiesPath(string $expectedPath = null): bool
     {
         if (empty($expectedPath)) {
             return true;
@@ -117,7 +118,7 @@ class CalledUri
      * @return  bool
      * @since   3.4.0
      */
-    public function satisfies($method, $expectedPath)
+    public function satisfies(string $method = null, string $expectedPath = null): bool
     {
         return $this->methodEquals($method) && $this->satisfiesPath($expectedPath);
     }
@@ -129,7 +130,7 @@ class CalledUri
      * @return  \stubbles\webapp\UriPath
      * @since   4.0.0
      */
-    public function path($configuredPath)
+    public function path(string $configuredPath): UriPath
     {
         return new UriPath($configuredPath, $this->uri->path());
     }
@@ -140,7 +141,7 @@ class CalledUri
      * @return  bool
      * @since   2.0.0
      */
-    public function isHttps()
+    public function isHttps(): bool
     {
         return $this->uri->isHttps();
     }
@@ -151,7 +152,7 @@ class CalledUri
      * @return  \stubbles\peer\http\HttpUri
      * @since   2.0.0
      */
-    public function toHttp()
+    public function toHttp(): HttpUri
     {
         return $this->uri->toHttp();
     }
@@ -162,7 +163,7 @@ class CalledUri
      * @return  \stubbles\peer\http\HttpUri
      * @since   2.0.0
      */
-    public function toHttps()
+    public function toHttps(): HttpUri
     {
         return $this->uri->toHttps();
     }
@@ -173,7 +174,7 @@ class CalledUri
      * @return  string
      * @since   2.0.0
      */
-    public function __toString()
+    public function __toString(): string
     {
         return (string) $this->uri;
     }

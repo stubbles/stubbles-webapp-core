@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -52,7 +53,7 @@ class ResourceOptions extends AbstractResource
      *
      * @return  bool
      */
-    public function requiresHttps()
+    public function requiresHttps(): bool
     {
         return false;
     }

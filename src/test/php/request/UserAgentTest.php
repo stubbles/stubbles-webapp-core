@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -43,12 +44,7 @@ class UserAgentTest extends \PHPUnit_Framework_TestCase
         assertTrue(annotationsOf($this->userAgent)->contain('XmlTag'));
     }
 
-    /**
-     * data provider
-     *
-     * @return  array
-     */
-    public function getXmlRelatedMethodAnnotations()
+    public function getXmlRelatedMethodAnnotations(): array
     {
         return [['name', 'XmlAttribute'],
                 ['isBot', 'XmlAttribute'],
@@ -61,7 +57,7 @@ class UserAgentTest extends \PHPUnit_Framework_TestCase
      * @test
      * @dataProvider  getXmlRelatedMethodAnnotations
      */
-    public function xmlAnnotationsPresentOnMethods($method, $annotation)
+    public function xmlAnnotationsPresentOnMethods(string $method, string $annotation)
     {
         assertTrue(
                 annotationsOf($this->userAgent, $method)->contain($annotation)
@@ -84,10 +80,8 @@ class UserAgentTest extends \PHPUnit_Framework_TestCase
         assert((string) $this->userAgent, equals('name'));
     }
 
-    /**
-     * @return  array
-     */
-    public function botsRecognizedByDefault()
+
+    public function botsRecognizedByDefault(): array
     {
         return [
             ['Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'],
@@ -102,12 +96,11 @@ class UserAgentTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param  string  $userAgentValue
      * @since  4.1.0
      * @test
      * @dataProvider  botsRecognizedByDefault
      */
-    public function recognizesSomeBotsByDefault($userAgentValue)
+    public function recognizesSomeBotsByDefault(string $userAgentValue)
     {
         $userAgent = new UserAgent($userAgentValue, true);
         assertTrue($userAgent->isBot());

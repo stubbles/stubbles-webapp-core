@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -146,12 +147,11 @@ class WebBoundSessionIdTest extends \PHPUnit_Framework_TestCase
      */
     public function usesCookieSessionIdIfRequestCookieValid()
     {
-        $this->request->mapCalls(
-                ['hasParam'   => false,
-                 'hasCookie'  => true,
-                 'readCookie' => ValueReader::forValue('abcdefghij1234567890abcdefghij12')
-                ]
-        );
+        $this->request->mapCalls([
+                'hasParam'   => false,
+                'hasCookie'  => true,
+                'readCookie' => ValueReader::forValue('abcdefghij1234567890abcdefghij12')
+        ]);
         assert(
                 (string) $this->webBoundSessionId,
                 equals('abcdefghij1234567890abcdefghij12')
@@ -163,7 +163,7 @@ class WebBoundSessionIdTest extends \PHPUnit_Framework_TestCase
      */
     public function regenerateChangesSessionId()
     {
-        $this->request->mapCalls(['hasParam' => false]);
+        $this->request->mapCalls(['hasParam' => false, 'hasCookie' => false]);
         $previous = (string) $this->webBoundSessionId;
         assert(
                 (string) $this->webBoundSessionId->regenerate(),

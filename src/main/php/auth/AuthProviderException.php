@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -31,7 +32,7 @@ abstract class AuthProviderException extends \Exception
      * @param  \Exception  $cause
      * @param  int         $code
      */
-    public function __construct($message, \Exception $cause = null, $code = 0)
+    public function __construct(string $message, \Exception $cause = null, $code = 0)
     {
         parent::__construct($message, $code, $cause);
 

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -67,7 +68,6 @@ class AddAccessControlAllowOriginHeaderTest extends \PHPUnit_Framework_TestCase
      * creates instance for test
      *
      * @param   string  $config
-     * @return  \stubbles\webapp\interceptor\AddAccessControlAllowOriginHeader
      */
     private function apply($config)
     {
@@ -75,7 +75,7 @@ class AddAccessControlAllowOriginHeaderTest extends \PHPUnit_Framework_TestCase
         $foo->postProcess($this->request, $this->response);
     }
 
-    public function emptyConfigs()
+    public function emptyConfigs(): array
     {
         return [[null], [''], [[]]];
     }
@@ -86,6 +86,7 @@ class AddAccessControlAllowOriginHeaderTest extends \PHPUnit_Framework_TestCase
      */
     public function doesNotAddHeaderWhenNoAllowedOriginHostConfigured($emptyConfig)
     {
+        $this->request->mapCalls(['hasHeader' => false]);
         $this->apply($emptyConfig);
         verify($this->response, 'addHeader')->wasNeverCalled();
     }
@@ -105,11 +106,11 @@ class AddAccessControlAllowOriginHeaderTest extends \PHPUnit_Framework_TestCase
      */
     public function doesNotAddHeaderWhenOriginFromRequestDoesNotMatchAllowedOriginHosts()
     {
-        $this->request->mapCalls(
-                ['hasHeader'  => true,
-                 'readHeader' => ValueReader::forValue('http://example.net')
-                ]
-        );
+        $this->request->mapCalls([
+                'hasHeader'  => true,
+                'readHeader' => ValueReader::forValue('http://example.net')
+
+        ]);
         $this->apply('^http://[a-zA-Z0-9-\.]+example\.com(:[0-9]{4})?$');
         verify($this->response, 'addHeader')->wasNeverCalled();
     }
@@ -119,19 +120,18 @@ class AddAccessControlAllowOriginHeaderTest extends \PHPUnit_Framework_TestCase
      */
     public function addsHeaderWhenOriginFromRequestIsAllowed()
     {
-        $this->request->mapCalls(
-                ['hasHeader'  => true,
-                 'readHeader' => ValueReader::forValue('http://foo.example.com:9039')
-                ]
-        );
+        $this->request->mapCalls([
+                'hasHeader'  => true,
+                'readHeader' => ValueReader::forValue('http://foo.example.com:9039')
+
+        ]);
         $this->apply(
                 '^http://[a-zA-Z0-9-\.]+example\.net(:[0-9]{4})?$'
                 . '|^http://[a-zA-Z0-9-\.]+example\.com(:[0-9]{4})?$'
         );
-        verify($this->response, 'addHeader')
-                ->received(
-                        'Access-Control-Allow-Origin',
-                        'http://foo.example.com:9039'
+        verify($this->response, 'addHeader')->received(
+                'Access-Control-Allow-Origin',
+                'http://foo.example.com:9039'
         );
     }
 }

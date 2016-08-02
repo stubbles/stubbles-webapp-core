@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -80,25 +81,15 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
         $_COOKIE = $this->globals['COOKIE'];
     }
 
-    /**
-     * creates instance to test
-     *
-     * @param   array  $params   optional
-     * @param   array  $headers  optional
-     * @param   array  $cookies  optional
-     * @return  WebRequest
-     */
-    private function createBaseWebRequest(array $params = [], array $headers = [], array $cookies = [])
-    {
+    private function createBaseWebRequest(
+            array $params  = [],
+            array $headers = [],
+            array $cookies = []
+    ): WebRequest {
         return new WebRequest($params, $headers, $cookies);
     }
 
-    /**
-     * helper method to fill globals with data
-     *
-     * @param  string  $requestMethod
-     */
-    private function fillGlobals($requestMethod = 'GET')
+    private function fillGlobals(string $requestMethod = 'GET')
     {
         $_GET    = ['foo' => 'bar', 'roland' => 'TB-303'];
         $_POST   = ['baz' => 'blubb', 'donald' => '313'];
@@ -206,10 +197,7 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
         );
     }
 
-    /**
-     * @return  array
-     */
-    public function protocolVersions()
+    public function protocolVersions(): array
     {
         return [
             ['HTTP/0.9', '0.9'],
@@ -226,7 +214,7 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
      * @test
      * @dataProvider  protocolVersions
      */
-    public function reportsParsedProtocolVersion($protocol)
+    public function reportsParsedProtocolVersion(string $protocol)
     {
          assert(
                 $this->createBaseWebRequest([], ['SERVER_PROTOCOL' => $protocol])
@@ -897,10 +885,7 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
         assert($request->id(), equals($request->id()));
     }
 
-    /**
-     * @return  array
-     */
-    public function invalidRequestIdValues()
+    public function invalidRequestIdValues(): array
     {
         return [
             ['too-short'],
@@ -916,7 +901,7 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
      * @dataProvider  invalidRequestIdValues
      * @since  4.2.0
      */
-    public function generatesIdIfRequestContainsInvalidValue($invalidValue)
+    public function generatesIdIfRequestContainsInvalidValue(string $invalidValue)
     {
         assert(
                 $this->createBaseWebRequest([], ['HTTP_X_REQUEST_ID' => $invalidValue])->id(),
@@ -924,10 +909,7 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
         );
     }
 
-    /**
-     * @return  array
-     */
-    public function validRequestIdValues()
+    public function validRequestIdValues(): array
     {
         return [
             [str_pad('minimum-size', 20, '-')],
@@ -942,7 +924,7 @@ class WebRequestTest extends \PHPUnit_Framework_TestCase
      * @dataProvider  validRequestIdValues
      * @since  4.2.0
      */
-    public function returnsValidValueFromHeader($validValue)
+    public function returnsValidValueFromHeader(string $validValue)
     {
         assert(
                 $this->createBaseWebRequest([], ['HTTP_X_REQUEST_ID' => $validValue])->id(),

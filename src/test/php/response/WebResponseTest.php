@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -57,8 +58,11 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      * @param   string              $sapi           optional  current php sapi, defaults to value of PHP_SAPI constant
      * @return  WebResponse
      */
-    private function createResponse($httpVersion = HttpVersion::HTTP_1_1, $requestMethod = Http::GET, $sapi = null)
-    {
+    private function createResponse(
+            $httpVersion = HttpVersion::HTTP_1_1,
+            $requestMethod = Http::GET,
+            string $sapi = PHP_SAPI
+    ): WebResponse {
         $request = NewInstance::of(Request::class)
                 ->mapCalls(
                         ['id'              => 'example-request-id-foo',
@@ -184,18 +188,10 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
         );
     }
 
-    /**
-     * creates mock cookie
-     *
-     * @param   string  $value  optional  cookie value
-     * @return  \stubbles\webapp\response\Cookie
-     */
-    protected function createCookie($value = null)
+    protected function createCookie($value = null): Cookie
     {
-        return NewInstance::of(
-                Cookie::class,
-                ['foo', $value]
-        )->mapCalls(['send' => false]); // disable actual sending of cookie
+        return NewInstance::of(Cookie::class, ['foo', $value])
+                ->mapCalls(['send' => false]); // disable actual sending of cookie
     }
 
     /**
@@ -542,10 +538,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
         assertTrue($this->response->isFixed());
     }
 
-    /**
-     * @return  array
-     */
-    public function unsupportedHttpVersions()
+    public function unsupportedHttpVersions(): array
     {
         return [
             [HttpVersion::fromString('HTTP/0.9')],
@@ -555,7 +548,6 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @since  4.0.0
-     * @param  HttpVersion  $unsupportedHttpVersion
      * @test
      * @dataProvider  unsupportedHttpVersions
      */

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -42,9 +43,6 @@ class NativeSessionStorageTest extends \PHPUnit_Framework_TestCase
         $this->nativeSessionStorage = new NativeSessionStorage('foo');
     }
 
-    /**
-     * ensure no session is running
-     */
     private function removeExistingSession()
     {
         if (session_status() === PHP_SESSION_ACTIVE) {

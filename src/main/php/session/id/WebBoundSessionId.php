@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -57,7 +58,7 @@ class WebBoundSessionId implements SessionId
      * @param  \stubbles\webapp\Response  $response
      * @param  string                     $sessionName
      */
-    public function __construct(Request $request, Response $response, $sessionName)
+    public function __construct(Request $request, Response $response, string $sessionName)
     {
         $this->request     = $request;
         $this->response    = $response;
@@ -69,7 +70,7 @@ class WebBoundSessionId implements SessionId
      *
      * @return  string
      */
-    public function name()
+    public function name(): string
     {
         return $this->sessionName;
     }
@@ -79,7 +80,7 @@ class WebBoundSessionId implements SessionId
      *
      * @return  string
      */
-    public function __toString()
+    public function __toString(): string
     {
         if (null === $this->id) {
             $this->id = $this->read();
@@ -94,7 +95,7 @@ class WebBoundSessionId implements SessionId
     /**
      * reads session id
      *
-     * @return  string
+     * @return  string|null
      */
     private function read()
     {
@@ -112,9 +113,9 @@ class WebBoundSessionId implements SessionId
      *
      * @return  string
      */
-    private function create()
+    private function create(): string
     {
-        return md5(uniqid(rand(), true));
+        return md5(uniqid((string) rand(), true));
     }
 
     /**
@@ -122,7 +123,7 @@ class WebBoundSessionId implements SessionId
      *
      * @return  \stubbles\webapp\session\id\SessionId
      */
-    public function regenerate()
+    public function regenerate(): SessionId
     {
         $this->id = $this->create();
         $this->response->addCookie(
@@ -136,7 +137,7 @@ class WebBoundSessionId implements SessionId
      *
      * @return  \stubbles\webapp\session\id\SessionId
      */
-    public function invalidate()
+    public function invalidate(): SessionId
     {
         $this->response->removeCookie($this->sessionName);
         return $this;

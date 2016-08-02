@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -86,7 +87,7 @@ class WebResponse implements Response
      * @param  \stubbles\webapp\response\mimetypes\MimeType  $mimeType  optional  mime type for response body
      * @param  string                                        $sapi      optional  current php sapi, defaults to value of PHP_SAPI constant
      */
-    public function __construct(Request $request, MimeType $mimeType = null, $sapi = PHP_SAPI)
+    public function __construct(Request $request, MimeType $mimeType = null, string $sapi = PHP_SAPI)
     {
         $this->request  = $request;
         $this->mimeType = null !== $mimeType ? $mimeType : new PassThrough();
@@ -106,7 +107,7 @@ class WebResponse implements Response
      * @param   \stubbles\webapp\response\mimetypes\MimeType  $mimeType
      * @return  \stubbles\webapp\response\WebResponse
      */
-    public function adjustMimeType(MimeType $mimeType)
+    public function adjustMimeType(MimeType $mimeType): self
     {
         $this->mimeType = $mimeType;
         return $this;
@@ -117,7 +118,7 @@ class WebResponse implements Response
      *
      * @return  \stubbles\webapp\response\mimetypes\MimeType
      */
-    public function mimeType()
+    public function mimeType(): MimeType
     {
         return $this->mimeType;
     }
@@ -132,7 +133,7 @@ class WebResponse implements Response
      * @param   string  $reasonPhrase  optional
      * @return  \stubbles\webapp\Response
      */
-    public function setStatusCode($statusCode, $reasonPhrase = null)
+    public function setStatusCode(int $statusCode, string $reasonPhrase = null): Response
     {
         $this->status->setCode($statusCode, $reasonPhrase);
         return $this;
@@ -144,7 +145,7 @@ class WebResponse implements Response
      * @return  int
      * @since   4.0.0
      */
-    public function statusCode()
+    public function statusCode(): int
     {
         return $this->status->code();
     }
@@ -152,10 +153,10 @@ class WebResponse implements Response
     /**
      * provide direct access to set a status code
      *
-     * @return  \stubbles\webapp\Status
+     * @return  \stubbles\webapp\response\Status
      * @since   5.1.0
      */
-    public function status()
+    public function status(): Status
     {
         return $this->status;
     }
@@ -167,7 +168,7 @@ class WebResponse implements Response
      * @param   string  $value  the value of the header
      * @return  \stubbles\webapp\Response
      */
-    public function addHeader($name, $value)
+    public function addHeader(string $name, string $value): Response
     {
         $this->headers->add($name, $value);
         return $this;
@@ -179,7 +180,7 @@ class WebResponse implements Response
      * @return  \stubbles\webapp\response\Headers
      * @since   4.0.0
      */
-    public function headers()
+    public function headers(): Headers
     {
         return $this->headers;
     }
@@ -192,7 +193,7 @@ class WebResponse implements Response
      * @return  bool
      * @since   4.0.0
      */
-    public function containsHeader($name, $value = null)
+    public function containsHeader(string $name, string $value = null): bool
     {
         if ($this->headers->contain($name)) {
             if (null !== $value) {
@@ -211,7 +212,7 @@ class WebResponse implements Response
      * @param   \stubbles\webapp\response\Cookie  $cookie  the cookie to set
      * @return  \stubbles\webapp\Response
      */
-    public function addCookie(Cookie $cookie)
+    public function addCookie(Cookie $cookie): Response
     {
         $this->cookies[$cookie->name()] = $cookie;
         return $this;
@@ -224,7 +225,7 @@ class WebResponse implements Response
      * @return  \stubbles\webapp\Response
      * @since   2.0.0
      */
-    public function removeCookie($name)
+    public function removeCookie(string $name): Response
     {
         $this->addCookie(
                 Cookie::create($name, 'remove')->expiringAt(time() - 86400)
@@ -240,7 +241,7 @@ class WebResponse implements Response
      * @return  bool
      * @since   4.0.0
      */
-    public function containsCookie($name, $value = null)
+    public function containsCookie(string $name, string $value = null): bool
     {
         if (isset($this->cookies[$name])) {
             if (null !== $value) {
@@ -259,7 +260,7 @@ class WebResponse implements Response
      * @param   mixed  $resource
      * @return  \stubbles\webapp\Response
      */
-    public function write($resource)
+    public function write($resource): Response
     {
         $this->resource = $resource;
         return $this;
@@ -279,7 +280,7 @@ class WebResponse implements Response
      * @return  bool
      * @since   3.1.0
      */
-    public function isFixed()
+    public function isFixed(): bool
     {
         return $this->status->isFixed();
     }
@@ -293,7 +294,7 @@ class WebResponse implements Response
      * @param   int                                 $statusCode  HTTP status code to redirect with (301, 302, ...)
      * @since   1.3.0
      */
-    public function redirect($uri, $statusCode = 302)
+    public function redirect($uri, int $statusCode = 302)
     {
         $this->status->redirect($uri, $statusCode);
     }
@@ -304,7 +305,7 @@ class WebResponse implements Response
      * @return  \stubbles\webapp\response\Error
      * @since   2.0.0
      */
-    public function forbidden()
+    public function forbidden(): Error
     {
         $this->status->forbidden();
         return Error::forbidden();
@@ -316,7 +317,7 @@ class WebResponse implements Response
      * @return  \stubbles\webapp\response\Error
      * @since   2.0.0
      */
-    public function notFound()
+    public function notFound(): Error
     {
         $this->status->notFound();
         return Error::notFound();
@@ -330,7 +331,7 @@ class WebResponse implements Response
      * @return  \stubbles\webapp\response\Error
      * @since   2.0.0
      */
-    public function methodNotAllowed($requestMethod, array $allowedMethods)
+    public function methodNotAllowed(string $requestMethod, array $allowedMethods): Error
     {
         $this->status->methodNotAllowed($allowedMethods);
         return Error::methodNotAllowed($requestMethod, $allowedMethods);
@@ -354,7 +355,7 @@ class WebResponse implements Response
      * @return  \stubbles\webapp\response\Error
      * @since   2.0.0
      */
-    public function internalServerError($error)
+    public function internalServerError($error): Error
     {
         $this->status->internalServerError();
         return Error::internalServerError($error);
@@ -385,7 +386,7 @@ class WebResponse implements Response
      * created in such a case.
      *
      * @param   \stubbles\streams\OutputStream  $out  optional  where to write response body to
-     * @return  \stubbles\streams\OutputStream
+     * @return  \stubbles\streams\OutputStream|null
      */
     public function send(OutputStream $out = null)
     {
@@ -407,7 +408,7 @@ class WebResponse implements Response
      * @return  bool
      * @since   4.0.0
      */
-    protected function requestAllowsBody()
+    protected function requestAllowsBody(): bool
     {
         return Http::HEAD !== $this->request->method();
     }
@@ -417,7 +418,7 @@ class WebResponse implements Response
      *
      * @return  \stubbles\webapp\Response
      */
-    private function sendHead()
+    private function sendHead(): Response
     {
         $this->header($this->status->line($this->version, $this->sapi));
         foreach ($this->headers as $name => $value) {
@@ -441,7 +442,7 @@ class WebResponse implements Response
      *
      * @param  string  $header
      */
-    protected function header($header)
+    protected function header(string $header)
     {
         header($header);
     }

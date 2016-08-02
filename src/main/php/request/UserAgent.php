@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -55,7 +56,7 @@ class UserAgent
      * @param  bool      $acceptsCookies  whether user agent accepts cookies or not
      * @param  string[]  $botSignatures   optional  additional list of bot user agent signatures
      */
-    public function __construct($name, $acceptsCookies, $botSignatures = [])
+    public function __construct($name, bool $acceptsCookies, array $botSignatures = [])
     {
         $this->name           = $name;
         $this->acceptsCookies = $acceptsCookies;
@@ -67,7 +68,7 @@ class UserAgent
      *
      * @XmlAttribute(attributeName='name')
      * @api
-     * @return  string
+     * @return  string|null
      */
     public function name()
     {
@@ -81,7 +82,7 @@ class UserAgent
      * @api
      * @return  bool
      */
-    public function isBot()
+    public function isBot(): bool
     {
         if (null === $this->isBot) {
             $this->isBot = false;
@@ -105,7 +106,7 @@ class UserAgent
      * @since   2.0.0
      * @return  bool
      */
-    public function acceptsCookies()
+    public function acceptsCookies(): bool
     {
         return $this->acceptsCookies;
     }
@@ -116,8 +117,8 @@ class UserAgent
      * @XmlIgnore
      * @return  string
      */
-    public function __toString()
+    public function __toString(): string
     {
-        return $this->name;
+        return (string) $this->name;
     }
 }

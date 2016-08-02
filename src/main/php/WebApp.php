@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -14,6 +15,7 @@ use stubbles\ioc\Injector;
 use stubbles\peer\MalformedUri;
 use stubbles\webapp\interceptor\AddAccessControlAllowOriginHeader;
 use stubbles\webapp\request\WebRequest;
+use stubbles\webapp\response\SendableResponse;
 use stubbles\webapp\response\WebResponse;
 use stubbles\webapp\routing\UriResource;
 use stubbles\webapp\routing\Routing;
@@ -53,7 +55,7 @@ abstract class WebApp extends App
      *
      * @return  \stubbles\webapp\response\SendableResponse
      */
-    public function run()
+    public function run(): SendableResponse
     {
         $request  = WebRequest::fromRawSource();
         $response = new WebResponse($request);
@@ -130,7 +132,7 @@ abstract class WebApp extends App
      * @param   \stubbles\webapp\routing\UriResource  $uriResource
      * @return  bool
      */
-    protected function switchToHttps(Request $request, UriResource $uriResource)
+    protected function switchToHttps(Request $request, UriResource $uriResource): bool
     {
         return !$request->isSsl() && $uriResource->requiresHttps();
     }
@@ -148,7 +150,7 @@ abstract class WebApp extends App
      * @return  string
      * @since   3.4.0
      */
-    protected static function addAccessControlAllowOriginHeaderClass()
+    protected static function addAccessControlAllowOriginHeaderClass(): string
     {
         return AddAccessControlAllowOriginHeader::class;
     }

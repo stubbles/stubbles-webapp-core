@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -55,7 +56,7 @@ class Resource implements \JsonSerializable
     /**
      * constructor
      *
-     * @param  string                                       $name            name of resource
+     * @param  string|null                                  name            name of resource
      * @param  string[]                                     $requestMethods  list of possible request methods
      * @param  \stubbles\peer\http\HttpUri                  $selfUri         uri under which resource is available
      * @param  string[]                                     $mimeTypes       list of supported mime types
@@ -81,7 +82,7 @@ class Resource implements \JsonSerializable
     /**
      * returns name of resource
      *
-     * @return  string
+     * @return  string|null
      * @XmlAttribute(attributeName='name')
      */
     public function name()
@@ -94,7 +95,7 @@ class Resource implements \JsonSerializable
      *
      * @return  string[]
      */
-    public function requestMethods()
+    public function requestMethods(): array
     {
         return $this->requestMethods;
     }
@@ -105,7 +106,7 @@ class Resource implements \JsonSerializable
      * @return  bool
      * @XmlIgnore
      */
-    public function hasDescription()
+    public function hasDescription(): bool
     {
         return null !== $this->annotations->description();
     }
@@ -128,7 +129,7 @@ class Resource implements \JsonSerializable
      * @param   string  $uri  actual uri
      * @return  \stubbles\webapp\routing\api\Link
      */
-    public function addLink($rel, $uri)
+    public function addLink(string $rel, $uri): Link
     {
         return $this->links->add($rel, $uri);
     }
@@ -139,7 +140,7 @@ class Resource implements \JsonSerializable
      * @return  \stubbles\webapp\routing\api\Links
      * @XmlTag(tagName='links')
      */
-    public function links()
+    public function links(): Links
     {
         return $this->links;
     }
@@ -150,7 +151,7 @@ class Resource implements \JsonSerializable
      * @return  bool
      * @XmlIgnore
      */
-    public function hasMimeTypes()
+    public function hasMimeTypes(): bool
     {
         return count($this->mimeTypes) > 0;
     }
@@ -161,7 +162,7 @@ class Resource implements \JsonSerializable
      * @return  string[]
      * @XmlTag(tagName='produces', elementTagName='mimetype')
      */
-    public function mimeTypes()
+    public function mimeTypes(): array
     {
         return $this->mimeTypes;
     }
@@ -172,7 +173,7 @@ class Resource implements \JsonSerializable
      * @return  bool
      * @XmlIgnore
      */
-    public function providesStatusCodes()
+    public function providesStatusCodes(): bool
     {
         return $this->annotations->containStatusCodes();
     }
@@ -183,7 +184,7 @@ class Resource implements \JsonSerializable
      * @return  \stubbles\webapp\routing\api\Status[]
      * @XmlTag(tagName='responses')
      */
-    public function statusCodes()
+    public function statusCodes(): array
     {
         return $this->annotations->statusCodes();
     }
@@ -194,7 +195,7 @@ class Resource implements \JsonSerializable
      * @return  bool
      * @XmlIgnore
      */
-    public function hasHeaders()
+    public function hasHeaders(): bool
     {
         return $this->annotations->containHeaders();
     }
@@ -205,7 +206,7 @@ class Resource implements \JsonSerializable
      * @return  \stubbles\webapp\routing\api\Header[]
      * @XmlTag(tagName='headers')
      */
-    public function headers()
+    public function headers(): array
     {
         return $this->annotations->headers();
     }
@@ -216,7 +217,7 @@ class Resource implements \JsonSerializable
      * @return  bool
      * @XmlIgnore
      */
-    public function hasParameters()
+    public function hasParameters(): bool
     {
         return $this->annotations->containParameters();
     }
@@ -227,7 +228,7 @@ class Resource implements \JsonSerializable
      * @return  \stubbles\webapp\routing\api\Parameter[]
      * @XmlTag(tagName='parameters')
      */
-    public function parameters()
+    public function parameters(): array
     {
         return $this->annotations->parameters();
     }
@@ -238,7 +239,7 @@ class Resource implements \JsonSerializable
      * @return  \stubbles\webapp\auth\AuthConstraint
      * @XmlTag(tagName='auth')
      */
-    public function authConstraint()
+    public function authConstraint(): AuthConstraint
     {
         return $this->authConstraint;
     }
@@ -249,7 +250,7 @@ class Resource implements \JsonSerializable
      * @return  array
      * @XmlIgnore
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return [
                 'name'        => $this->name,
@@ -264,4 +265,3 @@ class Resource implements \JsonSerializable
         ];
     }
 }
-

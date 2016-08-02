@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -20,10 +21,7 @@ use function bovigo\assert\predicate\isEmpty;
  */
 class ToArray
 {
-    /**
-     * @return  array
-     */
-    public function toArray()
+    public function toArray(): array
     {
         return ['column1' => 'foo', 'column2' => 'bar'];
     }
@@ -33,10 +31,7 @@ class ToArray
  */
 class AsArray
 {
-    /**
-     * @return  array
-     */
-    public function asArray()
+    public function asArray(): array
     {
         return ['column1' => 'foo', 'column2' => 'bar'];
     }
@@ -87,10 +82,7 @@ class CsvTest extends \PHPUnit_Framework_TestCase
         );
     }
 
-    /**
-     * @return  array
-     */
-    public function scalarValues()
+    public function scalarValues(): array
     {
         return [[1, '1'], ['some text', 'some text'], [true, '1'], [false, '']];
     }
@@ -100,7 +92,7 @@ class CsvTest extends \PHPUnit_Framework_TestCase
      * @test
      * @dataProvider  scalarValues
      */
-    public function scalarResourcesAreConvertedToOneLineCsv($scalarValue, $expected)
+    public function scalarResourcesAreConvertedToOneLineCsv($scalarValue, string $expected)
     {
         assert(
                 $this->csv->serialize($scalarValue, $this->memory)->buffer(),

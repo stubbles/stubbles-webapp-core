@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * This file is part of stubbles.
  *
@@ -49,7 +50,7 @@ class CachingAuthorizationProvider implements AuthorizationProvider
      * returns the roles available for this request and user
      *
      * @param   \stubbles\webapp\auth\User  $user
-     * @return  \stubbles\webapp\auth\Roles
+     * @return  \stubbles\webapp\auth\Roles|null
      */
     public function roles(User $user)
     {
