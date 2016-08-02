@@ -106,12 +106,13 @@ class RoutingAnnotations
      */
     public function mimeTypes(): array
     {
-        $mimeTypes = [];
-        foreach ($this->annotations->named('SupportsMimeType') as $supportedMimeType) {
-            $mimeTypes[] = $supportedMimeType->mimeType();
-        }
-
-        return $mimeTypes;
+        return array_map(
+                function($supportedMimeType)
+                {
+                    return $supportedMimeType->mimeType();
+                },
+                $this->annotations->named('SupportsMimeType')
+        );
     }
 
     /**
@@ -218,12 +219,13 @@ class RoutingAnnotations
      */
     public function statusCodes(): array
     {
-        $codes = [];
-        foreach ($this->annotations->named('Status') as $status) {
-            $codes[] = new Status($status->getCode(), $status->getDescription());
-        }
-
-        return $codes;
+        return array_map(
+                function($status)
+                {
+                    return new Status($status->getCode(), $status->getDescription());
+                },
+                $this->annotations->named('Status')
+        );
     }
 
     /**
@@ -245,12 +247,13 @@ class RoutingAnnotations
      */
     public function headers(): array
     {
-        $headers = [];
-        foreach ($this->annotations->named('Header') as $header) {
-            $headers[] = new Header($header->getName(), $header->getDescription());
-        }
-
-        return $headers;
+        return array_map(
+                function($header)
+                {
+                    return new Header($header->getName(), $header->getDescription());
+                },
+                $this->annotations->named('Header')
+        );
     }
 
     /**
@@ -272,21 +275,22 @@ class RoutingAnnotations
      */
     public function parameters(): array
     {
-        $parameters = [];
-        foreach ($this->annotations->named('Parameter') as $parameter) {
-            $param = new Parameter(
-                    $parameter->getName(),
-                    $parameter->getDescription(),
-                    $parameter->getIn()
-            );
+        return array_map(
+                function($parameter)
+                {
+                    $param = new Parameter(
+                            $parameter->getName(),
+                            $parameter->getDescription(),
+                            $parameter->getIn()
+                    );
 
-            if ($parameter->hasValueByName('required') && $parameter->isRequired()) {
-                $param->markRequired();
-            }
+                    if ($parameter->hasValueByName('required') && $parameter->isRequired()) {
+                        $param->markRequired();
+                    }
 
-            $parameters[] = $param;
-        }
-
-        return $parameters;
+                    return $param;
+                },
+                $this->annotations->named('Parameter')
+        );
     }
 }
