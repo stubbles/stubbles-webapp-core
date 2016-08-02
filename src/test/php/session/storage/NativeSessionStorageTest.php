@@ -9,15 +9,17 @@ declare(strict_types=1);
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\session\storage;
-use function bovigo\assert\assert;
-use function bovigo\assert\assertEmptyArray;;
-use function bovigo\assert\assertFalse;
-use function bovigo\assert\assertNotEmpty;
-use function bovigo\assert\assertNull;
-use function bovigo\assert\assertTrue;
-use function bovigo\assert\predicate\equals;
-use function bovigo\assert\predicate\isNotEqualTo;
-use function bovigo\assert\predicate\isSameAs;
+use function bovigo\assert\{
+    assert,
+    assertEmptyArray,
+    assertFalse,
+    assertNotEmpty,
+    assertNull,
+    assertTrue,
+    predicate\equals,
+    predicate\isNotEqualTo,
+    predicate\isSameAs
+};
 /**
  * Tests for stubbles\webapp\session\storage\NativeSessionStorage.
  *

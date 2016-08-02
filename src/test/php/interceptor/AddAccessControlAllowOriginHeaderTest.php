@@ -64,15 +64,10 @@ class AddAccessControlAllowOriginHeaderTest extends \PHPUnit_Framework_TestCase
         );
     }
 
-    /**
-     * creates instance for test
-     *
-     * @param   string  $config
-     */
     private function apply($config)
     {
-        $foo = new AddAccessControlAllowOriginHeader($config);
-        $foo->postProcess($this->request, $this->response);
+        (new AddAccessControlAllowOriginHeader($config))
+                ->postProcess($this->request, $this->response);
     }
 
     public function emptyConfigs(): array

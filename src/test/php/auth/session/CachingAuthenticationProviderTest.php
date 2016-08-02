@@ -15,11 +15,13 @@ use stubbles\webapp\auth\AuthenticationProvider;
 use stubbles\webapp\auth\User;
 use stubbles\webapp\session\Session;
 
-use function bovigo\assert\assert;
-use function bovigo\assert\assertNull;
-use function bovigo\assert\assertTrue;
-use function bovigo\assert\predicate\equals;
-use function bovigo\assert\predicate\isSameAs;
+use function bovigo\assert\{
+    assert,
+    assertNull,
+    assertTrue,
+    predicate\equals,
+    predicate\isSameAs
+};
 use function bovigo\callmap\verify;
 use function stubbles\reflect\annotationsOfConstructorParameter;
 /**
@@ -131,9 +133,9 @@ class CachingAuthenticationProviderTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsLoginUriFromOriginalAuthenticationProvider()
     {
-        $this->authenticationProvider->mapCalls(
-                ['loginUri' => 'http://login.example.net/']
-        );
+        $this->authenticationProvider->mapCalls([
+                'loginUri' => 'http://login.example.net/'
+        ]);
         assert(
                 $this->cachingAuthenticationProvider->loginUri(
                         NewInstance::of(Request::class)

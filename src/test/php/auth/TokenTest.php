@@ -11,11 +11,13 @@ declare(strict_types=1);
 namespace stubbles\webapp\auth;
 use bovigo\callmap\NewInstance;
 
-use function bovigo\assert\assert;
-use function bovigo\assert\assertFalse;
-use function bovigo\assert\assertTrue;
-use function bovigo\assert\predicate\equals;
-use function bovigo\assert\predicate\isInstanceOf;
+use function bovigo\assert\{
+    assert,
+    assertFalse,
+    assertTrue,
+    predicate\equals,
+    predicate\isInstanceOf
+};
 /**
  * Test for stubbles\webapp\auth\Token.
  *
@@ -51,7 +53,6 @@ class TokenTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param  string  $tokenValue
      * @test
      * @dataProvider  tokenValues
      */
@@ -67,7 +68,6 @@ class TokenTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param  string  $emptyValue
      * @test
      * @dataProvider  emptyValues
      */

@@ -10,28 +10,24 @@ declare(strict_types=1);
  */
 namespace stubbles\webapp\request;
 use bovigo\callmap\NewInstance;
-use stubbles\input\ValueReader;
-use stubbles\input\ValueValidator;
-use stubbles\input\errors\ParamErrors;
-use stubbles\peer\IpAddress;
-use stubbles\peer\MalformedUri;
-use stubbles\peer\http\HttpVersion;
+use stubbles\input\{ValueReader, ValueValidator, errors\ParamErrors};
+use stubbles\peer\{IpAddress, MalformedUri, http\HttpVersion};
 use stubbles\streams\InputStream;
-use stubbles\webapp\auth\Identity;
-use stubbles\webapp\auth\Roles;
-use stubbles\webapp\auth\User;
+use stubbles\webapp\auth\{Identity, Roles, User};
 use stubbles\webapp\session\Session;
 
-use function bovigo\assert\assert;
-use function bovigo\assert\assertFalse;
-use function bovigo\assert\assertNull;
-use function bovigo\assert\assertTrue;
-use function bovigo\assert\expect;
-use function bovigo\assert\predicate\equals;
-use function bovigo\assert\predicate\isInstanceOf;
-use function bovigo\assert\predicate\isNotEqualTo;
-use function bovigo\assert\predicate\isOfSize;
-use function bovigo\assert\predicate\isSameAs;
+use function bovigo\assert\{
+    assert,
+    assertFalse,
+    assertNull,
+    assertTrue,
+    expect,
+    predicate\equals,
+    predicate\isInstanceOf,
+    predicate\isNotEqualTo,
+    predicate\isOfSize,
+    predicate\isSameAs
+};
 /**
  * Tests for stubbles\webapp\request\WebRequest.
  *

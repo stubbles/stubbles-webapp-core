@@ -11,19 +11,18 @@ declare(strict_types=1);
 namespace stubbles\webapp;
 use bovigo\callmap\NewInstance;
 use stubbles\ExceptionLogger;
-use stubbles\ioc\Binder;
-use stubbles\ioc\Injector;
+use stubbles\ioc\{Binder, Injector};
 use stubbles\peer\http\HttpUri;
-use stubbles\webapp\routing\Routing;
-use stubbles\webapp\routing\UriResource;
+use stubbles\webapp\routing\{Routing, UriResource};
 use stubbles\webapp\session\Session;
 
-use function bovigo\assert\assert;
-use function bovigo\assert\assertTrue;
-use function bovigo\assert\predicate\equals;
-use function bovigo\assert\predicate\isInstanceOf;
-use function bovigo\callmap\throws;
-use function bovigo\callmap\verify;
+use function bovigo\assert\{
+    assert,
+    assertTrue,
+    predicate\equals,
+    isInstanceOf
+};
+use function bovigo\callmap\{throws, verify};
 /**
  * Helper class for the test.
  */

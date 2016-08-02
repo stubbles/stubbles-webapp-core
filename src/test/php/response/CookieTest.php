@@ -9,12 +9,14 @@ declare(strict_types=1);
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\response;
-use function bovigo\assert\assert;
-use function bovigo\assert\assertFalse;
-use function bovigo\assert\assertNull;
-use function bovigo\assert\assertTrue;
-use function bovigo\assert\predicate\equals;
-use function bovigo\assert\predicate\isGreaterThanOrEqualTo;
+use function bovigo\assert\{
+    assert,
+    assertFalse,
+    assertNull,
+    assertTrue,
+    predicate\equals,
+    predicate\isGreaterThanOrEqualTo
+};
 /**
  * Tests for stubbles\webapp\response\Cookie.
  *

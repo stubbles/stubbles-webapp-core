@@ -10,18 +10,19 @@ declare(strict_types=1);
  */
 namespace stubbles\webapp\response;
 use bovigo\callmap\NewInstance;
-use stubbles\peer\http\Http;
-use stubbles\peer\http\HttpVersion;
+use stubbles\peer\http\{Http, HttpVersion};
 use stubbles\streams\OutputStream;
 use stubbles\streams\memory\MemoryOutputStream;
 use stubbles\webapp\Request;
 use stubbles\webapp\response\mimetypes\PassThrough;
 
-use function bovigo\assert\assert;
-use function bovigo\assert\assertFalse;
-use function bovigo\assert\assertNull;
-use function bovigo\assert\assertTrue;
-use function bovigo\assert\predicate\equals;
+use function bovigo\assert\{
+    assert,
+    assertFalse,
+    assertNull,
+    assertTrue,
+    predicate\equals
+};
 use function bovigo\callmap\verify;
 /**
  * Tests for stubbles\webapp\response\WebResponse.
@@ -50,26 +51,16 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
         $this->memory   = new MemoryOutputStream();
     }
 
-    /**
-     * creates response where output facing methods are mocked
-     *
-     * @param   string|HttpVersion  $httpVersion    optional  http version to use for response, defaults to HTTP/1.1
-     * @param   string              $requestMethod  optional  http request method to use, defaults to GET
-     * @param   string              $sapi           optional  current php sapi, defaults to value of PHP_SAPI constant
-     * @return  WebResponse
-     */
     private function createResponse(
-            $httpVersion = HttpVersion::HTTP_1_1,
+            $httpVersion   = HttpVersion::HTTP_1_1,
             $requestMethod = Http::GET,
-            string $sapi = PHP_SAPI
+            string $sapi   = PHP_SAPI
     ): WebResponse {
-        $request = NewInstance::of(Request::class)
-                ->mapCalls(
-                        ['id'              => 'example-request-id-foo',
-                         'protocolVersion' => HttpVersion::castFrom($httpVersion),
-                         'method'          => $requestMethod
-                        ]
-        );
+        $request = NewInstance::of(Request::class)->mapCalls([
+                'id'              => 'example-request-id-foo',
+                'protocolVersion' => HttpVersion::castFrom($httpVersion),
+                'method'          => $requestMethod
+        ]);
         return NewInstance::of(
                 WebResponse::class,
                 [$request, new PassThrough(), $sapi]

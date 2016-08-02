@@ -13,12 +13,14 @@ use bovigo\callmap\NewInstance;
 use stubbles\webapp\session\id\SessionId;
 use stubbles\webapp\session\storage\SessionStorage;
 
-use function bovigo\assert\assert;;
-use function bovigo\assert\assertFalse;
-use function bovigo\assert\assertNull;
-use function bovigo\assert\assertTrue;
-use function bovigo\assert\expect;
-use function bovigo\assert\predicate\equals;
+use function bovigo\assert\{
+    assert,
+    assertFalse,
+    assertNull,
+    assertTrue,
+    expect,
+    predicate\equals
+};
 use function bovigo\callmap\onConsecutiveCalls;
 use function bovigo\callmap\verify;
 /**
@@ -50,22 +52,14 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
         $this->sessionId      = NewInstance::of(SessionId::class);
     }
 
-    /**
-     * creates valid web session
-     *
-     * @param   string  $givenFingerprint
-     * @param   string  $storageFingerprint
-     * @return  \stubbles\webapp\session\WebSession
-     */
     private function createWebSession(
             string $givenFingerprint = 'aFingerprint',
-            $storageFingerprint = 'aFingerprint'
+            $storageFingerprint      = 'aFingerprint'
     ): WebSession {
-        $this->sessionStorage->mapCalls(
-                ['hasValue' => null !== $storageFingerprint,
-                 'value'    => $storageFingerprint
-                ]
-        );
+        $this->sessionStorage->mapCalls([
+                'hasValue' => null !== $storageFingerprint,
+                'value'    => $storageFingerprint
+        ]);
         return new WebSession(
                 $this->sessionStorage,
                 $this->sessionId,
@@ -173,13 +167,12 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
      *
      * @return  \stubbles\webapp\session\WebSession
      */
-    private function createInvalidWebSession()
+    private function createInvalidWebSession(): WebSession
     {
-        $this->sessionStorage->mapCalls(
-                ['hasValue' => onConsecutiveCalls(true, false),
-                 'value'    => 'aFingerprint'
-                ]
-        );
+        $this->sessionStorage->mapCalls([
+                'hasValue' => onConsecutiveCalls(true, false),
+                'value'    => 'aFingerprint'
+        ]);
         return new WebSession(
                 $this->sessionStorage,
                 $this->sessionId,
@@ -230,8 +223,8 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
      */
     private function createWebSessionWithValues($value = null)
     {
-        $this->sessionStorage->mapCalls(
-                ['hasValue' => function($key) use ($value)
+        $this->sessionStorage->mapCalls([
+                'hasValue' => function($key) use ($value)
                         {
                             if (Session::FINGERPRINT === $key) {
                                 return true;
@@ -239,9 +232,8 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
 
                             return null !== $value;
                         },
-                 'value'    => onConsecutiveCalls('aFingerprint', $value)
-                ]
-        );
+                'value'    => onConsecutiveCalls('aFingerprint', $value)
+        ]);
         return new WebSession(
                 $this->sessionStorage,
                 $this->sessionId,

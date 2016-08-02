@@ -26,14 +26,9 @@ class IdentityTest extends \PHPUnit_Framework_TestCase
     private function createIdentity(User $user = null): Identity
     {
         return new Identity(
-                null === $user ? $this->createUser() : $user,
+                null === $user ? NewInstance::of(User::class) : $user,
                 new Roles(['admin'])
         );
-    }
-
-    private function createUser(): User
-    {
-        return NewInstance::of(User::class);
     }
 
     /**
@@ -41,7 +36,7 @@ class IdentityTest extends \PHPUnit_Framework_TestCase
      */
     public function isAssociatedWithGivenUser()
     {
-        $user = $this->createUser();
+        $user = NewInstance::of(User::class);
         assert(
                 $this->createIdentity($user)->user(),
                 isSameAs($user)

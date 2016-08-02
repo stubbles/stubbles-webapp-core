@@ -184,8 +184,8 @@ class AuthTest extends \PHPUnit_Framework_TestCase
     {
         $tokenStoreClass = NewInstance::classname(TokenStore::class);
         Auth::usingTokens($tokenStoreClass, $this->authenticationProviderClass)
-            ->enableSessionCaching()
-            ->configure($this->binder);
+                ->enableSessionCaching()
+                ->configure($this->binder);
         $injector = $this->binder->getInjector();
         assert(
                 $injector->getInstance(AuthenticationProvider::class),

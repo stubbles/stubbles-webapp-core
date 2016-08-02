@@ -9,12 +9,14 @@ declare(strict_types=1);
  * @package  stubbles\webapp
  */
 namespace stubbles\webapp\auth;
-use function bovigo\assert\assert;
-use function bovigo\assert\assertEmpty;
-use function bovigo\assert\assertFalse;
-use function bovigo\assert\assertTrue;
-use function bovigo\assert\predicate\equals;
-use function bovigo\assert\predicate\isOfSize;
+use function bovigo\assert\{
+    assert,
+    assertEmpty,
+    assertFalse,
+    assertTrue,
+    predicate\equals,
+    predicate\isOfSize
+};
 /**
  * Tests for stubbles\webapp\auth\Roles.
  *

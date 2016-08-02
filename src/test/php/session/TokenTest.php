@@ -16,10 +16,8 @@ use function bovigo\assert\assert;
 use function bovigo\assert\assertFalse;
 use function bovigo\assert\assertTrue;
 use function bovigo\assert\predicate\equals;
-use function bovigo\callmap\onConsecutiveCalls;
-use function bovigo\callmap\verify;
-use function stubbles\reflect\annotationsOf;
-use function stubbles\reflect\annotationsOfConstructor;
+use function bovigo\callmap\{onConsecutiveCalls, verify};
+use function stubbles\reflect\{annotationsOf, annotationsOfConstructor};
 /**
  * Tests for stubbles\webapp\session\Token.
  *

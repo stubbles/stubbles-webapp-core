@@ -10,17 +10,17 @@ declare(strict_types=1);
  */
 namespace stubbles\webapp\auth\session;
 use bovigo\callmap\NewInstance;
-use stubbles\webapp\auth\AuthorizationProvider;
-use stubbles\webapp\auth\Roles;
-use stubbles\webapp\auth\User;
+use stubbles\webapp\auth\{AuthorizationProvider, Roles, User};
 use stubbles\webapp\session\Session;
 
-use function bovigo\assert\assert;
-use function bovigo\assert\assertFalse;
-use function bovigo\assert\assertNull;
-use function bovigo\assert\assertTrue;
-use function bovigo\assert\predicate\equals;
-use function bovigo\assert\predicate\isSameAs;
+use function bovigo\assert\{
+    assert,
+    assertFalse,
+    assertNull,
+    assertTrue,
+    predicate\equals,
+    predicate\isSameAs
+};
 use function bovigo\callmap\verify;
 use function stubbles\reflect\annotationsOfConstructorParameter;
 /**
