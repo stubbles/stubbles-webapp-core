@@ -20,7 +20,7 @@ use function bovigo\assert\{
     assert,
     assertTrue,
     predicate\equals,
-    isInstanceOf
+    predicate\isInstanceOf
 };
 use function bovigo\callmap\{throws, verify};
 /**
