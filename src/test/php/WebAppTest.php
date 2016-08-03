@@ -24,56 +24,6 @@ use function bovigo\assert\{
 };
 use function bovigo\callmap\{throws, verify};
 /**
- * Helper class for the test.
- */
-class TestWebApp extends WebApp
-{
-    /**
-     * session to be created
-     *
-     * @type  \stubbles\webapp\session\Session
-     */
-    public static $session;
-
-    /**
-     * returns list of bindings required for this web app
-     *
-     * @return  array
-     */
-    public static function __bindings(): array
-    {
-        return [function(Binder $binder)
-                {
-                    $binder->bindConstant('stubbles.project.path')
-                           ->to(self::projectPath());
-                }
-        ];
-    }
-
-    /**
-     * creates a session instance based on current request
-     *
-     * @param   \stubbles\webapp\Request   $request
-     * @param   \stubbles\webapp\Response  $response
-     * @return  \stubbles\webapp\session\Session
-     * @since   6.0.0
-     */
-    protected function createSession(Request $request, Response $response)
-    {
-        return self::$session;
-    }
-
-    /**
-     * configures routing for this web app
-     *
-     * @param  RoutingConfigurator  $routing
-     */
-    protected function configureRouting(RoutingConfigurator $routing)
-    {
-        // intentionally empty
-    }
-}
-/**
  * Tests for stubbles\webapp\WebApp.
  *
  * @since  1.7.0
@@ -84,7 +34,7 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
     /**
      * instance to test
      *
-     * @type  TestWebApp
+     * @type  WebApp
      */
     private $webApp;
     /**
@@ -107,7 +57,20 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
     {
         $this->injector = NewInstance::stub(Injector::class);
         $this->routing  = NewInstance::stub(Routing::class);
-        $this->webApp   = new TestWebApp($this->injector, $this->routing);
+        $this->webApp   = new class($this->injector, $this->routing) extends WebApp
+        {
+            public static function __bindings(): array
+            {
+                return [function(Binder $binder)
+                        {
+                            $binder->bindConstant('stubbles.project.path')
+                                   ->to(self::projectPath());
+                        }
+                ];
+            }
+
+            protected function configureRouting(RoutingConfigurator $routing) { }
+        };
         $_SERVER['REQUEST_METHOD'] = 'GET';
         $_SERVER['REQUEST_URI']    = '/hello';
         $_SERVER['HTTP_HOST']      = 'example.com';
@@ -118,7 +81,6 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
      */
     public function tearDown()
     {
-        TestWebApp::$session = null;
         unset($_SERVER['REQUEST_METHOD']);
         unset($_SERVER['REQUEST_URI']);
         unset($_SERVER['HTTP_HOST']);
@@ -190,13 +152,28 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
      */
     public function enablesSessionScopeWhenSessionIsAvailable()
     {
-        TestWebApp::$session = NewInstance::of(Session::class);
+        $session = NewInstance::of(Session::class);
+        $webApp  = new class($this->injector, $this->routing, $session) extends WebApp
+        {
+            private $session;
+
+            public function __construct($injector, $routing, $session)
+            {
+                parent::__construct($injector, $routing);
+                $this->session = $session;
+            }
+
+            protected function createSession(Request $request, Response $response)
+            {
+                return $this->session;
+            }
+
+            protected function configureRouting(RoutingConfigurator $routing) { }
+        };
+
         $this->createNonHttpsResource();
-        $this->webApp->run();
-        verify($this->injector, 'setSession')->received(
-                TestWebApp::$session,
-                Session::class
-        );
+        $webApp->run();
+        verify($this->injector, 'setSession')->received($session, Session::class);
     }
 
     /**
@@ -221,10 +198,7 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
         verify($resource, 'applyPostInterceptors')->wasNeverCalled();
     }
 
-    /**
-     * @return  \bovigo\callmap\Proxy
-     */
-    private function setUpExceptionLogger()
+    private function setUpExceptionLogger(): ExceptionLogger
     {
         $exceptionLogger = NewInstance::stub(ExceptionLogger::class);
         $this->injector->mapCalls(['getInstance' => $exceptionLogger]);
@@ -302,7 +276,8 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
      */
     public function createCreatesInstance()
     {
-        assert(TestWebApp::create('projectPath'), isInstanceOf(TestWebApp::class));
+        $webAppClass = get_class($this->webApp);
+        assert($webAppClass::create('projectPath'), isInstanceOf($webAppClass));
     }
 
     /**
@@ -314,7 +289,6 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
     {
         $_SERVER['REQUEST_URI'] = '/hello';
         $_SERVER['HTTP_HOST']   = '%&$§!&$!§invalid';
-        $webApp  = new TestWebApp($this->injector, $this->routing);
-        assert($webApp->run()->statusCode(), equals(400));
+        assert($this->webApp->run()->statusCode(), equals(400));
     }
 }
