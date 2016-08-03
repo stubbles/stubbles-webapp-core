@@ -11,10 +11,8 @@ declare(strict_types=1);
 namespace stubbles\webapp\routing;
 use bovigo\callmap\NewInstance;
 use stubbles\ioc\Injector;
-use stubbles\webapp\Request;
-use stubbles\webapp\Response;
-use stubbles\webapp\interceptor\PreInterceptor;
-use stubbles\webapp\interceptor\PostInterceptor;
+use stubbles\webapp\{Request, Response};
+use stubbles\webapp\interceptor\{PreInterceptor, PostInterceptor};
 use stubbles\webapp\response\Error;
 
 use function bovigo\assert\assertFalse;
@@ -77,11 +75,11 @@ class InterceptorsTest extends \PHPUnit_Framework_TestCase
         $this->response->mapCalls(['internalServerError' => Error::internalServerError('')]);
         $this->injector->mapCalls(['getInstance' => new \stdClass()]);
         assertFalse(
-                $this->createInterceptors(
-                        ['some\PreInterceptor',
-                         'other\PreInterceptor'
-                        ]
-                )->preProcess($this->request, $this->response)
+                $this->createInterceptors([
+                        'some\PreInterceptor',
+                        'other\PreInterceptor'
+
+                ])->preProcess($this->request, $this->response)
         );
         verify($this->response, 'internalServerError')->received(
                 'Configured pre interceptor some\PreInterceptor is not an instance of '
@@ -99,11 +97,10 @@ class InterceptorsTest extends \PHPUnit_Framework_TestCase
         $preInterceptor->mapCalls(['preProcess' => false]);
         $this->injector->mapCalls(['getInstance' => $preInterceptor]);
         assertFalse(
-                $this->createInterceptors(
-                        ['some\PreInterceptor',
-                         'other\PreInterceptor'
-                        ]
-                )->preProcess($this->request, $this->response)
+                $this->createInterceptors([
+                        'some\PreInterceptor',
+                        'other\PreInterceptor'
+                ])->preProcess($this->request, $this->response)
         );
         verify($preInterceptor, 'preProcess')->wasCalledOnce();
     }
@@ -116,16 +113,15 @@ class InterceptorsTest extends \PHPUnit_Framework_TestCase
         $preInterceptor = NewInstance::of(PreInterceptor::class);
         $this->injector->mapCalls(['getInstance' => $preInterceptor]);
         assertTrue(
-                $this->createInterceptors(
-                        ['some\PreInterceptor',
-                         $preInterceptor,
-                         function(Request $request, Response $response)
-                         {
-                             $response->setStatusCode(418);
-                         },
-                         [$this, 'callableMethod']
-                        ]
-                )->preProcess($this->request, $this->response)
+                $this->createInterceptors([
+                        'some\PreInterceptor',
+                        $preInterceptor,
+                        function(Request $request, Response $response)
+                        {
+                            $response->setStatusCode(418);
+                        },
+                        [$this, 'callableMethod']
+                ])->preProcess($this->request, $this->response)
         );
         verify($preInterceptor, 'preProcess')->wasCalled(2);
     }

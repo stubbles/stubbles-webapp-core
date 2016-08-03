@@ -11,24 +11,19 @@ declare(strict_types=1);
 namespace stubbles\webapp\routing;
 use bovigo\callmap\NewInstance;
 use stubbles\peer\http\HttpUri;
-use stubbles\webapp\Target;
-use stubbles\webapp\Request;
-use stubbles\webapp\Response;
-use stubbles\webapp\UriPath;
-use stubbles\webapp\auth\AuthConstraint;
-use stubbles\webapp\auth\Roles;
-use stubbles\webapp\interceptor\PreInterceptor;
-use stubbles\webapp\interceptor\PostInterceptor;
-use stubbles\webapp\routing\api\Header;
-use stubbles\webapp\routing\api\Parameter;
-use stubbles\webapp\routing\api\Status;
+use stubbles\webapp\{Request, Response, Target, UriPath};
+use stubbles\webapp\auth\{AuthConstraint, Roles};
+use stubbles\webapp\interceptor\{PreInterceptor, PostInterceptor};
+use stubbles\webapp\routing\api\{Header, Parameter, Status};
 
-use function bovigo\assert\assert;
-use function bovigo\assert\assertEmptyArray;
-use function bovigo\assert\assertFalse;
-use function bovigo\assert\assertTrue;
-use function bovigo\assert\expect;
-use function bovigo\assert\predicate\equals;
+use function bovigo\assert\{
+    assert,
+    assertEmptyArray,
+    assertFalse,
+    assertTrue,
+    expect,
+    predicate\equals
+};
 /**
  * Class with annotations for tests.
  *

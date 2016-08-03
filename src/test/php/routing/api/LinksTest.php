@@ -11,12 +11,14 @@ declare(strict_types=1);
 namespace stubbles\webapp\routing\api;
 use stubbles\peer\http\HttpUri;
 
-use function bovigo\assert\assert;
-use function bovigo\assert\assertEmpty;
-use function bovigo\assert\assertEmptyArray;
-use function bovigo\assert\expect;
-use function bovigo\assert\predicate\equals;
-use function bovigo\assert\predicate\isOfSize;
+use function bovigo\assert\{
+    assert,
+    assertEmpty,
+    assertEmptyArray,
+    expect,
+    predicate\equals,
+    predicate\isOfSize
+};
 /**
  * Test for stubbles\webapp\routing\api\Links.
  *
@@ -30,6 +32,7 @@ class LinksTest extends \PHPUnit_Framework_TestCase
     {
         return new Links('self', HttpUri::fromString('http://example.com/foo'));
     }
+
     /**
      * @test
      */

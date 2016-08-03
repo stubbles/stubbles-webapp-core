@@ -13,9 +13,7 @@ use bovigo\callmap\NewInstance;
 use stubbles\ioc\Injector;
 use stubbles\peer\http\HttpVersion;
 use stubbles\webapp\Request;
-use stubbles\webapp\response\Error;
-use stubbles\webapp\response\WebResponse;
-use stubbles\webapp\routing\Interceptors;
+use stubbles\webapp\response\{Error, WebResponse};
 
 use function bovigo\assert\assert;
 use function bovigo\assert\assertFalse;
@@ -61,9 +59,9 @@ class NotFoundTest extends \PHPUnit_Framework_TestCase
      */
     public function returns404NotFoundError()
     {
-        $request = NewInstance::of(Request::class)->mapCalls(
-                ['protocolVersion' => new HttpVersion(1, 1)]
-        );
+        $request = NewInstance::of(Request::class)->mapCalls([
+                'protocolVersion' => new HttpVersion(1, 1)
+        ]);
         $response = new WebResponse($request);
         assert(
                 $this->notFound->resolve($request, $response),
@@ -76,9 +74,9 @@ class NotFoundTest extends \PHPUnit_Framework_TestCase
      */
     public function sets404NotFoundStatusCode()
     {
-        $request = NewInstance::of(Request::class)->mapCalls(
-                ['protocolVersion' => new HttpVersion(1, 1)]
-        );
+        $request = NewInstance::of(Request::class)->mapCalls([
+                'protocolVersion' => new HttpVersion(1, 1)
+        ]);
         $response = new WebResponse($request);
         $this->notFound->resolve($request, $response);
         assert($response->statusCode(), equals(404));

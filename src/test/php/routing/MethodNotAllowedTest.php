@@ -11,11 +11,9 @@ declare(strict_types=1);
 namespace stubbles\webapp\routing;
 use bovigo\callmap\NewInstance;
 use stubbles\ioc\Injector;
-use stubbles\peer\http\HttpVersion;
+use stubbles\peer\http\{Http, HttpVersion};
 use stubbles\webapp\Request;
-use stubbles\webapp\response\Error;
-use stubbles\webapp\response\WebResponse;
-use stubbles\webapp\routing\Interceptors;
+use stubbles\webapp\response\{Error, WebResponse};
 
 use function bovigo\assert\assert;
 use function bovigo\assert\assertFalse;
@@ -42,10 +40,10 @@ class MethodNotAllowedTest extends \PHPUnit_Framework_TestCase
     {
         $this->methodNotAllowed = new MethodNotAllowed(
                 NewInstance::stub(Injector::class),
-                new CalledUri('http://example.com/hello/world', 'GET'),
+                new CalledUri('http://example.com/hello/world', Http::GET),
                 NewInstance::stub(Interceptors::class),
                 new SupportedMimeTypes([]),
-                ['GET', 'POST', 'HEAD']
+                [Http::GET, Http::POST, Http::HEAD]
         );
     }
 
@@ -60,17 +58,18 @@ class MethodNotAllowedTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function triggers405MethodNotAllowedError()
+    public function returnsMethodNotAllowedError()
     {
-        $request = NewInstance::of(Request::class)->mapCalls(
-                ['method' => 'DELETE', 'protocolVersion' => new HttpVersion(1, 1)]
-        );
+        $request = NewInstance::of(Request::class)->mapCalls([
+                'method'          => Http::DELETE,
+                'protocolVersion' => new HttpVersion(1, 1)
+        ]);
         $response = new WebResponse($request);
         assert(
                 $this->methodNotAllowed->resolve($request, $response),
                 equals(Error::methodNotAllowed(
-                        'DELETE',
-                        ['GET', 'POST', 'HEAD', 'OPTIONS']
+                        Http::DELETE,
+                        [Http::GET, Http::POST, Http::HEAD, Http::OPTIONS]
                 ))
         );
     }
@@ -80,9 +79,10 @@ class MethodNotAllowedTest extends \PHPUnit_Framework_TestCase
      */
     public function sets405MethodNotAllowedStatusCode()
     {
-        $request = NewInstance::of(Request::class)->mapCalls(
-                ['method' => 'DELETE', 'protocolVersion' => new HttpVersion(1, 1)]
-        );
+        $request = NewInstance::of(Request::class)->mapCalls([
+                'method'          => Http::DELETE,
+                'protocolVersion' => new HttpVersion(1, 1)
+        ]);
         $response = new WebResponse($request);
         $this->methodNotAllowed->resolve($request, $response);
         assert($response->statusCode(), equals(405));

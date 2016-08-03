@@ -11,18 +11,16 @@ declare(strict_types=1);
 namespace stubbles\webapp\routing;
 use bovigo\callmap\NewInstance;
 use stubbles\ioc\Injector;
-use stubbles\webapp\Request;
-use stubbles\webapp\Response;
-use stubbles\webapp\Target;
-use stubbles\webapp\UriPath;
+use stubbles\webapp\{Request, Response, Target, UriPath};
 use stubbles\webapp\response\Error;
-use stubbles\webapp\routing\Interceptors;
 
-use function bovigo\assert\assert;
-use function bovigo\assert\assertFalse;
-use function bovigo\assert\assertTrue;
-use function bovigo\assert\predicate\equals;
-use function bovigo\assert\predicate\isSameAs;
+use function bovigo\assert\{
+    assert,
+    assertFalse,
+    assertTrue,
+    predicate\equals,
+    predicate\isSameAs
+};
 use function bovigo\callmap\verify;
 /**
  * Tests for stubbles\webapp\routing\ResolvingResource.

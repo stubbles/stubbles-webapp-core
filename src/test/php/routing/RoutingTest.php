@@ -12,21 +12,22 @@ namespace stubbles\webapp\routing;
 use bovigo\callmap\NewInstance;
 use stubbles\input\ValueReader;
 use stubbles\ioc\Injector;
-use stubbles\webapp\Request;
-use stubbles\webapp\Response;
+use stubbles\webapp\{Request, Response};
 use stubbles\webapp\auth\ProtectedResource;
 use stubbles\webapp\response\WebResponse;
 use stubbles\webapp\response\mimetypes\Json;
 use stubbles\webapp\routing\api\Index;
 
-use function bovigo\assert\assert;
-use function bovigo\assert\assertEmptyArray;
-use function bovigo\assert\assertTrue;
-use function bovigo\assert\expect;
-use function bovigo\assert\predicate\contains;
-use function bovigo\assert\predicate\doesNotContain;
-use function bovigo\assert\predicate\equals;
-use function bovigo\assert\predicate\isInstanceOf;
+use function bovigo\assert\{
+    assert,
+    assertEmptyArray,
+    assertTrue,
+    expect,
+    predicate\contains,
+    predicate\doesNotContain,
+    predicate\equals,
+    predicate\isInstanceOf
+};
 use function bovigo\callmap\verify;
 /**
  * Tests for stubbles\webapp\routing\Routing.
@@ -452,8 +453,9 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
      */
     public function passesGlobalClassToSupportedMimeTypesOfSelectedRoute()
     {
-        $request = NewInstance::of(Request::class)
-                ->mapCalls(['readHeader' => ValueReader::forValue('application/foo')]);
+        $request = NewInstance::of(Request::class)->mapCalls([
+                'readHeader' => ValueReader::forValue('application/foo')
+        ]);
         $mimeType = new Json();
         $this->injector->mapCalls(['getInstance' => $mimeType]);
         $this->routing->onGet('/hello', function() {})

@@ -14,65 +14,19 @@ use stubbles\input\ValueReader;
 use stubbles\ioc\Injector;
 use stubbles\peer\http\HttpVersion;
 use stubbles\streams\memory\MemoryOutputStream;
-use stubbles\webapp\Request;
-use stubbles\webapp\Response;
+use stubbles\webapp\{Request, Response};
 use stubbles\webapp\auth\AuthHandler;
-use stubbles\webapp\response\WebResponse;
-use stubbles\webapp\response\mimetypes\Json;
-use stubbles\webapp\response\mimetypes\PassThrough;
-use stubbles\webapp\routing\Interceptors;
+use stubbles\webapp\response\{WebResponse, mimetypes\Json, mimetypes\PassThrough};
 
-use function bovigo\assert\assert;
-use function bovigo\assert\assertEmptyArray;
-use function bovigo\assert\assertFalse;
-use function bovigo\assert\assertTrue;
-use function bovigo\assert\predicate\equals;
-use function bovigo\assert\predicate\isInstanceOf;
-use function bovigo\assert\predicate\isSameAs;
-/**
- * Helper class for the test.
- */
-class TestAbstractResource extends AbstractResource
-{
-    /**
-     * checks whether switch to https is required
-     *
-     * @return  bool
-     */
-    public function requiresHttps(): bool { return false; }
-
-    /**
-     * checks if access to this route required authorization
-     *
-     * @return  bool
-     */
-    public function requiresAuth(): bool { return false;}
-
-    /**
-     * checks whether this is an authorized request to this route
-     *
-     * @param   AuthHandler  $authHandler
-     * @return  bool
-     */
-    public function isAuthorized(AuthHandler $authHandler): bool { return false; }
-
-    /**
-     * checks whether route required login
-     *
-     * @param   AuthHandler  $authHandler
-     * @return  bool
-     */
-    public function requiresLogin(AuthHandler $authHandler): bool { return false; }
-
-    /**
-     * creates processor instance
-     *
-     * @param   \stubbles\webapp\Request   $request    current request
-     * @param   \stubbles\webapp\Response  $response   response to send
-     * @return  bool
-     */
-    public function resolve(Request $request, Response $response) {}
-}
+use function bovigo\assert\{
+    assert,
+    assertEmptyArray,
+    assertFalse,
+    assertTrue,
+    predicate\equals,
+    predicate\isInstanceOf,
+    predicate\isSameAs
+};
 /**
  * Tests for stubbles\webapp\routing\AbstractResource.
  *
@@ -120,13 +74,23 @@ class AbstractResourceTest extends \PHPUnit_Framework_TestCase
 
     private function createRoute(SupportedMimeTypes $mimeTypes = null): AbstractResource
     {
-        return new TestAbstractResource(
+        return new class(
                 $this->injector,
                 new CalledUri('http://example.com/hello/world', 'GET'),
                 $this->interceptors,
                 null === $mimeTypes ? new SupportedMimeTypes([]) : $mimeTypes
+        ) extends AbstractResource {
 
-        );
+            public function requiresHttps(): bool { return false; }
+
+            public function requiresAuth(): bool { return false;}
+
+            public function isAuthorized(AuthHandler $authHandler): bool { return false; }
+
+            public function requiresLogin(AuthHandler $authHandler): bool { return false; }
+
+            public function resolve(Request $request, Response $response) {}
+        };
     }
 
     /**
@@ -163,8 +127,9 @@ class AbstractResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function negotiatesNothingIfNoMatchCanBeFound()
     {
-        $request = NewInstance::of(Request::class)
-                ->mapCalls(['readHeader' => ValueReader::forValue('text/html')]);
+        $request = NewInstance::of(Request::class)->mapCalls([
+                'readHeader' => ValueReader::forValue('text/html')
+        ]);
         assertFalse(
                 $this->createRoute(
                         new SupportedMimeTypes(

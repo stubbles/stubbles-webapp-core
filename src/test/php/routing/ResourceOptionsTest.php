@@ -11,9 +11,7 @@ declare(strict_types=1);
 namespace stubbles\webapp\routing;
 use bovigo\callmap\NewInstance;
 use stubbles\ioc\Injector;
-use stubbles\webapp\Request;
-use stubbles\webapp\Response;
-use stubbles\webapp\routing\Interceptors;
+use stubbles\webapp\{Request, Response};
 
 use function bovigo\assert\assertFalse;
 use function bovigo\callmap\verify;
