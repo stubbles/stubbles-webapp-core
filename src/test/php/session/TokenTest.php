@@ -69,7 +69,7 @@ class TokenTest extends \PHPUnit_Framework_TestCase
      */
     public function givenTokenIsNotValidWhenNotEqualToSessionToken()
     {
-        $this->session->mapCalls(['value' => 'aToken']);
+        $this->session->returns(['value' => 'aToken']);
         assertFalse($this->token->isValid('otherToken'));
     }
 
@@ -78,7 +78,7 @@ class TokenTest extends \PHPUnit_Framework_TestCase
      */
     public function givenTokenIsValidWhenEqualToSessionToken()
     {
-        $this->session->mapCalls(['value' => 'aToken']);
+        $this->session->returns(['value' => 'aToken']);
         assertTrue($this->token->isValid('aToken'));
     }
 
@@ -87,7 +87,7 @@ class TokenTest extends \PHPUnit_Framework_TestCase
      */
     public function storesNextTokenInSessionWhenTokenIsValidated()
     {
-        $this->session->mapCalls(['value' => 'aToken']);
+        $this->session->returns(['value' => 'aToken']);
         $this->token->isValid('otherToken');
         verify($this->session, 'putValue')->wasCalledOnce();
     }
@@ -97,7 +97,7 @@ class TokenTest extends \PHPUnit_Framework_TestCase
      */
     public function nextTokenTakenFromSession()
     {
-        $this->session->mapCalls(
+        $this->session->returns(
                 ['value' => onConsecutiveCalls('aToken', 'nextToken')]
         );
         assert($this->token->next(), equals('nextToken'));
@@ -108,7 +108,7 @@ class TokenTest extends \PHPUnit_Framework_TestCase
      */
     public function nextStoresNextTokenInSession()
     {
-        $this->session->mapCalls(['value' => 'nextToken']);
+        $this->session->returns(['value' => 'nextToken']);
         $this->token->next();
         verify($this->session, 'putValue')->wasCalledOnce();
     }

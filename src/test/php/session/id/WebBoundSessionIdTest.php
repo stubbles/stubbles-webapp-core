@@ -75,7 +75,7 @@ class WebBoundSessionIdTest extends \PHPUnit_Framework_TestCase
      */
     public function createsSessionIdIfNotInRequest()
     {
-        $this->request->mapCalls(['hasParam' => false, 'hasCookie' => false]);
+        $this->request->returns(['hasParam' => false, 'hasCookie' => false]);
         assert(
                 (string) $this->webBoundSessionId,
                 matches('/^([a-zA-Z0-9]{32})$/D')
@@ -87,7 +87,7 @@ class WebBoundSessionIdTest extends \PHPUnit_Framework_TestCase
      */
     public function usesSessionIdNameForRequestValues()
     {
-        $this->request->mapCalls(['hasParam' => false, 'hasCookie' => false]);
+        $this->request->returns(['hasParam' => false, 'hasCookie' => false]);
         (string) $this->webBoundSessionId;
         verify($this->request, 'hasParam')->received('foo');
         verify($this->request, 'hasCookie')->received('foo');
@@ -98,7 +98,7 @@ class WebBoundSessionIdTest extends \PHPUnit_Framework_TestCase
      */
     public function createsSessionIdIfRequestParamInvalid()
     {
-        $this->request->mapCalls(
+        $this->request->returns(
                 ['hasParam'  => true,
                  'readParam' => ValueReader::forValue('invalid')
                 ]
@@ -114,7 +114,7 @@ class WebBoundSessionIdTest extends \PHPUnit_Framework_TestCase
      */
     public function usesParamSessionIdIfRequestParamValid()
     {
-        $this->request->mapCalls(
+        $this->request->returns(
                 ['hasParam'  => true,
                  'readParam' => ValueReader::forValue('abcdefghij1234567890abcdefghij12')
                 ]
@@ -130,7 +130,7 @@ class WebBoundSessionIdTest extends \PHPUnit_Framework_TestCase
      */
     public function createsSessionIdIfRequestCookieInvalid()
     {
-        $this->request->mapCalls(
+        $this->request->returns(
                 ['hasParam'   => false,
                  'hasCookie'  => true,
                  'readCookie' => ValueReader::forValue('invalid')
@@ -147,7 +147,7 @@ class WebBoundSessionIdTest extends \PHPUnit_Framework_TestCase
      */
     public function usesCookieSessionIdIfRequestCookieValid()
     {
-        $this->request->mapCalls([
+        $this->request->returns([
                 'hasParam'   => false,
                 'hasCookie'  => true,
                 'readCookie' => ValueReader::forValue('abcdefghij1234567890abcdefghij12')
@@ -163,7 +163,7 @@ class WebBoundSessionIdTest extends \PHPUnit_Framework_TestCase
      */
     public function regenerateChangesSessionId()
     {
-        $this->request->mapCalls(['hasParam' => false, 'hasCookie' => false]);
+        $this->request->returns(['hasParam' => false, 'hasCookie' => false]);
         $previous = (string) $this->webBoundSessionId;
         assert(
                 (string) $this->webBoundSessionId->regenerate(),

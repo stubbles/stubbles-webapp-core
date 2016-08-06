@@ -86,7 +86,7 @@ class CachingAuthorizationProviderTest extends \PHPUnit_Framework_TestCase
     public function usesSessionValueIfRolesStoredInSession()
     {
         $roles = new Roles(['admin']);
-        $this->session->mapCalls(['hasValue' => true, 'value' => $roles]);
+        $this->session->returns(['hasValue' => true, 'value' => $roles]);
         assert(
                 $this->cachingAuthorizationProvider->roles(
                         NewInstance::of(User::class)
@@ -102,8 +102,8 @@ class CachingAuthorizationProviderTest extends \PHPUnit_Framework_TestCase
     public function storeReturnValueInSessionWhenOriginalAuthenticationProviderReturnsRoles()
     {
         $roles = new Roles(['admin']);
-        $this->session->mapCalls(['hasValue' => false]);
-        $this->authorizationProvider->mapCalls(['roles' => $roles]);
+        $this->session->returns(['hasValue' => false]);
+        $this->authorizationProvider->returns(['roles' => $roles]);
         assert(
                 $this->cachingAuthorizationProvider->roles(
                         NewInstance::of(User::class)

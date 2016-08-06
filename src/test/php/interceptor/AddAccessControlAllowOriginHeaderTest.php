@@ -81,7 +81,7 @@ class AddAccessControlAllowOriginHeaderTest extends \PHPUnit_Framework_TestCase
      */
     public function doesNotAddHeaderWhenNoAllowedOriginHostConfigured($emptyConfig)
     {
-        $this->request->mapCalls(['hasHeader' => false]);
+        $this->request->returns(['hasHeader' => false]);
         $this->apply($emptyConfig);
         verify($this->response, 'addHeader')->wasNeverCalled();
     }
@@ -91,7 +91,7 @@ class AddAccessControlAllowOriginHeaderTest extends \PHPUnit_Framework_TestCase
      */
     public function doesNotAddHeaderWhenRequestContainsNoOriginHeader()
     {
-        $this->request->mapCalls(['hasHeader' => false]);
+        $this->request->returns(['hasHeader' => false]);
         $this->apply('^http://[a-zA-Z0-9-\.]+example\.com(:[0-9]{4})?$');
         verify($this->response, 'addHeader')->wasNeverCalled();
     }
@@ -101,7 +101,7 @@ class AddAccessControlAllowOriginHeaderTest extends \PHPUnit_Framework_TestCase
      */
     public function doesNotAddHeaderWhenOriginFromRequestDoesNotMatchAllowedOriginHosts()
     {
-        $this->request->mapCalls([
+        $this->request->returns([
                 'hasHeader'  => true,
                 'readHeader' => ValueReader::forValue('http://example.net')
 
@@ -115,7 +115,7 @@ class AddAccessControlAllowOriginHeaderTest extends \PHPUnit_Framework_TestCase
      */
     public function addsHeaderWhenOriginFromRequestIsAllowed()
     {
-        $this->request->mapCalls([
+        $this->request->returns([
                 'hasHeader'  => true,
                 'readHeader' => ValueReader::forValue('http://foo.example.com:9039')
 

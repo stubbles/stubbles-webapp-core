@@ -172,7 +172,7 @@ class CalledUriTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsTrueForSatisfiedPathPattern(string $path, string $pathPattern = null)
     {
-        $this->httpUri->mapCalls(['path' => $path]);
+        $this->httpUri->returns(['path' => $path]);
         assertTrue($this->calledUri->satisfiesPath($pathPattern));
     }
 
@@ -192,7 +192,7 @@ class CalledUriTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsFalseForNonSatisfiedCondition(string $path, string $pathPattern)
     {
-        $this->httpUri->mapCalls(['path' => $path]);
+        $this->httpUri->returns(['path' => $path]);
         assertFalse($this->calledUri->satisfiesPath($pathPattern));
     }
 
@@ -202,7 +202,7 @@ class CalledUriTest extends \PHPUnit_Framework_TestCase
      */
     public function isHttpsWhenRequestUriHasHttps()
     {
-        $this->httpUri->mapCalls(['isHttps' => true]);
+        $this->httpUri->returns(['isHttps' => true]);
         assertTrue($this->calledUri->isHttps());
     }
 
@@ -213,7 +213,7 @@ class CalledUriTest extends \PHPUnit_Framework_TestCase
     public function toHttpReturnsTransformedUri()
     {
         $httpUri = NewInstance::stub(HttpUri::class);
-        $this->httpUri->mapCalls(['toHttp' => $httpUri]);
+        $this->httpUri->returns(['toHttp' => $httpUri]);
         assert($this->calledUri->toHttp(), isSameAs($httpUri));
     }
 
@@ -224,7 +224,7 @@ class CalledUriTest extends \PHPUnit_Framework_TestCase
     public function toHttpsReturnsTransformedUri()
     {
         $httpUri = NewInstance::stub(HttpUri::class);
-        $this->httpUri->mapCalls(['toHttps' => $httpUri]);
+        $this->httpUri->returns(['toHttps' => $httpUri]);
         assert($this->calledUri->toHttps(), isSameAs($httpUri));
     }
 
@@ -234,7 +234,7 @@ class CalledUriTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsStringRepresentationOfUri()
     {
-        $this->httpUri->mapCalls(['__toString' => 'http://example.net/foo/bar']);
+        $this->httpUri->returns(['__toString' => 'http://example.net/foo/bar']);
         assert((string) $this->calledUri, equals('http://example.net/foo/bar'));
     }
 }

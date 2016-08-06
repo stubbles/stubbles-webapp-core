@@ -72,8 +72,8 @@ class InterceptorsTest extends \PHPUnit_Framework_TestCase
      */
     public function respondsWithInternalServerErrorIfPreInterceptorDoesNotImplementInterface()
     {
-        $this->response->mapCalls(['internalServerError' => Error::internalServerError('')]);
-        $this->injector->mapCalls(['getInstance' => new \stdClass()]);
+        $this->response->returns(['internalServerError' => Error::internalServerError('')]);
+        $this->injector->returns(['getInstance' => new \stdClass()]);
         assertFalse(
                 $this->createInterceptors([
                         'some\PreInterceptor',
@@ -94,8 +94,8 @@ class InterceptorsTest extends \PHPUnit_Framework_TestCase
     public function doesNotCallOtherPreInterceptorsIfOneReturnsFalse()
     {
         $preInterceptor = NewInstance::of(PreInterceptor::class);
-        $preInterceptor->mapCalls(['preProcess' => false]);
-        $this->injector->mapCalls(['getInstance' => $preInterceptor]);
+        $preInterceptor->returns(['preProcess' => false]);
+        $this->injector->returns(['getInstance' => $preInterceptor]);
         assertFalse(
                 $this->createInterceptors([
                         'some\PreInterceptor',
@@ -111,7 +111,7 @@ class InterceptorsTest extends \PHPUnit_Framework_TestCase
     public function returnsTrueWhenNoPreInterceptorReturnsFalse()
     {
         $preInterceptor = NewInstance::of(PreInterceptor::class);
-        $this->injector->mapCalls(['getInstance' => $preInterceptor]);
+        $this->injector->returns(['getInstance' => $preInterceptor]);
         assertTrue(
                 $this->createInterceptors([
                         'some\PreInterceptor',
@@ -131,8 +131,8 @@ class InterceptorsTest extends \PHPUnit_Framework_TestCase
      */
     public function respondsWithInternalServerErrorIfPostInterceptorDoesNotImplementInterface()
     {
-        $this->response->mapCalls(['internalServerError' => Error::internalServerError('')]);
-        $this->injector->mapCalls(['getInstance' => new \stdClass()]);
+        $this->response->returns(['internalServerError' => Error::internalServerError('')]);
+        $this->injector->returns(['getInstance' => new \stdClass()]);
         assertFalse(
                 $this->createInterceptors(
                         [],
@@ -152,8 +152,8 @@ class InterceptorsTest extends \PHPUnit_Framework_TestCase
     public function doesNotCallOtherPostInterceptorsIfOneReturnsFalse()
     {
         $postInterceptor = NewInstance::of(PostInterceptor::class);
-        $postInterceptor->mapCalls(['postProcess' => false]);
-        $this->injector->mapCalls(['getInstance' => $postInterceptor]);
+        $postInterceptor->returns(['postProcess' => false]);
+        $this->injector->returns(['getInstance' => $postInterceptor]);
         assertFalse(
                 $this->createInterceptors(
                         [],
@@ -169,7 +169,7 @@ class InterceptorsTest extends \PHPUnit_Framework_TestCase
     public function returnsTrueWhenNoPostInterceptorReturnsFalse()
     {
         $postInterceptor = NewInstance::of(PostInterceptor::class);
-        $this->injector->mapCalls(['getInstance' => $postInterceptor]);
+        $this->injector->returns(['getInstance' => $postInterceptor]);
         assertTrue(
                 $this->createInterceptors(
                         [],

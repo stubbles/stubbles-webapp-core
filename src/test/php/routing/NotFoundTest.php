@@ -59,7 +59,7 @@ class NotFoundTest extends \PHPUnit_Framework_TestCase
      */
     public function returns404NotFoundError()
     {
-        $request = NewInstance::of(Request::class)->mapCalls([
+        $request = NewInstance::of(Request::class)->returns([
                 'protocolVersion' => new HttpVersion(1, 1)
         ]);
         $response = new WebResponse($request);
@@ -74,7 +74,7 @@ class NotFoundTest extends \PHPUnit_Framework_TestCase
      */
     public function sets404NotFoundStatusCode()
     {
-        $request = NewInstance::of(Request::class)->mapCalls([
+        $request = NewInstance::of(Request::class)->returns([
                 'protocolVersion' => new HttpVersion(1, 1)
         ]);
         $response = new WebResponse($request);

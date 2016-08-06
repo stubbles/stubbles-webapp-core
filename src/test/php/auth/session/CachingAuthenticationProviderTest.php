@@ -87,7 +87,7 @@ class CachingAuthenticationProviderTest extends \PHPUnit_Framework_TestCase
     public function usesSessionValueIfUserStoredInSession()
     {
         $user = NewInstance::of(User::class);
-        $this->session->mapCalls(['hasValue' => true, 'value' => $user]);
+        $this->session->returns(['hasValue' => true, 'value' => $user]);
         assert(
                 $this->cachingAuthenticationProvider->authenticate(
                         NewInstance::of(Request::class)
@@ -102,7 +102,7 @@ class CachingAuthenticationProviderTest extends \PHPUnit_Framework_TestCase
      */
     public function doesNotStoreReturnValueWhenOriginalAuthenticationProviderReturnsNull()
     {
-        $this->session->mapCalls(['hasValue' => false]);
+        $this->session->returns(['hasValue' => false]);
         assertNull(
                 $this->cachingAuthenticationProvider->authenticate(
                         NewInstance::of(Request::class)
@@ -117,8 +117,8 @@ class CachingAuthenticationProviderTest extends \PHPUnit_Framework_TestCase
     public function storeReturnValueInSessionWhenOriginalAuthenticationProviderReturnsUser()
     {
         $user = NewInstance::of(User::class);
-        $this->session->mapCalls(['hasValue' => false]);
-        $this->authenticationProvider->mapCalls(['authenticate' => $user]);
+        $this->session->returns(['hasValue' => false]);
+        $this->authenticationProvider->returns(['authenticate' => $user]);
         assert(
                 $this->cachingAuthenticationProvider->authenticate(
                         NewInstance::of(Request::class)
@@ -133,7 +133,7 @@ class CachingAuthenticationProviderTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsLoginUriFromOriginalAuthenticationProvider()
     {
-        $this->authenticationProvider->mapCalls([
+        $this->authenticationProvider->returns([
                 'loginUri' => 'http://login.example.net/'
         ]);
         assert(

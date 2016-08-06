@@ -56,7 +56,7 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
             string $givenFingerprint = 'aFingerprint',
             $storageFingerprint      = 'aFingerprint'
     ): WebSession {
-        $this->sessionStorage->mapCalls([
+        $this->sessionStorage->returns([
                 'hasValue' => null !== $storageFingerprint,
                 'value'    => $storageFingerprint
         ]);
@@ -127,7 +127,7 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
      */
     public function idIsSessionId()
     {
-        $this->sessionId->mapCalls(['__toString' => '303']);
+        $this->sessionId->returns(['__toString' => '303']);
         assert($this->createWebSession()->id(), equals('303'));
     }
 
@@ -146,7 +146,7 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
      */
     public function nameIsSessionIdName()
     {
-        $this->sessionId->mapCalls(['name' => 'foo']);
+        $this->sessionId->returns(['name' => 'foo']);
         assert($this->createWebSession()->name(), equals('foo'));
     }
 
@@ -169,7 +169,7 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
      */
     private function createInvalidWebSession(): WebSession
     {
-        $this->sessionStorage->mapCalls([
+        $this->sessionStorage->returns([
                 'hasValue' => onConsecutiveCalls(true, false),
                 'value'    => 'aFingerprint'
         ]);
@@ -223,7 +223,7 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
      */
     private function createWebSessionWithValues($value = null)
     {
-        $this->sessionStorage->mapCalls([
+        $this->sessionStorage->returns([
                 'hasValue' => function($key) use ($value)
                         {
                             if (Session::FINGERPRINT === $key) {
@@ -348,7 +348,7 @@ class WebSessionTest extends \PHPUnit_Framework_TestCase
     public function getValueKeysReturnsAllKeysWithoutFingerprint()
     {
         $session = $this->createWebSession();
-        $this->sessionStorage->mapCalls(
+        $this->sessionStorage->returns(
                 ['hasValue' => true, 'valueKeys' => [Session::FINGERPRINT, 'foo']]
         );
         assert($session->valueKeys(), equals(['foo']));

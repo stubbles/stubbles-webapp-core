@@ -56,7 +56,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
             $requestMethod = Http::GET,
             string $sapi   = PHP_SAPI
     ): WebResponse {
-        $request = NewInstance::of(Request::class)->mapCalls([
+        $request = NewInstance::of(Request::class)->returns([
                 'id'              => 'example-request-id-foo',
                 'protocolVersion' => HttpVersion::castFrom($httpVersion),
                 'method'          => $requestMethod
@@ -64,7 +64,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
         return NewInstance::of(
                 WebResponse::class,
                 [$request, new PassThrough(), $sapi]
-        )->mapCalls(['header' => false]); // prevent call to original method
+        )->returns(['header' => false]); // prevent call to original method
     }
 
     /**
@@ -182,7 +182,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     protected function createCookie($value = null): Cookie
     {
         return NewInstance::of(Cookie::class, ['foo', $value])
-                ->mapCalls(['send' => false]); // disable actual sending of cookie
+                ->returns(['send' => false]); // disable actual sending of cookie
     }
 
     /**

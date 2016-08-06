@@ -33,7 +33,7 @@ class TokenTest extends \PHPUnit_Framework_TestCase
     {
         assert(
                 Token::create(
-                        NewInstance::of(User::class)->mapCalls([
+                        NewInstance::of(User::class)->returns([
                                 'name'        => 'Heinz Mustermann',
                                 'firstName'   => 'Heinz',
                                 'lastName'    => 'Mustermann',

@@ -60,7 +60,7 @@ class MethodNotAllowedTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsMethodNotAllowedError()
     {
-        $request = NewInstance::of(Request::class)->mapCalls([
+        $request = NewInstance::of(Request::class)->returns([
                 'method'          => Http::DELETE,
                 'protocolVersion' => new HttpVersion(1, 1)
         ]);
@@ -79,7 +79,7 @@ class MethodNotAllowedTest extends \PHPUnit_Framework_TestCase
      */
     public function sets405MethodNotAllowedStatusCode()
     {
-        $request = NewInstance::of(Request::class)->mapCalls([
+        $request = NewInstance::of(Request::class)->returns([
                 'method'          => Http::DELETE,
                 'protocolVersion' => new HttpVersion(1, 1)
         ]);

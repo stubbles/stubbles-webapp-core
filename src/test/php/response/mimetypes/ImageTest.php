@@ -106,7 +106,7 @@ class ImageTest extends \PHPUnit_Framework_TestCase
     public function usesErrorImgResourceWhenResourceIsError()
     {
         $dummyDriver = new DummyDriver('fake');
-        $this->resourceLoader->mapCalls(
+        $this->resourceLoader->returns(
                 ['load' => ImageSource::load('error.png', $dummyDriver)]
         );
         $this->image->serialize(new Error('ups'), new MemoryOutputStream());
@@ -120,7 +120,7 @@ class ImageTest extends \PHPUnit_Framework_TestCase
     public function displaysImageLoadedFromFilename()
     {
         $dummyDriver = new DummyDriver('fake');
-        $this->resourceLoader->mapCalls(
+        $this->resourceLoader->returns(
                 ['load' => ImageSource::load('error.png', $dummyDriver)]
         );
         $this->image->serialize('pixel.png', new MemoryOutputStream());
@@ -149,7 +149,7 @@ class ImageTest extends \PHPUnit_Framework_TestCase
      */
     public function triggersUserErrorWhenImageLoadingFails()
     {
-        $this->resourceLoader->mapCalls(
+        $this->resourceLoader->returns(
                 ['load' => throws(new \Exception('hm...'))]
         );
         expect(function() {

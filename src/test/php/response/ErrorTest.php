@@ -35,7 +35,7 @@ class ErrorTest extends \PHPUnit_Framework_TestCase
         $paramErrors->append('foo', 'STRING_TOO_SHORT', ['baz' => 303]);
         $paramErrors->append('bar', 'STRING_TOO_LONG');
         $errorMessages = NewInstance::of(ParamErrorMessages::class)
-                ->mapCalls(['messageFor' => onConsecutiveCalls(
+                ->returns(['messageFor' => onConsecutiveCalls(
                         new LocalizedMessage('en_*', 'foo empty'),
                         new LocalizedMessage('en_*', 'foo_too_short'),
                         new LocalizedMessage('en_*', 'bar_too_long')

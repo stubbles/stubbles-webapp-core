@@ -61,13 +61,13 @@ class AbstractResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->request = NewInstance::of(Request::class)->mapCalls([
+        $this->request = NewInstance::of(Request::class)->returns([
                 'id'              => '313',
                 'protocolVersion' => new HttpVersion(1, 1),
                 'method'          => 'TEST'
         ]);
         $this->response = NewInstance::of(WebResponse::class, [$this->request])
-                ->mapCalls(['header' => false]);
+                ->returns(['header' => false]);
         $this->injector     = NewInstance::stub(Injector::class);
         $this->interceptors = NewInstance::stub(Interceptors::class);
     }
@@ -127,7 +127,7 @@ class AbstractResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function negotiatesNothingIfNoMatchCanBeFound()
     {
-        $request = NewInstance::of(Request::class)->mapCalls([
+        $request = NewInstance::of(Request::class)->returns([
                 'readHeader' => ValueReader::forValue('text/html')
         ]);
         assertFalse(
@@ -152,7 +152,7 @@ class AbstractResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function missingMimeTypeClassForNegotiatedMimeTypeTriggersInternalServerError()
     {
-        $request = NewInstance::of(Request::class)->mapCalls([
+        $request = NewInstance::of(Request::class)->returns([
                 'readHeader' => ValueReader::forValue('application/foo'),
                 'method'     => 'TEST'
         ]);
@@ -176,12 +176,12 @@ class AbstractResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function createsNegotiatedMimeType()
     {
-        $request = NewInstance::of(Request::class)->mapCalls([
+        $request = NewInstance::of(Request::class)->returns([
                 'readHeader' => ValueReader::forValue('application/json'),
                 'method'     => 'TEST'
         ]);
         $mimeType = new Json();
-        $this->injector->mapCalls(['getInstance' => $mimeType]);
+        $this->injector->returns(['getInstance' => $mimeType]);
         assertTrue(
                 $this->createRoute(
                         new SupportedMimeTypes(
@@ -206,7 +206,7 @@ class AbstractResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function delegatesPreInterceptingToInterceptors()
     {
-        $this->interceptors->mapCalls(['preProcess' => true]);
+        $this->interceptors->returns(['preProcess' => true]);
         assertTrue(
                 $this->createRoute()
                         ->applyPreInterceptors(
@@ -221,7 +221,7 @@ class AbstractResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function delegatesPostInterceptingToInterceptors()
     {
-        $this->interceptors->mapCalls(['postProcess' => true]);
+        $this->interceptors->returns(['postProcess' => true]);
         assertTrue(
                 $this->createRoute()
                         ->applyPostInterceptors(

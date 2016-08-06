@@ -62,7 +62,7 @@ class SessionBasedHtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
         $root = vfsStream::setup();
         vfsStream::newFile('index.html')->withContent('this is index.html')->at($root);
         vfsStream::newFile('foo.html')->withContent('this is foo.html')->at($root);
-        $this->session  = NewInstance::of(Session::class)->mapCalls([
+        $this->session  = NewInstance::of(Session::class)->returns([
                 'name' => 'psessid', 'id' => '313'
         ]);
         $this->request  = NewInstance::of(Request::class);
@@ -89,7 +89,7 @@ class SessionBasedHtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
     public function requestForNonExistingFileWritesNotFoundResponse()
     {
         $error = Error::notFound();
-        $this->response->mapCalls(['notFound' => $error]);
+        $this->response->returns(['notFound' => $error]);
         assert(
                 $this->sessionBasedHtmlFilePassThrough->resolve(
                         $this->request,
@@ -105,7 +105,7 @@ class SessionBasedHtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
      */
     public function selectsAvailableRoute()
     {
-        $this->request->mapCalls([
+        $this->request->returns([
                 'userAgent'          => new UserAgent('foo', true),
                 'hasSessionAttached' => false
         ]);
@@ -124,7 +124,7 @@ class SessionBasedHtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
      */
     public function fallsBackToIndexFileIfRequestForSlashOnly()
     {
-        $this->request->mapCalls([
+        $this->request->returns([
                 'userAgent'          => new UserAgent('foo', true),
                 'hasSessionAttached' => true,
                 'attachedSession'    => $this->session
@@ -147,7 +147,7 @@ class SessionBasedHtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
      */
     public function writesNoSessionDataToOutputIfCookiesEnabled()
     {
-        $this->request->mapCalls([
+        $this->request->returns([
                 'userAgent'          => new UserAgent('foo', true),
                 'hasSessionAttached' => true,
                 'attachedSession'    => $this->session
@@ -170,7 +170,7 @@ class SessionBasedHtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
      */
     public function writesSessionDataToOutputIfCookiesDisabled()
     {
-        $this->request->mapCalls([
+        $this->request->returns([
                 'userAgent'          => new UserAgent('foo', false),
                 'hasSessionAttached' => true,
                 'attachedSession'    => $this->session

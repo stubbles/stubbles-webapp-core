@@ -90,14 +90,14 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
     private function createResource(): UriResource
     {
         $resource = NewInstance::of(UriResource::class);
-        $this->routing->mapCalls(['findResource' => $resource]);
+        $this->routing->returns(['findResource' => $resource]);
         return $resource;
     }
 
     private function createNonHttpsResource(array $callmap = []): UriResource
     {
         $resource = $this->createResource();
-        $resource->mapCalls(array_merge(
+        $resource->returns(array_merge(
                 ['requiresHttps'         => false,
                  'negotiateMimeType'     => true,
                  'applyPreInterceptors'  => true,
@@ -114,7 +114,7 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
     public function respondsWithRedirectHttpsUriIfRequiresHttps()
     {
         $resource = $this->createResource();
-        $resource->mapCalls([
+        $resource->returns([
                 'requiresHttps' => true,
                 'httpsUri'      => HttpUri::fromString('https://example.net/admin')
         ]);
@@ -134,8 +134,8 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
     public function doesNotExecuteInterceptorsAndResourceIfMimeTypeNegotiationFails  ()
     {
         $resource = NewInstance::of(UriResource::class);
-        $this->routing->mapCalls(['findResource' => $resource]);
-        $resource->mapCalls([
+        $this->routing->returns(['findResource' => $resource]);
+        $resource->returns([
                 'requiresHttps'     => false,
                 'negotiateMimeType' => false
         ]);
@@ -201,7 +201,7 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
     private function setUpExceptionLogger(): ExceptionLogger
     {
         $exceptionLogger = NewInstance::stub(ExceptionLogger::class);
-        $this->injector->mapCalls(['getInstance' => $exceptionLogger]);
+        $this->injector->returns(['getInstance' => $exceptionLogger]);
         return $exceptionLogger;
 
     }

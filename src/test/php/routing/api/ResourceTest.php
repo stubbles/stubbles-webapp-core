@@ -76,7 +76,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function hasDescriptionWhenNotNull()
     {
-        $this->routingAnnotations->mapCalls(
+        $this->routingAnnotations->returns(
                 ['description' => 'Endpoint for handling orders.']
         );
         assertTrue($this->resource->hasDescription());
@@ -95,7 +95,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsProvidedDescription()
     {
-        $this->routingAnnotations->mapCalls(
+        $this->routingAnnotations->returns(
                 ['description' => 'Endpoint for handling orders.']
         );
         assert(
@@ -141,7 +141,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function providesNoStatusCodesWhenNoStatusAnnotationPresent()
     {
-        $this->routingAnnotations->mapCalls(
+        $this->routingAnnotations->returns(
                 ['containStatusCodes' => false]
         );
 
@@ -153,7 +153,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function providesStatusCodesWhenStatusAnnotationPresent()
     {
-        $this->routingAnnotations->mapCalls(
+        $this->routingAnnotations->returns(
                 ['containStatusCodes' => true]
         );
 
@@ -165,7 +165,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsProvidedListOfAnnotatedStatusCodes()
     {
-        $this->routingAnnotations->mapCalls(
+        $this->routingAnnotations->returns(
                 ['statusCodes' => [new Status(200, 'Default response code')]]
         );
         assert(
@@ -179,7 +179,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function providesNoHeadersWhenNoHeaderAnnotationPresent()
     {
-        $this->routingAnnotations->mapCalls(
+        $this->routingAnnotations->returns(
                 ['containHeaders' => false]
         );
 
@@ -191,7 +191,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function providesHeadersWhenHeaderAnnotationPresent()
     {
-        $this->routingAnnotations->mapCalls(
+        $this->routingAnnotations->returns(
                 ['containHeaders' => true]
         );
 
@@ -203,7 +203,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsProvidedListOfAnnotatedHeaders()
     {
-        $this->routingAnnotations->mapCalls(
+        $this->routingAnnotations->returns(
                 ['headers' => [new Header('X-Binford', 'More power!')]]
         );
         assert(
@@ -217,7 +217,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function providesNoParametersWhenNoParameterAnnotationPresent()
     {
-        $this->routingAnnotations->mapCalls(
+        $this->routingAnnotations->returns(
                 ['containParameters' => false]
         );
 
@@ -229,7 +229,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function providesParametersWhenParameterAnnotationPresent()
     {
-        $this->routingAnnotations->mapCalls(
+        $this->routingAnnotations->returns(
                 ['containParameters' => true]
         );
 
@@ -241,7 +241,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsProvidedListOfAnnotatedParameters()
     {
-        $this->routingAnnotations->mapCalls(
+        $this->routingAnnotations->returns(
                 ['parameters' => [new Parameter('binford', 'More power!', 'query')]]
         );
         assert(

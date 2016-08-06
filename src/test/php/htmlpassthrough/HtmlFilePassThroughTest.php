@@ -81,7 +81,7 @@ class HtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
                 $this->htmlFilePassThrough->resolve(
                         NewInstance::of(Request::class),
                         NewInstance::of(Response::class)
-                                ->mapCalls(['notFound' => $error]),
+                                ->returns(['notFound' => $error]),
                         new UriPath('/', '/doesNotExist.html')
                 ),
                 isSameAs($error)

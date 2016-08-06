@@ -186,7 +186,7 @@ class ResolvingResourceTest extends \PHPUnit_Framework_TestCase
     public function processCallsGivenProcessorInstance()
     {
         $target = NewInstance::of(Target::class);
-        $target->mapCalls(['resolve' => 'Hello world']);
+        $target->returns(['resolve' => 'Hello world']);
         assert(
                 $this->createResolvingResourceWithTarget($target)
                         ->resolve($this->request, $this->response),
@@ -204,9 +204,9 @@ class ResolvingResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function respondsWithInternalServerErrorIfProcessorDoesNotImplementInterface()
     {
-        $this->injector->mapCalls(['getInstance' => new \stdClass()]);
+        $this->injector->returns(['getInstance' => new \stdClass()]);
         $error = new Error('error');
-        $this->response->mapCalls(['internalServerError' => $error]);
+        $this->response->returns(['internalServerError' => $error]);
         assert(
                 $this->createResolvingResourceWithTarget('\stdClass')
                         ->resolve($this->request, $this->response),
@@ -220,8 +220,8 @@ class ResolvingResourceTest extends \PHPUnit_Framework_TestCase
     public function processCreatesAndCallsGivenProcessorClass()
     {
         $target = NewInstance::of(Target::class);
-        $target->mapCalls(['resolve' => 'Hello world']);
-        $this->injector->mapCalls(['getInstance' => $target]);
+        $target->returns(['resolve' => 'Hello world']);
+        $this->injector->returns(['getInstance' => $target]);
         assert(
                 $this->createResolvingResourceWithTarget(get_class($target))
                         ->resolve($this->request, $this->response),

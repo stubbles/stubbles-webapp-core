@@ -67,7 +67,7 @@ class XmlTest extends \PHPUnit_Framework_TestCase
      */
     public function serializesResourceToXml()
     {
-        $this->xmlSerializerFacade->mapCalls(['serializeToXml' => '<xml/>']);
+        $this->xmlSerializerFacade->returns(['serializeToXml' => '<xml/>']);
         assert(
                 $this->xml->serialize(
                         'value',

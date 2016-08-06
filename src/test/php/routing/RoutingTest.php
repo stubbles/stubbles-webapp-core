@@ -453,11 +453,11 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
      */
     public function passesGlobalClassToSupportedMimeTypesOfSelectedRoute()
     {
-        $request = NewInstance::of(Request::class)->mapCalls([
+        $request = NewInstance::of(Request::class)->returns([
                 'readHeader' => ValueReader::forValue('application/foo')
         ]);
         $mimeType = new Json();
-        $this->injector->mapCalls(['getInstance' => $mimeType]);
+        $this->injector->returns(['getInstance' => $mimeType]);
         $this->routing->onGet('/hello', function() {})
                 ->supportsMimeType('application/json');
         $this->routing->supportsMimeType('application/foo', 'example\Special');
