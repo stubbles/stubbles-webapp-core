@@ -119,7 +119,7 @@ class CsvTest extends \PHPUnit_Framework_TestCase
         expect(function() {
                 $this->csv->serialize(fopen(__FILE__, 'r'), $this->memory);
         })
-                ->throws(\PHPUnit_Framework_Error::class)
+                ->triggers(E_USER_ERROR)
                 ->withMessage('Resource of type resource[stream] can not be serialized to csv')
                 ->after($this->memory->buffer(), isEmpty());
     }

@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "38d38a6292fb943bbb55bce73299aee3",
-    "content-hash": "9d30005a393378d68e50c88eccf3a022",
+    "hash": "3f5b902eafb58bb47748dbc7ed09833f",
+    "content-hash": "e248157a69137c8ae47a8fb9c4f944f3",
     "packages": [
         {
             "name": "stubbles/input",
@@ -344,16 +344,16 @@
     "packages-dev": [
         {
             "name": "bovigo/assert",
-            "version": "v2.0.0",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mikey179/bovigo-assert.git",
-                "reference": "5187f3f880fbe8c4a937c0d362682431429f999f"
+                "reference": "dd49538ea71e1cba6535dd2813f88a2875218a80"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mikey179/bovigo-assert/zipball/5187f3f880fbe8c4a937c0d362682431429f999f",
-                "reference": "5187f3f880fbe8c4a937c0d362682431429f999f",
+                "url": "https://api.github.com/repos/mikey179/bovigo-assert/zipball/dd49538ea71e1cba6535dd2813f88a2875218a80",
+                "reference": "dd49538ea71e1cba6535dd2813f88a2875218a80",
                 "shasum": ""
             },
             "require": {
@@ -363,12 +363,12 @@
             },
             "require-dev": {
                 "mikey179/vfsstream": "^1.6",
-                "phpunit/phpunit": "^5.4"
+                "phpunit/phpunit": "^5.5"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.0.x-dev"
+                    "dev-master": "2.1.x-dev"
                 }
             },
             "autoload": {
@@ -385,7 +385,7 @@
                 "BSD-3-Clause"
             ],
             "description": "Provides assertions for unit tests.",
-            "time": "2016-07-10 10:31:41"
+            "time": "2016-08-22 21:13:23"
         },
         {
             "name": "bovigo/callmap",

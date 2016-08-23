@@ -155,7 +155,7 @@ class ImageTest extends \PHPUnit_Framework_TestCase
         expect(function() {
                 $this->image->serialize('pixel.png', new MemoryOutputStream());
         })
-                ->throws(\PHPUnit_Framework_Error::class)
+                ->triggers(E_USER_ERROR)
                 ->withMessage('Can not load image "pixel.png": hm...');
     }
 }
