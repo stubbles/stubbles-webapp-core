@@ -80,6 +80,7 @@ class NativeSessionStorageTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @test
+     * @skip  if headers_sent
      */
     public function canRegenerateSessionId()
     {
