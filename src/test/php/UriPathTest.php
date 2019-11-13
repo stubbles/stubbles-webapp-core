@@ -5,11 +5,11 @@ declare(strict_types=1);
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- *
- * @package  stubbles\webapp
  */
 namespace stubbles\webapp;
-use function bovigo\assert\assert;
+use PHPUnit\Framework\TestCase;
+
+use function bovigo\assert\assertThat;
 use function bovigo\assert\assertFalse;
 use function bovigo\assert\assertNull;
 use function bovigo\assert\assertTrue;
@@ -20,7 +20,7 @@ use function bovigo\assert\predicate\equals;
  * @since  2.0.0
  * @group  core
  */
-class UriPathTest extends \PHPUnit_Framework_TestCase
+class UriPathTest extends TestCase
 {
     /**
      * instance to test
@@ -29,10 +29,7 @@ class UriPathTest extends \PHPUnit_Framework_TestCase
      */
     private $uriPath;
 
-    /**
-     * set up test environment
-     */
-    public function setUp()
+    protected function setUp(): void
     {
         $this->uriPath = new UriPath('/hello/{name}', '/hello/world/foo');
     }
@@ -42,7 +39,7 @@ class UriPathTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsGivenConfiguredPath()
     {
-        assert($this->uriPath->configured(), equals('/hello/{name}'));
+        assertThat($this->uriPath->configured(), equals('/hello/{name}'));
     }
 
     /**
@@ -51,7 +48,7 @@ class UriPathTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsGivenActualPath()
     {
-        assert($this->uriPath->actual(), equals('/hello/world/foo'));
+        assertThat($this->uriPath->actual(), equals('/hello/world/foo'));
     }
 
     /**
@@ -60,7 +57,7 @@ class UriPathTest extends \PHPUnit_Framework_TestCase
      */
     public function castingToStringReturnsActualPath()
     {
-        assert((string) $this->uriPath, equals('/hello/world/foo'));
+        assertThat((string) $this->uriPath, equals('/hello/world/foo'));
     }
 
     public function providePathArguments(): array
@@ -82,7 +79,7 @@ class UriPathTest extends \PHPUnit_Framework_TestCase
         $uriPath = new UriPath($configuredPath, $calledPath);
         foreach ($expectedArguments as $name => $value) {
             assertTrue($uriPath->hasArgument($name));
-            assert($uriPath->readArgument($name)->unsecure(), equals($value));
+            assertThat($uriPath->readArgument($name)->unsecure(), equals($value));
         }
     }
 
@@ -124,7 +121,7 @@ class UriPathTest extends \PHPUnit_Framework_TestCase
             $expected
     ) {
         $uriPath = new UriPath($configuredPath, $calledPath);
-        assert($uriPath->remaining(), equals($expected));
+        assertThat($uriPath->remaining(), equals($expected));
     }
 
     /**
@@ -133,6 +130,6 @@ class UriPathTest extends \PHPUnit_Framework_TestCase
     public function returnsDefaultIfRemainingPathIsNull()
     {
         $this->uriPath = new UriPath('/hello/{name}', '/hello/world');
-        assert($this->uriPath->remaining('index.html'), equals('index.html'));
+        assertThat($this->uriPath->remaining('index.html'), equals('index.html'));
     }
 }

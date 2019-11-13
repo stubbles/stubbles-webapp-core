@@ -5,11 +5,10 @@ declare(strict_types=1);
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- *
- * @package  stubbles\webapp
  */
 namespace stubbles\webapp\auth;
 use bovigo\callmap\NewInstance;
+use PHPUnit\Framework\TestCase;
 use stubbles\ioc\Injector;
 use stubbles\peer\http\HttpUri;
 use stubbles\webapp\{Request, Response};
@@ -19,7 +18,7 @@ use stubbles\webapp\response\Error;
 use stubbles\webapp\routing\{RoutingAnnotations, UriResource};
 
 use function bovigo\assert\{
-    assert,
+    assertThat,
     assertNull,
     assertTrue,
     predicate\equals,
@@ -32,7 +31,7 @@ use function bovigo\callmap\{onConsecutiveCalls, throws, verify};
  * @since  3.0.0
  * @group  auth
  */
-class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
+class ProtectedResourceTest extends TestCase
 {
     /**
      * instance to test
@@ -71,10 +70,7 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
      */
     private $response;
 
-    /**
-     * set up test environment
-     */
-    public function setUp()
+    protected function setUp(): void
     {
         $this->authConstraint    = new AuthConstraint(new RoutingAnnotations(function() {}));
         $this->actualResource    = NewInstance::of(UriResource::class);
@@ -104,7 +100,7 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
     {
         $httpsUri = HttpUri::fromString('https://example.com/hello');
         $this->actualResource->returns(['httpsUri' => $httpsUri]);
-        assert($this->protectedResource->httpsUri(), isSameAs($httpsUri));
+        assertThat($this->protectedResource->httpsUri(), isSameAs($httpsUri));
     }
 
     /**
@@ -128,7 +124,7 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
     public function returnsSupportedMimeTypesOfActualRoute()
     {
         $this->actualResource->returns(['supportedMimeTypes' => ['application/foo']]);
-        assert(
+        assertThat(
                 $this->protectedResource->supportedMimeTypes(),
                 equals(['application/foo'])
         );
@@ -156,7 +152,7 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
                         $this->response
                 )
         );
-        assert(
+        assertThat(
                 $this->protectedResource->resolve(
                         $this->request,
                         $this->response
@@ -181,7 +177,7 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
                 $this->request,
                 $this->response
         ));
-        assert(
+        assertThat(
                 $this->protectedResource->resolve(
                         $this->request,
                         $this->response
@@ -226,7 +222,7 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
                 $this->request,
                 $this->response
         ));
-        assert(
+        assertThat(
                 $this->protectedResource->resolve(
                         $this->request,
                         $this->response
@@ -266,7 +262,7 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
         $request = WebRequest::fromRawSource();
         $this->actualResource->returns(['applyPreInterceptors' => true]);
         $this->protectedResource->applyPreInterceptors($request, $this->response);
-        assert($request->identity()->user(), isSameAs($user));
+        assertThat($request->identity()->user(), isSameAs($user));
     }
 
     private function createAuthorizationProvider($roles, User $user = null): AuthorizationProvider
@@ -298,7 +294,7 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
                 $this->request,
                 $this->response
         ));
-        assert(
+        assertThat(
                 $this->protectedResource->resolve(
                         $this->request,
                         $this->response
@@ -324,7 +320,7 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
                 $this->request,
                 $this->response
         ));
-        assert(
+        assertThat(
                 $this->protectedResource->resolve(
                         $this->request,
                         $this->response
@@ -348,7 +344,7 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
                 $this->request,
                 $this->response
         ));
-        assert(
+        assertThat(
                 $this->protectedResource->resolve(
                         $this->request,
                         $this->response
@@ -388,7 +384,7 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
                 $request,
                 $this->response
         );
-        assert($request->identity()->user(), isSameAs($user));
+        assertThat($request->identity()->user(), isSameAs($user));
     }
 
     /**
@@ -405,7 +401,7 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
                 $request,
                 $this->response
         );
-        assert($request->identity()->roles(), isSameAs($roles));
+        assertThat($request->identity()->roles(), isSameAs($roles));
     }
 
     /**
@@ -434,7 +430,7 @@ class ProtectedResourceTest extends \PHPUnit_Framework_TestCase
                 $this->request,
                 $this->response
         ));
-        assert(
+        assertThat(
                 $this->protectedResource->resolve(
                         $this->request,
                         $this->response

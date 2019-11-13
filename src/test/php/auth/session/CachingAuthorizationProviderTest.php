@@ -5,16 +5,15 @@ declare(strict_types=1);
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- *
- * @package  stubbles\webapp
  */
 namespace stubbles\webapp\auth\session;
 use bovigo\callmap\NewInstance;
+use PHPUnit\Framework\TestCase;
 use stubbles\webapp\auth\{AuthorizationProvider, Roles, User};
 use stubbles\webapp\session\Session;
 
 use function bovigo\assert\{
-    assert,
+    assertThat,
     assertFalse,
     assertNull,
     assertTrue,
@@ -30,7 +29,7 @@ use function stubbles\reflect\annotationsOfConstructorParameter;
  * @group  auth
  * @group  auth_session
  */
-class CachingAuthorizationProviderTest extends \PHPUnit_Framework_TestCase
+class CachingAuthorizationProviderTest extends TestCase
 {
     /**
      * instance to test
@@ -51,10 +50,7 @@ class CachingAuthorizationProviderTest extends \PHPUnit_Framework_TestCase
      */
     private $authorizationProvider;
 
-    /**
-     * set up test environment
-     */
-    public function setUp()
+    protected function setUp(): void
     {
         $this->session                  = NewInstance::of(Session::class);
         $this->authorizationProvider    = NewInstance::of(AuthorizationProvider::class);
@@ -74,7 +70,7 @@ class CachingAuthorizationProviderTest extends \PHPUnit_Framework_TestCase
                 $this->cachingAuthorizationProvider
         );
         assertTrue($annotations->contain('Named'));
-        assert(
+        assertThat(
                 $annotations->firstNamed('Named')->getName(),
                 equals('original')
         );
@@ -87,7 +83,7 @@ class CachingAuthorizationProviderTest extends \PHPUnit_Framework_TestCase
     {
         $roles = new Roles(['admin']);
         $this->session->returns(['hasValue' => true, 'value' => $roles]);
-        assert(
+        assertThat(
                 $this->cachingAuthorizationProvider->roles(
                         NewInstance::of(User::class)
                 ),
@@ -104,7 +100,7 @@ class CachingAuthorizationProviderTest extends \PHPUnit_Framework_TestCase
         $roles = new Roles(['admin']);
         $this->session->returns(['hasValue' => false]);
         $this->authorizationProvider->returns(['roles' => $roles]);
-        assert(
+        assertThat(
                 $this->cachingAuthorizationProvider->roles(
                         NewInstance::of(User::class)
                 ),

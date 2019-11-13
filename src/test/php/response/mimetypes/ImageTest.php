@@ -5,18 +5,18 @@ declare(strict_types=1);
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- *
- * @package  stubbles\webapp
  */
 namespace stubbles\webapp\response\mimetypes;
 use bovigo\callmap\NewInstance;
+use PHPUnit\Framework\TestCase;
 use stubbles\img\Image as ImageSource;
 use stubbles\img\driver\DummyDriver;
 use stubbles\streams\memory\MemoryOutputStream;
 use stubbles\values\ResourceLoader;
 use stubbles\webapp\response\Error;
 
-use function bovigo\assert\assert;
+use function bovigo\assert\assertThat;
+use function bovigo\assert\assertEmptyString;
 use function bovigo\assert\assertTrue;
 use function bovigo\assert\expect;
 use function bovigo\assert\predicate\equals;
@@ -30,7 +30,7 @@ use function stubbles\reflect\annotationsOfConstructorParameter;
  * @group  mimetypes
  * @since  6.0.0
  */
-class ImageTest extends \PHPUnit_Framework_TestCase
+class ImageTest extends TestCase
 {
     /**
      * @type  \stubbles\webapp\response\mimetypes\Image
@@ -41,11 +41,7 @@ class ImageTest extends \PHPUnit_Framework_TestCase
      */
     private $resourceLoader;
 
-
-    /**
-     * set up test environment
-     */
-    public function setUp()
+    protected function setUp(): void
     {
         $this->resourceLoader = NewInstance::stub(ResourceLoader::class);
         $this->image = new Image($this->resourceLoader, 'error.png');
@@ -61,7 +57,7 @@ class ImageTest extends \PHPUnit_Framework_TestCase
                 $this->image
         );
         assertTrue($annotations->contain('Property'));
-        assert(
+        assertThat(
                 $annotations->firstNamed('Property')->getName(),
                 equals('stubbles.img.error')
         );
@@ -72,7 +68,7 @@ class ImageTest extends \PHPUnit_Framework_TestCase
      */
     public function defaultMimeType()
     {
-        assert((string) $this->image, equals('image/*'));
+        assertThat((string) $this->image, equals('image/*'));
     }
 
     /**
@@ -80,7 +76,7 @@ class ImageTest extends \PHPUnit_Framework_TestCase
      */
     public function mimeTypeCanBeSpecialised()
     {
-        assert(
+        assertThat(
                 (string) $this->image->specialise('image/png'),
                 equals('image/png')
         );
@@ -97,7 +93,9 @@ class ImageTest extends \PHPUnit_Framework_TestCase
      */
     public function doesNothingWhenPassedResourceIsEmpty($empty)
     {
-        $this->image->serialize($empty, new MemoryOutputStream());
+        $out = new MemoryOutputStream();
+        $this->image->serialize($empty, $out);
+        assertEmptyString($out->buffer());
     }
 
     /**
@@ -110,7 +108,7 @@ class ImageTest extends \PHPUnit_Framework_TestCase
                 ['load' => ImageSource::load('error.png', $dummyDriver)]
         );
         $this->image->serialize(new Error('ups'), new MemoryOutputStream());
-        assert($dummyDriver->lastDisplayedHandle(), equals('fake'));
+        assertThat($dummyDriver->lastDisplayedHandle(), equals('fake'));
         verify($this->resourceLoader, 'load')->received('error.png');
     }
 
@@ -124,7 +122,7 @@ class ImageTest extends \PHPUnit_Framework_TestCase
                 ['load' => ImageSource::load('error.png', $dummyDriver)]
         );
         $this->image->serialize('pixel.png', new MemoryOutputStream());
-        assert($dummyDriver->lastDisplayedHandle(), equals('fake'));
+        assertThat($dummyDriver->lastDisplayedHandle(), equals('fake'));
         verify($this->resourceLoader, 'load')->received('pixel.png');
     }
 
@@ -141,7 +139,7 @@ class ImageTest extends \PHPUnit_Framework_TestCase
                 ),
                 new MemoryOutputStream()
         );
-        assert($dummyDriver->lastDisplayedHandle(), equals('fake'));
+        assertThat($dummyDriver->lastDisplayedHandle(), equals('fake'));
     }
 
     /**

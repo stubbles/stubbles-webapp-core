@@ -53,7 +53,7 @@ class NativeSessionStorage implements SessionStorage, SessionId
             return;
         }
 
-        @session_start();
+        session_start();
         $this->initialized = true;
     }
 

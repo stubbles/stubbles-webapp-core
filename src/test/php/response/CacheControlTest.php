@@ -5,11 +5,11 @@ declare(strict_types=1);
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- *
- * @package  stubbles\webapp
  */
 namespace stubbles\webapp\response;
-use function bovigo\assert\assert;
+use PHPUnit\Framework\TestCase;
+
+use function bovigo\assert\assertThat;
 use function bovigo\assert\predicate\equals;
 /**
  * Tests for stubbles\webapp\response\CacheControl.
@@ -18,7 +18,7 @@ use function bovigo\assert\predicate\equals;
  * @group  issue_71
  * @since  5.1.0
  */
-class CacheControlTest extends \PHPUnit_Framework_TestCase
+class CacheControlTest extends TestCase
 {
     /**
      * instance to test
@@ -27,10 +27,7 @@ class CacheControlTest extends \PHPUnit_Framework_TestCase
      */
     private $cacheControl;
 
-    /**
-     * set up test environment
-     */
-    public function setUp()
+    protected function setUp(): void
     {
         $this->cacheControl = new CacheControl();
     }
@@ -40,7 +37,7 @@ class CacheControlTest extends \PHPUnit_Framework_TestCase
      */
     public function onlyPrivateEnabledByDefault()
     {
-        assert($this->cacheControl, equals('private'));
+        assertThat($this->cacheControl, equals('private'));
     }
 
     /**
@@ -48,7 +45,7 @@ class CacheControlTest extends \PHPUnit_Framework_TestCase
      */
     public function enablePublicDisablesPrivate()
     {
-        assert($this->cacheControl->enablePublic(), equals('public'));
+        assertThat($this->cacheControl->enablePublic(), equals('public'));
     }
 
     /**
@@ -56,7 +53,7 @@ class CacheControlTest extends \PHPUnit_Framework_TestCase
      */
     public function mustRevalidateEnabled()
     {
-        assert(
+        assertThat(
                 $this->cacheControl->disablePrivate()->mustRevalidate(),
                 equals('must-revalidate')
         );
@@ -67,7 +64,7 @@ class CacheControlTest extends \PHPUnit_Framework_TestCase
      */
     public function proxyRevalidateEnabled()
     {
-        assert(
+        assertThat(
                 $this->cacheControl->disablePrivate()->proxyRevalidate(),
                 equals('proxy-revalidate')
         );
@@ -78,7 +75,7 @@ class CacheControlTest extends \PHPUnit_Framework_TestCase
      */
     public function noCacheEnabled()
     {
-        assert(
+        assertThat(
                 $this->cacheControl->disablePrivate()->noCache(),
                 equals('no-cache')
         );
@@ -89,7 +86,7 @@ class CacheControlTest extends \PHPUnit_Framework_TestCase
      */
     public function noStoreEnabled()
     {
-        assert(
+        assertThat(
                 $this->cacheControl->disablePrivate()->noStore(),
                 equals('no-store')
         );
@@ -100,7 +97,7 @@ class CacheControlTest extends \PHPUnit_Framework_TestCase
      */
     public function noTransformEnabled()
     {
-        assert(
+        assertThat(
                 $this->cacheControl->disablePrivate()->noTransform(),
                 equals('no-transform')
         );
@@ -111,7 +108,7 @@ class CacheControlTest extends \PHPUnit_Framework_TestCase
      */
     public function maxAgeSet()
     {
-        assert(
+        assertThat(
                 $this->cacheControl->disablePrivate()->maxAge(3),
                 equals('max-age=3')
         );
@@ -122,7 +119,7 @@ class CacheControlTest extends \PHPUnit_Framework_TestCase
      */
     public function sMaxAgeSet()
     {
-        assert(
+        assertThat(
                 $this->cacheControl->disablePrivate()->sMaxAge(3),
                 equals('s-maxage=3')
         );
@@ -133,7 +130,7 @@ class CacheControlTest extends \PHPUnit_Framework_TestCase
      */
     public function severalDirectives()
     {
-        assert(
+        assertThat(
                 $this->cacheControl->mustRevalidate()->noCache()->noStore(),
                 equals('must-revalidate, no-cache, no-store, private')
         );

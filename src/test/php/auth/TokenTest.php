@@ -5,14 +5,13 @@ declare(strict_types=1);
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- *
- * @package  stubbles\webapp
  */
 namespace stubbles\webapp\auth;
 use bovigo\callmap\NewInstance;
+use PHPUnit\Framework\TestCase;
 
 use function bovigo\assert\{
-    assert,
+    assertThat,
     assertFalse,
     assertTrue,
     predicate\equals,
@@ -24,14 +23,14 @@ use function bovigo\assert\{
  * @since  5.0.0
  * @group  auth
  */
-class TokenTest extends \PHPUnit_Framework_TestCase
+class TokenTest extends TestCase
 {
     /**
      * @test
      */
     public function canCreateTokenFromUser()
     {
-        assert(
+        assertThat(
                 Token::create(
                         NewInstance::of(User::class)->returns([
                                 'name'        => 'Heinz Mustermann',
@@ -59,7 +58,7 @@ class TokenTest extends \PHPUnit_Framework_TestCase
     public function tokenCanBeCastedToString($tokenValue)
     {
         $token = new Token($tokenValue);
-        assert((string) $token, equals($tokenValue));
+        assertThat((string) $token, equals($tokenValue));
     }
 
     public function emptyValues(): array

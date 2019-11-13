@@ -5,11 +5,10 @@ declare(strict_types=1);
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- *
- * @package  stubbles\webapp
  */
 namespace stubbles\webapp\htmlpassthrough;
 use bovigo\callmap\NewInstance;
+use PHPUnit\Framework\TestCase;
 use org\bovigo\vfs\vfsStream;
 use stubbles\webapp\Request;
 use stubbles\webapp\Response;
@@ -18,7 +17,7 @@ use stubbles\webapp\request\UserAgent;
 use stubbles\webapp\response\Error;
 use stubbles\webapp\session\Session;
 
-use function bovigo\assert\assert;
+use function bovigo\assert\assertThat;
 use function bovigo\assert\predicate\equals;
 use function bovigo\assert\predicate\isSameAs;
 use function bovigo\callmap\verify;
@@ -27,7 +26,7 @@ use function bovigo\callmap\verify;
  *
  * @group  htmlpassthrough
  */
-class SessionBasedHtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
+class SessionBasedHtmlFilePassThroughTest extends TestCase
 {
     /**
      * instance to test
@@ -54,10 +53,7 @@ class SessionBasedHtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
      */
     private $response;
 
-    /**
-     * set up the test environment
-     */
-    public function setUp()
+    protected function setUp(): void
     {
         $root = vfsStream::setup();
         vfsStream::newFile('index.html')->withContent('this is index.html')->at($root);
@@ -77,7 +73,7 @@ class SessionBasedHtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
      */
     public function functionReturnsClassName()
     {
-        assert(
+        assertThat(
                 \stubbles\webapp\sessionBasedHtmlPassThrough(),
                 equals(SessionBasedHtmlFilePassThrough::class)
         );
@@ -90,7 +86,7 @@ class SessionBasedHtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
     {
         $error = Error::notFound();
         $this->response->returns(['notFound' => $error]);
-        assert(
+        assertThat(
                 $this->sessionBasedHtmlFilePassThrough->resolve(
                         $this->request,
                         $this->response,
@@ -109,7 +105,7 @@ class SessionBasedHtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
                 'userAgent'          => new UserAgent('foo', true),
                 'hasSessionAttached' => false
         ]);
-        assert(
+        assertThat(
                 $this->sessionBasedHtmlFilePassThrough->resolve(
                         $this->request,
                         $this->response,
@@ -130,7 +126,7 @@ class SessionBasedHtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
                 'attachedSession'    => $this->session
 
         ]);
-        assert(
+        assertThat(
                 $this->sessionBasedHtmlFilePassThrough->resolve(
                         $this->request,
                         $this->response,
@@ -153,7 +149,7 @@ class SessionBasedHtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
                 'attachedSession'    => $this->session
 
         ]);
-        assert(
+        assertThat(
                 $this->sessionBasedHtmlFilePassThrough->resolve(
                         $this->request,
                         $this->response,
@@ -176,7 +172,7 @@ class SessionBasedHtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
                 'attachedSession'    => $this->session
 
         ]);
-        assert(
+        assertThat(
                 $this->sessionBasedHtmlFilePassThrough->resolve(
                         $this->request,
                         $this->response,
@@ -186,5 +182,7 @@ class SessionBasedHtmlFilePassThroughTest extends \PHPUnit_Framework_TestCase
         );
         verify($this->session, 'name')->wasCalledOnce();
         verify($this->session, 'id')->wasCalledOnce();
+        // need to end output buffer opened by SessionBasedHtmlFilePassThrough
+        ob_end_clean();
     }
 }

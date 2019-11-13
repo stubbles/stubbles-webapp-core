@@ -5,13 +5,12 @@ declare(strict_types=1);
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- *
- * @package  stubbles\webapp
  */
 namespace stubbles\webapp\auth;
 use bovigo\callmap\NewInstance;
+use PHPUnit\Framework\TestCase;
 
-use function bovigo\assert\assert;
+use function bovigo\assert\assertThat;
 use function bovigo\assert\assertTrue;
 use function bovigo\assert\predicate\equals;
 use function bovigo\assert\predicate\isSameAs;
@@ -21,7 +20,7 @@ use function bovigo\assert\predicate\isSameAs;
  * @since  6.0.0
  * @group  auth
  */
-class IdentityTest extends \PHPUnit_Framework_TestCase
+class IdentityTest extends TestCase
 {
     private function createIdentity(User $user = null): Identity
     {
@@ -37,7 +36,7 @@ class IdentityTest extends \PHPUnit_Framework_TestCase
     public function isAssociatedWithGivenUser()
     {
         $user = NewInstance::of(User::class);
-        assert(
+        assertThat(
                 $this->createIdentity($user)->user(),
                 isSameAs($user)
         );
@@ -56,6 +55,6 @@ class IdentityTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsGivenRoles()
     {
-        assert($this->createIdentity()->roles(), equals(new Roles(['admin'])));
+        assertThat($this->createIdentity()->roles(), equals(new Roles(['admin'])));
     }
 }

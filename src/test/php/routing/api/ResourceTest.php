@@ -5,16 +5,15 @@ declare(strict_types=1);
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- *
- * @package  stubbles\webapp
  */
 namespace stubbles\webapp\routing\api;
 use bovigo\callmap\NewInstance;
+use PHPUnit\Framework\TestCase;
 use stubbles\peer\http\HttpUri;
 use stubbles\webapp\auth\AuthConstraint;
 use stubbles\webapp\routing\RoutingAnnotations;
 
-use function bovigo\assert\assert;
+use function bovigo\assert\assertThat;
 use function bovigo\assert\assertFalse;
 use function bovigo\assert\assertTrue;
 use function bovigo\assert\predicate\equals;
@@ -25,7 +24,7 @@ use function bovigo\assert\predicate\equals;
  * @group  routing
  * @group  routing_api
  */
-class ResourceTest extends \PHPUnit_Framework_TestCase
+class ResourceTest extends TestCase
 {
     /**
      * instance to test
@@ -39,10 +38,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
      */
     private $routingAnnotations;
 
-    /**
-     * set up test environment
-     */
-    public function setUp()
+    protected function setUp(): void
     {
         $this->routingAnnotations = NewInstance::stub(RoutingAnnotations::class);
         $this->resource = new Resource(
@@ -60,7 +56,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsProvidedName()
     {
-        assert($this->resource->name(), equals('Orders'));
+        assertThat($this->resource->name(), equals('Orders'));
     }
 
     /**
@@ -68,7 +64,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsProvidedRequestMethods()
     {
-        assert($this->resource->requestMethods(), equals(['GET']));
+        assertThat($this->resource->requestMethods(), equals(['GET']));
     }
 
     /**
@@ -98,7 +94,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
         $this->routingAnnotations->returns(
                 ['description' => 'Endpoint for handling orders.']
         );
-        assert(
+        assertThat(
                 $this->resource->description(),
                 equals('Endpoint for handling orders.')
         );
@@ -133,7 +129,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsProvidedListOfMimeTypes()
     {
-        assert($this->resource->mimeTypes(), equals(['application/xml']));
+        assertThat($this->resource->mimeTypes(), equals(['application/xml']));
     }
 
     /**
@@ -168,7 +164,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
         $this->routingAnnotations->returns(
                 ['statusCodes' => [new Status(200, 'Default response code')]]
         );
-        assert(
+        assertThat(
                 $this->resource->statusCodes(),
                 equals([new Status(200, 'Default response code')])
         );
@@ -206,7 +202,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
         $this->routingAnnotations->returns(
                 ['headers' => [new Header('X-Binford', 'More power!')]]
         );
-        assert(
+        assertThat(
                 $this->resource->headers(),
                 equals([new Header('X-Binford', 'More power!')])
         );
@@ -244,7 +240,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
         $this->routingAnnotations->returns(
                 ['parameters' => [new Parameter('binford', 'More power!', 'query')]]
         );
-        assert(
+        assertThat(
                 $this->resource->parameters(),
                 equals([new Parameter('binford', 'More power!', 'query')])
         );
@@ -255,7 +251,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsProvidedAuthConstraint()
     {
-        assert(
+        assertThat(
                 $this->resource->authConstraint(),
                 equals(new AuthConstraint($this->routingAnnotations))
         );
@@ -266,7 +262,7 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsLinksWithProvidedLinkAsSelf()
     {
-        assert(
+        assertThat(
                 $this->resource->links()->with('self'),
                 equals(['http://example.com/orders'])
         );

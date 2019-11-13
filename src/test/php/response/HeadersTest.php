@@ -5,14 +5,13 @@ declare(strict_types=1);
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- *
- * @package  stubbles\webapp
  */
 namespace stubbles\webapp\response;
+use PHPUnit\Framework\TestCase;
 use stubbles\peer\http\HttpUri;
 
 use function bovigo\assert\{
-    assert,
+    assertThat,
     assertFalse,
     assertTrue,
     expect,
@@ -25,7 +24,7 @@ use function bovigo\assert\{
  * @group  response
  * @sicne  4.0.0
  */
-class HeadersTest extends \PHPUnit_Framework_TestCase
+class HeadersTest extends TestCase
 {
     /**
      * instance to test
@@ -34,10 +33,7 @@ class HeadersTest extends \PHPUnit_Framework_TestCase
      */
     private $headers;
 
-    /**
-     * set up test environment
-     */
-    public function setUp()
+    protected function setUp(): void
     {
         $this->headers = new Headers();
     }
@@ -93,7 +89,7 @@ class HeadersTest extends \PHPUnit_Framework_TestCase
     {
         $this->headers->location('http://example.com/');
         assertTrue(isset($this->headers['Location']));
-        assert($this->headers['Location'], equals('http://example.com/'));
+        assertThat($this->headers['Location'], equals('http://example.com/'));
     }
 
     /**
@@ -103,7 +99,7 @@ class HeadersTest extends \PHPUnit_Framework_TestCase
     {
         $this->headers->location(HttpUri::fromString('http://example.com/'));
         assertTrue(isset($this->headers['Location']));
-        assert($this->headers['Location'], equals('http://example.com/'));
+        assertThat($this->headers['Location'], equals('http://example.com/'));
     }
 
     /**
@@ -113,7 +109,7 @@ class HeadersTest extends \PHPUnit_Framework_TestCase
     {
         $this->headers->allow(['POST', 'PUT']);
         assertTrue(isset($this->headers['Allow']));
-        assert($this->headers['Allow'], equals('POST, PUT'));
+        assertThat($this->headers['Allow'], equals('POST, PUT'));
     }
 
     /**
@@ -133,7 +129,7 @@ class HeadersTest extends \PHPUnit_Framework_TestCase
     {
         $this->headers->acceptable(['text/csv', 'application/json']);
         assertTrue(isset($this->headers['X-Acceptable']));
-        assert($this->headers['X-Acceptable'], equals('text/csv, application/json'));
+        assertThat($this->headers['X-Acceptable'], equals('text/csv, application/json'));
     }
 
     /**
@@ -143,7 +139,7 @@ class HeadersTest extends \PHPUnit_Framework_TestCase
     {
         $this->headers->forceDownload('example.csv');
         assertTrue(isset($this->headers['Content-Disposition']));
-        assert(
+        assertThat(
                 $this->headers['Content-Disposition'],
                 equals('attachment; filename="example.csv"')
         );
@@ -156,8 +152,8 @@ class HeadersTest extends \PHPUnit_Framework_TestCase
     {
         $this->headers->add('X-Foo', 'bar');
         foreach ($this->headers as $name => $value) {
-            assert($name, equals('X-Foo'));
-            assert($value, equals('bar'));
+            assertThat($name, equals('X-Foo'));
+            assertThat($value, equals('bar'));
         }
     }
 
@@ -179,7 +175,7 @@ class HeadersTest extends \PHPUnit_Framework_TestCase
     public function cacheControlAddsCacheControlHeaderWithDefaultValue()
     {
         $this->headers->cacheControl();
-        assert($this->headers[CacheControl::HEADER_NAME], equals('private'));
+        assertThat($this->headers[CacheControl::HEADER_NAME], equals('private'));
     }
 
     /**
@@ -189,7 +185,7 @@ class HeadersTest extends \PHPUnit_Framework_TestCase
      */
     public function cacheControlReturnsCacheControlInstance()
     {
-        assert($this->headers->cacheControl(), isInstanceOf(CacheControl::class));
+        assertThat($this->headers->cacheControl(), isInstanceOf(CacheControl::class));
     }
 
     /**
@@ -201,7 +197,7 @@ class HeadersTest extends \PHPUnit_Framework_TestCase
     {
         $this->headers->requestId('example-request-id-foo');
         assertTrue(isset($this->headers['X-Request-ID']));
-        assert($this->headers['X-Request-ID'], equals('example-request-id-foo'));
+        assertThat($this->headers['X-Request-ID'], equals('example-request-id-foo'));
     }
 
     /**
@@ -212,6 +208,6 @@ class HeadersTest extends \PHPUnit_Framework_TestCase
     {
         $this->headers->age(12);
         assertTrue(isset($this->headers['Age']));
-        assert($this->headers['Age'], equals(12));
+        assertThat($this->headers['Age'], equals(12));
     }
 }

@@ -5,11 +5,10 @@ declare(strict_types=1);
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- *
- * @package  stubbles\webapp
  */
 namespace stubbles\webapp\response;
 use bovigo\callmap\NewInstance;
+use PHPUnit\Framework\TestCase;
 use stubbles\peer\http\{Http, HttpVersion};
 use stubbles\streams\OutputStream;
 use stubbles\streams\memory\MemoryOutputStream;
@@ -17,7 +16,7 @@ use stubbles\webapp\Request;
 use stubbles\webapp\response\mimetypes\PassThrough;
 
 use function bovigo\assert\{
-    assert,
+    assertThat,
     assertFalse,
     assertNull,
     assertTrue,
@@ -29,7 +28,7 @@ use function bovigo\callmap\verify;
  *
  * @group  response
  */
-class WebResponseTest extends \PHPUnit_Framework_TestCase
+class WebResponseTest extends TestCase
 {
     /**
      * instance to test
@@ -42,10 +41,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      */
     private $memory;
 
-    /**
-     * set up test environment
-     */
-    public function setUp()
+    protected function setUp(): void
     {
         $this->response = $this->createResponse();
         $this->memory   = new MemoryOutputStream();
@@ -92,7 +88,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function statusCodeIs200ByDefault()
     {
-        assert($this->response->statusCode(), equals(200));
+        assertThat($this->response->statusCode(), equals(200));
     }
 
     /**
@@ -101,7 +97,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function statusCodeCanBeChanged()
     {
-        assert($this->response->setStatusCode(404)->statusCode(), equals(404));
+        assertThat($this->response->setStatusCode(404)->statusCode(), equals(404));
     }
 
     /**
@@ -131,7 +127,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
         $this->response->addHeader('name', 'value1')
                 ->addHeader('name', 'value2')
                 ->send();
-        assert($this->response->headers()['name'], equals('value2'));
+        assertThat($this->response->headers()['name'], equals('value2'));
     }
 
     /**
@@ -193,7 +189,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
         $cookie = $this->createCookie();
         $this->response->addCookie($cookie)
                 ->send($this->memory);
-        verify($cookie, 'send')->wasCalledOnce();
+        assertTrue(verify($cookie, 'send')->wasCalledOnce());
     }
 
     /**
@@ -205,7 +201,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
         $this->response->addCookie($cookie)
                 ->addCookie($cookie)
                 ->send($this->memory);
-        verify($cookie, 'send')->wasCalledOnce();
+        assertTrue(verify($cookie, 'send')->wasCalledOnce());
     }
 
     /**
@@ -260,7 +256,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     {
         $outputStream = NewInstance::of(OutputStream::class);
         $this->response->send($outputStream);
-        verify($outputStream, 'write')->wasNeverCalled();
+        assertTrue(verify($outputStream, 'write')->wasNeverCalled());
     }
 
     /**
@@ -276,7 +272,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function bodyIsSend()
     {
-        assert(
+        assertThat(
                 $this->response->write('foo')->send($this->memory)->buffer(),
                 equals('foo')
         );
@@ -291,7 +287,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
         $this->response = $this->createResponse(HttpVersion::HTTP_1_1, Http::HEAD);
         $outputStream = NewInstance::of(OutputStream::class);
         $this->response->write('foo')->send($outputStream);
-        verify($outputStream, 'write')->wasNeverCalled();
+        assertTrue(verify($outputStream, 'write')->wasNeverCalled());
     }
 
     /**
@@ -350,7 +346,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function forbiddenReturnsErrorInstance()
     {
-        assert($this->response->forbidden(), equals(Error::forbidden()));
+        assertThat($this->response->forbidden(), equals(Error::forbidden()));
     }
 
     /**
@@ -381,7 +377,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function notFoundReturnsErrorInstance()
     {
-        assert($this->response->notFound(), equals(Error::notFound()));
+        assertThat($this->response->notFound(), equals(Error::notFound()));
     }
 
     /**
@@ -415,7 +411,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function methodNotAllowedReturnsErrorInstance()
     {
-        assert(
+        assertThat(
                 $this->response->methodNotAllowed('POST', ['GET', 'HEAD']),
                 equals(Error::methodNotAllowed('POST', ['GET', 'HEAD']))
         );
@@ -486,7 +482,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function internalServerErrorReturnsErrorInstance()
     {
-        assert(
+        assertThat(
                 $this->response->internalServerError('ups!'),
                 equals(Error::internalServerError('ups!'))
         );
@@ -510,7 +506,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     public function httpVersionNotSupportedSetsStatusCodeTo505()
     {
         $this->response->httpVersionNotSupported();
-        assert(
+        assertThat(
                 $this->response->send($this->memory)->buffer(),
                 equals('Error: Unsupported HTTP protocol version, expected HTTP/1.0 or HTTP/1.1')
         );
@@ -546,7 +542,7 @@ class WebResponseTest extends \PHPUnit_Framework_TestCase
     {
         $response = $this->createResponse($unsupportedHttpVersion);
         assertTrue($response->isFixed());
-        assert(
+        assertThat(
                 $response->send($this->memory)->buffer(),
                 equals('Error: Unsupported HTTP protocol version, expected HTTP/1.0 or HTTP/1.1')
         );

@@ -5,15 +5,14 @@ declare(strict_types=1);
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- *
- * @package  stubbles\webapp
  */
 namespace stubbles\webapp\routing;
 use bovigo\callmap\NewInstance;
+use PHPUnit\Framework\TestCase;
 use stubbles\peer\http\HttpUri;
 
 use function bovigo\assert\{
-    assert,
+    assertThat,
     assertFalse,
     assertTrue,
     expect,
@@ -26,7 +25,7 @@ use function bovigo\assert\{
  * @since  1.7.0
  * @group  routing
  */
-class CalledUriTest extends \PHPUnit_Framework_TestCase
+class CalledUriTest extends TestCase
 {
     /**
      * instance to test
@@ -41,10 +40,7 @@ class CalledUriTest extends \PHPUnit_Framework_TestCase
      */
     private $httpUri;
 
-    /**
-     * set up test environment
-     */
-    public function setUp()
+    protected function setUp(): void
     {
         $this->httpUri   = NewInstance::stub(HttpUri::class);
         $this->calledUri = new CalledUri($this->httpUri, 'GET');
@@ -66,7 +62,7 @@ class CalledUriTest extends \PHPUnit_Framework_TestCase
      */
     public function castFromOtherInstanceReturnsInstance()
     {
-        assert(
+        assertThat(
                 CalledUri::castFrom($this->calledUri, null),
                 isSameAs($this->calledUri)
         );
@@ -78,7 +74,7 @@ class CalledUriTest extends \PHPUnit_Framework_TestCase
      */
     public function castFromHttpUriInstanceReturnsInstance()
     {
-        assert(
+        assertThat(
                 CalledUri::castFrom($this->httpUri, 'GET'),
                 equals($this->calledUri)
         );
@@ -101,7 +97,7 @@ class CalledUriTest extends \PHPUnit_Framework_TestCase
     public function castFromHttpUriStringReturnsInstance()
     {
 
-        assert(
+        assertThat(
                 CalledUri::castFrom('http://example.net/', 'GET'),
                 equals(new CalledUri('http://example.net/', 'GET'))
         );
@@ -214,7 +210,7 @@ class CalledUriTest extends \PHPUnit_Framework_TestCase
     {
         $httpUri = NewInstance::stub(HttpUri::class);
         $this->httpUri->returns(['toHttp' => $httpUri]);
-        assert($this->calledUri->toHttp(), isSameAs($httpUri));
+        assertThat($this->calledUri->toHttp(), isSameAs($httpUri));
     }
 
     /**
@@ -225,7 +221,7 @@ class CalledUriTest extends \PHPUnit_Framework_TestCase
     {
         $httpUri = NewInstance::stub(HttpUri::class);
         $this->httpUri->returns(['toHttps' => $httpUri]);
-        assert($this->calledUri->toHttps(), isSameAs($httpUri));
+        assertThat($this->calledUri->toHttps(), isSameAs($httpUri));
     }
 
     /**
@@ -235,6 +231,6 @@ class CalledUriTest extends \PHPUnit_Framework_TestCase
     public function returnsStringRepresentationOfUri()
     {
         $this->httpUri->returns(['__toString' => 'http://example.net/foo/bar']);
-        assert((string) $this->calledUri, equals('http://example.net/foo/bar'));
+        assertThat((string) $this->calledUri, equals('http://example.net/foo/bar'));
     }
 }

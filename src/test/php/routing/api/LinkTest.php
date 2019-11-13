@@ -5,13 +5,12 @@ declare(strict_types=1);
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- *
- * @package  stubbles\webapp
  */
 namespace stubbles\webapp\routing\api;
+use PHPUnit\Framework\TestCase;
 use stubbles\peer\http\HttpUri;
 
-use function bovigo\assert\assert;
+use function bovigo\assert\assertThat;
 use function bovigo\assert\predicate\equals;
 /**
  * Test for stubbles\webapp\routing\api\Link.
@@ -20,7 +19,7 @@ use function bovigo\assert\predicate\equals;
  * @group  routing
  * @group  routing_api
  */
-class LinkTest extends \PHPUnit_Framework_TestCase
+class LinkTest extends TestCase
 {
     /**
      * instance to test
@@ -29,10 +28,7 @@ class LinkTest extends \PHPUnit_Framework_TestCase
      */
     private $link;
 
-    /**
-     * set up test environment
-     */
-    public function setUp()
+    protected function setUp(): void
     {
         $this->link = new Link(
                 'self',
@@ -45,7 +41,7 @@ class LinkTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsProvidedRel()
     {
-        assert($this->link->rel(), equals('self'));
+        assertThat($this->link->rel(), equals('self'));
     }
 
     /**
@@ -53,7 +49,7 @@ class LinkTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsProvidedUri()
     {
-        assert($this->link->uri(), equals('http://example.com/foo'));
+        assertThat($this->link->uri(), equals('http://example.com/foo'));
     }
 
     /**
@@ -61,7 +57,7 @@ class LinkTest extends \PHPUnit_Framework_TestCase
      */
     public function stringRepresentationIsUri()
     {
-        assert($this->link, equals('http://example.com/foo'));
+        assertThat($this->link, equals('http://example.com/foo'));
     }
 
     /**
@@ -69,7 +65,7 @@ class LinkTest extends \PHPUnit_Framework_TestCase
      */
     public function canBeSerializedToJson()
     {
-        assert(
+        assertThat(
                 json_encode($this->link),
                 equals('{"href":"http:\/\/example.com\/foo"}')
         );

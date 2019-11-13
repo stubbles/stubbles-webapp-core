@@ -5,11 +5,10 @@ declare(strict_types=1);
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- *
- * @package  stubbles\webapp
  */
 namespace stubbles\webapp;
 use bovigo\callmap\NewInstance;
+use PHPUnit\Framework\TestCase;
 use stubbles\ExceptionLogger;
 use stubbles\ioc\{Binder, Injector};
 use stubbles\peer\http\HttpUri;
@@ -17,7 +16,7 @@ use stubbles\webapp\routing\{Routing, UriResource};
 use stubbles\webapp\session\Session;
 
 use function bovigo\assert\{
-    assert,
+    assertThat,
     assertTrue,
     predicate\equals,
     predicate\isInstanceOf
@@ -29,7 +28,7 @@ use function bovigo\callmap\{throws, verify};
  * @since  1.7.0
  * @group  core_webapp
  */
-class WebAppTest extends \PHPUnit_Framework_TestCase
+class WebAppTest extends TestCase
 {
     /**
      * instance to test
@@ -50,10 +49,7 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
      */
     private $routing;
 
-    /**
-     * set up test environment
-     */
-    public function setUp()
+    protected function setUp(): void
     {
         $this->injector = NewInstance::stub(Injector::class);
         $this->routing  = NewInstance::stub(Routing::class);
@@ -76,10 +72,7 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
         $_SERVER['HTTP_HOST']      = 'example.com';
     }
 
-    /**
-     * clean up test environment
-     */
-    public function tearDown()
+    protected function tearDown(): void
     {
         unset($_SERVER['REQUEST_METHOD']);
         unset($_SERVER['REQUEST_URI']);
@@ -119,7 +112,7 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
                 'httpsUri'      => HttpUri::fromString('https://example.net/admin')
         ]);
         $response = $this->webApp->run();
-        assert($response->statusCode(), equals(302));
+        assertThat($response->statusCode(), equals(302));
         assertTrue(
                 $response->containsHeader(
                         'Location',
@@ -140,9 +133,9 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
                 'negotiateMimeType' => false
         ]);
         $this->webApp->run();
-        verify($resource, 'applyPreInterceptors')->wasNeverCalled();
-        verify($resource, 'resolve')->wasNeverCalled();
-        verify($resource, 'applyPostInterceptors')->wasNeverCalled();
+        assertTrue(verify($resource, 'applyPreInterceptors')->wasNeverCalled());
+        assertTrue(verify($resource, 'resolve')->wasNeverCalled());
+        assertTrue(verify($resource, 'applyPostInterceptors')->wasNeverCalled());
 
     }
 
@@ -173,7 +166,7 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
 
         $this->createNonHttpsResource();
         $webApp->run();
-        verify($this->injector, 'setSession')->received($session, Session::class);
+        assertTrue(verify($this->injector, 'setSession')->received($session, Session::class));
     }
 
     /**
@@ -184,7 +177,7 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
     {
         $this->createNonHttpsResource();
         $this->webApp->run();
-        verify($this->injector, 'setSession')->wasNeverCalled();
+        assertTrue(verify($this->injector, 'setSession')->wasNeverCalled());
     }
 
     /**
@@ -194,8 +187,8 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
     {
         $resource = $this->createNonHttpsResource(['applyPreInterceptors' => false]);
         $this->webApp->run();
-        verify($resource, 'resolve')->wasNeverCalled();
-        verify($resource, 'applyPostInterceptors')->wasNeverCalled();
+        assertTrue(verify($resource, 'resolve')->wasNeverCalled());
+        assertTrue(verify($resource, 'applyPostInterceptors')->wasNeverCalled());
     }
 
     private function setUpExceptionLogger(): ExceptionLogger
@@ -217,10 +210,10 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
         );
         $exceptionLogger = $this->setUpExceptionLogger($exception);
         $response = $this->webApp->run();
-        assert($response->statusCode(), equals(500));
-        verify($exceptionLogger, 'log')->received($exception);
-        verify($resource, 'resolve')->wasNeverCalled();
-        verify($resource, 'applyPostInterceptors')->wasNeverCalled();
+        assertThat($response->statusCode(), equals(500));
+        assertTrue(verify($exceptionLogger, 'log')->received($exception));
+        assertTrue(verify($resource, 'resolve')->wasNeverCalled());
+        assertTrue(verify($resource, 'applyPostInterceptors')->wasNeverCalled());
     }
 
     /**
@@ -235,9 +228,9 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
         ]);
         $exceptionLogger = $this->setUpExceptionLogger($exception);
         $response = $this->webApp->run();
-        assert($response->statusCode(), equals(500));
-        verify($exceptionLogger, 'log')->received($exception);
-        verify($resource, 'applyPostInterceptors')->wasNeverCalled();
+        assertThat($response->statusCode(), equals(500));
+        assertTrue(verify($exceptionLogger, 'log')->received($exception));
+        assertTrue(verify($resource, 'applyPostInterceptors')->wasNeverCalled());
     }
 
     /**
@@ -253,8 +246,8 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
         ]);
         $exceptionLogger = $this->setUpExceptionLogger($exception);
         $response = $this->webApp->run();
-        assert($response->statusCode(), equals(500));
-        verify($exceptionLogger, 'log')->received($exception);
+        assertThat($response->statusCode(), equals(500));
+        assertTrue(verify($exceptionLogger, 'log')->received($exception));
     }
 
     /**
@@ -266,8 +259,8 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
                 'applyPreInterceptors' => true
         ]);
         $this->webApp->run();
-        verify($resource, 'resolve')->wasCalledOnce();
-        verify($resource, 'applyPostInterceptors')->wasCalledOnce();
+        assertTrue(verify($resource, 'resolve')->wasCalledOnce());
+        assertTrue(verify($resource, 'applyPostInterceptors')->wasCalledOnce());
     }
 
     /**
@@ -277,7 +270,7 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
     public function createCreatesInstance()
     {
         $webAppClass = get_class($this->webApp);
-        assert($webAppClass::create('projectPath'), isInstanceOf($webAppClass));
+        assertThat($webAppClass::create('projectPath'), isInstanceOf($webAppClass));
     }
 
     /**
@@ -289,6 +282,6 @@ class WebAppTest extends \PHPUnit_Framework_TestCase
     {
         $_SERVER['REQUEST_URI'] = '/hello';
         $_SERVER['HTTP_HOST']   = '%&$§!&$!§invalid';
-        assert($this->webApp->run()->statusCode(), equals(400));
+        assertThat($this->webApp->run()->statusCode(), equals(400));
     }
 }

@@ -5,11 +5,10 @@ declare(strict_types=1);
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- *
- * @package  stubbles\webapp
  */
 namespace stubbles\webapp\auth\token;
 use bovigo\callmap\NewInstance;
+use PHPUnit\Framework\TestCase;
 use stubbles\input\ValueReader;
 use stubbles\webapp\Request;
 use stubbles\webapp\auth\{
@@ -20,7 +19,7 @@ use stubbles\webapp\auth\{
 };
 
 use function bovigo\assert\{
-    assert,
+    assertThat,
     assertNull,
     assertNotNull,
     assertTrue,
@@ -39,7 +38,7 @@ use function stubbles\reflect\annotationsOfConstructorParameter;
  * @group  auth_token
  * @since  2.1.0
  */
-class TokenAuthenticatorTest extends \PHPUnit_Framework_TestCase
+class TokenAuthenticatorTest extends TestCase
 {
     /**
      * instance to test
@@ -66,10 +65,7 @@ class TokenAuthenticatorTest extends \PHPUnit_Framework_TestCase
      */
     private $request;
 
-    /**
-     * set up test environment
-     */
-    public function setUp()
+    protected function setUp(): void
     {
         $this->tokenStore     = NewInstance::of(TokenStore::class);
         $this->loginProvider  = NewInstance::of(AuthenticationProvider::class);
@@ -91,7 +87,7 @@ class TokenAuthenticatorTest extends \PHPUnit_Framework_TestCase
                 $this->tokenAuthenticator
         );
         assertTrue($tokenSaltParamAnnotations->contain('Property'));
-        assert(
+        assertThat(
                 $tokenSaltParamAnnotations->firstNamed('Property')->getName(),
                 equals('stubbles.webapp.auth.token.salt')
         );
@@ -101,7 +97,7 @@ class TokenAuthenticatorTest extends \PHPUnit_Framework_TestCase
                 $this->tokenAuthenticator
         );
         assertTrue($loginProviderParamAnnotations->contain('Named'));
-        assert(
+        assertThat(
                 $loginProviderParamAnnotations->firstNamed('Named')->getName(),
                 equals('stubbles.webapp.auth.token.loginProvider')
         );
@@ -167,7 +163,7 @@ class TokenAuthenticatorTest extends \PHPUnit_Framework_TestCase
         $user->returns(['createToken' => $token]);
         $this->request->returns(['hasRedirectHeader' => false]);
         $this->loginProvider->returns(['authenticate' => $user]);
-        assert(
+        assertThat(
                 $this->tokenAuthenticator->authenticate($this->request),
                 isSameAs($user)
         );
@@ -228,7 +224,7 @@ class TokenAuthenticatorTest extends \PHPUnit_Framework_TestCase
         ]);
         $user = $this->createTokenAwareUser();
         $this->tokenStore->returns(['findUserByToken' => $user]);
-        assert(
+        assertThat(
                 $this->tokenAuthenticator->authenticate($this->request),
                 isSameAs($user)
         );
@@ -251,7 +247,7 @@ class TokenAuthenticatorTest extends \PHPUnit_Framework_TestCase
         $user  = $this->createTokenAwareUser();
         $token = new Token($tokenValue);
         $this->tokenStore->returns(['findUserByToken' => $user]);
-        assert(
+        assertThat(
                 $this->tokenAuthenticator->authenticate($this->request)->token(),
                 equals($token)
         );
@@ -283,7 +279,7 @@ class TokenAuthenticatorTest extends \PHPUnit_Framework_TestCase
         ]);
         $user  = $this->createTokenAwareUser();
         $this->loginProvider->returns(['authenticate' => $user]);
-        assert(
+        assertThat(
                 $this->tokenAuthenticator->authenticate($this->request),
                 isSameAs($user)
         );
@@ -320,7 +316,7 @@ class TokenAuthenticatorTest extends \PHPUnit_Framework_TestCase
         ]);
         $user = $this->createTokenAwareUser();
         $this->loginProvider->returns(['authenticate' => $user]);
-        assert(
+        assertThat(
                 $this->tokenAuthenticator->authenticate($this->request)->token(),
                 isNotEqualTo(new Token('someOtherToken'))
         );

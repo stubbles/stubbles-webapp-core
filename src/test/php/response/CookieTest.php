@@ -5,12 +5,12 @@ declare(strict_types=1);
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- *
- * @package  stubbles\webapp
  */
 namespace stubbles\webapp\response;
+use PHPUnit\Framework\TestCase;
+
 use function bovigo\assert\{
-    assert,
+    assertThat,
     assertFalse,
     assertNull,
     assertTrue,
@@ -22,14 +22,14 @@ use function bovigo\assert\{
  *
  * @group  response
  */
-class CookieTest extends \PHPUnit_Framework_TestCase
+class CookieTest extends TestCase
 {
     /**
      * @test
      */
     public function returnsGivenName()
     {
-        assert(Cookie::create('foo', 'bar')->name(), equals('foo'));
+        assertThat(Cookie::create('foo', 'bar')->name(), equals('foo'));
     }
 
     /**
@@ -37,7 +37,7 @@ class CookieTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsGivenValue()
     {
-        assert(Cookie::create('foo', 'bar')->value(), equals('bar'));
+        assertThat(Cookie::create('foo', 'bar')->value(), equals('bar'));
     }
 
     /**
@@ -45,7 +45,7 @@ class CookieTest extends \PHPUnit_Framework_TestCase
      */
     public function hasNoExpirationDateByDefault()
     {
-        assert(Cookie::create('foo', 'bar')->expiration(), equals(0));
+        assertThat(Cookie::create('foo', 'bar')->expiration(), equals(0));
     }
 
     /**
@@ -86,7 +86,7 @@ class CookieTest extends \PHPUnit_Framework_TestCase
     public function expiresAtUsesGivenTimestamp()
     {
         $expires = time() + 100; // expire after 100 seconds
-        assert(
+        assertThat(
                 Cookie::create('foo', 'bar')->expiringAt($expires)->expiration(),
                 equals($expires)
         );
@@ -98,7 +98,7 @@ class CookieTest extends \PHPUnit_Framework_TestCase
      */
     public function expiresInAddsCurrentTime()
     {
-        assert(
+        assertThat(
                 Cookie::create('foo', 'bar')->expiringIn(100)->expiration(),
                 isGreaterThanOrEqualTo(time() + 100)
         );
@@ -109,7 +109,7 @@ class CookieTest extends \PHPUnit_Framework_TestCase
      */
     public function usesGivenPath()
     {
-        assert(
+        assertThat(
                 Cookie::create('foo', 'bar')->forPath('bar')->path(),
                 equals('bar')
         );
@@ -120,7 +120,7 @@ class CookieTest extends \PHPUnit_Framework_TestCase
      */
     public function usesGivenDomain()
     {
-        assert(
+        assertThat(
                 Cookie::create('foo', 'bar')->forDomain('.example.org')->domain(),
                 equals('.example.org')
         );

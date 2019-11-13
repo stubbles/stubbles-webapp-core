@@ -5,11 +5,10 @@ declare(strict_types=1);
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- *
- * @package  stubbles\webapp
  */
 namespace stubbles\webapp\routing;
 use bovigo\callmap\NewInstance;
+use PHPUnit\Framework\TestCase;
 use stubbles\ioc\Injector;
 use stubbles\webapp\{Request, Response};
 use stubbles\webapp\interceptor\{PreInterceptor, PostInterceptor};
@@ -24,7 +23,7 @@ use function bovigo\callmap\verify;
  * @since  2.2.0
  * @group  routing
  */
-class InterceptorsTest extends \PHPUnit_Framework_TestCase
+class InterceptorsTest extends TestCase
 {
     /**
      * mocked request instance
@@ -45,10 +44,7 @@ class InterceptorsTest extends \PHPUnit_Framework_TestCase
      */
     private $injector;
 
-    /**
-     * set up test environment
-     */
-    public function setUp()
+    protected function setUp(): void
     {
         $this->request  = NewInstance::of(Request::class);
         $this->response = NewInstance::of(Response::class);

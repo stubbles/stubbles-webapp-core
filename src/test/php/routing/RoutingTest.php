@@ -5,11 +5,10 @@ declare(strict_types=1);
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- *
- * @package  stubbles\webapp
  */
 namespace stubbles\webapp\routing;
 use bovigo\callmap\NewInstance;
+use PHPUnit\Framework\TestCase;
 use stubbles\input\ValueReader;
 use stubbles\ioc\Injector;
 use stubbles\webapp\{Request, Response};
@@ -19,7 +18,7 @@ use stubbles\webapp\response\mimetypes\Json;
 use stubbles\webapp\routing\api\Index;
 
 use function bovigo\assert\{
-    assert,
+    assertThat,
     assertEmptyArray,
     assertTrue,
     expect,
@@ -35,7 +34,7 @@ use function bovigo\callmap\verify;
  * @since  2.0.0
  * @group  routing
  */
-class RoutingTest extends \PHPUnit_Framework_TestCase
+class RoutingTest extends TestCase
 {
     /**
      * instance to test
@@ -54,10 +53,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
      */
     private $calledUri;
 
-    /**
-     * set up test environment
-     */
-    public function setUp()
+    protected function setUp(): void
     {
         SupportedMimeTypes::removeDefaultMimeTypeClass('application/foo');
         $this->injector  = NewInstance::stub(Injector::class);
@@ -65,10 +61,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
         $this->calledUri = new CalledUri('http://example.net/hello', 'GET');
     }
 
-    /**
-     * clean up test environment
-     */
-    public function tearDown()
+    protected function tearDown(): void
     {
         SupportedMimeTypes::removeDefaultMimeTypeClass('application/foo');
     }
@@ -78,7 +71,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsNotFoundOnRouteSelectionWhenNoRouteAdded()
     {
-        assert(
+        assertThat(
                 $this->routing->findResource($this->calledUri),
                 isInstanceOf(NotFound::class)
         );
@@ -91,7 +84,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
     {
         $this->routing->onHead('/bar', function() {});
         $this->routing->onGet('/foo', function() {});
-        assert(
+        assertThat(
                 $this->routing->findResource($this->calledUri),
                 isInstanceOf(NotFound::class)
         );
@@ -105,7 +98,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
     {
         $this->routing->onHead('/hello', function() {});
         $this->routing->onGet('/foo', function() {});
-        assert(
+        assertThat(
                 $this->routing->findResource('http://example.net/hello', 'OPTIONS'),
                 isInstanceOf(ResourceOptions::class)
         );
@@ -119,7 +112,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
     {
         $this->routing->onHead('/hello', function() {});
         $this->routing->onGet('/foo', function() {});
-        assert(
+        assertThat(
                 $this->routing->findResource($this->calledUri),
                 isInstanceOf(MethodNotAllowed::class)
         );
@@ -132,7 +125,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
     public function returnsProtectedResourceWhenMatchingRouteRequiresLogin()
     {
         $this->routing->onGet('/hello', function() {})->withLoginOnly();
-        assert(
+        assertThat(
                 $this->routing->findResource($this->calledUri),
                 isInstanceOf(ProtectedResource::class)
         );
@@ -145,7 +138,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
     public function returnsProtectedResourceWhenMatchingRouteRequiresRole()
     {
         $this->routing->onGet('/hello', function() {})->withRoleOnly('admin');
-        assert(
+        assertThat(
                 $this->routing->findResource($this->calledUri),
                 isInstanceOf(ProtectedResource::class)
         );
@@ -158,7 +151,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
     public function routeWithoutMethodRestrictionReturnsResourceOptionsOnOptionRequest()
     {
         $this->routing->onAll('/hello', function() { });
-        assert(
+        assertThat(
                 $this->routing->findResource('http://example.net/hello', 'OPTIONS'),
                 isInstanceOf(ResourceOptions::class)
         );
@@ -200,7 +193,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
     public function returnsRouteWhichFitsMethodAndPath()
     {
         $route = $this->createResolvingResource($this->routing->onGet('/hello', function() {}));
-        assert($this->routing->findResource($this->calledUri), equals($route));
+        assertThat($this->routing->findResource($this->calledUri), equals($route));
     }
 
     /**
@@ -219,7 +212,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
     {
         $preInterceptor = function() {};
         $route = $this->createResolvingResource($this->routing->onGet('/hello', function() {}));
-        assert(
+        assertThat(
                 $this->routing->preInterceptOnHead($preInterceptor)
                         ->preInterceptOnPost($preInterceptor)
                         ->preInterceptOnPut($preInterceptor)
@@ -239,7 +232,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
                 $this->routing->onGet('/hello', function() {}),
                 ['array_map', $preInterceptor]
         );
-        assert(
+        assertThat(
                 $this->routing->preIntercept('array_map')
                         ->preInterceptOnGet($preInterceptor)
                         ->findResource($this->calledUri),
@@ -258,7 +251,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
                 $this->routing->onGet('/hello', function() {}),
                 ['array_map']
         );
-        assert(
+        assertThat(
                 $this->routing->preIntercept('array_map', '/hello')
                         ->preInterceptOnGet($preInterceptor, '/world')
                         ->findResource($this->calledUri),
@@ -277,7 +270,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
                 $this->routing->onGet('/hello', function() {}),
                 [$preInterceptor, $preFunction]
         );
-        assert(
+        assertThat(
                 $this->routing->preIntercept($preInterceptor)
                         ->preIntercept($preFunction)
                         ->findResource($this->calledUri),
@@ -296,7 +289,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
                         ->preIntercept('array_map'),
                 [$preInterceptor, 'array_map']
         );
-        assert(
+        assertThat(
                 $this->routing->preInterceptOnGet($preInterceptor)
                         ->findResource($this->calledUri),
                 equals($route)
@@ -321,7 +314,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
         $route = $this->createResolvingResource(
                 $this->routing->onGet('/hello', function() {})
         );
-        assert(
+        assertThat(
                 $this->routing->postInterceptOnHead($postInterceptor)
                         ->postInterceptOnPost($postInterceptor)
                         ->postInterceptOnPut($postInterceptor)
@@ -342,7 +335,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
                 [],
                 ['array_map', $postInterceptor]
         );
-        assert(
+        assertThat(
                 $this->routing->postIntercept('array_map')
                         ->postInterceptOnGet($postInterceptor)
                         ->findResource($this->calledUri),
@@ -362,7 +355,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
                 [],
                 ['array_map']
         );
-        assert(
+        assertThat(
                 $this->routing->postIntercept('array_map', '/hello')
                         ->postInterceptOnGet($postInterceptor, '/world')
                         ->findResource($this->calledUri),
@@ -384,7 +377,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
                  $postFunction
                 ]
         );
-        assert(
+        assertThat(
                 $this->routing->postIntercept($postInterceptor)
                         ->postIntercept($postFunction)
                         ->findResource($this->calledUri),
@@ -404,7 +397,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
                 [],
                 ['array_map', $postInterceptor]
         );
-        assert(
+        assertThat(
                 $this->routing->postInterceptOnGet($postInterceptor)
                         ->findResource($this->calledUri),
                 equals($route)
@@ -439,7 +432,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
     {
         $this->routing->onGet('/hello', function() {})
                     ->supportsMimeType('application/json');
-        assert(
+        assertThat(
                 $this->routing->supportsMimeType('application/xml')
                         ->findResource($this->calledUri)
                         ->supportedMimeTypes(),
@@ -478,7 +471,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
     {
         $this->routing->setDefaultMimeTypeClass('application/foo', 'example\Special');
         $this->routing->onGet('/hello', function() {});
-        assert(
+        assertThat(
                 $this->routing->findResource($this->calledUri)
                         ->supportedMimeTypes(),
                 doesNotContain('application/foo')
@@ -494,7 +487,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
     {
         $this->routing->setDefaultMimeTypeClass('application/foo', 'example\Special');
         $this->routing->onGet('/hello', function() {})->supportsMimeType('application/foo');
-        assert(
+        assertThat(
                 $this->routing->findResource($this->calledUri)
                         ->supportedMimeTypes(),
                 contains('application/foo')
@@ -562,7 +555,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
                 [],
                 $htmlFile
         );
-        assert(
+        assertThat(
                 $this->routing->findResource('http://example.net/' . $htmlFile, 'GET'),
                 equals($expected)
         );
@@ -574,7 +567,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
      */
     public function apiIndexOnGetCreatesRouteWithIndexTarget()
     {
-        assert(
+        assertThat(
                 $this->routing->apiIndexOnGet('/')->target(),
                 isInstanceOf(Index::class)
         );
@@ -587,7 +580,7 @@ class RoutingTest extends \PHPUnit_Framework_TestCase
      */
     public function redirectOnGetCreatesRouteWithRedirectTarget()
     {
-        assert(
+        assertThat(
                 $this->routing->redirectOnGet('/foo', '/bar')->target(),
                 isInstanceOf(Redirect::class)
         );

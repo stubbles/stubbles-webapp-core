@@ -5,17 +5,16 @@ declare(strict_types=1);
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- *
- * @package  stubbles\webapp
  */
 namespace stubbles\webapp\routing;
 use bovigo\callmap\NewInstance;
+use PHPUnit\Framework\TestCase;
 use stubbles\ioc\Injector;
 use stubbles\webapp\{Request, Response, Target, UriPath};
 use stubbles\webapp\response\Error;
 
 use function bovigo\assert\{
-    assert,
+    assertThat,
     assertFalse,
     assertTrue,
     predicate\equals,
@@ -28,7 +27,7 @@ use function bovigo\callmap\verify;
  * @since  2.0.0
  * @group  routing
  */
-class ResolvingResourceTest extends \PHPUnit_Framework_TestCase
+class ResolvingResourceTest extends TestCase
 {
     /**
      * mocked request instance
@@ -49,10 +48,7 @@ class ResolvingResourceTest extends \PHPUnit_Framework_TestCase
      */
     private $injector;
 
-    /**
-     * set up test environment
-     */
-    public function setUp()
+    protected function setUp(): void
     {
         $this->request  = NewInstance::of(Request::class);
         $this->response = NewInstance::of(Response::class);
@@ -111,7 +107,7 @@ class ResolvingResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsHttpsUriFromCalledUri()
     {
-        assert(
+        assertThat(
                 (string) $this->createResolvingResourceWithTarget(function() {})
                         ->httpsUri(),
                 equals('https://example.com/hello/world')
@@ -130,7 +126,7 @@ class ResolvingResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function processCallsClosureGivenAsCallback()
     {
-        assert(
+        assertThat(
                 $this->createResolvingResourceWithTarget(
                         function(Request $request, Response $response, UriPath $uriPath)
                         {
@@ -160,7 +156,7 @@ class ResolvingResourceTest extends \PHPUnit_Framework_TestCase
      */
     public function processCallsGivenCallback()
     {
-        assert(
+        assertThat(
                 $this->createResolvingResourceWithTarget([$this, 'theCallable'])
                         ->resolve($this->request, $this->response),
                 equals('Hello world')
@@ -187,7 +183,7 @@ class ResolvingResourceTest extends \PHPUnit_Framework_TestCase
     {
         $target = NewInstance::of(Target::class);
         $target->returns(['resolve' => 'Hello world']);
-        assert(
+        assertThat(
                 $this->createResolvingResourceWithTarget($target)
                         ->resolve($this->request, $this->response),
                 equals('Hello world')
@@ -207,7 +203,7 @@ class ResolvingResourceTest extends \PHPUnit_Framework_TestCase
         $this->injector->returns(['getInstance' => new \stdClass()]);
         $error = new Error('error');
         $this->response->returns(['internalServerError' => $error]);
-        assert(
+        assertThat(
                 $this->createResolvingResourceWithTarget('\stdClass')
                         ->resolve($this->request, $this->response),
                 isSameAs($error)
@@ -222,7 +218,7 @@ class ResolvingResourceTest extends \PHPUnit_Framework_TestCase
         $target = NewInstance::of(Target::class);
         $target->returns(['resolve' => 'Hello world']);
         $this->injector->returns(['getInstance' => $target]);
-        assert(
+        assertThat(
                 $this->createResolvingResourceWithTarget(get_class($target))
                         ->resolve($this->request, $this->response),
                 equals('Hello world')

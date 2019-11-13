@@ -5,15 +5,14 @@ declare(strict_types=1);
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- *
- * @package  stubbles\webapp
  */
 namespace stubbles\webapp\response\mimetypes;
 use bovigo\callmap\NewInstance;
+use PHPUnit\Framework\TestCase;
 use stubbles\streams\memory\MemoryOutputStream;
 use stubbles\xml\serializer\XmlSerializerFacade;
 
-use function bovigo\assert\assert;
+use function bovigo\assert\assertThat;
 use function bovigo\assert\predicate\equals;
 /**
  * Tests for stubbles\webapp\response\mimetypes\Xml.
@@ -22,7 +21,7 @@ use function bovigo\assert\predicate\equals;
  * @group  mimetypes
  * @since  6.0.0
  */
-class XmlTest extends \PHPUnit_Framework_TestCase
+class XmlTest extends TestCase
 {
     /**
      * @type  \stubbles\webapp\response\mimetypes\Xml
@@ -33,11 +32,7 @@ class XmlTest extends \PHPUnit_Framework_TestCase
      */
     private $xmlSerializerFacade;
 
-
-    /**
-     * set up test environment
-     */
-    public function setUp()
+    protected function setUp(): void
     {
         $this->xmlSerializerFacade = NewInstance::stub(XmlSerializerFacade::class);
         $this->xml = new Xml($this->xmlSerializerFacade);
@@ -48,7 +43,7 @@ class XmlTest extends \PHPUnit_Framework_TestCase
      */
     public function defaultMimeType()
     {
-        assert((string) $this->xml, equals('application/xml'));
+        assertThat((string) $this->xml, equals('application/xml'));
     }
 
     /**
@@ -56,7 +51,7 @@ class XmlTest extends \PHPUnit_Framework_TestCase
      */
     public function mimeTypeCanBeSpecialised()
     {
-        assert(
+        assertThat(
                 (string) $this->xml->specialise('text/xml'),
                 equals('text/xml')
         );
@@ -68,7 +63,7 @@ class XmlTest extends \PHPUnit_Framework_TestCase
     public function serializesResourceToXml()
     {
         $this->xmlSerializerFacade->returns(['serializeToXml' => '<xml/>']);
-        assert(
+        assertThat(
                 $this->xml->serialize(
                         'value',
                         new MemoryOutputStream()

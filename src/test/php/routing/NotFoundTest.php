@@ -5,17 +5,16 @@ declare(strict_types=1);
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- *
- * @package  stubbles\webapp
  */
 namespace stubbles\webapp\routing;
 use bovigo\callmap\NewInstance;
+use PHPUnit\Framework\TestCase;
 use stubbles\ioc\Injector;
 use stubbles\peer\http\HttpVersion;
 use stubbles\webapp\Request;
 use stubbles\webapp\response\{Error, WebResponse};
 
-use function bovigo\assert\assert;
+use function bovigo\assert\assertThat;
 use function bovigo\assert\assertFalse;
 use function bovigo\assert\predicate\equals;
 /**
@@ -24,7 +23,7 @@ use function bovigo\assert\predicate\equals;
  * @since  2.2.0
  * @group  routing
  */
-class NotFoundTest extends \PHPUnit_Framework_TestCase
+class NotFoundTest extends TestCase
 {
     /**
      * instance to test
@@ -33,10 +32,7 @@ class NotFoundTest extends \PHPUnit_Framework_TestCase
      */
     private $notFound;
 
-    /**
-     * set up test environment
-     */
-    public function setUp()
+    protected function setUp(): void
     {
         $this->notFound = new NotFound(
                 NewInstance::stub(Injector::class),
@@ -63,7 +59,7 @@ class NotFoundTest extends \PHPUnit_Framework_TestCase
                 'protocolVersion' => new HttpVersion(1, 1)
         ]);
         $response = new WebResponse($request);
-        assert(
+        assertThat(
                 $this->notFound->resolve($request, $response),
                 equals(Error::notFound())
         );
@@ -79,6 +75,6 @@ class NotFoundTest extends \PHPUnit_Framework_TestCase
         ]);
         $response = new WebResponse($request);
         $this->notFound->resolve($request, $response);
-        assert($response->statusCode(), equals(404));
+        assertThat($response->statusCode(), equals(404));
     }
 }

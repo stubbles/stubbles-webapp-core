@@ -5,11 +5,11 @@ declare(strict_types=1);
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- *
- * @package  stubbles\webapp\session
  */
 namespace stubbles\webapp\session;
-use function bovigo\assert\assert;
+use PHPUnit\Framework\TestCase;
+
+use function bovigo\assert\assertThat;
 use function bovigo\assert\predicate\isInstanceOf;
 /**
  * Tests for stubbles\webapp\session\*().
@@ -17,14 +17,18 @@ use function bovigo\assert\predicate\isInstanceOf;
  * @since  4.0.0
  * @group  session
  */
-class FunctionsTest extends \PHPUnit_Framework_TestCase
+class FunctionsTest extends TestCase
 {
     /**
      * @test
      */
     public function nativeCreatesWebSession()
     {
-        assert(
+        if (\headers_sent()) {
+            $this->markTestSkipped();
+        }
+
+        assertThat(
                 native('example', md5('example user agent')),
                 isInstanceOf(WebSession::class)
         );
@@ -35,7 +39,7 @@ class FunctionsTest extends \PHPUnit_Framework_TestCase
      */
     public function noneDurableCreatesWebSession()
     {
-        assert(noneDurable(), isInstanceOf(WebSession::class));
+        assertThat(noneDurable(), isInstanceOf(WebSession::class));
     }
 
     /**
@@ -44,6 +48,6 @@ class FunctionsTest extends \PHPUnit_Framework_TestCase
      */
     public function nullSessionCreatesNullSession()
     {
-        assert(nullSession(), isInstanceOf(NullSession::class));
+        assertThat(nullSession(), isInstanceOf(NullSession::class));
     }
 }

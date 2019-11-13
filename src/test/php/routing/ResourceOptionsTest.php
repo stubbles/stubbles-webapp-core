@@ -5,11 +5,10 @@ declare(strict_types=1);
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- *
- * @package  stubbles\webapp
  */
 namespace stubbles\webapp\routing;
 use bovigo\callmap\NewInstance;
+use PHPUnit\Framework\TestCase;
 use stubbles\ioc\Injector;
 use stubbles\webapp\{Request, Response};
 
@@ -21,7 +20,7 @@ use function bovigo\callmap\verify;
  * @since  2.2.0
  * @group  routing
  */
-class ResourceOptionsTest extends \PHPUnit_Framework_TestCase
+class ResourceOptionsTest extends TestCase
 {
     /**
      * instance to test
@@ -30,10 +29,7 @@ class ResourceOptionsTest extends \PHPUnit_Framework_TestCase
      */
     private $resourceOptions;
 
-    /**
-     * set up test environment
-     */
-    public function setUp()
+    protected function setUp(): void
     {
         $this->resourceOptions = new ResourceOptions(
                 NewInstance::stub(Injector::class),

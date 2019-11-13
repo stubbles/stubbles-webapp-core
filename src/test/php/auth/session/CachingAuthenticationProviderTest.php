@@ -5,18 +5,17 @@ declare(strict_types=1);
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- *
- * @package  stubbles\webapp
  */
 namespace stubbles\webapp\auth\session;
 use bovigo\callmap\NewInstance;
+use PHPUnit\Framework\TestCase;
 use stubbles\webapp\Request;
 use stubbles\webapp\auth\AuthenticationProvider;
 use stubbles\webapp\auth\User;
 use stubbles\webapp\session\Session;
 
 use function bovigo\assert\{
-    assert,
+    assertThat,
     assertNull,
     assertTrue,
     predicate\equals,
@@ -31,7 +30,7 @@ use function stubbles\reflect\annotationsOfConstructorParameter;
  * @group  auth
  * @group  auth_session
  */
-class CachingAuthenticationProviderTest extends \PHPUnit_Framework_TestCase
+class CachingAuthenticationProviderTest extends TestCase
 {
     /**
      * instance to test
@@ -52,10 +51,7 @@ class CachingAuthenticationProviderTest extends \PHPUnit_Framework_TestCase
      */
     private $authenticationProvider;
 
-    /**
-     * set up test environment
-     */
-    public function setUp()
+    protected function setUp(): void
     {
         $this->session                = NewInstance::of(Session::class);
         $this->authenticationProvider = NewInstance::of(AuthenticationProvider::class);
@@ -75,7 +71,7 @@ class CachingAuthenticationProviderTest extends \PHPUnit_Framework_TestCase
                 $this->cachingAuthenticationProvider
         );
         assertTrue($parameterAnnotations->contain('Named'));
-        assert(
+        assertThat(
                 $parameterAnnotations->firstNamed('Named')->getName(),
                 equals('original')
         );
@@ -88,7 +84,7 @@ class CachingAuthenticationProviderTest extends \PHPUnit_Framework_TestCase
     {
         $user = NewInstance::of(User::class);
         $this->session->returns(['hasValue' => true, 'value' => $user]);
-        assert(
+        assertThat(
                 $this->cachingAuthenticationProvider->authenticate(
                         NewInstance::of(Request::class)
                 ),
@@ -119,7 +115,7 @@ class CachingAuthenticationProviderTest extends \PHPUnit_Framework_TestCase
         $user = NewInstance::of(User::class);
         $this->session->returns(['hasValue' => false]);
         $this->authenticationProvider->returns(['authenticate' => $user]);
-        assert(
+        assertThat(
                 $this->cachingAuthenticationProvider->authenticate(
                         NewInstance::of(Request::class)
                 ),
@@ -136,7 +132,7 @@ class CachingAuthenticationProviderTest extends \PHPUnit_Framework_TestCase
         $this->authenticationProvider->returns([
                 'loginUri' => 'http://login.example.net/'
         ]);
-        assert(
+        assertThat(
                 $this->cachingAuthenticationProvider->loginUri(
                         NewInstance::of(Request::class)
                 ),

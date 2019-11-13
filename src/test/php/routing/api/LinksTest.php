@@ -5,14 +5,13 @@ declare(strict_types=1);
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- *
- * @package  stubbles\webapp
  */
 namespace stubbles\webapp\routing\api;
+use PHPUnit\Framework\TestCase;
 use stubbles\peer\http\HttpUri;
 
 use function bovigo\assert\{
-    assert,
+    assertThat,
     assertEmpty,
     assertEmptyArray,
     expect,
@@ -26,7 +25,7 @@ use function bovigo\assert\{
  * @group  routing
  * @group  routing_api
  */
-class LinksTest extends \PHPUnit_Framework_TestCase
+class LinksTest extends TestCase
 {
     private function createPrefilled(): Links
     {
@@ -46,7 +45,7 @@ class LinksTest extends \PHPUnit_Framework_TestCase
      */
     public function hasLinkWhenInitiallyProvided()
     {
-        assert($this->createPrefilled(), isOfSize(1));
+        assertThat($this->createPrefilled(), isOfSize(1));
     }
 
     /**
@@ -65,7 +64,7 @@ class LinksTest extends \PHPUnit_Framework_TestCase
     {
         $links = new Links();
         $links->add('self', HttpUri::fromString('http://example.com/foo'));
-        assert($links, isOfSize(1));
+        assertThat($links, isOfSize(1));
     }
 
     /**
@@ -86,7 +85,7 @@ class LinksTest extends \PHPUnit_Framework_TestCase
                 'self',
                 HttpUri::fromString('http://example.com/foo')
         );
-        assert(
+        assertThat(
                 $links->with('self'),
                 equals([new Link('self', HttpUri::fromString('http://example.com/foo'))])
         );
@@ -106,7 +105,7 @@ class LinksTest extends \PHPUnit_Framework_TestCase
                 'other',
                 HttpUri::fromString('http://example.com/bar')
         );
-        assert(
+        assertThat(
                 $links->with('other'),
                 equals([
                         new Link('other', HttpUri::fromString('http://example.com/foo')),
@@ -133,7 +132,7 @@ class LinksTest extends \PHPUnit_Framework_TestCase
                 'items',
                 HttpUri::fromString('http://example.com/item3')
         );
-        assert(
+        assertThat(
                 json_encode($links),
                 equals('{"self":{"href":"http:\/\/example.com\/foo"},"items":[{"href":"http:\/\/example.com\/item1"},{"href":"http:\/\/example.com\/item2"},{"href":"http:\/\/example.com\/item3"}]}')
         );

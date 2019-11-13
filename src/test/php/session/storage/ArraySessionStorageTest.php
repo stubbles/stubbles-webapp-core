@@ -5,14 +5,13 @@ declare(strict_types=1);
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- *
- * @package  stubbles\webapp
  */
 namespace stubbles\webapp\session\storage;
+use PHPUnit\Framework\TestCase;
 use stubbles\webapp\session\Session;
 
 use function bovigo\assert\{
-    assert,
+    assertThat,
     assertEmptyArray,
     assertEmptyString,
     assertFalse,
@@ -28,7 +27,7 @@ use function bovigo\assert\{
  * @group  session
  * @group  storage
  */
-class ArraySessionStorageTest extends \PHPUnit_Framework_TestCase
+class ArraySessionStorageTest extends TestCase
 {
     /**
      * instance to test
@@ -37,10 +36,7 @@ class ArraySessionStorageTest extends \PHPUnit_Framework_TestCase
      */
     private $arraySessionStorage;
 
-    /**
-     * set up test environment
-     */
-    public function setUp()
+    protected function setUp(): void
     {
         $this->arraySessionStorage = new ArraySessionStorage();
     }
@@ -96,7 +92,7 @@ class ArraySessionStorageTest extends \PHPUnit_Framework_TestCase
      */
     public function doesNothingWenRemovingNonExistingValue()
     {
-        assert(
+        assertThat(
                 $this->arraySessionStorage->removeValue('foo'),
                 isSameAs($this->arraySessionStorage)
         );
@@ -118,7 +114,7 @@ class ArraySessionStorageTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsValueWhichWasSet()
     {
-        assert(
+        assertThat(
                 $this->arraySessionStorage->putValue('foo', 'bar')
                         ->value('foo'),
                 equals('bar')
@@ -142,7 +138,7 @@ class ArraySessionStorageTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsDefaultValueKeysAfterCreation()
     {
-        assert(
+        assertThat(
                 $this->arraySessionStorage->valueKeys(),
                 equals([Session::FINGERPRINT])
         );
@@ -153,7 +149,7 @@ class ArraySessionStorageTest extends \PHPUnit_Framework_TestCase
      */
     public function valueKeysIncludeKeysOfAddedValues()
     {
-        assert(
+        assertThat(
                 $this->arraySessionStorage->putValue('foo', 'bar')
                         ->valueKeys(),
                 equals([Session::FINGERPRINT, 'foo'])

@@ -5,14 +5,13 @@ declare(strict_types=1);
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- *
- * @package  stubbles\webapp
  */
 namespace stubbles\webapp\session;
 use bovigo\callmap\NewInstance;
+use PHPUnit\Framework\TestCase;
 use stubbles\webapp\session\Session;
 
-use function bovigo\assert\assert;
+use function bovigo\assert\assertThat;
 use function bovigo\assert\assertFalse;
 use function bovigo\assert\assertTrue;
 use function bovigo\assert\predicate\equals;
@@ -24,7 +23,7 @@ use function stubbles\reflect\{annotationsOf, annotationsOfConstructor};
  * @since  2.0.0
  * @group  session
  */
-class TokenTest extends \PHPUnit_Framework_TestCase
+class TokenTest extends TestCase
 {
     /**
      * instance to test
@@ -39,10 +38,7 @@ class TokenTest extends \PHPUnit_Framework_TestCase
      */
     private $session;
 
-    /**
-     * set up test enviroment
-     */
-    public function setUp()
+    protected function setUp(): void
     {
         $this->session = NewInstance::of(Session::class);
         $this->token   = new Token($this->session);
@@ -89,7 +85,7 @@ class TokenTest extends \PHPUnit_Framework_TestCase
     {
         $this->session->returns(['value' => 'aToken']);
         $this->token->isValid('otherToken');
-        verify($this->session, 'putValue')->wasCalledOnce();
+        assertTrue(verify($this->session, 'putValue')->wasCalledOnce());
     }
 
     /**
@@ -100,7 +96,7 @@ class TokenTest extends \PHPUnit_Framework_TestCase
         $this->session->returns(
                 ['value' => onConsecutiveCalls('aToken', 'nextToken')]
         );
-        assert($this->token->next(), equals('nextToken'));
+        assertThat($this->token->next(), equals('nextToken'));
     }
 
     /**
@@ -110,6 +106,6 @@ class TokenTest extends \PHPUnit_Framework_TestCase
     {
         $this->session->returns(['value' => 'nextToken']);
         $this->token->next();
-        verify($this->session, 'putValue')->wasCalledOnce();
+        assertTrue(verify($this->session, 'putValue')->wasCalledOnce());
     }
 }

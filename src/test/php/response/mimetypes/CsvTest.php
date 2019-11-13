@@ -5,14 +5,13 @@ declare(strict_types=1);
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- *
- * @package  stubbles\webapp
  */
 namespace stubbles\webapp\response\mimetypes;
+use PHPUnit\Framework\TestCase;
 use stubbles\streams\memory\MemoryOutputStream;
 use stubbles\webapp\response\Error;
 
-use function bovigo\assert\assert;
+use function bovigo\assert\assertThat;
 use function bovigo\assert\expect;
 use function bovigo\assert\predicate\equals;
 use function bovigo\assert\predicate\isEmpty;
@@ -43,7 +42,7 @@ class AsArray
  * @group  mimetypes
  * @since  6.0.0
  */
-class CsvTest extends \PHPUnit_Framework_TestCase
+class CsvTest extends TestCase
 {
     /**
      * @type  \stubbles\webapp\response\mimetypes\Csv
@@ -54,10 +53,7 @@ class CsvTest extends \PHPUnit_Framework_TestCase
      */
     private $memory;
 
-    /**
-     * set up test environment
-     */
-    public function setUp()
+    protected function setUp(): void
     {
         $this->csv    = new Csv();
         $this->memory = new MemoryOutputStream();
@@ -68,7 +64,7 @@ class CsvTest extends \PHPUnit_Framework_TestCase
      */
     public function defaultMimeType()
     {
-        assert((string) $this->csv, equals('text/csv'));
+        assertThat((string) $this->csv, equals('text/csv'));
     }
 
     /**
@@ -76,7 +72,7 @@ class CsvTest extends \PHPUnit_Framework_TestCase
      */
     public function mimeTypeCanBeSpecialised()
     {
-        assert(
+        assertThat(
                 (string) $this->csv->specialise('text/vendor-csv'),
                 equals('text/vendor-csv')
         );
@@ -94,7 +90,7 @@ class CsvTest extends \PHPUnit_Framework_TestCase
      */
     public function scalarResourcesAreConvertedToOneLineCsv($scalarValue, string $expected)
     {
-        assert(
+        assertThat(
                 $this->csv->serialize($scalarValue, $this->memory)->buffer(),
                 equals($expected . "\n")
         );
@@ -105,7 +101,7 @@ class CsvTest extends \PHPUnit_Framework_TestCase
      */
     public function errorResourceIsConvertedToOneLineCsv()
     {
-        assert(
+        assertThat(
                 $this->csv->serialize(new Error('ups'), $this->memory)->buffer(),
                 equals("Error: ups\n")
         );
@@ -132,7 +128,7 @@ class CsvTest extends \PHPUnit_Framework_TestCase
         $object = new \stdClass();
         $object->column1 = 'bar';
         $object->column2 = 'baz';
-        assert(
+        assertThat(
                 $this->csv->serialize($object, $this->memory)->buffer(),
                 equals("column1,column2\nbar,baz\n")
         );
@@ -143,7 +139,7 @@ class CsvTest extends \PHPUnit_Framework_TestCase
      */
     public function serializeSimpleListWritesOneLine()
     {
-        assert(
+        assertThat(
                 $this->csv->serialize(
                         ['bar', 'baz'],
                         $this->memory
@@ -161,7 +157,7 @@ class CsvTest extends \PHPUnit_Framework_TestCase
      */
     public function serializeSimpleTravsersableListWritesOneLineForEachEntry()
     {
-        assert(
+        assertThat(
                 $this->csv->serialize(
                         new \ArrayIterator(['bar', 'baz']),
                         $this->memory
@@ -175,7 +171,7 @@ class CsvTest extends \PHPUnit_Framework_TestCase
      */
     public function serializeSimpleMapWritesHeaderLineAndOneValueLine()
     {
-        assert(
+        assertThat(
                 $this->csv->serialize(
                         ['column1' => 'bar', 'column2' => 'baz'],
                         $this->memory
@@ -189,7 +185,7 @@ class CsvTest extends \PHPUnit_Framework_TestCase
      */
     public function serializeNestedArray()
     {
-        assert(
+        assertThat(
                 $this->csv->serialize(
                         [['bar', 'baz'], ['foo', 'dummy']],
                         $this->memory
@@ -203,7 +199,7 @@ class CsvTest extends \PHPUnit_Framework_TestCase
      */
     public function serializeNestedAssociativeArray()
     {
-        assert(
+        assertThat(
                 $this->csv->serialize(
                         [['column1' => 'bar', 'column2' => 'baz'],
                          ['column1' => 'foo', 'column2' => 'dummy']
@@ -225,7 +221,7 @@ class CsvTest extends \PHPUnit_Framework_TestCase
         $object2 = new \stdClass();
         $object2->column1 = 'foo';
         $object2->column2 = 'dummy';
-        assert(
+        assertThat(
                 $this->csv->serialize(
                         [$object1, $object2],
                         $this->memory
@@ -245,7 +241,7 @@ class CsvTest extends \PHPUnit_Framework_TestCase
         $object2 = new \stdClass();
         $object2->column1 = 'foo';
         $object2->column2 = 'dummy';
-        assert(
+        assertThat(
                 $this->csv->serialize(
                         new \ArrayIterator([$object1, $object2]),
                         $this->memory
@@ -259,7 +255,7 @@ class CsvTest extends \PHPUnit_Framework_TestCase
      */
     public function serializeTraversable()
     {
-        assert(
+        assertThat(
                 $this->csv->serialize(
                         new \ArrayIterator(
                                 [['column1' => 'bar', 'column2' => 'baz'],
@@ -277,7 +273,7 @@ class CsvTest extends \PHPUnit_Framework_TestCase
      */
     public function serializeNonAssociativeTraversable()
     {
-        assert(
+        assertThat(
                 $this->csv->serialize(
                         new \ArrayIterator([['bar', 'baz'], ['foo', 'dummy']]),
                         $this->memory
@@ -291,7 +287,7 @@ class CsvTest extends \PHPUnit_Framework_TestCase
      */
     public function serializeNestedTraversable()
     {
-        assert(
+        assertThat(
                 $this->csv->serialize(
                         new \ArrayIterator(
                                 [new \ArrayIterator(['column1' => 'bar', 'column2' => 'baz']),
@@ -309,7 +305,7 @@ class CsvTest extends \PHPUnit_Framework_TestCase
      */
     public function supportsToArrayOnObjects()
     {
-        assert(
+        assertThat(
                 $this->csv->serialize(
                         new ToArray(),
                         $this->memory
@@ -323,7 +319,7 @@ class CsvTest extends \PHPUnit_Framework_TestCase
      */
     public function supportsNestedToArrayOnObjects()
     {
-        assert(
+        assertThat(
                 $this->csv->serialize(
                         [new ToArray(), new ToArray()],
                         $this->memory
@@ -337,7 +333,7 @@ class CsvTest extends \PHPUnit_Framework_TestCase
      */
     public function supportsAsArrayOnObjects()
     {
-        assert(
+        assertThat(
                 $this->csv->serialize(
                         new AsArray(),
                         $this->memory
@@ -351,7 +347,7 @@ class CsvTest extends \PHPUnit_Framework_TestCase
      */
     public function supportsNestedAsArrayOnObjects()
     {
-        assert(
+        assertThat(
                 $this->csv->serialize(
                         [new AsArray(), new AsArray()],
                         $this->memory
@@ -365,7 +361,7 @@ class CsvTest extends \PHPUnit_Framework_TestCase
      */
     public function serializeWithChangedDelimiter()
     {
-        assert(
+        assertThat(
                 $this->csv->changeDelimiterTo(';')
                         ->serialize(['bar', 'baz'], $this->memory)
                         ->buffer(),
@@ -378,7 +374,7 @@ class CsvTest extends \PHPUnit_Framework_TestCase
      */
     public function serializeWithChangedEnclosure()
     {
-        assert(
+        assertThat(
                 $this->csv->changeEnclosureTo('/')
                         ->serialize(['bar', 'b/az'], $this->memory)
                         ->buffer(),

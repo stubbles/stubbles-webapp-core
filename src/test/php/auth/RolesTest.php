@@ -5,12 +5,12 @@ declare(strict_types=1);
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- *
- * @package  stubbles\webapp
  */
 namespace stubbles\webapp\auth;
+use PHPUnit\Framework\TestCase;
+
 use function bovigo\assert\{
-    assert,
+    assertThat,
     assertEmpty,
     assertFalse,
     assertTrue,
@@ -23,7 +23,7 @@ use function bovigo\assert\{
  * @since  5.0.0
  * @group  auth
  */
-class RolesTest extends \PHPUnit_Framework_TestCase
+class RolesTest extends TestCase
 {
     /**
      * @test
@@ -38,7 +38,7 @@ class RolesTest extends \PHPUnit_Framework_TestCase
      */
     public function hasAmountOfInitialRoles()
     {
-        assert(new Roles(['admin']), isOfSize(1));
+        assertThat(new Roles(['admin']), isOfSize(1));
     }
 
     /**
@@ -70,6 +70,6 @@ class RolesTest extends \PHPUnit_Framework_TestCase
             $result[] = $role;
         }
 
-        assert($result, equals($expected));
+        assertThat($result, equals($expected));
     }
 }

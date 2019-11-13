@@ -47,8 +47,9 @@ namespace stubbles\webapp\session {
     /**
      * returns a callable which creates a session based on php's session implementation
      *
-     * @param   string  $sessionName  name of session to create
-     * @param   string  $fingerPrint  unique fingerprint for user agent
+     * @param   string    $sessionName   name of session to create
+     * @param   string    $fingerPrint   unique fingerprint for user agent
+     * @param   callable  $sessionStart
      * @return  \stubbles\webapp\session\WebSession
      * @since   4.0.0
      */

@@ -5,11 +5,10 @@ declare(strict_types=1);
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- *
- * @package  stubbles\webapp
  */
 namespace stubbles\webapp\routing;
 use bovigo\callmap\NewInstance;
+use PHPUnit\Framework\TestCase;
 use stubbles\peer\http\HttpUri;
 use stubbles\webapp\{Request, Response, Target, UriPath};
 use stubbles\webapp\auth\{AuthConstraint, Roles};
@@ -17,7 +16,7 @@ use stubbles\webapp\interceptor\{PreInterceptor, PostInterceptor};
 use stubbles\webapp\routing\api\{Header, Parameter, Status};
 
 use function bovigo\assert\{
-    assert,
+    assertThat,
     assertEmptyArray,
     assertFalse,
     assertTrue,
@@ -106,7 +105,7 @@ class RoleAwareAnnotatedProcessor implements Target
  * @since  2.0.0
  * @group  routing
  */
-class RouteTest extends \PHPUnit_Framework_TestCase
+class RouteTest extends TestCase
 {
     /**
      * @test
@@ -146,7 +145,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
      */
     public function allowedRequestMethodsContainAllIfNoneGiven()
     {
-        assert(
+        assertThat(
                 $this->createRoute(null)->allowedRequestMethods(),
                 equals(['GET', 'HEAD', 'POST', 'PUT', 'DELETE'])
         );
@@ -157,7 +156,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
      */
     public function allowedRequestMethodsContainGivenSingleMethodOnly()
     {
-        assert($this->createRoute()->allowedRequestMethods(), equals(['GET']));
+        assertThat($this->createRoute()->allowedRequestMethods(), equals(['GET']));
     }
 
     /**
@@ -166,7 +165,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
      */
     public function allowedRequestMethodsContainGivenListOfMethodOnly()
     {
-        assert(
+        assertThat(
                 $this->createRoute(['POST', 'PUT'])->allowedRequestMethods(),
                 equals(['POST', 'PUT'])
         );
@@ -249,7 +248,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsGivenPath()
     {
-        assert($this->createRoute()->configuredPath(), equals('/hello/{name}'));
+        assertThat($this->createRoute()->configuredPath(), equals('/hello/{name}'));
     }
 
     /**
@@ -258,7 +257,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
     public function returnsGivenCallback()
     {
         $route = new Route('/hello/{name}', __CLASS__);
-        assert($route->target(), equals(__CLASS__));
+        assertThat($route->target(), equals(__CLASS__));
     }
 
     /**
@@ -286,7 +285,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         $preInterceptorClosure  = function() {};
         $preInterceptor         = NewInstance::of(PreInterceptor::class);
         $preInterceptorFunction = 'array_map';
-        assert(
+        assertThat(
                 $this->createRoute()->preIntercept(get_class($preInterceptor))
                         ->preIntercept($preInterceptorClosure)
                         ->preIntercept($preInterceptor)
@@ -326,7 +325,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
         $postInterceptorClosure  = function() {};
         $postInterceptor         = NewInstance::of(PostInterceptor::class);
         $postInterceptorFunction = 'array_map';
-        assert(
+        assertThat(
                 $this->createRoute()->postIntercept(get_class($postInterceptor))
                         ->postIntercept($postInterceptorClosure)
                         ->postIntercept($postInterceptor)
@@ -717,7 +716,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsListOfAddedSupportedMimeTypes()
     {
-        assert(
+        assertThat(
                 $this->createRoute()
                         ->supportsMimeType('application/json')
                         ->supportsMimeType('application/xml')
@@ -747,7 +746,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
      */
     public function supportedMimeTypesReturnSpecialClass()
     {
-        assert(
+        assertThat(
                 $this->createRoute()
                         ->supportsMimeType('foo/bar', 'example\FooBar')
                         ->supportedMimeTypes()
@@ -810,7 +809,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 AnnotatedProcessor::class,
                 'GET'
         );
-        assert(
+        assertThat(
                 $route->supportedMimeTypes()->asArray(),
                 equals(['text/plain', 'application/bar', 'application/baz'])
         );
@@ -839,7 +838,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 AnnotatedProcessor::class,
                 'GET'
         );
-        assert(
+        assertThat(
                 $route->supportedMimeTypes()->classFor($mimeType),
                 equals($expectedMimeTypeClass)
         );
@@ -857,7 +856,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 AnnotatedProcessor::class,
                 'GET'
         );
-        assert(
+        assertThat(
                 $route->supportsMimeType('application/bar', 'example\OtherBar')
                         ->supportedMimeTypes()
                         ->classFor('application/bar'),
@@ -905,7 +904,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 'GET'
         );
         $annotations = new RoutingAnnotations($target);
-        assert(
+        assertThat(
                 $route->asResource(HttpUri::fromString('https://example.com/')),
                 equals(new api\Resource(
                         $name,
@@ -929,7 +928,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 AnnotatedProcessor::class,
                 'GET'
         );
-        assert(
+        assertThat(
                 $route->asResource(HttpUri::fromString('http://example.com/'))
                         ->links()->with('self')[0]->uri(),
                 equals('https://example.com/orders/')
@@ -948,7 +947,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 'GET'
         );
         $route->httpsOnly();
-        assert(
+        assertThat(
                 $route->asResource(HttpUri::fromString('http://example.com/'))
                         ->links()->with('self')[0]->uri(),
                 equals('https://example.com/orders/')
@@ -966,7 +965,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 OtherAnnotatedProcessor::class,
                 'GET'
         );
-        assert(
+        assertThat(
                 $route->asResource(HttpUri::fromString('http://example.com/'))
                         ->links()->with('self')[0]->uri(),
                 equals('http://example.com/orders/')
@@ -1027,7 +1026,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 'GET'
         );
         $route->supportsMimeType('application/xml');
-        assert(
+        assertThat(
                 $route->asResource(HttpUri::fromString('http://example.com/'))
                         ->mimeTypes(),
                 equals([
@@ -1051,7 +1050,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 'GET'
         );
         $route->supportsMimeType('application/xml');
-        assert(
+        assertThat(
                 $route->asResource(HttpUri::fromString('http://example.com/'), ['application/foo'])
                         ->mimeTypes(),
                 equals([
@@ -1075,7 +1074,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 AnnotatedProcessor::class,
                 'GET'
         );
-        assert(
+        assertThat(
                 $route->asResource(HttpUri::fromString('http://example.com/'))
                         ->statusCodes(),
                 equals([
@@ -1096,7 +1095,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 AnnotatedProcessor::class,
                 'GET'
         );
-        assert(
+        assertThat(
                 $route->asResource(HttpUri::fromString('http://example.com/'))
                         ->headers(),
                 equals([
@@ -1117,7 +1116,7 @@ class RouteTest extends \PHPUnit_Framework_TestCase
                 AnnotatedProcessor::class,
                 'GET'
         );
-        assert(
+        assertThat(
                 $route->asResource(HttpUri::fromString('http://example.com/'))
                         ->parameters(),
                 equals([

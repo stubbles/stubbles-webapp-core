@@ -5,16 +5,16 @@ declare(strict_types=1);
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- *
- * @package  stubbles\webapp
  */
 namespace stubbles\webapp\session\id;
 use bovigo\callmap\NewInstance;
+use PHPUnit\Framework\TestCase;
 use stubbles\input\ValueReader;
 use stubbles\webapp\Request;
 use stubbles\webapp\Response;
 
-use function bovigo\assert\assert;
+use function bovigo\assert\assertThat;
+use function bovigo\assert\assertTrue;
 use function bovigo\assert\predicate\equals;
 use function bovigo\assert\predicate\isNotEqualTo;
 use function bovigo\assert\predicate\isSameAs;
@@ -27,7 +27,7 @@ use function bovigo\callmap\verify;
  * @group  session
  * @group  id
  */
-class WebBoundSessionIdTest extends \PHPUnit_Framework_TestCase
+class WebBoundSessionIdTest extends TestCase
 {
     /**
      * instance to test
@@ -48,10 +48,7 @@ class WebBoundSessionIdTest extends \PHPUnit_Framework_TestCase
      */
     private $response;
 
-    /**
-     * set up test enviroment
-     */
-    public function setUp()
+    protected function setUp(): void
     {
         $this->request  = NewInstance::of(Request::class);
         $this->response = NewInstance::of(Response::class);
@@ -67,7 +64,7 @@ class WebBoundSessionIdTest extends \PHPUnit_Framework_TestCase
      */
     public function returnsGivenSessionName()
     {
-        assert($this->webBoundSessionId->name(), equals('foo'));
+        assertThat($this->webBoundSessionId->name(), equals('foo'));
     }
 
     /**
@@ -76,7 +73,7 @@ class WebBoundSessionIdTest extends \PHPUnit_Framework_TestCase
     public function createsSessionIdIfNotInRequest()
     {
         $this->request->returns(['hasParam' => false, 'hasCookie' => false]);
-        assert(
+        assertThat(
                 (string) $this->webBoundSessionId,
                 matches('/^([a-zA-Z0-9]{32})$/D')
         );
@@ -89,8 +86,8 @@ class WebBoundSessionIdTest extends \PHPUnit_Framework_TestCase
     {
         $this->request->returns(['hasParam' => false, 'hasCookie' => false]);
         (string) $this->webBoundSessionId;
-        verify($this->request, 'hasParam')->received('foo');
-        verify($this->request, 'hasCookie')->received('foo');
+        assertTrue(verify($this->request, 'hasParam')->received('foo'));
+        assertTrue(verify($this->request, 'hasCookie')->received('foo'));
     }
 
     /**
@@ -103,7 +100,7 @@ class WebBoundSessionIdTest extends \PHPUnit_Framework_TestCase
                  'readParam' => ValueReader::forValue('invalid')
                 ]
         );
-        assert(
+        assertThat(
                 (string) $this->webBoundSessionId,
                 matches('/^([a-zA-Z0-9]{32})$/D')
         );
@@ -119,7 +116,7 @@ class WebBoundSessionIdTest extends \PHPUnit_Framework_TestCase
                  'readParam' => ValueReader::forValue('abcdefghij1234567890abcdefghij12')
                 ]
         );
-        assert(
+        assertThat(
                 (string) $this->webBoundSessionId,
                 equals('abcdefghij1234567890abcdefghij12')
         );
@@ -136,7 +133,7 @@ class WebBoundSessionIdTest extends \PHPUnit_Framework_TestCase
                  'readCookie' => ValueReader::forValue('invalid')
                 ]
         );
-        assert(
+        assertThat(
                 (string) $this->webBoundSessionId,
                 matches('/^([a-zA-Z0-9]{32})$/D')
         );
@@ -152,7 +149,7 @@ class WebBoundSessionIdTest extends \PHPUnit_Framework_TestCase
                 'hasCookie'  => true,
                 'readCookie' => ValueReader::forValue('abcdefghij1234567890abcdefghij12')
         ]);
-        assert(
+        assertThat(
                 (string) $this->webBoundSessionId,
                 equals('abcdefghij1234567890abcdefghij12')
         );
@@ -165,7 +162,7 @@ class WebBoundSessionIdTest extends \PHPUnit_Framework_TestCase
     {
         $this->request->returns(['hasParam' => false, 'hasCookie' => false]);
         $previous = (string) $this->webBoundSessionId;
-        assert(
+        assertThat(
                 (string) $this->webBoundSessionId->regenerate(),
                 isNotEqualTo($previous)
         );
@@ -176,7 +173,7 @@ class WebBoundSessionIdTest extends \PHPUnit_Framework_TestCase
      */
     public function regeneratedSessionIdIsValid()
     {
-        assert(
+        assertThat(
                 (string) $this->webBoundSessionId->regenerate(),
                 matches('/^([a-zA-Z0-9]{32})$/D')
         );
@@ -188,7 +185,7 @@ class WebBoundSessionIdTest extends \PHPUnit_Framework_TestCase
     public function regenerateStoresNewSessionIdInCookie()
     {
         $this->webBoundSessionId->regenerate();
-        verify($this->response, 'addCookie')->wasCalledOnce();
+        assertTrue(verify($this->response, 'addCookie')->wasCalledOnce());
     }
 
     /**
@@ -196,10 +193,10 @@ class WebBoundSessionIdTest extends \PHPUnit_Framework_TestCase
      */
     public function invalidateRemovesSessionidCookie()
     {
-        assert(
+        assertThat(
                 $this->webBoundSessionId->invalidate(),
                 isSameAs($this->webBoundSessionId)
         );
-        verify($this->response, 'removeCookie')->received('foo');
+        assertTrue(verify($this->response, 'removeCookie')->received('foo'));
     }
 }

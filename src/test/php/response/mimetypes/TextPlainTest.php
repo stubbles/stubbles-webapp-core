@@ -5,13 +5,12 @@ declare(strict_types=1);
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- *
- * @package  stubbles\webapp
  */
 namespace stubbles\webapp\response\mimetypes;
+use PHPUnit\Framework\TestCase;
 use stubbles\streams\memory\MemoryOutputStream;
 
-use function bovigo\assert\assert;
+use function bovigo\assert\assertThat;
 use function bovigo\assert\predicate\equals;
 /**
  * Tests for stubbles\webapp\response\mimetypes\TextPlain.
@@ -20,17 +19,14 @@ use function bovigo\assert\predicate\equals;
  * @group  mimetypes
  * @since  6.0.0
  */
-class TextPlainTest extends \PHPUnit_Framework_TestCase
+class TextPlainTest extends TestCase
 {
     /**
      * @type  \stubbles\webapp\response\mimetypes\TextPlain
      */
     private $textPlain;
 
-    /**
-     * set up test environment
-     */
-    public function setUp()
+    protected function setUp(): void
     {
         $this->textPlain = new TextPlain();
     }
@@ -40,7 +36,7 @@ class TextPlainTest extends \PHPUnit_Framework_TestCase
      */
     public function defaultMimeType()
     {
-        assert((string) $this->textPlain, equals('text/plain'));
+        assertThat((string) $this->textPlain, equals('text/plain'));
     }
 
     /**
@@ -48,7 +44,7 @@ class TextPlainTest extends \PHPUnit_Framework_TestCase
      */
     public function mimeTypeCanBeSpecialised()
     {
-        assert(
+        assertThat(
                 (string) $this->textPlain->specialise('text/foo'),
                 equals('text/foo')
         );
@@ -64,7 +60,7 @@ class TextPlainTest extends \PHPUnit_Framework_TestCase
             [true, 'true'],
             [false, 'false'],
             [[303 => 'cool'], "array (\n  303 => 'cool',\n)"],
-            [$stdClass, "stdClass::__set_state(array(\n   'foo' => 'bar',\n))"],
+            [$stdClass, "(object) array(\n   'foo' => 'bar',\n)"],
             [new TextPlain(), 'text/plain']
         ];
     }
@@ -75,7 +71,7 @@ class TextPlainTest extends \PHPUnit_Framework_TestCase
      */
     public function serializesResourceToText($resource, string $expected)
     {
-        assert(
+        assertThat(
                 $this->textPlain->serialize(
                         $resource,
                         new MemoryOutputStream()

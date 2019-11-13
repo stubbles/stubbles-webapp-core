@@ -5,14 +5,13 @@ declare(strict_types=1);
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- *
- * @package  stubbles\webapp
  */
 namespace stubbles\webapp\response;
+use PHPUnit\Framework\TestCase;
 use stubbles\peer\http\HttpVersion;
 
 use function bovigo\assert\{
-    assert,
+    assertThat,
     assertFalse,
     assertTrue,
     expect,
@@ -24,7 +23,7 @@ use function bovigo\assert\{
  * @group  response_1
  * @since  5.1.0
  */
-class StatusTest extends \PHPUnit_Framework_TestCase
+class StatusTest extends TestCase
 {
     /**
      * instance to test
@@ -37,10 +36,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     private $headers;
 
-    /**
-     * set up test environment
-     */
-    public function setUp()
+    protected function setUp(): void
     {
         $this->headers = new Headers();
         $this->status  = new Status($this->headers);
@@ -51,7 +47,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function statusCodeIs200ByDefault()
     {
-        assert($this->status->code(), equals(200));
+        assertThat($this->status->code(), equals(200));
     }
 
     /**
@@ -75,7 +71,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function lineForCgiSapi()
     {
-        assert(
+        assertThat(
                 $this->status->line(HttpVersion::HTTP_1_1, 'cgi'),
                 equals('Status: 200 OK')
         );
@@ -86,7 +82,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function lineForOtherSapi()
     {
-        assert(
+        assertThat(
                 $this->status->line(HttpVersion::HTTP_1_1),
                 equals(HttpVersion::HTTP_1_1 . ' 200 OK')
         );
@@ -106,7 +102,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function setUnknownStatusCodeWithReasonPhraseIsAccepted()
     {
-        assert(
+        assertThat(
                 $this->status->setCode(909, 'Sound Is Awesome')
                         ->line(HttpVersion::HTTP_1_1),
                 equals(HttpVersion::HTTP_1_1 . ' 909 Sound Is Awesome')
@@ -118,7 +114,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function createdSetsStatusCodeTo201()
     {
-        assert(
+        assertThat(
                 $this->status->created('http://example.com/foo')->code(),
                 equals(201)
         );
@@ -130,7 +126,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
     public function createdAddsLocationHeaderWithGivenUri()
     {
         $this->status->created('http://example.com/foo');
-        assert($this->headers['Location'], equals('http://example.com/foo'));
+        assertThat($this->headers['Location'], equals('http://example.com/foo'));
     }
 
     /**
@@ -148,7 +144,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
     public function createdAddsEtagHeaderWhenGiven()
     {
         $this->status->created('http://example.com/foo', 'someValue');
-        assert($this->headers['ETag'], equals('someValue'));
+        assertThat($this->headers['ETag'], equals('someValue'));
     }
 
     /**
@@ -164,7 +160,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function acceptedSetsStatusCodeTo202()
     {
-        assert($this->status->accepted()->code(), equals(202));
+        assertThat($this->status->accepted()->code(), equals(202));
     }
 
     /**
@@ -180,7 +176,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function noContentSetsStatusCodeTo204()
     {
-        assert($this->status->noContent()->code(), equals(204));
+        assertThat($this->status->noContent()->code(), equals(204));
     }
 
     /**
@@ -189,7 +185,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
     public function noContentAddsContentLengthHeaderWithValue0()
     {
         $this->status->noContent();
-        assert($this->headers['Content-Length'], equals('0'));
+        assertThat($this->headers['Content-Length'], equals('0'));
     }
 
     /**
@@ -213,7 +209,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function resetContentSetsStatusCodeTo205()
     {
-        assert($this->status->resetContent()->code(), equals(205));
+        assertThat($this->status->resetContent()->code(), equals(205));
     }
 
     /**
@@ -222,7 +218,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
     public function resetContentAddsContentLengthHeaderWithValue0()
     {
         $this->status->resetContent();
-        assert($this->headers['Content-Length'], equals('0'));
+        assertThat($this->headers['Content-Length'], equals('0'));
     }
 
     /**
@@ -246,7 +242,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function partialContentSetsStatusCodeTo206()
     {
-        assert($this->status->partialContent(0, 10)->code(), equals(206));
+        assertThat($this->status->partialContent(0, 10)->code(), equals(206));
     }
 
     /**
@@ -255,7 +251,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
     public function partialContentAddsContentRangeHeader()
     {
         $this->status->partialContent(0, 10);
-        assert($this->headers['Content-Range'], equals('bytes 0-10/*'));
+        assertThat($this->headers['Content-Range'], equals('bytes 0-10/*'));
     }
 
     /**
@@ -264,7 +260,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
     public function partialContentAddsContentRangeHeaderWithTotalSizeAndDifferentUnit()
     {
         $this->status->partialContent(0, 10, 25, 'elements');
-        assert($this->headers['Content-Range'], equals('elements 0-10/25'));
+        assertThat($this->headers['Content-Range'], equals('elements 0-10/25'));
     }
 
     /**
@@ -280,7 +276,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function redirectSetsStatusCodeTo302ByDefault()
     {
-        assert(
+        assertThat(
                 $this->status->redirect('http://example.com/foo')->code(),
                 equals(302)
         );
@@ -291,7 +287,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function redirectSetsStatusCodeToGivenStatusCode()
     {
-        assert(
+        assertThat(
                 $this->status->redirect('http://example.com/foo', 301)->code(),
                 equals(301)
         );
@@ -303,7 +299,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
     public function redirectAddsLocationHeaderWithGivenUri()
     {
         $this->status->redirect('http://example.com/foo');
-        assert($this->headers['Location'], equals('http://example.com/foo'));
+        assertThat($this->headers['Location'], equals('http://example.com/foo'));
     }
 
     /**
@@ -319,7 +315,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function notModifiedSetsStatusCodeTo304()
     {
-        assert($this->status->notModified()->code(), equals(304));
+        assertThat($this->status->notModified()->code(), equals(304));
     }
 
     /**
@@ -335,7 +331,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function badRequestSetsStatusCodeTo400()
     {
-        assert($this->status->badRequest()->code(), equals(400));
+        assertThat($this->status->badRequest()->code(), equals(400));
     }
 
     /**
@@ -351,7 +347,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function unauthorizedSetsStatusCodeTo401()
     {
-        assert(
+        assertThat(
                 $this->status->unauthorized(['Basic realm="RealmName"'])->code(),
                 equals(401)
         );
@@ -374,7 +370,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
         $this->status->unauthorized(
                 ['MyAuth realm="Yo"', 'Basic realm="RealmName"']
         );
-        assert(
+        assertThat(
                 $this->headers['WWW-Authenticate'],
                 equals('MyAuth realm="Yo", Basic realm="RealmName"')
         );
@@ -396,7 +392,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function forbiddenSetsStatusCodeTo403()
     {
-        assert($this->status->forbidden()->code(), equals(403));
+        assertThat($this->status->forbidden()->code(), equals(403));
     }
 
     /**
@@ -412,7 +408,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function notFoundSetsStatusCodeTo404()
     {
-        assert($this->status->notFound()->code(), equals(404));
+        assertThat($this->status->notFound()->code(), equals(404));
     }
 
     /**
@@ -428,7 +424,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function methodNotAllowedSetsStatusCodeTo405()
     {
-        assert(
+        assertThat(
                 $this->status->methodNotAllowed(['GET', 'HEAD'])->code(),
                 equals(405)
         );
@@ -440,7 +436,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
     public function methodNotAllowedAddsAllowHeader()
     {
         $this->status->methodNotAllowed(['GET', 'HEAD']);
-        assert($this->headers['Allow'], equals('GET, HEAD'));
+        assertThat($this->headers['Allow'], equals('GET, HEAD'));
     }
 
     /**
@@ -456,7 +452,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function notAcceptableSetsStatusCodeTo406()
     {
-        assert(
+        assertThat(
                 $this->status->notAcceptable(['text/plain', 'application/foo'])
                         ->code(),
                 equals(406)
@@ -469,7 +465,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
     public function notAcceptableAddsAcceptableHeader()
     {
         $this->status->notAcceptable(['text/plain', 'application/foo']);
-        assert(
+        assertThat(
                 $this->headers['X-Acceptable'],
                 equals('text/plain, application/foo')
         );
@@ -491,7 +487,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function conflictSetsStatusCodeTo409()
     {
-        assert($this->status->conflict()->code(), equals(409));
+        assertThat($this->status->conflict()->code(), equals(409));
     }
 
     /**
@@ -507,7 +503,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function goneSetsStatusCodeTo410()
     {
-        assert($this->status->gone()->code(), equals(410));
+        assertThat($this->status->gone()->code(), equals(410));
     }
 
     /**
@@ -523,7 +519,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function lengthRequiredSetsStatusCodeTo411()
     {
-        assert($this->status->lengthRequired()->code(), equals(411));
+        assertThat($this->status->lengthRequired()->code(), equals(411));
     }
 
     /**
@@ -539,7 +535,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function preconditionFailedSetsStatusCodeTo412()
     {
-        assert($this->status->preconditionFailed()->code(), equals(412));
+        assertThat($this->status->preconditionFailed()->code(), equals(412));
     }
 
     /**
@@ -555,7 +551,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function unsupportedMediaTypeSetsStatusCodeTo415()
     {
-        assert($this->status->unsupportedMediaType()->code(), equals(415));
+        assertThat($this->status->unsupportedMediaType()->code(), equals(415));
     }
 
     /**
@@ -571,7 +567,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function rangeNotSatisfiableSetsStatusCodeTo416()
     {
-        assert($this->status->rangeNotSatisfiable(22)->code(), equals(416));
+        assertThat($this->status->rangeNotSatisfiable(22)->code(), equals(416));
     }
 
     /**
@@ -580,7 +576,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
     public function rangeNotSatisfiableAddsContentRangeHeader()
     {
         $this->status->rangeNotSatisfiable(22);
-        assert($this->headers['Content-Range'], equals('bytes */22'));
+        assertThat($this->headers['Content-Range'], equals('bytes */22'));
     }
 
     /**
@@ -589,7 +585,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
     public function rangeNotSatisfiableAddsContentRangeHeaderWithDifferentUnit()
     {
         $this->status->rangeNotSatisfiable(22, 'elements');
-        assert($this->headers['Content-Range'], equals('elements */22'));
+        assertThat($this->headers['Content-Range'], equals('elements */22'));
     }
 
     /**
@@ -605,7 +601,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function internalServerErrorSetsStatusCodeTo500()
     {
-        assert($this->status->internalServerError()->code(), equals(500));
+        assertThat($this->status->internalServerError()->code(), equals(500));
     }
 
     /**
@@ -621,7 +617,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function notImplementedSetsStatusCodeTo501()
     {
-        assert($this->status->notImplemented()->code(), equals(501));
+        assertThat($this->status->notImplemented()->code(), equals(501));
     }
 
     /**
@@ -637,7 +633,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function serviceUnavailableSetsStatusCodeTo503()
     {
-        assert($this->status->serviceUnavailable()->code(), equals(503));
+        assertThat($this->status->serviceUnavailable()->code(), equals(503));
     }
 
     /**
@@ -653,7 +649,7 @@ class StatusTest extends \PHPUnit_Framework_TestCase
      */
     public function httpVersionNotSupportedSetsStatusCodeTo505()
     {
-        assert($this->status->httpVersionNotSupported()->code(), equals(505));
+        assertThat($this->status->httpVersionNotSupported()->code(), equals(505));
     }
 
     /**

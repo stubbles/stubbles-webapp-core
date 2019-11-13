@@ -5,13 +5,12 @@ declare(strict_types=1);
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
- *
- * @package  stubbles\webapp
  */
 namespace stubbles\webapp\response\mimetypes;
+use PHPUnit\Framework\TestCase;
 use stubbles\streams\memory\MemoryOutputStream;
 
-use function bovigo\assert\assert;
+use function bovigo\assert\assertThat;
 use function bovigo\assert\predicate\equals;
 /**
  * Tests for stubbles\webapp\response\mimetypes\Json.
@@ -20,17 +19,14 @@ use function bovigo\assert\predicate\equals;
  * @group  mimetypes
  * @since  6.0.0
  */
-class JsonTest extends \PHPUnit_Framework_TestCase
+class JsonTest extends TestCase
 {
     /**
      * @type  \stubbles\webapp\response\mimetypes\Json
      */
     private $json;
 
-    /**
-     * set up test environment
-     */
-    public function setUp()
+    protected function setUp(): void
     {
         $this->json = new Json();
     }
@@ -40,7 +36,7 @@ class JsonTest extends \PHPUnit_Framework_TestCase
      */
     public function defaultMimeType()
     {
-        assert((string) $this->json, equals('application/json'));
+        assertThat((string) $this->json, equals('application/json'));
     }
 
     /**
@@ -48,7 +44,7 @@ class JsonTest extends \PHPUnit_Framework_TestCase
      */
     public function mimeTypeCanBeSpecialised()
     {
-        assert(
+        assertThat(
                 (string) $this->json->specialise('text/json'),
                 equals('text/json')
         );
@@ -59,7 +55,7 @@ class JsonTest extends \PHPUnit_Framework_TestCase
      */
     public function serializesResourceToJson()
     {
-        assert(
+        assertThat(
                 $this->json->serialize(
                         ['foo', 'bar' => 313],
                         new MemoryOutputStream()
