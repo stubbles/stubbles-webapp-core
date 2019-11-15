@@ -51,10 +51,15 @@ class HtmlFilePassThrough implements Target
             return $response->notFound();
         }
 
+        $fileContents = @file_get_contents($this->routePath . $routeName);
+        if (false === $fileContents) {
+            return $response->internalServerError('Could not read contents of ' . $routeName);
+        }
+
         return $this->modifyContent(
                 $request,
                 $response,
-                file_get_contents($this->routePath . $routeName),
+                $fileContents,
                 $routeName
         );
     }

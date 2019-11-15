@@ -34,12 +34,17 @@ class HtmlFilePassThroughTest extends TestCase
      * @type  \stubbles\webapp\htmlpassthrough\HtmlFilePassThrough
      */
     private $htmlFilePassThrough;
+    /**
+     * @type  \org\bovigo\vfs\vfsStreamFile
+     */
+    private $file;
 
     protected function setUp(): void
     {
         $root = vfsStream::setup();
         vfsStream::newFile('index.html')->withContent('this is index.html')->at($root);
-        vfsStream::newFile('foo.html')->withContent('this is foo.html')->at($root);
+        $this->file = vfsStream::newFile('foo.html');
+        $this->file->withContent('this is foo.html')->at($root);
         $this->htmlFilePassThrough = new HtmlFilePassThrough(vfsStream::url('root'));
     }
 
@@ -79,6 +84,25 @@ class HtmlFilePassThroughTest extends TestCase
                         NewInstance::of(Response::class)
                                 ->returns(['notFound' => $error]),
                         new UriPath('/', '/doesNotExist.html')
+                ),
+                isSameAs($error)
+        );
+    }
+
+    /**
+     * @test
+     * @since  8.0.0
+     */
+    public function requestForNonReadableFileWritesInternalServerErrorResponse()
+    {
+        $this->file->chmod(0000);
+        $error = Error::internalServerError('');
+        assertThat(
+                $this->htmlFilePassThrough->resolve(
+                        NewInstance::of(Request::class),
+                        NewInstance::of(Response::class)
+                                ->returns(['internalServerError' => $error]),
+                        new UriPath('/', '/foo.html')
                 ),
                 isSameAs($error)
         );
