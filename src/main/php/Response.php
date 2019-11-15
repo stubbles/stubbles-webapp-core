@@ -22,6 +22,14 @@ use stubbles\webapp\response\mimetypes\MimeType;
 interface Response extends SendableResponse
 {
     /**
+     * adjusts mime type of response to given mime type
+     *
+     * @param   \stubbles\webapp\response\mimetypes\MimeType  $mimeType
+     * @return  \stubbles\webapp\Response
+     */
+    public function adjustMimeType(MimeType $mimeType): self;
+
+    /**
      * returns mime type for response body
      *
      * @return  \stubbles\webapp\response\mimetypes\MimeType
