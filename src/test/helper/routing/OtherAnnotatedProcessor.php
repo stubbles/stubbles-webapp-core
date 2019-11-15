@@ -20,7 +20,7 @@ class OtherAnnotatedProcessor implements Target
      * processes the request
      *
      * @param  \stubbles\webapp\Request   $request   current request
-     * @param  \stubbles\webapp\respone\Response  $response  response to send
+     * @param  \stubbles\webapp\Response  $response  response to send
      * @param  \stubbles\webapp\UriPath           $uriPath   information about called uri path
      */
     public function resolve(Request $request, Response $response, UriPath $uriPath)
