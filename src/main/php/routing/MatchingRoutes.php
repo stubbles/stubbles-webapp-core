@@ -58,7 +58,7 @@ class MatchingRoutes
      *
      * @return  \stubbles\webapp\routing\Route
      */
-    public function exactMatch(): Route
+    public function exactMatch(): ?Route
     {
         if ($this->hasExactMatch()) {
             return $this->routes['exact'];
