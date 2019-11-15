@@ -91,9 +91,9 @@ abstract class AbstractResource implements UriResource
         }
 
         $mimeType = $this->supportedMimeTypes->findMatch(
-                $request->readHeader('HTTP_ACCEPT')
-                        ->defaultingTo(emptyAcceptHeader())
-                        ->withFilter(new AcceptFilter())
+            $request->readHeader('HTTP_ACCEPT')
+                    ->defaultingTo(emptyAcceptHeader())
+                    ->withFilter(new AcceptFilter())
         );
         if (null === $mimeType) {
             $response->notAcceptable($this->supportedMimeTypes->asArray());
@@ -101,18 +101,15 @@ abstract class AbstractResource implements UriResource
         }
 
         if (!$this->supportedMimeTypes->provideClass($mimeType)) {
-            $response->write(
-                    $response->internalServerError(
-                            'No mime type class defined for negotiated content type ' . $mimeType
-                    )
-            );
+            $response->write($response->internalServerError(
+                'No mime type class defined for negotiated content type ' . $mimeType
+            ));
             return false;
         }
 
         $response->adjustMimeType(
-                $this->injector->getInstance(
-                    $this->supportedMimeTypes->classFor($mimeType)
-                )->specialise($mimeType)
+            $this->injector->getInstance($this->supportedMimeTypes->classFor($mimeType))
+                 ->specialise($mimeType)
         );
         return true;
     }
