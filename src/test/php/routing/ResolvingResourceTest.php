@@ -168,7 +168,7 @@ class ResolvingResourceTest extends TestCase
      * helper method for the test
      *
      * @param   \stubbles\webapp\Request   $request
-     * @param   \stubbles\webapp\respone\Response  $response
+     * @param   \stubbles\webapp\Response  $response
      * @throws  \Exception
      */
     public function failingCallable(Request $request, Response $response, UriPath $uriPath)
