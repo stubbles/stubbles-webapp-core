@@ -19,6 +19,7 @@ use function bovigo\assert\assertThat;
 use function bovigo\assert\assertEmptyString;
 use function bovigo\assert\assertTrue;
 use function bovigo\assert\expect;
+use function bovigo\assert\fail;
 use function bovigo\assert\predicate\equals;
 use function bovigo\callmap\throws;
 use function bovigo\callmap\verify;
@@ -98,17 +99,27 @@ class ImageTest extends TestCase
         assertEmptyString($out->buffer());
     }
 
+    private function newDriver(): DummyDriver
+    {
+
+    }
+
     /**
      * @test
      */
     public function usesErrorImgResourceWhenResourceIsError()
     {
-        $dummyDriver = new DummyDriver('fake');
+        $handle = imagecreatefrompng(dirname(__DIR__) . '/../../resources/' . 'empty.png');
+        if (false === $handle) {
+            fail('Could not create file handle');
+        }
+
+        $dummyDriver = new DummyDriver($handle);
         $this->resourceLoader->returns(
                 ['load' => ImageSource::load('error.png', $dummyDriver)]
         );
         $this->image->serialize(new Error('ups'), new MemoryOutputStream());
-        assertThat($dummyDriver->lastDisplayedHandle(), equals('fake'));
+        assertThat($dummyDriver->lastDisplayedHandle(), equals($handle));
         verify($this->resourceLoader, 'load')->received('error.png');
     }
 
@@ -117,12 +128,17 @@ class ImageTest extends TestCase
      */
     public function displaysImageLoadedFromFilename()
     {
-        $dummyDriver = new DummyDriver('fake');
+        $handle = imagecreatefrompng(dirname(__DIR__) . '/../../resources/' . 'empty.png');
+        if (false === $handle) {
+            fail('Could not create file handle');
+        }
+
+        $dummyDriver = new DummyDriver($handle);
         $this->resourceLoader->returns(
                 ['load' => ImageSource::load('error.png', $dummyDriver)]
         );
         $this->image->serialize('pixel.png', new MemoryOutputStream());
-        assertThat($dummyDriver->lastDisplayedHandle(), equals('fake'));
+        assertThat($dummyDriver->lastDisplayedHandle(), equals($handle));
         verify($this->resourceLoader, 'load')->received('pixel.png');
     }
 
@@ -131,7 +147,12 @@ class ImageTest extends TestCase
      */
     public function displaysImagePassedAsResource()
     {
-        $dummyDriver = new DummyDriver('fake');
+        $handle = imagecreatefrompng(dirname(__DIR__) . '/../../resources/' . 'empty.png');
+        if (false === $handle) {
+            fail('Could not create file handle');
+        }
+
+        $dummyDriver = new DummyDriver($handle);
         $this->image->serialize(
                 ImageSource::load(
                         'pixel.png',
@@ -139,7 +160,7 @@ class ImageTest extends TestCase
                 ),
                 new MemoryOutputStream()
         );
-        assertThat($dummyDriver->lastDisplayedHandle(), equals('fake'));
+        assertThat($dummyDriver->lastDisplayedHandle(), equals($handle));
     }
 
     /**
