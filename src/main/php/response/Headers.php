@@ -170,7 +170,7 @@ class Headers implements \IteratorAggregate, \ArrayAccess
      * returns header with given name
      *
      * @param   string  $offset  name of header to retrieve
-     * @return  string
+     * @return  string|null
      */
     public function offsetGet($offset)
     {
