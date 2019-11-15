@@ -47,7 +47,6 @@ namespace stubbles\webapp\session {
      *
      * @param   string    $sessionName   name of session to create
      * @param   string    $fingerPrint   unique fingerprint for user agent
-     * @param   callable  $sessionStart
      * @return  \stubbles\webapp\session\WebSession
      * @since   4.0.0
      */
