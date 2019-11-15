@@ -138,7 +138,7 @@ abstract class WebApp extends App
     /**
      * configures routing for this web app
      *
-     * @param  \stubbles\webapp\routing\RoutingConfigurator  $routing
+     * @param  \stubbles\webapp\RoutingConfigurator  $routing
      */
     protected abstract function configureRouting(RoutingConfigurator $routing): void;
 
