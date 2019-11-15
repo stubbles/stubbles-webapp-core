@@ -112,6 +112,7 @@ class ImageTest extends TestCase
         $handle = imagecreatefrompng(dirname(__DIR__) . '/../../resources/' . 'empty.png');
         if (false === $handle) {
             fail('Could not create file handle');
+            return;
         }
 
         $dummyDriver = new DummyDriver($handle);
@@ -131,6 +132,7 @@ class ImageTest extends TestCase
         $handle = imagecreatefrompng(dirname(__DIR__) . '/../../resources/' . 'empty.png');
         if (false === $handle) {
             fail('Could not create file handle');
+            return;
         }
 
         $dummyDriver = new DummyDriver($handle);
@@ -150,6 +152,7 @@ class ImageTest extends TestCase
         $handle = imagecreatefrompng(dirname(__DIR__) . '/../../resources/' . 'empty.png');
         if (false === $handle) {
             fail('Could not create file handle');
+            return;
         }
 
         $dummyDriver = new DummyDriver($handle);
