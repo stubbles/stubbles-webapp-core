@@ -51,9 +51,9 @@ class UserAgent
     /**
      * constructor
      *
-     * @param  string    $name            name of user agent
-     * @param  bool      $acceptsCookies  whether user agent accepts cookies or not
-     * @param  string[]  $botSignatures   optional  additional list of bot user agent signatures
+     * @param  string|null  $name            name of user agent
+     * @param  bool         $acceptsCookies  whether user agent accepts cookies or not
+     * @param  string[]     $botSignatures   optional  additional list of bot user agent signatures
      */
     public function __construct($name, bool $acceptsCookies, array $botSignatures = [])
     {
