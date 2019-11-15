@@ -96,7 +96,7 @@ interface Response extends SendableResponse
     /**
      * write body into the response
      *
-     * @param   string  $body
+     * @param   mixed  $body
      * @return  \stubbles\webapp\Response
      */
     public function write($body): self;
