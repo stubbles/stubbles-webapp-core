@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace stubbles\webapp\routing;
 use bovigo\callmap\NewInstance;
 use PHPUnit\Framework\TestCase;
+use stubbles\helper\routing\{AnnotatedProcessor, Baz, OtherAnnotatedProcessor, RoleAwareAnnotatedProcessor};
 use stubbles\peer\http\HttpUri;
 use stubbles\webapp\{Request, Response, Target, UriPath};
 use stubbles\webapp\auth\{AuthConstraint, Roles};
@@ -23,82 +24,6 @@ use function bovigo\assert\{
     expect,
     predicate\equals
 };
-/**
- * Class with annotations for tests.
- *
- * @RequiresHttps
- * @RequiresLogin
- * @Name('Orders')
- * @Description('List of placed orders')
- * @SupportsMimeType(mimeType="text/plain")
- * @SupportsMimeType(mimeType="application/bar", class="example\\Bar")
- * @SupportsMimeType(mimeType="application/baz", class=stubbles\webapp\routing\Baz.class)
- * @Status(code=200, description='Default status code')
- * @Status(code=404, description='No orders found')
- * @Parameter(name='foo', in='path', description='Some path parameter', required=true)
- * @Parameter(name='bar', in='query', description='A query parameter')
- * @Header(name='Last-Modified', description='Some explanation')
- * @Header(name='X-Binford', description='More power!')
- */
-class AnnotatedProcessor implements Target
-{
-    /**
-     * processes the request
-     *
-     * @param  \stubbles\webapp\Request   $request   current request
-     * @param  \stubbles\webapp\Response  $response  response to send
-     * @param  \stubbles\webapp\UriPath   $uriPath   information about called uri path
-     */
-    public function resolve(Request $request, Response $response, UriPath $uriPath)
-    {
-        // intentionally empty
-    }
-}
-class Baz
-{
-    // intentionally empty
-}
-/**
- * Class with annotations for tests.
- *
- * @RequiresRole('superadmin')
- * @DisableContentNegotiation
- */
-class OtherAnnotatedProcessor implements Target
-{
-    /**
-     * processes the request
-     *
-     * @param  \stubbles\webapp\Request   $request   current request
-     * @param  \stubbles\webapp\respone\Response  $response  response to send
-     * @param  \stubbles\webapp\UriPath           $uriPath   information about called uri path
-     */
-    public function resolve(Request $request, Response $response, UriPath $uriPath)
-    {
-        // intentionally empty
-    }
-}
-/**
- * Class with annotations for tests.
- *
- * @RolesAware
- * @ExcludeFromApiIndex
- * @since  5.0.0
- */
-class RoleAwareAnnotatedProcessor implements Target
-{
-    /**
-     * processes the request
-     *
-     * @param  \stubbles\webapp\Request   $request   current request
-     * @param  \stubbles\webapp\respone\Response  $response  response to send
-     * @param  \stubbles\webapp\UriPath           $uriPath   information about called uri path
-     */
-    public function resolve(Request $request, Response $response, UriPath $uriPath)
-    {
-        // intentionally empty
-    }
-}
 /**
  * Tests for stubbles\webapp\routing\Route.
  *

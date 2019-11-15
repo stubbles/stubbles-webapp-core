@@ -8,6 +8,7 @@ declare(strict_types=1);
  */
 namespace stubbles\webapp\response\mimetypes;
 use PHPUnit\Framework\TestCase;
+use stubbles\helper\response\mimetypes\{ToArray, AsArray};
 use stubbles\streams\memory\MemoryOutputStream;
 use stubbles\webapp\response\Error;
 
@@ -15,26 +16,6 @@ use function bovigo\assert\assertThat;
 use function bovigo\assert\expect;
 use function bovigo\assert\predicate\equals;
 use function bovigo\assert\predicate\isEmpty;
-/**
- * Helper class for the test.
- */
-class ToArray
-{
-    public function toArray(): array
-    {
-        return ['column1' => 'foo', 'column2' => 'bar'];
-    }
-}
-/**
- * Helper class for the test.
- */
-class AsArray
-{
-    public function asArray(): array
-    {
-        return ['column1' => 'foo', 'column2' => 'bar'];
-    }
-}
 /**
  * Tests for stubbles\webapp\response\mimetypes\Csv.
  *
