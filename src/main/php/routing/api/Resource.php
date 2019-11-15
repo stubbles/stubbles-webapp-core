@@ -54,7 +54,7 @@ class Resource implements \JsonSerializable
     /**
      * constructor
      *
-     * @param  string|null                                  name            name of resource
+     * @param  string|null                                  $name            name of resource
      * @param  string[]                                     $requestMethods  list of possible request methods
      * @param  \stubbles\peer\http\HttpUri                  $selfUri         uri under which resource is available
      * @param  string[]                                     $mimeTypes       list of supported mime types
