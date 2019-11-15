@@ -314,7 +314,7 @@ class Routing implements RoutingConfigurator
     /**
      * pre intercept with given class or callable on all GET requests
      *
-     * @param   string|callable|\stubbles\webapp\intercepto\PreInterceptor  $preInterceptor  pre interceptor to add
+     * @param   string|callable|\stubbles\webapp\interceptor\PreInterceptor  $preInterceptor  pre interceptor to add
      * @param   string                                                      $path            optional  path for which pre interceptor should be executed
      * @return  \stubbles\webapp\RoutingConfigurator
      */

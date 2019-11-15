@@ -18,7 +18,7 @@ interface ConfigurableRoute
     /**
      * add a pre interceptor for this route
      *
-     * @param   string|callback|\stubbles\webapp\interceptor\PreInterceptor  $preInterceptor
+     * @param   string|callable|\stubbles\webapp\interceptor\PreInterceptor  $preInterceptor
      * @return  \stubbles\webapp\routing\ConfigurableRoute
      */
     public function preIntercept($preInterceptor): self;
@@ -26,7 +26,7 @@ interface ConfigurableRoute
     /**
      * add a post interceptor for this route
      *
-     * @param   string|callback|\stubbles\webapp\interceptor\PostInterceptor  $postInterceptor
+     * @param   string|callable|\stubbles\webapp\interceptor\PostInterceptor  $postInterceptor
      * @return  \stubbles\webapp\routing\ConfigurableRoute
      */
     public function postIntercept($postInterceptor): self;

@@ -212,7 +212,7 @@ class RoutingAnnotations
     /**
      * returns list of possible status codes on this route
      *
-     * @return  stubbles\webapp\routing\api\Status[]
+     * @return  \stubbles\webapp\routing\api\Status[]
      * @since   6.1.0
      */
     public function statusCodes(): array
