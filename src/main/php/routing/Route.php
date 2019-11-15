@@ -163,7 +163,7 @@ class Route implements ConfigurableRoute
     /**
      * checks if this route is applicable for given request
      *
-     * @param   \stubbles\webapp\CalledUri  $calledUri  current request uri
+     * @param   \stubbles\webapp\routing\CalledUri  $calledUri  current request uri
      * @return  bool
      */
     public function matches(CalledUri $calledUri): bool
@@ -186,7 +186,7 @@ class Route implements ConfigurableRoute
     /**
      * checks if this route is applicable for given request path
      *
-     * @param   \stubbles\webapp\CalledUri  $calledUri  current request uri
+     * @param   \stubbles\webapp\routing\CalledUri  $calledUri  current request uri
      * @return  bool
      */
     public function matchesPath(CalledUri $calledUri): bool

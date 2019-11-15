@@ -490,7 +490,7 @@ class Routing implements RoutingConfigurator
      *
      * @param   \stubbles\webapp\routing\CalledUri  $calledUri
      * @param   \stubbles\webapp\routing\Route      $route
-     * @return  \stubbles\webapp\interceptor\Interceptors
+     * @return  \stubbles\webapp\routing\Interceptors
      */
     private function collectInterceptors(CalledUri $calledUri, Route $route = null): Interceptors
     {

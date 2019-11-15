@@ -72,7 +72,7 @@ class Token
     /**
      * returns string value
      *
-     * @return  strings
+     * @return  string
      */
     public function __toString(): string
     {

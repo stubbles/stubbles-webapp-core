@@ -34,7 +34,7 @@ class Csv extends MimeType
     /**
      * allows to change the delimiter character
      *
-     * @param   char  $delimiter
+     * @param   string  $delimiter
      * @return  \stubbles\webapp\response\mimetypes\Csv
      */
     public function changeDelimiterTo(string $delimiter): self
@@ -46,7 +46,7 @@ class Csv extends MimeType
     /**
      * allows to change the enclosure character
      *
-     * @param   char  $enclosure
+     * @param   string  $enclosure
      * @return  \stubbles\webapp\response\mimetypes\Csv
      */
     public function changeEnclosureTo(string $enclosure): self

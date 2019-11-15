@@ -110,7 +110,7 @@ interface RoutingConfigurator
      * @param   string                                   $path           path this route is applicable for
      * @param   string|callable|\stubbles\webapp\Target  $target         code to be executed when the route is active
      * @param   string|string[]                          $requestMethod  optional  request method(s) this route is applicable for
-     * @return  \stubbles\webapp\ConfigurableRoute
+     * @return  \stubbles\webapp\routing\ConfigurableRoute
      * @since   4.0.0
      */
     public function onAll(string $path, $target, $requestMethod = null): ConfigurableRoute;
@@ -118,8 +118,8 @@ interface RoutingConfigurator
     /**
      * add a route definition
      *
-     * @param   \stubbles\webapp\Route  $route
-     * @return  \stubbles\webapp\ConfigurableRoute
+     * @param   \stubbles\webapp\routing\Route  $route
+     * @return  \stubbles\webapp\routing\ConfigurableRoute
      */
     public function addRoute(Route $route): ConfigurableRoute;
 
@@ -175,7 +175,6 @@ interface RoutingConfigurator
      * @param   string                                                       $path            optional  path for which pre interceptor should be executed
      * @param   string                                                       $requestMethod   optional  request method for which interceptor should be executed
      * @return  \stubbles\webapp\RoutingConfigurator
-     * @throws  \stubbles\lang\exception\IllegalArgumentException
      */
     public function preIntercept($preInterceptor, string $path = null, string $requestMethod = null): self;
 
@@ -231,7 +230,6 @@ interface RoutingConfigurator
      * @param   string                                                        $path             optional  path for which post interceptor should be executed
      * @param   string                                                        $requestMethod    optional  request method for which interceptor should be executed
      * @return  \stubbles\webapp\RoutingConfigurator
-     * @throws  IllegalArgumentException
      */
     public function postIntercept($postInterceptor, string $path = null, string $requestMethod = null): self;
 

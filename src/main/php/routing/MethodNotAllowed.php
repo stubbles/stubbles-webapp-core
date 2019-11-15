@@ -30,7 +30,7 @@ class MethodNotAllowed extends AbstractResource
      *
      * @param  \stubbles\ioc\Injector                       $injector
      * @param  \stubbles\webapp\routing\CalledUri           $calledUri           actual called uri
-     * @param  \stubbles\webapp\interceptor\Interceptors    $interceptors
+     * @param  \stubbles\webapp\routing\Interceptors        $interceptors
      * @param  \stubbles\webapp\routing\SupportedMimeTypes  $supportedMimeTypes
      * @param  string[]                                     $allowedMethods
      */

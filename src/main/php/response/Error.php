@@ -131,8 +131,8 @@ class Error implements \JsonSerializable
     /**
      * creates error with given list of param errors
      *
-     * @param   \stubbles\input\errors\ParamErrors            $errors
-     * @param   \stubbles\webapp\response\ParamErrorMessages  $errorMessages
+     * @param   \stubbles\input\errors\ParamErrors                  $errors
+     * @param   \stubbles\input\errors\messages\ParamErrorMessages  $errorMessages
      * @return  self
      * @since   6.2.0
      */

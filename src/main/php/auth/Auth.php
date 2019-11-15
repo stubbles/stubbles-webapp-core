@@ -68,7 +68,7 @@ class Auth implements BindingModule
      *
      * @param   string  $authenticationProvider
      * @param   string  $authorizationProvider   optional
-     * @return  \stubbles\webapp\ioc\Auth
+     * @return  self
      */
     public static function with(
             string $authenticationProvider,
@@ -82,7 +82,7 @@ class Auth implements BindingModule
      * @param   string  $tokenStore             class which stores tokens
      * @param   string  $loginProvider          login provider to use because token authenticator has no own means of a login
      * @param   string  $authorizationProvider  optional
-     * @return  \stubbles\webapp\ioc\Auth
+     * @return  self
      */
     public static function usingTokens(
             string $tokenStore,
@@ -98,7 +98,7 @@ class Auth implements BindingModule
     /**
      * enables session caching of authentication and authorization information
      *
-     * @return  \stubbles\webapp\ioc\Auth
+     * @return  self
      */
     public function enableSessionCaching(): self
     {
