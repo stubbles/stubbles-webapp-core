@@ -4,34 +4,35 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6006979eee0e480d214200c0a205bb4b",
+    "content-hash": "5b8a203ecd9a3351ff6010d45c541a55",
     "packages": [
         {
             "name": "stubbles/input",
-            "version": "v7.0.0",
+            "version": "v8.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/stubbles/stubbles-input.git",
-                "reference": "1ce0ebe5ba392faf3cc369a95e3fe0fa38912b1e"
+                "reference": "65898cd8eb4920930d5b22cee757dc10f07c6ab1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/stubbles/stubbles-input/zipball/1ce0ebe5ba392faf3cc369a95e3fe0fa38912b1e",
-                "reference": "1ce0ebe5ba392faf3cc369a95e3fe0fa38912b1e",
+                "url": "https://api.github.com/repos/stubbles/stubbles-input/zipball/65898cd8eb4920930d5b22cee757dc10f07c6ab1",
+                "reference": "65898cd8eb4920930d5b22cee757dc10f07c6ab1",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.0",
-                "stubbles/reflect": "^8.0",
-                "stubbles/values": "^8.1"
+                "ext-iconv": "*",
+                "php": "^7.3",
+                "stubbles/reflect": "^9.0",
+                "stubbles/values": "^9.0"
             },
             "require-dev": {
-                "bovigo/assert": "^2.0",
-                "bovigo/callmap": "^3.1",
-                "mikey179/vfsstream": "^1.6",
-                "phpunit/phpunit": "^5.4",
-                "stubbles/date": "^7.0",
-                "stubbles/peer": "^8.1"
+                "bovigo/assert": "^5.0",
+                "bovigo/callmap": "^5.0.1",
+                "mikey179/vfsstream": "^1.6.7",
+                "phpunit/phpunit": "^8.4",
+                "stubbles/date": "^8.0",
+                "stubbles/peer": "^9.0"
             },
             "suggest": {
                 "stubbles/date": "To filter input params as date or datespan instances.",
@@ -40,7 +41,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "7.0.x-dev"
+                    "dev-master": "8.0.x-dev"
                 }
             },
             "autoload": {
@@ -54,39 +55,39 @@
             ],
             "description": "Stubbles Input enables to handle input data via validation and filtering.",
             "homepage": "http://stubbles.net/",
-            "time": "2016-07-31T10:35:48+00:00"
+            "time": "2019-11-07T12:49:30+00:00"
         },
         {
             "name": "stubbles/ioc",
-            "version": "v8.0.1",
+            "version": "v9.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/stubbles/stubbles-ioc.git",
-                "reference": "faff574e6e506e77bbeb66a3ac80f80acb9f618d"
+                "reference": "ea9970e2ffe0425956581fd53bbd00d4b5a731c0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/stubbles/stubbles-ioc/zipball/faff574e6e506e77bbeb66a3ac80f80acb9f618d",
-                "reference": "faff574e6e506e77bbeb66a3ac80f80acb9f618d",
+                "url": "https://api.github.com/repos/stubbles/stubbles-ioc/zipball/ea9970e2ffe0425956581fd53bbd00d4b5a731c0",
+                "reference": "ea9970e2ffe0425956581fd53bbd00d4b5a731c0",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.0",
-                "stubbles/reflect": "^8.0.1",
-                "stubbles/sequence": "^8.1",
-                "stubbles/values": "^8.0"
+                "php": "^7.3",
+                "stubbles/reflect": "^9.0",
+                "stubbles/sequence": "^9.0",
+                "stubbles/values": "^9.0"
             },
             "require-dev": {
-                "bovigo/assert": "^2.0",
-                "bovigo/callmap": "^3.0.3",
-                "mikey179/vfsstream": "^1.6",
-                "phpunit/phpunit": "^5.4",
-                "stubbles/streams": "^8.0"
+                "bovigo/assert": "^5.0",
+                "bovigo/callmap": "^5.0.1",
+                "mikey179/vfsstream": "^1.6.7",
+                "phpunit/phpunit": "^8.4",
+                "stubbles/streams": "^9.0"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "8.0.x-dev"
+                    "dev-master": "9.0.x-dev"
                 }
             },
             "autoload": {
@@ -100,31 +101,31 @@
             ],
             "description": "Dependency injection.",
             "homepage": "http://stubbles.net/",
-            "time": "2016-07-30T10:07:45+00:00"
+            "time": "2019-11-12T12:55:54+00:00"
         },
         {
             "name": "stubbles/peer",
-            "version": "v8.1.0",
+            "version": "v9.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/stubbles/stubbles-peer.git",
-                "reference": "dc8b0a517dc4c84b615cc3c88f0d64a2b742f9cc"
+                "reference": "98e5b9eb49bc9ff18dda5311c3c5b81e52ee4c5d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/stubbles/stubbles-peer/zipball/dc8b0a517dc4c84b615cc3c88f0d64a2b742f9cc",
-                "reference": "dc8b0a517dc4c84b615cc3c88f0d64a2b742f9cc",
+                "url": "https://api.github.com/repos/stubbles/stubbles-peer/zipball/98e5b9eb49bc9ff18dda5311c3c5b81e52ee4c5d",
+                "reference": "98e5b9eb49bc9ff18dda5311c3c5b81e52ee4c5d",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.0"
+                "php": "^7.3"
             },
             "require-dev": {
-                "bovigo/assert": "^2.0",
-                "bovigo/callmap": "^3.1",
-                "mikey179/vfsstream": "^1.6",
-                "phpunit/phpunit": "^5.4",
-                "stubbles/values": "^8.0"
+                "bovigo/assert": "^5.0",
+                "bovigo/callmap": "^5.0.1",
+                "mikey179/vfsstream": "^1.6.7",
+                "phpunit/phpunit": "^8.4",
+                "stubbles/values": "^9.0"
             },
             "suggest": {
                 "stubbles/values": "Will automatically add http uri parsing to stubbles\\values\\Parse"
@@ -132,7 +133,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "8.1.x-dev"
+                    "dev-master": "9.0.x-dev"
                 }
             },
             "autoload": {
@@ -149,36 +150,36 @@
             ],
             "description": "Help with socket operations.",
             "homepage": "http://stubbles.net/",
-            "time": "2016-07-28T14:40:52+00:00"
+            "time": "2019-10-30T15:11:35+00:00"
         },
         {
             "name": "stubbles/reflect",
-            "version": "v8.0.2",
+            "version": "v9.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/stubbles/stubbles-reflect.git",
-                "reference": "ab48f9b8692293ef0d276b52619625dbb8869c97"
+                "reference": "eb1f75c25d5d5b136b190ab3affeb66ce64570b2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/stubbles/stubbles-reflect/zipball/ab48f9b8692293ef0d276b52619625dbb8869c97",
-                "reference": "ab48f9b8692293ef0d276b52619625dbb8869c97",
+                "url": "https://api.github.com/repos/stubbles/stubbles-reflect/zipball/eb1f75c25d5d5b136b190ab3affeb66ce64570b2",
+                "reference": "eb1f75c25d5d5b136b190ab3affeb66ce64570b2",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.0",
-                "stubbles/sequence": "^8.1",
-                "stubbles/values": "^8.0"
+                "php": "^7.3",
+                "stubbles/sequence": "^9.0",
+                "stubbles/values": "^9.0.1"
             },
             "require-dev": {
-                "bovigo/assert": "^2.0",
-                "mikey179/vfsstream": "^1.6",
-                "phpunit/phpunit": "^5.4"
+                "bovigo/assert": "^5.0",
+                "mikey179/vfsstream": "^1.6.7",
+                "phpunit/phpunit": "^8.4"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "8.0.x-dev"
+                    "dev-master": "9.0.x-dev"
                 }
             },
             "autoload": {
@@ -195,34 +196,34 @@
             ],
             "description": "Reflection helper functions and annotations.",
             "homepage": "http://stubbles.net/",
-            "time": "2016-08-01T14:25:49+00:00"
+            "time": "2019-10-29T16:19:35+00:00"
         },
         {
             "name": "stubbles/sequence",
-            "version": "v8.1.0",
+            "version": "v9.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/stubbles/stubbles-sequence.git",
-                "reference": "258d2247f1cdd826818348fe15829d5a98a9de70"
+                "reference": "e704fb42229a435e2034db20a59195fc361a87d4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/stubbles/stubbles-sequence/zipball/258d2247f1cdd826818348fe15829d5a98a9de70",
-                "reference": "258d2247f1cdd826818348fe15829d5a98a9de70",
+                "url": "https://api.github.com/repos/stubbles/stubbles-sequence/zipball/e704fb42229a435e2034db20a59195fc361a87d4",
+                "reference": "e704fb42229a435e2034db20a59195fc361a87d4",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.0"
+                "php": "^7.3"
             },
             "require-dev": {
-                "bovigo/assert": "^2.0",
-                "bovigo/callmap": "^3.0",
-                "phpunit/phpunit": "^5.4"
+                "bovigo/assert": "^5.0",
+                "bovigo/callmap": "^5.0.1",
+                "phpunit/phpunit": "^8.4"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "8.1.x-dev"
+                    "dev-master": "9.0.x-dev"
                 }
             },
             "autoload": {
@@ -239,33 +240,33 @@
             ],
             "description": "Stream your iterators.",
             "homepage": "http://stubbles.net/",
-            "time": "2016-07-11T16:21:11+00:00"
+            "time": "2019-10-29T11:00:01+00:00"
         },
         {
             "name": "stubbles/streams",
-            "version": "v8.0.0",
+            "version": "v9.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/stubbles/stubbles-streams.git",
-                "reference": "8fae2ecf6fa6e0e77a5e81c3a90c3b25a71c9bf5"
+                "reference": "799aa6303927b804196da5eb77fdcc8ed2a44b96"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/stubbles/stubbles-streams/zipball/8fae2ecf6fa6e0e77a5e81c3a90c3b25a71c9bf5",
-                "reference": "8fae2ecf6fa6e0e77a5e81c3a90c3b25a71c9bf5",
+                "url": "https://api.github.com/repos/stubbles/stubbles-streams/zipball/799aa6303927b804196da5eb77fdcc8ed2a44b96",
+                "reference": "799aa6303927b804196da5eb77fdcc8ed2a44b96",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.0"
+                "php": "^7.3"
             },
             "require-dev": {
-                "bovigo/assert": "^2.0",
-                "bovigo/callmap": "3.0",
+                "bovigo/assert": "^5.0",
+                "bovigo/callmap": "^5.0.1",
                 "ext-iconv": "*",
-                "mikey179/vfsstream": "^1.6",
-                "phpunit/phpunit": "^5.4",
-                "stubbles/reflect": "^8.0",
-                "stubbles/sequence": "^8.1"
+                "mikey179/vfsstream": "^1.6.7",
+                "phpunit/phpunit": "^8.4",
+                "stubbles/reflect": "^9.0",
+                "stubbles/sequence": "^9.0"
             },
             "suggest": {
                 "ext-iconv": "For use in decoding and encoding stream decorators.",
@@ -274,7 +275,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "8.0.x-dev"
+                    "dev-master": "9.0.x-dev"
                 }
             },
             "autoload": {
@@ -291,36 +292,36 @@
             ],
             "description": "Input- and OutputStreams.",
             "homepage": "http://stubbles.net/",
-            "time": "2016-07-20T15:29:54+00:00"
+            "time": "2019-11-08T13:01:55+00:00"
         },
         {
             "name": "stubbles/values",
-            "version": "v8.1.0",
+            "version": "v9.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/stubbles/stubbles-values.git",
-                "reference": "16dab0c6fa8f278b27120caac6389845ad7d2d28"
+                "reference": "24901407a79f57b2293fd1005e57b0f9dae8ecc7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/stubbles/stubbles-values/zipball/16dab0c6fa8f278b27120caac6389845ad7d2d28",
-                "reference": "16dab0c6fa8f278b27120caac6389845ad7d2d28",
+                "url": "https://api.github.com/repos/stubbles/stubbles-values/zipball/24901407a79f57b2293fd1005e57b0f9dae8ecc7",
+                "reference": "24901407a79f57b2293fd1005e57b0f9dae8ecc7",
                 "shasum": ""
             },
             "require": {
                 "ext-iconv": "*",
-                "php": "^7.0"
+                "php": "^7.3"
             },
             "require-dev": {
-                "bovigo/assert": "^2.0",
-                "bovigo/callmap": "^3.1",
-                "mikey179/vfsstream": "^1.6",
-                "phpunit/phpunit": "^5.4"
+                "bovigo/assert": "^5.0",
+                "bovigo/callmap": "^5.0.1",
+                "mikey179/vfsstream": "^1.6.7",
+                "phpunit/phpunit": "^8.4"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "8.1.x-dev"
+                    "dev-master": "9.0.x-dev"
                 }
             },
             "autoload": {
@@ -337,7 +338,7 @@
             ],
             "description": "Useful classes to ease the work with values.",
             "homepage": "http://stubbles.net/",
-            "time": "2016-07-30T19:18:15+00:00"
+            "time": "2019-10-29T15:59:41+00:00"
         }
     ],
     "packages-dev": [
@@ -1851,25 +1852,25 @@
         },
         {
             "name": "stubbles/date",
-            "version": "v7.0.0",
+            "version": "v8.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/stubbles/stubbles-date.git",
-                "reference": "98553392bec03affc53a6e3eb7f88408c2720d1c"
+                "reference": "e91adcfcfe463070b20f738bda4f1e1988152c98"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/stubbles/stubbles-date/zipball/98553392bec03affc53a6e3eb7f88408c2720d1c",
-                "reference": "98553392bec03affc53a6e3eb7f88408c2720d1c",
+                "url": "https://api.github.com/repos/stubbles/stubbles-date/zipball/e91adcfcfe463070b20f738bda4f1e1988152c98",
+                "reference": "e91adcfcfe463070b20f738bda4f1e1988152c98",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.0"
+                "php": "^7.3"
             },
             "require-dev": {
-                "bovigo/assert": "^2.0",
-                "phpunit/phpunit": "^5.4",
-                "stubbles/reflect": "^8.0"
+                "bovigo/assert": "^5.0",
+                "phpunit/phpunit": "^8.4",
+                "stubbles/reflect": "^9.0"
             },
             "suggest": {
                 "bovigo/assert": "To use predicates when asserting dates with stubbles\\date\\assert\\equalsDate()"
@@ -1877,7 +1878,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "7.0.x-dev"
+                    "dev-master": "8.0.x-dev"
                 }
             },
             "autoload": {
@@ -1894,34 +1895,34 @@
             ],
             "description": "Simplified handling of dates and datespans.",
             "homepage": "http://stubbles.net/",
-            "time": "2016-07-23T20:15:52+00:00"
+            "time": "2019-10-30T10:02:13+00:00"
         },
         {
             "name": "stubbles/image",
-            "version": "v5.0.0",
+            "version": "v6.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/stubbles/stubbles-image.git",
-                "reference": "5ae6488a94c7b2eb97e042875a19ba43efc414fa"
+                "reference": "41d1b2e0152ddbbb5126a04066d2b661fa8f468d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/stubbles/stubbles-image/zipball/5ae6488a94c7b2eb97e042875a19ba43efc414fa",
-                "reference": "5ae6488a94c7b2eb97e042875a19ba43efc414fa",
+                "url": "https://api.github.com/repos/stubbles/stubbles-image/zipball/41d1b2e0152ddbbb5126a04066d2b661fa8f468d",
+                "reference": "41d1b2e0152ddbbb5126a04066d2b661fa8f468d",
                 "shasum": ""
             },
             "require": {
                 "ext-gd": "*",
-                "php": "^7.0"
+                "php": "^7.3"
             },
             "require-dev": {
-                "bovigo/assert": "^2.0",
-                "phpunit/phpunit": "^5.4"
+                "bovigo/assert": "^5.0",
+                "phpunit/phpunit": "^8.4"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "5.0.x-dev"
+                    "dev-master": "6.0.x-dev"
                 }
             },
             "autoload": {
@@ -1935,39 +1936,39 @@
             ],
             "description": "Simple image handling support.",
             "homepage": "http://stubbles.net/",
-            "time": "2016-07-31T13:59:24+00:00"
+            "time": "2019-11-12T13:22:28+00:00"
         },
         {
             "name": "stubbles/xml",
-            "version": "v6.0.0",
+            "version": "v7.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/stubbles/stubbles-xml.git",
-                "reference": "595bc5266190fd9661e9eee140cf2378f623e50a"
+                "reference": "2cf2f37e5cca309d3ca68e98dee6c9ff5fd7eca6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/stubbles/stubbles-xml/zipball/595bc5266190fd9661e9eee140cf2378f623e50a",
-                "reference": "595bc5266190fd9661e9eee140cf2378f623e50a",
+                "url": "https://api.github.com/repos/stubbles/stubbles-xml/zipball/2cf2f37e5cca309d3ca68e98dee6c9ff5fd7eca6",
+                "reference": "2cf2f37e5cca309d3ca68e98dee6c9ff5fd7eca6",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.0",
-                "stubbles/date": "^7.0",
-                "stubbles/ioc": "^8.0",
-                "stubbles/reflect": "^8.0.2"
+                "php": "^7.3",
+                "stubbles/date": "^8.0",
+                "stubbles/ioc": "^9.0",
+                "stubbles/reflect": "^9.0"
             },
             "require-dev": {
-                "bovigo/assert": "^2.0",
-                "bovigo/callmap": "^3.1",
-                "mikey179/vfsstream": "^1.6",
-                "phpunit/phpunit": "^5.4",
-                "stubbles/sequence": "^8.1"
+                "bovigo/assert": "^5.0",
+                "bovigo/callmap": "^5.0",
+                "mikey179/vfsstream": "^1.6.7",
+                "phpunit/phpunit": "^8.4",
+                "stubbles/sequence": "^9.0"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "6.0.x-dev"
+                    "dev-master": "7.0.x-dev"
                 }
             },
             "autoload": {
@@ -1981,7 +1982,7 @@
             ],
             "description": "Classes to work with XML",
             "homepage": "http://stubbles.net/",
-            "time": "2016-08-02T09:33:14+00:00"
+            "time": "2019-11-12T15:39:42+00:00"
         },
         {
             "name": "symfony/polyfill-ctype",
@@ -2138,7 +2139,7 @@
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": "^7.0"
+        "php": "^7.3"
     },
     "platform-dev": []
 }
