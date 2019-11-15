@@ -1,0 +1,18 @@
+parameters:
+  level: 5
+  paths:
+      - ./src
+  ignoreErrors:
+      # False positive
+      - '#Call to an undefined method stubbles\\reflect\\annotation\\Annotation::get#'
+      - '#Call to an undefined method stubbles\\webapp\\(.)+::returns\(\).#'
+      - '#but returns bovigo\\callmap\\ClassProxy#'
+      - '#bovigo\\callmap\\ClassProxy given#'
+      - '#function bovigo\\callmap\\verify expects bovigo\\callmap\\Proxy#'
+      -
+          message: '#Parameter (.)+ of class stubbles\\webapp\\routing\\Route constructor expects (.)+, int given#'
+          path: src/test/php/routing/RouteTest.php
+      -
+          message: '#Parameter (.)+ of method stubbles\\webapp\\routing\\Route::(pre|post)Intercept\(\) expects (.)+, int given#'
+          path: src/test/php/routing/RouteTest.php
+
