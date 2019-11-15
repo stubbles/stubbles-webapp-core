@@ -6,6 +6,7 @@
 
 * Raised minimum required PHP version to 7.3
 * Added more type hints
+* `stubbles\webapp\response\mimetypes\Csv` will now throw an exception when a line can't be serialized instead of silently converting to an empty line
 
 ## 7.0.0 (2016-08-06)
 

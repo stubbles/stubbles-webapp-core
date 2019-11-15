@@ -125,19 +125,17 @@ class Csv extends MimeType
         fclose($memory);
     }
 
-    /**
-     * turns given list of elements into a line suitable for csv
-     *
-     * @param   string[]  $elements
-     * @param   resource  $memory
-     * @return  string
-     */
     private function toCsvLine(array $elements, $memory): string
     {
         ftruncate($memory, 0);
         rewind($memory);
         fputcsv($memory, $elements, $this->delimiter, $this->enclosure);
         rewind($memory);
-        return stream_get_contents($memory);
+        $result = stream_get_contents($memory);
+        if (false === $result) {
+            throw new \RuntimeException('Could not read serialized csv line from memory');
+        }
+
+        return $result;
     }
 }
