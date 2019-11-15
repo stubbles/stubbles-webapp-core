@@ -81,10 +81,6 @@ class AbstractResourceTest extends TestCase
 
             public function requiresAuth(): bool { return false;}
 
-            public function isAuthorized(AuthHandler $authHandler): bool { return false; }
-
-            public function requiresLogin(AuthHandler $authHandler): bool { return false; }
-
             public function resolve(Request $request, Response $response) {}
         };
     }
