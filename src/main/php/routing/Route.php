@@ -126,7 +126,7 @@ class Route implements ConfigurableRoute
     /**
      * turns given value into a list
      *
-     * @param   string|string[]  $requestMethod
+     * @param   string|string[]|null  $requestMethod
      * @return  string[]
      * @throws  \InvalidArgumentException
      */
