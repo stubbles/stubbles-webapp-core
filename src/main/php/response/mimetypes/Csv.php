@@ -100,6 +100,10 @@ class Csv extends MimeType
     private function serializeIterable($resource, OutputStream $out): void
     {
         $memory = fopen('php://memory', 'wb');
+        if (false === $memory) {
+            throw new \RuntimeException('Could not open memory');
+        }
+
         if (is_array($resource) && is_scalar(current($resource))) {
             if (!is_numeric(key($resource))) {
                 $out->write($this->toCsvLine(array_keys($resource), $memory));
