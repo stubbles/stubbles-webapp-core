@@ -208,7 +208,7 @@ class WebAppTest extends TestCase
         $resource  = $this->createNonHttpsResource(
                 ['applyPreInterceptors' => throws($exception)]
         );
-        $exceptionLogger = $this->setUpExceptionLogger($exception);
+        $exceptionLogger = $this->setUpExceptionLogger();
         $response = $this->webApp->run();
         assertThat($response->statusCode(), equals(500));
         assertTrue(verify($exceptionLogger, 'log')->received($exception));
@@ -226,7 +226,7 @@ class WebAppTest extends TestCase
                 'applyPreInterceptors' => true,
                 'resolve'              => throws($exception)
         ]);
-        $exceptionLogger = $this->setUpExceptionLogger($exception);
+        $exceptionLogger = $this->setUpExceptionLogger();
         $response = $this->webApp->run();
         assertThat($response->statusCode(), equals(500));
         assertTrue(verify($exceptionLogger, 'log')->received($exception));
@@ -244,7 +244,7 @@ class WebAppTest extends TestCase
                 'applyPostInterceptors' => throws($exception)
 
         ]);
-        $exceptionLogger = $this->setUpExceptionLogger($exception);
+        $exceptionLogger = $this->setUpExceptionLogger();
         $response = $this->webApp->run();
         assertThat($response->statusCode(), equals(500));
         assertTrue(verify($exceptionLogger, 'log')->received($exception));
