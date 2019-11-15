@@ -542,9 +542,10 @@ class WebResponseTest extends TestCase
     {
         $response = $this->createResponse($unsupportedHttpVersion);
         assertTrue($response->isFixed());
+        $response->send($this->memory);
         assertThat(
-                $response->send($this->memory)->buffer(),
-                equals('Error: Unsupported HTTP protocol version, expected HTTP/1.0 or HTTP/1.1')
+            $this->memory->buffer(),
+            equals('Error: Unsupported HTTP protocol version, expected HTTP/1.0 or HTTP/1.1')
         );
         verify($response, 'header')
                 ->received('HTTP/1.1 505 HTTP Version Not Supported');
