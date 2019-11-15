@@ -66,6 +66,7 @@ class RolesTest extends TestCase
     {
         $expected = ['admin', 'superadmin'];
         $roles    = new Roles($expected);
+        $result   = [];
         foreach ($roles as $role) {
             $result[] = $role;
         }
