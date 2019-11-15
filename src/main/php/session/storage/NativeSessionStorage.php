@@ -45,7 +45,7 @@ class NativeSessionStorage implements SessionStorage, SessionId
     /**
      * initialize storage
      */
-    private function init()
+    private function init(): void
     {
         if ($this->initialized || session_status() === PHP_SESSION_ACTIVE) {
             return;

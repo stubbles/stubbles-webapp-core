@@ -87,7 +87,7 @@ class WebSession implements Session
      *
      * @param  string  $fingerPrint
      */
-    private function init(string $fingerPrint)
+    private function init(string $fingerPrint): void
     {
         $this->storage->putValue(Session::FINGERPRINT, $fingerPrint);
     }

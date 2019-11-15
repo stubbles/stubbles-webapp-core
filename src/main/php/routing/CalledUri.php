@@ -54,7 +54,7 @@ class CalledUri
      * @return  \stubbles\webapp\routing\CalledUri
      * @since   4.0.0
      */
-    public static function castFrom($requestUri, string $requestMethod = null)
+    public static function castFrom($requestUri, string $requestMethod = null): self
     {
         if ($requestUri instanceof self) {
             return $requestUri;

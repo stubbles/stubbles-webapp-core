@@ -71,5 +71,5 @@ interface User
      *
      * @return  \stubbles\webapp\auth\Token|null
      */
-    public function token();
+    public function token(): ?Token;
 }

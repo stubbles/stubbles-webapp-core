@@ -162,7 +162,7 @@ class ProtectedResource implements UriResource
      * @param   \stubbles\webapp\Response  $response  response to send
      * @return  \stubbles\webapp\auth\User|null
      */
-    private function authenticate(Request $request, Response $response)
+    private function authenticate(Request $request, Response $response): ?User
     {
         $authenticationProvider = $this->injector->getInstance(AuthenticationProvider::class);
         try {
@@ -190,7 +190,7 @@ class ProtectedResource implements UriResource
      * @param   \stubbles\webapp\auth\User  $user
      * @return  \stubbles\webapp\auth\Roles|null
      */
-    private function roles(Response $response, User $user)
+    private function roles(Response $response, User $user): ?Roles
     {
         try {
             return $this->injector->getInstance(AuthorizationProvider::class)
@@ -207,7 +207,7 @@ class ProtectedResource implements UriResource
      * @param  \stubbles\webapp\auth\AuthProviderException  $ahe
      * @param  \stubbles\webapp\Response                    $response
      */
-    private function handleAuthProviderException(AuthProviderException $ahe, Response $response)
+    private function handleAuthProviderException(AuthProviderException $ahe, Response $response): void
     {
         if ($ahe->isInternal()) {
             $this->error = $response->internalServerError($ahe);

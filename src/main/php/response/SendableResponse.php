@@ -55,5 +55,5 @@ interface SendableResponse
      * @param   \stubbles\streams\OutputStream  $out  optional  where to write response body to
      * @return  \stubbles\streams\OutputStream|null
      */
-    public function send(OutputStream $out = null);
+    public function send(OutputStream $out = null): ?OutputStream;
 }

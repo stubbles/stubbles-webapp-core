@@ -26,7 +26,7 @@ interface AuthenticationProvider
      * @return  \stubbles\webapp\auth\User|null
      * @throws  \stubbles\webapp\auth\AuthProviderException
      */
-    public function authenticate(Request $request);
+    public function authenticate(Request $request): ?User;
 
     /**
      * returns login uri

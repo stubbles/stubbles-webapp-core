@@ -36,5 +36,5 @@ interface TokenStore
      * @param   \stubbles\webapp\auth\Token  $token    actual token
      * @return  \stubbles\webapp\auth\User
      */
-    public function findUserByToken(Request $request, Token $token);
+    public function findUserByToken(Request $request, Token $token): ?User;
 }

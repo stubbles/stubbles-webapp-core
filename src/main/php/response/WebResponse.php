@@ -292,7 +292,7 @@ class WebResponse implements Response
      * @param   int                                 $statusCode  HTTP status code to redirect with (301, 302, ...)
      * @since   1.3.0
      */
-    public function redirect($uri, int $statusCode = 302)
+    public function redirect($uri, int $statusCode = 302): void
     {
         $this->status->redirect($uri, $statusCode);
     }
@@ -341,7 +341,7 @@ class WebResponse implements Response
      * @param   string[]  $supportedMimeTypes  list of supported mime types
      * @since   2.0.0
      */
-    public function notAcceptable(array $supportedMimeTypes = [])
+    public function notAcceptable(array $supportedMimeTypes = []): void
     {
         $this->status->notAcceptable($supportedMimeTypes);
     }
@@ -364,7 +364,7 @@ class WebResponse implements Response
      *
      * @since   2.0.0
      */
-    public function httpVersionNotSupported()
+    public function httpVersionNotSupported(): void
     {
         $this->status->httpVersionNotSupported();
         $this->resource = new Error(
@@ -386,7 +386,7 @@ class WebResponse implements Response
      * @param   \stubbles\streams\OutputStream  $out  optional  where to write response body to
      * @return  \stubbles\streams\OutputStream|null
      */
-    public function send(OutputStream $out = null)
+    public function send(OutputStream $out = null): ?OutputStream
     {
         $this->sendHead();
         if ($this->requestAllowsBody() && null != $this->resource) {
@@ -440,7 +440,7 @@ class WebResponse implements Response
      *
      * @param  string  $header
      */
-    protected function header(string $header)
+    protected function header(string $header): void
     {
         header($header);
     }

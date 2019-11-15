@@ -27,5 +27,5 @@ interface AuthorizationProvider
      * @return  \stubbles\webapp\auth\Roles|null
      * @throws  \stubbles\webapp\auth\AuthProviderException
      */
-    public function roles(User $user);
+    public function roles(User $user): ?Roles;
 }

@@ -10,6 +10,8 @@ namespace stubbles\webapp\auth\token;
 use stubbles\webapp\Request;
 use stubbles\webapp\auth\AuthenticationProvider;
 use stubbles\webapp\auth\InternalAuthProviderException;
+use stubbles\webapp\auth\Token;
+use stubbles\webapp\auth\User;
 /**
  * Supports token handling for intranet users.
  *
@@ -62,7 +64,7 @@ class TokenAuthenticator implements AuthenticationProvider
      * @return  \stubbles\webapp\auth\User|null
      * @throws  \stubbles\webapp\auth\InternalAuthProviderException
      */
-    public function authenticate(Request $request)
+    public function authenticate(Request $request): ?User
     {
         $token = $this->readToken($request);
         if (null === $token || $token->isEmpty()) {
@@ -87,7 +89,7 @@ class TokenAuthenticator implements AuthenticationProvider
      * @return  \stubbles\webapp\auth\User|null
      * @throws  \stubbles\webapp\auth\InternalAuthProviderException
      */
-    private function login(Request $request)
+    private function login(Request $request): ?User
     {
         $user = $this->loginProvider->authenticate($request);
         if (null !== $user) {
@@ -112,7 +114,7 @@ class TokenAuthenticator implements AuthenticationProvider
      * @param   \stubbles\webapp\Request  $request  current request
      * @return  \stubbles\webapp\auth\Token|null
      */
-    private function readToken(Request $request)
+    private function readToken(Request $request): ?Token
     {
         if (!$request->hasRedirectHeader('HTTP_AUTHORIZATION')) {
             return null;

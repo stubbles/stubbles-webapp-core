@@ -63,7 +63,7 @@ class AbstractResourceTest extends TestCase
                 'method'          => 'TEST'
         ]);
         $this->response = NewInstance::of(WebResponse::class, [$this->request])
-                ->returns(['header' => false]);
+                ->stub('header');
         $this->injector     = NewInstance::stub(Injector::class);
         $this->interceptors = NewInstance::stub(Interceptors::class);
     }

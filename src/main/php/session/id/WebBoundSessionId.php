@@ -95,7 +95,7 @@ class WebBoundSessionId implements SessionId
      *
      * @return  string|null
      */
-    private function read()
+    private function read(): ?string
     {
         if ($this->request->hasParam($this->sessionName)) {
             return $this->request->readParam($this->sessionName)->ifMatches(self::SESSION_ID_REGEX);

@@ -147,7 +147,7 @@ class AuthConstraint implements \JsonSerializable
      * @return  string|null
      * @XmlAttribute(attributeName='role', skipEmpty=true)
      */
-    public function requiredRole()
+    public function requiredRole(): ?string
     {
         if (null === $this->requiredRole) {
             $this->requiredRole = $this->callbackAnnotatedWith->requiredRole();

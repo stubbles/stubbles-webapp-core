@@ -76,7 +76,7 @@ class RoutingAnnotations
      *
      * @return  string|null
      */
-    public function requiredRole()
+    public function requiredRole(): ?string
     {
         if ($this->annotations->contain('RequiresRole')) {
             return $this->annotations->firstNamed('RequiresRole')->getValue();
@@ -174,7 +174,7 @@ class RoutingAnnotations
      * @return  string|null
      * @since   6.1.0
      */
-    public function name()
+    public function name(): ?string
     {
         if ($this->annotations->contain('Name')) {
             return $this->annotations->firstNamed('Name')->getValue();
@@ -189,7 +189,7 @@ class RoutingAnnotations
      * @return  string|null
      * @since   6.1.0
      */
-    public function description()
+    public function description(): ?string
     {
         if ($this->annotations->contain('Description')) {
             return $this->annotations->firstNamed('Description')->getValue();

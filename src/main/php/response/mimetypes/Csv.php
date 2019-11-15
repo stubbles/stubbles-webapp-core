@@ -97,7 +97,7 @@ class Csv extends MimeType
      * @param  iterable  $resource
      * @param  \stubbles\streams\OutputStream  $out
      */
-    private function serializeIterable($resource, OutputStream $out)
+    private function serializeIterable($resource, OutputStream $out): void
     {
         $memory = fopen('php://memory', 'wb');
         if (is_array($resource) && is_scalar(current($resource))) {

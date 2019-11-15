@@ -96,7 +96,7 @@ class Image extends MimeType
      * @param   string  $resource
      * @return  \stubbles\img\Image|null
      */
-    private function loadImage(string $resource)
+    private function loadImage(string $resource): ?ImageSource
     {
         try {
             return $this->resourceLoader->load(

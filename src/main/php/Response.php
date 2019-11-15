@@ -168,5 +168,5 @@ interface Response extends SendableResponse
      *
      * @since   2.0.0
      */
-    public function httpVersionNotSupported();
+    public function httpVersionNotSupported(): void;
 }

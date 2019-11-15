@@ -50,7 +50,7 @@ class CachingAuthenticationProvider implements AuthenticationProvider
      * @param   \stubbles\webapp\Request  $request
      * @return  \stubbles\webapp\auth\User|null
      */
-    public function authenticate(Request $request)
+    public function authenticate(Request $request): ?User
     {
         if ($this->session->hasValue(User::SESSION_KEY)) {
             return $this->session->value(User::SESSION_KEY);

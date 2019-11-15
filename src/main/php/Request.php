@@ -10,7 +10,9 @@ namespace stubbles\webapp;
 use stubbles\input\ValueReader;
 use stubbles\input\ValueValidator;
 use stubbles\input\errors\ParamErrors;
+use stubbles\peer\IpAddress;
 use stubbles\peer\http\HttpUri;
+use stubbles\peer\http\HttpVersion;
 use stubbles\streams\InputStream;
 use stubbles\webapp\auth\Identity;
 use stubbles\webapp\request\UserAgent;
@@ -54,7 +56,7 @@ interface Request extends \stubbles\input\Request
      * @return  \stubbles\peer\http\HttpVersion
      * @since   2.0.2
      */
-    public function protocolVersion();
+    public function protocolVersion(): ?HttpVersion;
 
     /**
      * returns the ip which issued the request originally
@@ -76,7 +78,7 @@ interface Request extends \stubbles\input\Request
      * @return  \stubbles\peer\IpAddress
      * @since   3.0.0
      */
-    public function originatingIpAddress();
+    public function originatingIpAddress(): ?IpAddress;
 
     /**
      * returns the user agent which issued the request
@@ -268,7 +270,7 @@ interface Request extends \stubbles\input\Request
      * @return  \stubbles\webapp\session\Session
      * @since   6.0.0
      */
-    public function attachedSession();
+    public function attachedSession(): ?Session;
 
     /**
      * associates identity with this request
@@ -293,5 +295,5 @@ interface Request extends \stubbles\input\Request
      * @return  \stubbles\webapp\auth\Identity
      * @since   6.0.0
      */
-    public function identity();
+    public function identity(): ?Identity;
 }

@@ -26,7 +26,7 @@ class Token
      *
      * @param  string  $value
      */
-    public function __construct($value)
+    public function __construct(string $value = null)
     {
         $this->value = $value;
     }

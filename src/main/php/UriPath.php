@@ -40,7 +40,7 @@ class UriPath
      * @param   string  $path
      * @return  string
      */
-    public static function pattern(string $path)
+    public static function pattern(string $path): ?string
     {
         return preg_replace('/[{][^}]*[}]/', '([^\/]+)', str_replace('/', '\/', $path));
     }
@@ -120,7 +120,7 @@ class UriPath
     /**
      * parses path arguments from called path
      */
-    private function parsePathArguments()
+    private function parsePathArguments(): void
     {
         if (null !== $this->arguments) {
             return;
@@ -145,7 +145,7 @@ class UriPath
      * @param   string  $default
      * @return  string
      */
-    public function remaining(string $default = null)
+    public function remaining(string $default = null): ?string
     {
         $matches = [];
         preg_match('/(' . self::pattern($this->configuredPath) . ')([^?]*)?/', $this->calledPath, $matches);

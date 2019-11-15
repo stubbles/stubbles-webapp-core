@@ -117,7 +117,7 @@ class SupportedMimeTypes
      * @param   \stubbles\peer\http\AcceptHeader  $acceptedMimeTypes
      * @return  string|null
      */
-    public function findMatch(AcceptHeader $acceptedMimeTypes)
+    public function findMatch(AcceptHeader $acceptedMimeTypes): ?string
     {
         if (count($this->mimeTypes) === 0) {
             return 'text/html';
@@ -138,7 +138,7 @@ class SupportedMimeTypes
      * @param  string  $mimeTypeClass
      * @since  5.1.1
      */
-    public static function setDefaultMimeTypeClass(string $mimeType, $mimeTypeClass)
+    public static function setDefaultMimeTypeClass(string $mimeType, $mimeTypeClass): void
     {
         self::$supported[$mimeType] = $mimeTypeClass;
     }
@@ -149,7 +149,7 @@ class SupportedMimeTypes
      * @param  string  $mimeType
      * @since  5.1.1
      */
-    public static function removeDefaultMimeTypeClass(string $mimeType)
+    public static function removeDefaultMimeTypeClass(string $mimeType): void
     {
         if (isset(self::$supported[$mimeType])) {
             unset(self::$supported[$mimeType]);
@@ -199,7 +199,7 @@ class SupportedMimeTypes
      * @return  string|null
      * @since   3.2.0
      */
-    public function classFor(string $mimeType)
+    public function classFor(string $mimeType): ?string
     {
         if ($this->provideClass($mimeType)) {
             return $this->mimeTypeClasses[$mimeType];

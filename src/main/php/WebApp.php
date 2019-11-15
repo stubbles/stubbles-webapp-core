@@ -99,7 +99,7 @@ abstract class WebApp extends App
      * @param  \stubbles\webapp\Request   $request
      * @param  \stubbles\webapp\Response  $response
      */
-    private function sessionHandshake(Request $request, Response $response)
+    private function sessionHandshake(Request $request, Response $response): void
     {
         $session = $this->createSession($request, $response);
         if (null !== $session) {
@@ -118,7 +118,7 @@ abstract class WebApp extends App
      * @return  \stubbles\webapp\session\Session
      * @since   6.0.0
      */
-    protected function createSession(Request $request, Response $response)
+    protected function createSession(Request $request, Response $response): ?Session
     {
         return null;
     }
@@ -140,7 +140,7 @@ abstract class WebApp extends App
      *
      * @param  \stubbles\webapp\routing\RoutingConfigurator  $routing
      */
-    protected abstract function configureRouting(RoutingConfigurator $routing);
+    protected abstract function configureRouting(RoutingConfigurator $routing): void;
 
     /**
      * returns post interceptor class which adds Access-Control-Allow-Origin header to the response

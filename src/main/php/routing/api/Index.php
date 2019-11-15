@@ -54,7 +54,7 @@ class Index implements Target
      * @param   \stubbles\webapp\UriPath   $uriPath   information about called uri path
      * @return  \stubbles\webapp\routing\api\Resources
      */
-    public function resolve(Request $request, Response $response, UriPath $uriPath)
+    public function resolve(Request $request, Response $response, UriPath $uriPath): Resources
     {
         $uri = $request->uri();
         $resources = new Resources();

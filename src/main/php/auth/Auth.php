@@ -57,7 +57,7 @@ class Auth implements BindingModule
      * @param  string  $authenticationProvider
      * @param  string  $authorizationProvider   optional
      */
-    public function __construct($authenticationProvider, $authorizationProvider = null)
+    public function __construct(string $authenticationProvider, string $authorizationProvider = null)
     {
         $this->authenticationProvider = $authenticationProvider;
         $this->authorizationProvider  = $authorizationProvider;

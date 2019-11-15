@@ -28,7 +28,7 @@ class Resources implements \IteratorAggregate, \JsonSerializable
      * @param   \stubbles\webapp\routing\api\Resource  $resource
      * @return  \stubbles\webapp\routing\api\Resource
      */
-    public function add(Resource $resource)
+    public function add(Resource $resource): Resource
     {
         $this->resources[] = $resource;
         return $resource;

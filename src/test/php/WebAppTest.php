@@ -65,7 +65,7 @@ class WebAppTest extends TestCase
                 ];
             }
 
-            protected function configureRouting(RoutingConfigurator $routing) { }
+            protected function configureRouting(RoutingConfigurator $routing): void { }
         };
         $_SERVER['REQUEST_METHOD'] = 'GET';
         $_SERVER['REQUEST_URI']    = '/hello';
@@ -156,12 +156,12 @@ class WebAppTest extends TestCase
                 $this->session = $session;
             }
 
-            protected function createSession(Request $request, Response $response)
+            protected function createSession(Request $request, Response $response): ?Session
             {
                 return $this->session;
             }
 
-            protected function configureRouting(RoutingConfigurator $routing) { }
+            protected function configureRouting(RoutingConfigurator $routing): void { }
         };
 
         $this->createNonHttpsResource();

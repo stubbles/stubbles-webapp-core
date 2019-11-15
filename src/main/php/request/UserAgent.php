@@ -69,7 +69,7 @@ class UserAgent
      * @api
      * @return  string|null
      */
-    public function name()
+    public function name(): ?string
     {
         return $this->name;
     }

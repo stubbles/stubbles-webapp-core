@@ -1,5 +1,11 @@
 # Changelog
 
+## 8.0.0 (2019-??-??)
+
+### BC breaks
+
+* Added more type hints
+
 ## 7.0.0 (2016-08-06)
 
 ### BC breaks

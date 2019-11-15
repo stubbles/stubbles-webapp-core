@@ -50,7 +50,7 @@ class CachingAuthorizationProvider implements AuthorizationProvider
      * @param   \stubbles\webapp\auth\User  $user
      * @return  \stubbles\webapp\auth\Roles|null
      */
-    public function roles(User $user)
+    public function roles(User $user): ?Roles
     {
         if ($this->session->hasValue(Roles::SESSION_KEY)) {
             return $this->session->value(Roles::SESSION_KEY);

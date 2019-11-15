@@ -83,7 +83,7 @@ class Resource implements \JsonSerializable
      * @return  string|null
      * @XmlAttribute(attributeName='name')
      */
-    public function name()
+    public function name(): ?string
     {
         return $this->name;
     }
@@ -112,10 +112,10 @@ class Resource implements \JsonSerializable
     /**
      * returns description of resource
      *
-     * @return  string
+     * @return  string|null
      * @XmlTag(tagName='description')
      */
-    public function description()
+    public function description(): ?string
     {
         return $this->annotations->description();
     }

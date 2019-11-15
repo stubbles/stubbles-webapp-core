@@ -176,7 +176,7 @@ class Cookie
      *
      * @return  string|null
      */
-    public function value()
+    public function value(): ?string
     {
         return $this->value;
     }
@@ -196,7 +196,7 @@ class Cookie
      *
      * @return  string|null
      */
-    public function path()
+    public function path(): ?string
     {
         return $this->path;
     }
@@ -206,7 +206,7 @@ class Cookie
      *
      * @return  string|null
      */
-    public function domain()
+    public function domain(): ?string
     {
         return $this->domain;
     }
@@ -234,7 +234,7 @@ class Cookie
     /**
      * sends the cookie
      */
-    public function send()
+    public function send(): void
     {
         setcookie(
                 $this->name,

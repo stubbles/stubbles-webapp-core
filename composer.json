@@ -23,7 +23,7 @@
         "stubbles/image": "^5.0",
         "phpunit/phpunit": "^8.4",
         "mikey179/vfsstream": "^1.6.7",
-        "bovigo/callmap": "^5.0",
+        "bovigo/callmap": "^5.1",
         "bovigo/assert": "^5.0"
     },
     "autoload": {
@@ -39,7 +39,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "7.0.x-dev"
+            "dev-master": "8.0.x-dev"
         }
     },
     "minimum-stability": "dev",

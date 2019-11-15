@@ -60,7 +60,7 @@ class WebResponseTest extends TestCase
         return NewInstance::of(
                 WebResponse::class,
                 [$request, new PassThrough(), $sapi]
-        )->returns(['header' => false]); // prevent call to original method
+        )->stub('header'); // prevent call to original method
     }
 
     /**
@@ -178,7 +178,7 @@ class WebResponseTest extends TestCase
     protected function createCookie($value = null): Cookie
     {
         return NewInstance::of(Cookie::class, ['foo', $value])
-                ->returns(['send' => false]); // disable actual sending of cookie
+                ->stub('send'); // disable actual sending of cookie
     }
 
     /**

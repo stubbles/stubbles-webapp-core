@@ -154,7 +154,7 @@ class WebRequest extends ParamRequest implements Request
      * @return  \stubbles\peer\http\HttpVersion
      * @since   2.0.2
      */
-    public function protocolVersion()
+    public function protocolVersion(): ?HttpVersion
     {
         if (!$this->headers->contain('SERVER_PROTOCOL')) {
             return new HttpVersion(1, 0);
@@ -187,7 +187,7 @@ class WebRequest extends ParamRequest implements Request
      * @return  \stubbles\peer\IpAddress
      * @since   3.0.0
      */
-    public function originatingIpAddress()
+    public function originatingIpAddress(): ?IpAddress
     {
         try {
             if ($this->headers->contain('HTTP_X_FORWARDED_FOR')) {
@@ -479,7 +479,7 @@ class WebRequest extends ParamRequest implements Request
      * @return  \stubbles\webapp\session\Session
      * @since   6.0.0
      */
-    public function attachedSession()
+    public function attachedSession(): ?Session
     {
         return $this->session;
     }
@@ -514,7 +514,7 @@ class WebRequest extends ParamRequest implements Request
      * @return  \stubbles\webapp\auth\Identity
      * @since   6.0.0
      */
-    public function identity()
+    public function identity(): ?Identity
     {
         return $this->identity;
     }

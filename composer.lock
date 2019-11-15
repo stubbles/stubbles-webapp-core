@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "495e535a931e79d28ea16f5871b046ec",
+    "content-hash": "6006979eee0e480d214200c0a205bb4b",
     "packages": [
         {
             "name": "stubbles/input",
@@ -388,16 +388,16 @@
         },
         {
             "name": "bovigo/callmap",
-            "version": "v5.0.1",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bovigo/callmap.git",
-                "reference": "b97de0d67ad0e7cba74d1f7a7d6019d90aead877"
+                "reference": "b38925b09d3f4fce57cffac0f780421f2341eb67"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bovigo/callmap/zipball/b97de0d67ad0e7cba74d1f7a7d6019d90aead877",
-                "reference": "b97de0d67ad0e7cba74d1f7a7d6019d90aead877",
+                "url": "https://api.github.com/repos/bovigo/callmap/zipball/b38925b09d3f4fce57cffac0f780421f2341eb67",
+                "reference": "b38925b09d3f4fce57cffac0f780421f2341eb67",
                 "shasum": ""
             },
             "require": {
@@ -416,7 +416,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "5.0.x-dev"
+                    "dev-master": "5.1.x-dev"
                 }
             },
             "autoload": {
@@ -432,7 +432,7 @@
                 "BSD-3-Clause"
             ],
             "description": "Allows to stub and mock method calls by applying a callmap.",
-            "time": "2019-07-25T08:00:41+00:00"
+            "time": "2019-11-15T10:17:02+00:00"
         },
         {
             "name": "doctrine/instantiator",

@@ -70,7 +70,7 @@ class Token
     /**
      * initialize
      */
-    private function init()
+    private function init(): void
     {
         if (null === $this->current) {
             $this->current = $this->session->value(self::NEXT_TOKEN, md5(uniqid((string) rand())));
