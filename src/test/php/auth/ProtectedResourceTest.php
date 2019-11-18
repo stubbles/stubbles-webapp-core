@@ -21,6 +21,7 @@ use function bovigo\assert\{
     assertThat,
     assertNull,
     assertTrue,
+    fail,
     predicate\equals,
     predicate\isSameAs
 };
@@ -262,7 +263,13 @@ class ProtectedResourceTest extends TestCase
         $request = WebRequest::fromRawSource();
         $this->actualResource->returns(['applyPreInterceptors' => true]);
         $this->protectedResource->applyPreInterceptors($request, $this->response);
-        assertThat($request->identity()->user(), isSameAs($user));
+        $identity = $request->identity();
+        if (null === $identity) {
+            fail('Expected identity, got none');
+            return;
+        }
+
+        assertThat($identity->user(), isSameAs($user));
     }
 
     private function createAuthorizationProvider($roles, User $user = null): AuthorizationProvider
@@ -384,7 +391,13 @@ class ProtectedResourceTest extends TestCase
                 $request,
                 $this->response
         );
-        assertThat($request->identity()->user(), isSameAs($user));
+        $identity = $request->identity();
+        if (null === $identity) {
+            fail('Expected identity, got none');
+            return;
+        }
+
+        assertThat($identity->user(), isSameAs($user));
     }
 
     /**
@@ -401,7 +414,13 @@ class ProtectedResourceTest extends TestCase
                 $request,
                 $this->response
         );
-        assertThat($request->identity()->roles(), isSameAs($roles));
+        $identity = $request->identity();
+        if (null === $identity) {
+            fail('Expected identity, got none');
+            return;
+        }
+
+        assertThat($identity->roles(), isSameAs($roles));
     }
 
     /**
