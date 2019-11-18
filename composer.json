@@ -8,7 +8,7 @@
         "stubbles/ioc": "^9.0",
         "stubbles/input": "^8.0",
         "stubbles/peer": "^9.0",
-        "stubbles/reflect": "^9.0",
+        "stubbles/reflect": "^9.0.1",
         "stubbles/sequence": "^9.0",
         "stubbles/streams": "^9.0",
         "stubbles/values": "^9.0"

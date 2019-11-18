@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b3037b2e3d998975dff16a1c818bb734",
+    "content-hash": "b598d1502dfb3ee587a401009f7f8ff2",
     "packages": [
         {
             "name": "stubbles/input",
@@ -154,16 +154,16 @@
         },
         {
             "name": "stubbles/reflect",
-            "version": "v9.0.0",
+            "version": "v9.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/stubbles/stubbles-reflect.git",
-                "reference": "eb1f75c25d5d5b136b190ab3affeb66ce64570b2"
+                "reference": "02dc86cffead215549f3f60abbc8fc66209b7fb7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/stubbles/stubbles-reflect/zipball/eb1f75c25d5d5b136b190ab3affeb66ce64570b2",
-                "reference": "eb1f75c25d5d5b136b190ab3affeb66ce64570b2",
+                "url": "https://api.github.com/repos/stubbles/stubbles-reflect/zipball/02dc86cffead215549f3f60abbc8fc66209b7fb7",
+                "reference": "02dc86cffead215549f3f60abbc8fc66209b7fb7",
                 "shasum": ""
             },
             "require": {
@@ -195,8 +195,7 @@
                 "BSD-3-Clause"
             ],
             "description": "Reflection helper functions and annotations.",
-            "homepage": "http://stubbles.net/",
-            "time": "2019-10-29T16:19:35+00:00"
+            "time": "2019-11-18T12:28:20+00:00"
         },
         {
             "name": "stubbles/sequence",
