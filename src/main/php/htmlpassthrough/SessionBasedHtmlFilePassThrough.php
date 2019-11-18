@@ -31,12 +31,13 @@ class SessionBasedHtmlFilePassThrough extends HtmlFilePassThrough
             string $content,
             string $routeName
     ): string {
-        if ($request->hasSessionAttached()) {
-            $request->attachedSession()->putValue('stubbles.webapp.lastPage', $routeName);
+        $session = $request->attachedSession();
+        if (null === $session) {
+            return $content;
         }
 
-        if (!$request->userAgent()->acceptsCookies() && $request->hasSessionAttached()) {
-            $session = $request->attachedSession();
+        $session->putValue('stubbles.webapp.lastPage', $routeName);
+        if (!$request->userAgent()->acceptsCookies()) {
             output_add_rewrite_var($session->name(), $session->id());
         }
 
