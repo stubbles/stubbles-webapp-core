@@ -172,7 +172,12 @@ class AuthConstraint implements \JsonSerializable
             return true;
         }
 
-        return $roles->contain($this->requiredRole());
+        $requiredRole = $this->requiredRole();
+        if (null === $requiredRole) {
+            throw new \LogicException('Route says it requires a role but doesn\'t specify which.');
+        }
+
+        return $roles->contain($requiredRole);
     }
 
     /**
@@ -196,5 +201,4 @@ class AuthConstraint implements \JsonSerializable
 
         return $data;
     }
-
 }
