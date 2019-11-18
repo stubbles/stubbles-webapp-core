@@ -95,6 +95,19 @@ class AddAccessControlAllowOriginHeaderTest extends TestCase
     /**
      * @test
      */
+    public function doesNotAddHeaderWhenRequestContainsEmptyOriginHeader()
+    {
+        $this->request->returns([
+            'hasHeader'  => true,
+            'readHeader' => ValueReader::forValue('')
+        ]);
+        $this->apply('^http://[a-zA-Z0-9-\.]+example\.com(:[0-9]{4})?$');
+        assertTrue(verify($this->response, 'addHeader')->wasNeverCalled());
+    }
+
+    /**
+     * @test
+     */
     public function doesNotAddHeaderWhenOriginFromRequestDoesNotMatchAllowedOriginHosts()
     {
         $this->request->returns([

@@ -66,8 +66,12 @@ class AddAccessControlAllowOriginHeader implements PostInterceptor
         }
 
         $originHost = $request->readHeader('HTTP_ORIGIN')->unsecure();
+        if (empty($originHost)) {
+            return;
+        }
+
         foreach ($this->allowedOriginHosts as $allowedOriginHost) {
-            if (preg_match('~' . $allowedOriginHost . '~', $originHost) === 1) {
+            if (\preg_match('~' . $allowedOriginHost . '~', $originHost) === 1) {
                 $response->addHeader('Access-Control-Allow-Origin', $originHost);
             }
         }
