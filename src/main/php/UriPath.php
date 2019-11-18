@@ -145,7 +145,7 @@ class UriPath
      * @param   string  $default
      * @return  string
      */
-    public function remaining(string $default = null): ?string
+    public function remaining(string $default = ''): string
     {
         $matches = [];
         preg_match('/(' . self::pattern($this->configuredPath) . ')([^?]*)?/', $this->calledPath, $matches);

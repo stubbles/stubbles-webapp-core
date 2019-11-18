@@ -8,6 +8,7 @@
 * Added more type hints
 * `stubbles\webapp\response\mimetypes\Csv` will now throw an exception when a line can't be serialized instead of silently converting to an empty line
 * `stubbles\webapp\htmlpassthrough\HtmlFilePassThrough` now serves an error 500 in case the file can't be read
+* `stubbles\webapp\UriPath::remaining()` now returns an empty string instead of `null` if there is no remaining path and no default given
 
 ## 7.0.0 (2016-08-06)
 

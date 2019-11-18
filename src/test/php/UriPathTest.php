@@ -102,12 +102,12 @@ class UriPathTest extends TestCase
     public function provideRemainingPath(): array
     {
         return [['/hello/mikey', '/hello/{name}', null],
-                ['/hello/303/mikey', '/hello/{id}/{name}', null],
+                ['/hello/303/mikey', '/hello/{id}/{name}', ''],
                 ['/hello/303/mikey/foo', '/hello/{id}/{name}', '/foo'],
-                ['/hello', '/hello', null],
+                ['/hello', '/hello', ''],
                 ['/hello/world;name', '/hello/[a-z0-9]+;?', 'name'],
                 ['/hello/world', '/hello/?', 'world'],
-                ['/', '/', null]
+                ['/', '/', '']
         ];
     }
 
