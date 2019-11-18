@@ -1,5 +1,5 @@
 parameters:
-  level: 5
+  level: 7
   paths:
       - ./src
   ignoreErrors:
@@ -15,4 +15,15 @@ parameters:
       -
           message: '#Parameter (.)+ of method stubbles\\webapp\\routing\\Route::(pre|post)Intercept\(\) expects (.)+, int given#'
           path: src/test/php/routing/RouteTest.php
-
+      -
+          message: '#class stubbles\\webapp\\auth\\Identity constructor expects stubbles\\webapp\\auth\\User, bovigo\\callmap\\ClassProxy\|stubbles\\webapp\\auth\\User given#'
+          path: src/test/php/auth/IdentityTest.php
+      -
+          message: '#Call to an undefined method object::serializeToXml\(\)#'
+          path: src/test/php/routing/api/StatusTest.php
+      -
+          message: '#Possibly invalid array key type \(array\|string\)#'
+          path: src/main/php/UriPath.php
+      -
+          message: '#Method stubbles\\webapp\\session\\storage\\ArraySessionStorage::valueKeys\(\) should return array<string> but returns array<int, int\|string>#'
+          path: src/main/php/session/storage/ArraySessionStorage.php
