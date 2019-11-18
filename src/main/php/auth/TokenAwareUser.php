@@ -44,8 +44,9 @@ abstract class TokenAwareUser implements User
      */
     public function createToken(string $tokenSalt): Token
     {
-        $this->setToken(Token::create($this, $tokenSalt));
-        return $this->token();
+        $token = Token::create($this, $tokenSalt);
+        $this->setToken($token);
+        return $token;
     }
 
     /**
