@@ -19,7 +19,7 @@
 
 ## 6.2.2 (2015-07-06)
 
-* put filename in Content-Disposition header in double quotes, see https://code.google.com/p/chromium/issues/detail?id=103618
+* put filename in Content-Disposition header in double quotes, see <https://code.google.com/p/chromium/issues/detail?id=103618>
 
 ## 6.2.1 (2015-06-23)
 
