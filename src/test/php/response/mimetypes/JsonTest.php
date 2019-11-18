@@ -60,7 +60,7 @@ class JsonTest extends TestCase
                         ['foo', 'bar' => 313],
                         new MemoryOutputStream()
                 )->buffer(),
-                equals(json_encode(['foo', 'bar' => 313]))
+                equals(json_encode(['foo', 'bar' => 313], JSON_THROW_ON_ERROR))
         );
     }
 }

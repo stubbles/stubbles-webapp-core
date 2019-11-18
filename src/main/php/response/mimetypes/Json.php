@@ -34,7 +34,7 @@ class Json extends MimeType
      */
     public function serialize($resource, OutputStream $out): OutputStream
     {
-        $out->write(json_encode($resource));
+        $out->write(json_encode($resource, JSON_THROW_ON_ERROR));
         return $out;
     }
 }
