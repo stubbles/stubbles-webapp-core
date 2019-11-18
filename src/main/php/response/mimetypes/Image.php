@@ -76,15 +76,7 @@ class Image extends MimeType
         }
 
         if (!empty($image)) {
-            // must use output buffering
-            // PHP's image*() functions write directly to stdout
-            ob_start();
-            $image->display();
-            $result = ob_get_contents();
-            // end output buffering first before writing to output stream
-            // because it might be captured by output buffering as well
-            ob_end_clean();
-            $out->write($result);
+            $out->write($image->contentForDisplay());
         }
 
         return $out;

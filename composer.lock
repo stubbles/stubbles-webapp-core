@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5b8a203ecd9a3351ff6010d45c541a55",
+    "content-hash": "b3037b2e3d998975dff16a1c818bb734",
     "packages": [
         {
             "name": "stubbles/input",
@@ -1899,16 +1899,16 @@
         },
         {
             "name": "stubbles/image",
-            "version": "v6.0.0",
+            "version": "v6.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/stubbles/stubbles-image.git",
-                "reference": "41d1b2e0152ddbbb5126a04066d2b661fa8f468d"
+                "reference": "d242c54c85637d8730f65bda032eb52176fc85c6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/stubbles/stubbles-image/zipball/41d1b2e0152ddbbb5126a04066d2b661fa8f468d",
-                "reference": "41d1b2e0152ddbbb5126a04066d2b661fa8f468d",
+                "url": "https://api.github.com/repos/stubbles/stubbles-image/zipball/d242c54c85637d8730f65bda032eb52176fc85c6",
+                "reference": "d242c54c85637d8730f65bda032eb52176fc85c6",
                 "shasum": ""
             },
             "require": {
@@ -1922,7 +1922,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "6.0.x-dev"
+                    "dev-master": "6.1.x-dev"
                 }
             },
             "autoload": {
@@ -1935,8 +1935,7 @@
                 "BSD-3-Clause"
             ],
             "description": "Simple image handling support.",
-            "homepage": "http://stubbles.net/",
-            "time": "2019-11-12T13:22:28+00:00"
+            "time": "2019-11-18T10:51:40+00:00"
         },
         {
             "name": "stubbles/xml",
