@@ -47,13 +47,20 @@ interface ConfigurableRoute
     public function withLoginOnly(): self;
 
     /**
-     * forbid the actual login
+     * when user is not logged in respond with 401 Unauthorized
      *
-     * Forbidding a login means that the user receives a 403 Forbidden response
-     * in case he accesses a restricted resource but is not logged in yet.
-     * Otherwise, he would just be redirected to the login uri of the
+     * Otherwise, the user would just be redirected to the login uri of the
      * authentication provider.
      *
+     * @since   8.0.0
+     * @return  \stubbles\webapp\routing\ConfigurableRoute
+     */
+    public function sendChallengeWhenNotLoggedIn(): self;
+
+    /**
+     * forbid the actual login
+     *
+     * @deprecated  use sendChallengeWhenNotLoggedIn() instead, will be removed with 9.0.0
      * @return  \stubbles\webapp\routing\ConfigurableRoute
      * @since   5.0.0
      */

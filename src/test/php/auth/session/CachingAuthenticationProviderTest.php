@@ -56,8 +56,8 @@ class CachingAuthenticationProviderTest extends TestCase
         $this->session                = NewInstance::of(Session::class);
         $this->authenticationProvider = NewInstance::of(AuthenticationProvider::class);
         $this->cachingAuthenticationProvider = new CachingAuthenticationProvider(
-                $this->session,
-                $this->authenticationProvider
+            $this->session,
+            $this->authenticationProvider
         );
     }
 
@@ -67,13 +67,13 @@ class CachingAuthenticationProviderTest extends TestCase
     public function annotationsPresentOnConstructor()
     {
         $parameterAnnotations = annotationsOfConstructorParameter(
-                'authenticationProvider',
-                $this->cachingAuthenticationProvider
+            'authenticationProvider',
+            $this->cachingAuthenticationProvider
         );
         assertTrue($parameterAnnotations->contain('Named'));
         assertThat(
-                $parameterAnnotations->firstNamed('Named')->getName(),
-                equals('original')
+            $parameterAnnotations->firstNamed('Named')->getName(),
+            equals('original')
         );
     }
 
@@ -85,10 +85,8 @@ class CachingAuthenticationProviderTest extends TestCase
         $user = NewInstance::of(User::class);
         $this->session->returns(['hasValue' => true, 'value' => $user]);
         assertThat(
-                $this->cachingAuthenticationProvider->authenticate(
-                        NewInstance::of(Request::class)
-                ),
-                isSameAs($user)
+            $this->cachingAuthenticationProvider->authenticate(NewInstance::of(Request::class)),
+            isSameAs($user)
         );
         verify($this->authenticationProvider, 'authenticate')->wasNeverCalled();
     }
@@ -100,9 +98,7 @@ class CachingAuthenticationProviderTest extends TestCase
     {
         $this->session->returns(['hasValue' => false]);
         assertNull(
-                $this->cachingAuthenticationProvider->authenticate(
-                        NewInstance::of(Request::class)
-                )
+            $this->cachingAuthenticationProvider->authenticate(NewInstance::of(Request::class))
         );
         verify($this->session, 'putValue')->wasNeverCalled();
     }
@@ -116,10 +112,10 @@ class CachingAuthenticationProviderTest extends TestCase
         $this->session->returns(['hasValue' => false]);
         $this->authenticationProvider->returns(['authenticate' => $user]);
         assertThat(
-                $this->cachingAuthenticationProvider->authenticate(
-                        NewInstance::of(Request::class)
-                ),
-                isSameAs($user)
+            $this->cachingAuthenticationProvider->authenticate(
+                NewInstance::of(Request::class)
+            ),
+            isSameAs($user)
         );
         verify($this->session, 'putValue')->received(User::SESSION_KEY, $user);
     }
@@ -130,13 +126,31 @@ class CachingAuthenticationProviderTest extends TestCase
     public function returnsLoginUriFromOriginalAuthenticationProvider()
     {
         $this->authenticationProvider->returns([
-                'loginUri' => 'http://login.example.net/'
+            'loginUri' => 'http://login.example.net/'
         ]);
         assertThat(
-                $this->cachingAuthenticationProvider->loginUri(
-                        NewInstance::of(Request::class)
-                ),
-                equals('http://login.example.net/')
+            $this->cachingAuthenticationProvider->loginUri(
+                NewInstance::of(Request::class)
+            ),
+            equals('http://login.example.net/')
+        );
+    }
+
+    /**
+     * @test
+     * @group  issue_73
+     * @since  8.0.0
+     */
+    public function returnsChallengesFromOriginalAuthenticationProvider()
+    {
+        $this->authenticationProvider->returns([
+            'challengesFor' => ['Basic realm="simple"']
+        ]);
+        assertThat(
+            $this->cachingAuthenticationProvider->challengesFor(
+                NewInstance::of(Request::class)
+            ),
+            equals(['Basic realm="simple"'])
         );
     }
 }

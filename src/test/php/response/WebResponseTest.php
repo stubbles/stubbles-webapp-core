@@ -330,6 +330,59 @@ class WebResponseTest extends TestCase
     }
 
     /**
+     * @since  8.0.0
+     * @test
+     * @group  issue_73
+     */
+    public function unauthorizedSetsStatusCodeTo401()
+    {
+        $this->response->unauthorized(['Basic realm="simple"']);
+        $this->response->send();
+        verify($this->response, 'header')->received('HTTP/1.1 401 Unauthorized');
+    }
+
+    /**
+     * @since  8.0.0
+     * @test
+     * @group  issue_73
+     */
+    public function unauthorizedAddsWwwAuthenticateHeaderWithChallenges()
+    {
+        $this->response->unauthorized([
+            'Newauth realm="apps", type=1, title="Login to \"apps\""',
+            'Basic realm="simple"'
+        ]);
+        assertTrue($this->response->containsHeader(
+            'WWW-Authenticate',
+            'Newauth realm="apps", type=1, title="Login to \"apps\"", Basic realm="simple"'
+        ));
+    }
+
+    /**
+     * @since  8.0.0
+     * @test
+     * @group  issue_73
+     */
+    public function unauthorizedReturnsErrorInstance()
+    {
+        assertThat(
+            $this->response->unauthorized(['Basic realm="simple"']),
+            equals(Error::unauthorized())
+        );
+    }
+
+    /**
+     * @since  8.0.0
+     * @test
+     * @group  issue_73
+     */
+    public function unauthorizedFixatesResponse()
+    {
+        $this->response->unauthorized(['Basic realm="simple"']);
+        assertTrue($this->response->isFixed());
+    }
+
+    /**
      * @since  2.0.0
      * @test
      */

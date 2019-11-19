@@ -167,13 +167,10 @@ class ProtectedResource implements UriResource
         $authenticationProvider = $this->injector->getInstance(AuthenticationProvider::class);
         try {
             $user = $authenticationProvider->authenticate($request);
-            if (null == $user && $this->authConstraint->loginAllowed()) {
+            if (null == $user && $this->authConstraint->redirectToLogin()) {
                 $response->redirect($authenticationProvider->loginUri($request));
             } elseif (null == $user) {
-                // TODO should become 401 Unauthorized
-                // see https://github.com/stubbles/stubbles-webapp-core/issues/73
-                $this->error = $response->forbidden();
-                return null;
+                $this->error = $response->unauthorized($authenticationProvider->challengesFor($request));
             }
 
             return $user;

@@ -129,6 +129,15 @@ interface Response extends SendableResponse
     public function redirect($uri, int $statusCode = 302);
 
     /**
+     * creates a 401 Unauthorized message including a WWW-Authenticate header with given challenge
+     *
+     * @param   string[]  $challenges
+     * @return  \stubbles\webapp\response\Error
+     * @since   8.0.0
+     */
+    public function unauthorized(array $challenges): Error;
+
+    /**
      * creates a 403 Forbidden message
      *
      * @return  \stubbles\webapp\response\Error

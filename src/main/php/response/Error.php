@@ -40,6 +40,20 @@ class Error implements \JsonSerializable
     }
 
     /**
+     * creates error when access to resource is unauthorized
+     *
+     * @since   8.0.0
+     * @return  \stubbles\webapp\response\Error
+     */
+    public static function unauthorized(): self
+    {
+        return new self(
+            'You need to authenticate to access this resource.',
+            'Unauthorized'
+        );
+    }
+
+    /**
      * creates error when access to resource is forbidden
      *
      * @return  \stubbles\webapp\response\Error
@@ -47,8 +61,8 @@ class Error implements \JsonSerializable
     public static function forbidden(): self
     {
         return new self(
-                'You are not allowed to access this resource.',
-                'Forbidden'
+            'You are not allowed to access this resource.',
+            'Forbidden'
         );
     }
 

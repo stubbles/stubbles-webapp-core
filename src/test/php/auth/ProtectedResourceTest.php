@@ -211,14 +211,14 @@ class ProtectedResourceTest extends TestCase
 
     /**
      * @test
-     * @since  5.0.0
-     * @group  forbid_login
+     * @since  8.0.0
+     * @group  issue_73
      */
-    public function applyPreInterceptorsTriggers403ForbiddenWhenNotAuthenticatedAndRedirectToLoginForbidden()
+    public function applyPreInterceptorsTriggers401UnauthorizedWhenNotAuthenticatedAndRedirectToLoginForbidden()
     {
-        $this->authConstraint->forbiddenWhenNotAlreadyLoggedIn();
-        $this->createAuthenticationProvider();
-        $this->response->returns(['forbidden' => Error::forbidden()]);
+        $this->authConstraint->sendChallengeWhenNotLoggedIn();
+        $this->createAuthenticationProvider(['challengesFor' => ['Basic realm="simple"']]);
+        $this->response->returns(['unauthorized' => Error::unauthorized()]);
         assertTrue($this->protectedResource->applyPreInterceptors(
                 $this->request,
                 $this->response
@@ -228,8 +228,9 @@ class ProtectedResourceTest extends TestCase
                         $this->request,
                         $this->response
                 ),
-                equals(Error::forbidden())
+                equals(Error::unauthorized())
         );
+        verify($this->response, 'unauthorized')->wasCalledOnce();
         verify($this->actualResource, 'applyPreInterceptors')->wasNeverCalled();
         verify($this->actualResource, 'resolve')->wasNeverCalled();
     }

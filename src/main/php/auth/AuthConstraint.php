@@ -33,7 +33,7 @@ class AuthConstraint implements \JsonSerializable
      *
      * @type  bool
      */
-    private $loginAllowed          = true;
+    private $redirectToLogin       = true;
     /**
      * required role to access the route
      *
@@ -64,6 +64,22 @@ class AuthConstraint implements \JsonSerializable
     }
 
     /**
+     * when user is not logged in respond with 401 Unauthorized
+     *
+     * Otherwise, the user would just be redirected to the login uri of the
+     * authentication provider.
+     *
+     * @since   8.0.0
+     * @return  \stubbles\webapp\auth\AuthConstraint
+     * @XmlIgnore
+     */
+    public function sendChallengeWhenNotLoggedIn(): self
+    {
+        $this->redirectToLogin = false;
+        return $this;
+    }
+
+    /**
      * forbid the actual login
      *
      * Forbidding a login means that the user receives a 403 Forbidden response
@@ -71,24 +87,37 @@ class AuthConstraint implements \JsonSerializable
      * Otherwise, he would just be redirected to the login uri of the
      * authentication provider.
      *
+     * @deprecated  use sendChallengeWhenNotLoggedIn() instead
      * @return  \stubbles\webapp\auth\AuthConstraint
      * @XmlIgnore
      */
     public function forbiddenWhenNotAlreadyLoggedIn(): self
     {
-        $this->loginAllowed = false;
-        return $this;
+        return $this->sendChallengeWhenNotLoggedIn();
     }
 
     /**
      * checks whether a login is allowed
      *
+     * @since   8.0.0
+     * @return  bool
+     * @XmlIgnore
+     */
+    public function redirectToLogin(): bool
+    {
+        return $this->redirectToLogin;
+    }
+
+    /**
+     * checks whether a login is allowed
+     *
+     * @deprecated  since 8.0.0, use redirectToLogin() instead
      * @return  bool
      * @XmlIgnore
      */
     public function loginAllowed(): bool
     {
-        return $this->loginAllowed;
+        return $this->redirectToLogin();
     }
 
     /**

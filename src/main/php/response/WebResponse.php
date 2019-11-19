@@ -298,6 +298,19 @@ class WebResponse implements Response
     }
 
     /**
+     * creates a 401 Unauthorized message including a WWW-Authenticate header with given challenge
+     *
+     * @param   string[]  $challenges
+     * @return  \stubbles\webapp\response\Error
+     * @since   8.0.0
+     */
+    public function unauthorized(array $challenges): Error
+    {
+        $this->status->unauthorized($challenges);
+        return Error::unauthorized();
+    }
+
+    /**
      * creates a 403 Forbidden message
      *
      * @return  \stubbles\webapp\response\Error

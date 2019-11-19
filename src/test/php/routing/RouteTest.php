@@ -614,7 +614,7 @@ class RouteTest extends TestCase
                 OtherAnnotatedProcessor::class,
                 'GET'
         );
-        assertFalse($route->forbiddenWhenNotAlreadyLoggedIn()->authConstraint()->loginAllowed());
+        assertFalse($route->sendChallengeWhenNotLoggedIn()->authConstraint()->redirectToLogin());
     }
 
     /**

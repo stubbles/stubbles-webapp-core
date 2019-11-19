@@ -5,6 +5,12 @@
 ### BC breaks
 
 * Raised minimum required PHP version to 7.3
+* Implemented issue #73 `stubbles\webapp\auth\ProtectedResource` should respond with 401 instead of 403 when no user found
+  * Extended interface `stubbles\webapp\Response` with new method `unauthorized(array $challenges)`
+  * Extended interface `stubbles\webapp\auth\AuthenticationProvider` with new method `challengesFor(stubbles\webapp\Request $request): array`
+  * Added new method `stubbles\webapp\response\Error::unauthorized()`
+  * Deprecated `stubbles\webapp\routing\ConfigurableRoute::forbiddenWhenNotAlreadyLoggedIn()`, use `stubbles\webapp\routing\ConfigurableRoute::sendChallengeWhenNotLoggedIn()` instead, will be removed with 9.0
+  * Deprecated `stubbles\webapp\auth\AuthConstraint::loginAllowed()`, use `stubbles\webapp\auth\AuthConstraint::redirectToLogin()` instead, will be removed with 9.0
 * Added more type hints
 * `stubbles\webapp\response\mimetypes\Csv` will now throw an exception when a line can't be serialized instead of silently converting to an empty line
 * `stubbles\webapp\htmlpassthrough\HtmlFilePassThrough` now serves an error 500 in case the file can't be read

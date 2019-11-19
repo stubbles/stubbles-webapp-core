@@ -134,4 +134,20 @@ class TokenAuthenticator implements AuthenticationProvider
     {
         return $this->loginProvider->loginUri($request);
     }
+
+    /**
+     * returns a list of challenges to send in response's 401 WWW-Authenticate header for given request
+     *
+     * The method is called when the authenticate() method returns <null> and a
+     * redirect to a login URI is not allowed for the resource, but a
+     * 401 Unauthorized response should be send instead.
+     *
+     * @since   8.0.0
+     * @param   \stubbles\webapp\Request  $request
+     * @return  string[]  list of challenges for the WWW-Authenticate header, must at least contain one
+     */
+    public function challengesFor(Request $request): array
+    {
+        return $this->loginProvider->challengesFor($request);
+    }
 }
