@@ -331,13 +331,34 @@ class WebRequestTest extends TestCase
                         ['foo'         => 'bar'],
                         ['HTTPS'       => null,
                          'HTTP_HOST'   => 'stubbles.net',
-                         'SERVER_PORT' => 80,
+                         'SERVER_PORT' => '80',
                          'REQUEST_URI' => '/index.php?foo=bar'
                         ]
                     )
                     ->uri()
                     ->asString(),
                 equals('http://stubbles.net:80/index.php?foo=bar')
+        );
+    }
+
+    /**
+     * @test
+     * @since  8.0.1
+     */
+    public function uriWithInvalidServerPortIgnoresPort()
+    {
+        assertThat(
+                $this->createBaseWebRequest(
+                        ['foo'         => 'bar'],
+                        ['HTTPS'       => null,
+                         'HTTP_HOST'   => 'stubbles.net',
+                         'SERVER_PORT' => 'abcd',
+                         'REQUEST_URI' => '/index.php?foo=bar'
+                        ]
+                    )
+                    ->uri()
+                    ->asString(),
+                equals('http://stubbles.net/index.php?foo=bar')
         );
     }
 
@@ -352,7 +373,7 @@ class WebRequestTest extends TestCase
                         ['foo'         => 'bar'],
                         ['HTTPS'       => null,
                          'HTTP_HOST'   => 'localhost:8080',
-                         'SERVER_PORT' => 80,
+                         'SERVER_PORT' => '80',
                          'REQUEST_URI' => '/index.php?foo=bar'
                         ]
                     )

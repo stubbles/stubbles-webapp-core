@@ -1,5 +1,9 @@
 # Changelog
 
+## 8.0.1 (2019-11-21)
+
+* fixed bug with `stubbles\webapp\request\WebRequest::uri()` parsing port incorrectly
+
 ## 8.0.0 (2019-11-19)
 
 ### BC breaks

@@ -243,10 +243,11 @@ class WebRequest extends ParamRequest implements Request
     public function uri(): HttpUri
     {
         $host = (string) $this->headers->value('HTTP_HOST')->value();
+        $port = (int) $this->headers->value('SERVER_PORT')->value();
         return HttpUri::fromParts(
                 $this->headers->contain('HTTPS') ? Http::SCHEME_SSL : Http::SCHEME,
                 $host,
-                strstr($host, ':') === false ? $this->headers->value('SERVER_PORT')->value() : null,
+                strstr($host, ':') === false && 0 !== $port ? $port : null,
                 (string) $this->headers->value('REQUEST_URI')->value() // already contains query string
         );
     }
