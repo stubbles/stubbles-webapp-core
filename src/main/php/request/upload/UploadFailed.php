@@ -41,7 +41,7 @@ class UploadFailed extends \Exception
      */
     public function __construct(string $filename, int $error)
     {
-        parent::__construct(self::$msg[$error] ?? 'Unknown upload error');
+        parent::__construct(self::$msg[$error] ?? 'Unknown upload error', $error);
         $this->filename = $filename;
     }
 
