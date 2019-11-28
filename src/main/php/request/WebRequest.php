@@ -24,7 +24,6 @@ use stubbles\streams\InputStream;
 use stubbles\streams\StandardInputStream;
 use stubbles\webapp\Request;
 use stubbles\webapp\auth\Identity;
-use stubbles\webapp\request\upload\Uploads;
 use stubbles\webapp\session\Session;
 /**
  * Request implementation for web applications.

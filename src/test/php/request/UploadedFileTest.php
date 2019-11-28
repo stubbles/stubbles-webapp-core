@@ -6,14 +6,14 @@ declare(strict_types=1);
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace stubbles\webapp\request\upload;
+namespace stubbles\webapp\request;
 use PHPUnit\Framework\TestCase;
 use org\bovigo\vfs\vfsStream;
 
 use function bovigo\assert\{assertFalse, assertThat, assertTrue, expect};
 use function bovigo\assert\predicate\equals;
 /**
- * Test for stubbles\webapp\request\upload\UploadedFile.
+ * Test for stubbles\webapp\request\UploadedFile.
  *
  * @since  8.1.0
  * @group  request

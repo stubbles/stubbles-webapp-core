@@ -6,7 +6,7 @@ declare(strict_types=1);
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace stubbles\webapp\request\upload;
+namespace stubbles\webapp\request;
 /**
  * Provides access to uploaded files.
  *

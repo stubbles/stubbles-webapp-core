@@ -15,8 +15,7 @@ use stubbles\peer\http\HttpUri;
 use stubbles\peer\http\HttpVersion;
 use stubbles\streams\InputStream;
 use stubbles\webapp\auth\Identity;
-use stubbles\webapp\request\UserAgent;
-use stubbles\webapp\request\upload\Uploads;
+use stubbles\webapp\request\{Uploads, UserAgent};
 use stubbles\webapp\session\Session;
 /**
  * Interface for web applications requests.

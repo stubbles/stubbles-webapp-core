@@ -13,7 +13,6 @@ use stubbles\input\{ValueReader, ValueValidator, errors\ParamErrors};
 use stubbles\peer\{IpAddress, MalformedUri, http\HttpVersion};
 use stubbles\streams\InputStream;
 use stubbles\webapp\auth\{Identity, Roles, User};
-use stubbles\webapp\request\upload\Uploads;
 use stubbles\webapp\session\Session;
 
 use function bovigo\assert\{
