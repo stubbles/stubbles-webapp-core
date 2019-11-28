@@ -9,8 +9,9 @@ declare(strict_types=1);
 namespace stubbles\webapp\request;
 use PHPUnit\Framework\TestCase;
 use org\bovigo\vfs\vfsStream;
+use stubbles\input\errors\ParamError;
 
-use function bovigo\assert\{assertFalse, assertThat, assertTrue, expect};
+use function bovigo\assert\{assertFalse, assertNull, assertThat, assertTrue, expect};
 use function bovigo\assert\predicate\equals;
 /**
  * Test for stubbles\webapp\request\Uploads.
@@ -57,6 +58,79 @@ class UploadsTest extends TestCase
     {
         $uploads = new Uploads($_files);
         assertThat($uploads->amount('example'), equals($expected));
+    }
+
+    /**
+     * @test
+     */
+    public function hasNoErrorWhenNoUploadForGivenFieldPresent(): void
+    {
+        $uploads = new Uploads([]);
+        assertNull($uploads->errorFor('example'));
+    }
+
+    /**
+     * @test
+     */
+    public function hasNoErrorWhenNoUploadForGivenFieldPresentForMultiple(): void
+    {
+        $uploads = new Uploads(['example' => ['name' => ['foo.txt'], 'error' => [\UPLOAD_ERR_OK]]]);
+        assertNull($uploads->errorFor('example', 2));
+    }
+
+    public function noUserErrors(): array
+    {
+        return [[\UPLOAD_ERR_NO_TMP_DIR], [\UPLOAD_ERR_CANT_WRITE], [\UPLOAD_ERR_EXTENSION], [10]];
+    }
+
+    /**
+     * @test
+     * @dataProvider  noUserErrors
+     */
+    public function hasNoErrorWhenNotUserError(int $noUserError): void
+    {
+        $uploads = new Uploads(['example' => ['name' => ['foo.txt'], 'error' => [$noUserError]]]);
+        assertNull($uploads->errorFor('example'));
+    }
+
+    /**
+     * @test
+     * @dataProvider  noUserErrors
+     */
+    public function hasNoErrorWhenNotUserErrorMultiple(int $noUserError): void
+    {
+        $uploads = new Uploads(['example' => ['name' => ['foo.txt'], 'error' => [$noUserError]]]);
+        assertNull($uploads->errorFor('example'));
+    }
+
+    public function userErrors(): array
+    {
+        return [
+            [\UPLOAD_ERR_INI_SIZE, new ParamError('UPLOAD_EXCEEDS_MAXSIZE_ALLOWED_BY_SERVER')],
+            [\UPLOAD_ERR_FORM_SIZE, new ParamError('UPLOAD_EXCEEDS_MAXSIZE_ALLOWED_BY_FORM')],
+            [\UPLOAD_ERR_PARTIAL, new ParamError('UPLOAD_NOT_COMPLETED')],
+            [\UPLOAD_ERR_NO_FILE, new ParamError('UPLOAD_MISSING')],
+        ];
+    }
+
+    /**
+     * @test
+     * @dataProvider  userErrors
+     */
+    public function hasErrorWhenUserError(int $userError, ParamError $expected): void
+    {
+        $uploads = new Uploads(['example' => ['name' => ['foo.txt'], 'error' => [$userError]]]);
+        assertThat($uploads->errorFor('example'), equals($expected));
+    }
+
+    /**
+     * @test
+     * @dataProvider  userErrors
+     */
+    public function hasErrorWhenUserErrorMultiple(int $userError, ParamError $expected): void
+    {
+        $uploads = new Uploads(['example' => ['name' => 'foo.txt', 'error' => $userError]]);
+        assertThat($uploads->errorFor('example'), equals($expected));
     }
 
     /**
