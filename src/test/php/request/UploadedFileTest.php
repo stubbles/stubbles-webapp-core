@@ -51,11 +51,11 @@ class UploadedFileTest extends TestCase
     /**
      * @test
      */
-    public function failureToDetectMimetypeThrowsRuntimeException(): void
+    public function failureToDetectMimetypeThrowsMimetypeCheckFailed(): void
     {
         $file = new UploadedFile('example.php', '/tmp/foobarbaz', 303);
         expect(function() use($file) { $file->mimetype(); })
-            ->throws(\RuntimeException::class);
+            ->throws(MimetypeCheckFailed::class);
     }
 
     /**

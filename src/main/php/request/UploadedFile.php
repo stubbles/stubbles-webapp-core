@@ -84,12 +84,12 @@ class UploadedFile
      *
      * @api
      * @return  string
-     * @throws  \RuntimeException  in case mime type detection fails
+     * @throws  MimetypeCheckFailed  in case mime type detection fails
      */
     public function mimetype(): string
     {
         if (null !== $this->mimeTypeError) {
-            throw new \RuntimeException($this->mimeTypeError);
+            throw new MimetypeCheckFailed($this->mimeTypeError);
         }
 
         if (null !== $this->mimeType) {
@@ -100,7 +100,7 @@ class UploadedFile
         if (false === $this->mimeType) {
             $error = \error_get_last();
             $this->mimeTypeError = 'Could not detect mimetype of uploaded file: ' . $error['message'];
-            throw new \RuntimeException($this->mimeTypeError);
+            throw new MimetypeCheckFailed($this->mimeTypeError);
         }
 
         return $this->mimeType;
