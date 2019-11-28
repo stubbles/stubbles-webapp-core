@@ -117,7 +117,7 @@ class UploadsTest extends TestCase
     /**
      * @test
      */
-    public function selectForMulitpleUploadFieldWithoutErrorReturnsUploadedFile(): void
+    public function selectForMultipleUploadFieldWithoutErrorReturnsUploadedFile(): void
     {
         $uploads = new Uploads(['example' => [
             'name'     => ['foo.txt', 'bar.txt'],
@@ -134,7 +134,7 @@ class UploadsTest extends TestCase
     /**
      * @test
      */
-    public function selectForMulitpleUploadFieldWithErrorThrowsUploadFailed(): void
+    public function selectForMultipleUploadFieldWithErrorThrowsUploadFailed(): void
     {
         $uploads = new Uploads(['example' => [
             'name'     => ['foo.txt', 'bar.txt'],
