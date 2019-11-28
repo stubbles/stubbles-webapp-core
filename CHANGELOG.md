@@ -1,5 +1,9 @@
 # Changelog
 
+## 8.1.0 (2019-11-??)
+
+* Added `stubbles\webapp\request\WebRequest::uploads()` which provides access to uploaded files
+
 ## 8.0.1 (2019-11-21)
 
 * fixed bug with `stubbles\webapp\request\WebRequest::uri()` parsing port incorrectly

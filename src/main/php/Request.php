@@ -16,6 +16,7 @@ use stubbles\peer\http\HttpVersion;
 use stubbles\streams\InputStream;
 use stubbles\webapp\auth\Identity;
 use stubbles\webapp\request\UserAgent;
+use stubbles\webapp\request\upload\Uploads;
 use stubbles\webapp\session\Session;
 /**
  * Interface for web applications requests.
@@ -106,6 +107,14 @@ interface Request extends \stubbles\input\Request
      * @return  \stubbles\peer\http\HttpUri
      */
     public function uri(): HttpUri;
+
+    /**
+     * Provides access to file uploads done with this request.
+     *
+     * @return  Uploads
+     * @since   8.1.0
+     */
+    public function uploads(): Uploads;
 
     /**
      * return a list of all header names registered in this request

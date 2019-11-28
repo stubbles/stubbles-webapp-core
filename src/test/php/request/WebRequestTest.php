@@ -13,6 +13,7 @@ use stubbles\input\{ValueReader, ValueValidator, errors\ParamErrors};
 use stubbles\peer\{IpAddress, MalformedUri, http\HttpVersion};
 use stubbles\streams\InputStream;
 use stubbles\webapp\auth\{Identity, Roles, User};
+use stubbles\webapp\request\upload\Uploads;
 use stubbles\webapp\session\Session;
 
 use function bovigo\assert\{
@@ -422,6 +423,16 @@ class WebRequestTest extends TestCase
                     ->asString(),
                 equals('https://stubbles.net:443/index.php?foo=bar')
         );
+    }
+
+    /**
+     * @test
+     * @group  upload
+     * @since  8.1.0
+     */
+    public function uploadsProvidesAccessToUploadedFiles(): void
+    {
+        assertThat($this->webRequest->uploads(), isInstanceOf(Uploads::class));
     }
 
     /**

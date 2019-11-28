@@ -24,6 +24,7 @@ use stubbles\streams\InputStream;
 use stubbles\streams\StandardInputStream;
 use stubbles\webapp\Request;
 use stubbles\webapp\auth\Identity;
+use stubbles\webapp\request\upload\Uploads;
 use stubbles\webapp\session\Session;
 /**
  * Request implementation for web applications.
@@ -250,6 +251,17 @@ class WebRequest extends ParamRequest implements Request
                 strstr($host, ':') === false && 0 !== $port ? $port : null,
                 (string) $this->headers->value('REQUEST_URI')->value() // already contains query string
         );
+    }
+
+    /**
+     * Provides access to file uploads done with this request.
+     *
+     * @return  Uploads
+     * @since   8.1.0
+     */
+    public function uploads(): Uploads
+    {
+        return new Uploads($_FILES);
     }
 
     /**
