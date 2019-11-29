@@ -73,23 +73,30 @@ class Uploads
         return 1;
     }
 
-    private function isUserError(int $error): bool
+    /**
+     * Checks if an error was caused by the client.
+     *
+     * Even though some of the errors could be caused by a wrong configuration
+     * on the server side, it is assumed the server is configured correctly,
+     * which means it's on to the client to fix the error.
+     */
+    private function isClientError(int $error): bool
     {
-        return $error === \UPLOAD_ERR_INI_SIZE
-            || $error === \UPLOAD_ERR_FORM_SIZE
-            || $error === \UPLOAD_ERR_PARTIAL
-            || $error === \UPLOAD_ERR_NO_FILE;
+        return $error === \UPLOAD_ERR_INI_SIZE  // file is larger than upload_max_filesize directive in php.ini
+            || $error === \UPLOAD_ERR_FORM_SIZE // file is larger than MAX_FILE_SIZE directive in HTML form
+            || $error === \UPLOAD_ERR_PARTIAL   // file was uploaded partially only, i.e. bytes are missing
+            || $error === \UPLOAD_ERR_NO_FILE;  // the upload didn't contain any file
     }
 
     /**
-     * Returns a ParamError when a user error for the upload exists.
+     * Returns a ParamError when a client error for the upload exists.
      *
-     * A user error can occur when the uploaded file exceeds the size permitted by either
-     * upload_max_filesize directive in php.ini, MAX_FILE_SIZE directive in form, or was
-     * only partially or not uploaded at all.
+     * A client error can occur when the uploaded file exceeds the size permitted by either
+     * upload_max_filesize directive in php.ini, MAX_FILE_SIZE directive in HTML form, or
+     * was only partially or not uploaded at all.
      *
-     * This method will return null even if there is an error but that is due a problem
-     * on the server side.
+     * This method will return null when there is no error or if there is an error due to
+     * a problem on the server side.
      *
      * @api
      * @param   string  $field  name of field to select upload from
@@ -102,11 +109,11 @@ class Uploads
             return null;
         }
 
-        if (!is_array($this->uploads[$field]['error']) && $this->isUserError($this->uploads[$field]['error'])) {
+        if (!is_array($this->uploads[$field]['error']) && $this->isClientError($this->uploads[$field]['error'])) {
             return new ParamError(self::$paramErrorId[$this->uploads[$field]['error']]);
         }
 
-        if (!isset($this->uploads[$field]['error'][$pos]) || !$this->isUserError($this->uploads[$field]['error'][$pos])) {
+        if (!isset($this->uploads[$field]['error'][$pos]) || !$this->isClientError($this->uploads[$field]['error'][$pos])) {
             return null;
         }
 
