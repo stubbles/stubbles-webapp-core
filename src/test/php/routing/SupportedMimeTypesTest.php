@@ -202,4 +202,19 @@ class SupportedMimeTypesTest extends TestCase
                 equals('example\SpecialMimeType')
         );
     }
+
+    public function imageMimetypes(): array
+    {
+        return [['image/png'], ['image/jpeg']];
+    }
+
+    /**
+     * @test
+     * @dataProvider  imageMimetypes
+     * @since  8.1.0
+     */
+    public function supportsImageMimeTypesWhenStubblesImagePresent(string $imageMimetype): void
+    {
+        assertTrue($this->createInstance()->provideClass($imageMimetype));
+    }
 }

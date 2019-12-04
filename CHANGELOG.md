@@ -1,8 +1,9 @@
 # Changelog
 
-## 8.1.0 (2019-11-??)
+## 8.1.0 (2019-12-??)
 
 * Added `stubbles\webapp\request\WebRequest::uploads()` which provides access to uploaded files
+* Added `image/jpeg` as default supported mime type when stubbles/image is present
 
 ## 8.0.1 (2019-11-21)
 

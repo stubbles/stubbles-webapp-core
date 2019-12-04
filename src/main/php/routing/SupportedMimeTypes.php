@@ -62,7 +62,7 @@ class SupportedMimeTypes
      *
      * @type  array
      */
-    private static $image = ['image/png' => Image::class];
+    private static $image = ['image/png' => Image::class, 'image/jpeg' => Image::class];
     /**
      * map of available mime types classes
      *
