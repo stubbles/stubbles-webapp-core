@@ -2,7 +2,6 @@ language: php
 
 php:
   - 7.3
-  - 7.4
   - 7.4snapshot
   - nightly
 
@@ -11,9 +10,6 @@ matrix:
   allow_failures:
     - php: nightly
     - php: 7.4snapshot
-
-before_install:
-  - sudo apt-get install php-gd
 
 install:
   - composer install
