@@ -13,7 +13,7 @@ matrix:
     - php: 7.4snapshot
 
 before_install:
-  - pecl install gd
+  - sudo apt-get install php-gd
 
 install:
   - composer install
