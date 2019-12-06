@@ -27,10 +27,10 @@ abstract class AuthProviderException extends \Exception
      * constructor
      *
      * @param  string      $message
-     * @param  \Exception  $cause
+     * @param  \Throwable  $cause
      * @param  int         $code
      */
-    public function __construct(string $message, \Exception $cause = null, $code = 0)
+    public function __construct(string $message, \Throwable $cause = null, $code = 0)
     {
         parent::__construct($message, $code, $cause);
 

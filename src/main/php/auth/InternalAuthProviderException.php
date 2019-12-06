@@ -19,9 +19,9 @@ class InternalAuthProviderException extends AuthProviderException
      * constructor
      *
      * @param  string      $message
-     * @param  \Exception  $cause    optional
+     * @param  \Throwable  $cause    optional
      */
-    public function __construct(string $message, \Exception $cause = null)
+    public function __construct(string $message, \Throwable $cause = null)
     {
         parent::__construct($message, $cause, AuthProviderException::INTERNAL);
     }

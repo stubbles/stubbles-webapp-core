@@ -4,6 +4,7 @@
 
 * Added `stubbles\webapp\request\WebRequest::uploads()` which provides access to uploaded files
 * Added `image/jpeg` as default supported mime type when stubbles/image is present
+* `stubbles\webapp\auth\InternalAuthProviderException` and `stubbles\webapp\auth\ExternalAuthProviderException` now accept `\Throwable` as cause instead of `\Exception` only
 
 ## 8.0.1 (2019-11-21)
 
