@@ -64,11 +64,10 @@ class StatusTest extends TestCase
      */
     public function canBeSerializedToXml(): void
     {
-        $binder = new Binder();
+        /**  @var  XmlSerializerFacade  $xmlSerializer */
+        $xmlSerializer = (new Binder())->getInjector()->getInstance(XmlSerializerFacade::class);
         assertThat(
-                $binder->getInjector()
-                        ->getInstance(XmlSerializerFacade::class)
-                        ->serializeToXml($this->status),
+          $xmlSerializer->serializeToXml($this->status),
                 equals('<?xml version="1.0" encoding="UTF-8"?>
 <status code="200"><description>Default <b>response</b> code</description></status>')
         );
