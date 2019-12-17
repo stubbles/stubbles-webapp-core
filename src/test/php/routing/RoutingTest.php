@@ -195,8 +195,10 @@ class RoutingTest extends TestCase
      */
     public function returnsRouteWhichFitsMethodAndPath(): void
     {
-        $route = $this->createResolvingResource($this->routing->onGet('/hello', function() {}));
-        assertThat($this->routing->findResource($this->calledUri), equals($route));
+        /** @var  Route  $route */
+        $route = $this->routing->onGet('/hello', function() {});
+        $resource = $this->createResolvingResource($route);
+        assertThat($this->routing->findResource($this->calledUri), equals($resource));
     }
 
     /**
