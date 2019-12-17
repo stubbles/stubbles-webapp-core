@@ -33,7 +33,7 @@ class SessionBasedHtmlFilePassThroughTest extends TestCase
      */
     private $sessionBasedHtmlFilePassThrough;
     /**
-     * @var  \stubbles\webapp\session\Session
+     * @var  Session&\bovigo\callmap\ClassProxy
      */
     private $session;
     /**

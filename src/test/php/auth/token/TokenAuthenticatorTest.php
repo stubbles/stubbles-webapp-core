@@ -118,6 +118,9 @@ class TokenAuthenticatorTest extends TestCase
         verify($this->loginProvider, 'authenticate')->wasCalledOnce();
     }
 
+    /**
+     * @return  TokenAwareUser&\bovigo\callmap\ClassProxy
+     */
     private function createTokenAwareUser(): TokenAwareUser
     {
         return NewInstance::of(TokenAwareUser::class)->returns([
