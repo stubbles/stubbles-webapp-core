@@ -829,7 +829,7 @@ class RouteTest extends TestCase
     /**
      * @param  class-string<Target>|Target|callable  $target
      * @param  string                                $name
-     * @paam   string[]                              $mimeTypes
+     * @param  string[]                              $mimeTypes
      * @test
      * @since  6.1.0
      * @dataProvider  resources
