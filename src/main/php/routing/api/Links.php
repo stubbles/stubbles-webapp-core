@@ -13,6 +13,7 @@ use stubbles\peer\http\HttpUri;
  *
  * @since  6.1.0
  * @XmlTag(tagName='links')
+ * @implements  \IteratorAggregate<Link>
  */
 class Links implements \IteratorAggregate, \JsonSerializable, \Countable
 {
@@ -86,9 +87,9 @@ class Links implements \IteratorAggregate, \JsonSerializable, \Countable
     /**
      * allows to iterate over all resources
      *
-     * @return  \Traversable
+     * @return  \Iterator<Link>
      */
-    public function getIterator(): \Traversable
+    public function getIterator(): \Iterator
     {
         $result = [];
         foreach ($this->links as $link) {
