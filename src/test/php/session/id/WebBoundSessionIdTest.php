@@ -79,8 +79,9 @@ class WebBoundSessionIdTest extends TestCase
     public function usesSessionIdNameForRequestValues(): void
     {
         $this->request->returns(['hasParam' => false, 'hasCookie' => false]);
-        assertTrue(verify($this->request, 'hasParam')->received('foo'));
-        assertTrue(verify($this->request, 'hasCookie')->received('foo'));
+        $this->webBoundSessionId->__toString();
+        verify($this->request, 'hasParam')->received('foo');
+        verify($this->request, 'hasCookie')->received('foo');
     }
 
     /**
