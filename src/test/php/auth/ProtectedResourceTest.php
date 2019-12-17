@@ -263,7 +263,6 @@ class ProtectedResourceTest extends TestCase
         $identity = $request->identity();
         if (null === $identity) {
             fail('Expected identity, got none');
-            return;
         }
 
         assertThat($identity->user(), isSameAs($user));
@@ -396,7 +395,6 @@ class ProtectedResourceTest extends TestCase
         $identity = $request->identity();
         if (null === $identity) {
             fail('Expected identity, got none');
-            return;
         }
 
         assertThat($identity->user(), isSameAs($user));
@@ -419,7 +417,6 @@ class ProtectedResourceTest extends TestCase
         $identity = $request->identity();
         if (null === $identity) {
             fail('Expected identity, got none');
-            return;
         }
 
         assertThat($identity->roles(), isSameAs($roles));
