@@ -12,4 +12,7 @@ parameters:
       -
         message: '#target of class stubbles\\webapp\\routing\\Route constructor expects \(callable\(\): mixed\)|string|\stubbles\\webapp\\Target, 500 given#'
         path: src/test/php/routing/RouteTest.php
+      -
+        message: '#preInterceptor of method stubbles\\webapp\\routing\\Routing::preIntercept\(\) expects \(callable\(\): mixed\)|string|stubbles\\webapp\\interceptor\\PreInterceptor, 303 given#'
+        path: src/test/php/routing/RoutingTest.php
 
