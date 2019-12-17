@@ -34,7 +34,7 @@ class ResourceTest extends TestCase
     private $resource;
     /**
      *
-     * @var  \stubbles\webapp\routing\RoutingAnnotations
+     * @var  RoutingAnnotations&\bovigo\callmap\ClassProxy
      */
     private $routingAnnotations;
 
