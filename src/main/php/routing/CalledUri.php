@@ -49,8 +49,8 @@ class CalledUri
     /**
      * casts given values to an instance of UriRequest
      *
-     * @param   string|\stubbles\webapp\routing\CalledUri  $requestUri
-     * @param   string                                     $requestMethod
+     * @param   string|\stubbles\webapp\routing\CalledUri|\stubbles\peer\http\HttpUri  $requestUri
+     * @param   string                                                                 $requestMethod
      * @return  \stubbles\webapp\routing\CalledUri
      * @since   4.0.0
      */

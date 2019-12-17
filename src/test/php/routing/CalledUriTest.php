@@ -20,7 +20,7 @@ use function bovigo\assert\{
     predicate\isSameAs
 };
 /**
- * Tests for stubbles\webapp\CalledUri.
+ * Tests for stubbles\webapp\routing\CalledUri.
  *
  * @since  1.7.0
  * @group  routing
@@ -28,7 +28,7 @@ use function bovigo\assert\{
 class CalledUriTest extends TestCase
 {
     /**
-     * @var  \stubbles\webapp\CalledUri
+     * @var  \stubbles\webapp\routing\CalledUri
      */
     private $calledUri;
     /**
@@ -171,6 +171,9 @@ class CalledUriTest extends TestCase
         assertTrue($this->calledUri->satisfiesPath($pathPattern));
     }
 
+    /**
+     * @return  array<string[]>
+     */
     public function provideNonSatisfiedPathPattern(): array
     {
         return [['/rss/articles', '/hello/{name}'],
