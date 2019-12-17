@@ -64,7 +64,7 @@ class UploadedFileTest extends TestCase
     public function moveUploadedFileReturnsPathAfterMoveAndUsesGivenNameIfNotOverruled(): void
     {
         $file = new class('example.php', '/tmp/foobarbaz', 303) extends UploadedFile {
-            public function move_uploaded_file(callable $move_uploaded_file)
+            public function move_uploaded_file(callable $move_uploaded_file): void
             {
                 $this->move_uploaded_file = $move_uploaded_file;
             }
@@ -79,7 +79,7 @@ class UploadedFileTest extends TestCase
     public function moveUploadedFileReturnsPathAfterMoveAndUsesOverruledName(): void
     {
         $file = new class('example.php', '/tmp/foobarbaz', 303) extends UploadedFile {
-            public function move_uploaded_file(callable $move_uploaded_file)
+            public function move_uploaded_file(callable $move_uploaded_file): void
             {
                 $this->move_uploaded_file = $move_uploaded_file;
             }
@@ -94,7 +94,7 @@ class UploadedFileTest extends TestCase
     public function moveUploadedThrowsRuntimeExceptionWhenMoveFails(): void
     {
         $file = new class('example.php', '/tmp/foobarbaz', 303) extends UploadedFile {
-            public function move_uploaded_file(callable $move_uploaded_file)
+            public function move_uploaded_file(callable $move_uploaded_file): void
             {
                 $this->move_uploaded_file = $move_uploaded_file;
             }
