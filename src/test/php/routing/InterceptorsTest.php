@@ -34,7 +34,7 @@ class InterceptorsTest extends TestCase
      */
     private $response;
     /**
-     * @type  Injector&\bovigo\callmap\ClassProxy
+     * @var  Injector&\bovigo\callmap\ClassProxy
      */
     private $injector;
 
@@ -46,8 +46,8 @@ class InterceptorsTest extends TestCase
     }
 
     /**
-     * @param  string[]  $preInterceptors
-     * @param  string[]  $postInterceptors
+     * @param  mixed[]  $preInterceptors
+     * @param  mixed[]  $postInterceptors
      */
     private function createInterceptors(
             array $preInterceptors = [],
@@ -56,7 +56,7 @@ class InterceptorsTest extends TestCase
         return new Interceptors($this->injector, $preInterceptors, $postInterceptors);
     }
 
-    public function callableMethod(Request $request, Response $response)
+    public function callableMethod(Request $request, Response $response): void
     {
         $response->addHeader('X-Binford', '6100 (More power!)');
     }
