@@ -103,11 +103,6 @@ class ImageTest extends TestCase
         assertEmptyString($out->buffer());
     }
 
-    private function newDriver(): DummyDriver
-    {
-
-    }
-
     /**
      * @test
      */
