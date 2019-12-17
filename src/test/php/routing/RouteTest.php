@@ -52,7 +52,7 @@ class RouteTest extends TestCase
     }
 
     /**
-     * @param   string|string[]  $method
+     * @param   string|string[]|null  $method
      * @return  Route
      */
     private function createRoute($method = 'GET'): Route
