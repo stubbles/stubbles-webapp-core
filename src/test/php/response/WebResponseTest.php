@@ -31,7 +31,7 @@ use function bovigo\callmap\verify;
 class WebResponseTest extends TestCase
 {
     /**
-     * @var  \stubbles\webapp\response\WebResponse
+     * @var  WebResponse&\bovigo\callmap\ClassProxy
      */
     private $response;
     /**
@@ -45,9 +45,15 @@ class WebResponseTest extends TestCase
         $this->memory   = new MemoryOutputStream();
     }
 
+    /**
+     * @param   HttpVersion|string  $httpVersion
+     * @param   string              $requestMethod
+     * @param   string              $sapi
+     * @return  WebResponse&\bovigo\callmap\ClassProxy
+     */
     private function createResponse(
             $httpVersion   = HttpVersion::HTTP_1_1,
-            $requestMethod = Http::GET,
+            string $requestMethod = Http::GET,
             string $sapi   = PHP_SAPI
     ): WebResponse {
         $request = NewInstance::of(Request::class)->returns([
@@ -173,6 +179,10 @@ class WebResponseTest extends TestCase
         );
     }
 
+    /**
+     * @param   string  $value
+     * @return  Cookie&\bovigo\callmap\ClassProxy
+     */
     protected function createCookie(?string $value = null): Cookie
     {
         return NewInstance::of(Cookie::class, ['foo', $value])
@@ -270,10 +280,8 @@ class WebResponseTest extends TestCase
      */
     public function bodyIsSend(): void
     {
-        assertThat(
-                $this->response->write('foo')->send($this->memory)->buffer(),
-                equals('foo')
-        );
+        $this->response->write('foo')->send($this->memory);
+        assertThat($this->memory->buffer(), equals('foo'));
     }
 
     /**
@@ -557,12 +565,13 @@ class WebResponseTest extends TestCase
     public function httpVersionNotSupportedSetsStatusCodeTo505(): void
     {
         $this->response->httpVersionNotSupported();
+        $this->response->send($this->memory);
         assertThat(
-                $this->response->send($this->memory)->buffer(),
-                equals('Error: Unsupported HTTP protocol version, expected HTTP/1.0 or HTTP/1.1')
+            $this->memory->buffer(),
+            equals('Error: Unsupported HTTP protocol version, expected HTTP/1.0 or HTTP/1.1')
         );
         verify($this->response, 'header')
-                ->received('HTTP/1.1 505 HTTP Version Not Supported');
+            ->received('HTTP/1.1 505 HTTP Version Not Supported');
     }
 
     /**

@@ -396,9 +396,8 @@ class WebResponse implements Response
      * body was set the return value is null because no standard stream will be
      * created in such a case.
      *
-     * @template  T of OutputStream
-     * @param   T|null  $out  optional  where to write response body to
-     * @return  T|StandardOutputStream|null
+     * @param   OutputStream|null  $out  optional  where to write response body to
+     * @return  OutputStream|StandardOutputStream|null
      */
     public function send(OutputStream $out = null): ?OutputStream
     {
