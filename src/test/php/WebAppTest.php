@@ -39,13 +39,13 @@ class WebAppTest extends TestCase
     /**
      * mocked injector
      *
-     * @var  \bovigo\callmap\Proxy
+     * @var  Injector&\bovigo\callmap\ClassProxy
      */
     private $injector;
     /**
      * partially mocked routing
      *
-     * @var  \bovigo\callmap\Proxy
+     * @var  Routing&\bovigo\callmap\ClassProxy
      */
     private $routing;
 
@@ -55,6 +55,9 @@ class WebAppTest extends TestCase
         $this->routing  = NewInstance::stub(Routing::class);
         $this->webApp   = new class($this->injector, $this->routing) extends WebApp
         {
+            /**
+             * @return  array<callable>
+             */
             public static function __bindings(): array
             {
                 return [function(Binder $binder)
@@ -80,6 +83,9 @@ class WebAppTest extends TestCase
         restore_error_handler();
     }
 
+    /**
+     * @return  UriResource&\bovigo\callmap\ClassProxy
+     */
     private function createResource(): UriResource
     {
         $resource = NewInstance::of(UriResource::class);
@@ -89,7 +95,7 @@ class WebAppTest extends TestCase
 
     /**
      * @param   array<string,mixed>  $callmap
-     * @return  UriResource
+     * @return  UriResource&\bovigo\callmap\ClassProxy
      */
     private function createNonHttpsResource(array $callmap = []): UriResource
     {
@@ -152,9 +158,12 @@ class WebAppTest extends TestCase
         $session = NewInstance::of(Session::class);
         $webApp  = new class($this->injector, $this->routing, $session) extends WebApp
         {
+            /**
+             * @var  Session
+             */
             private $session;
 
-            public function __construct($injector, $routing, $session)
+            public function __construct(Injector $injector, Routing $routing, Session $session)
             {
                 parent::__construct($injector, $routing);
                 $this->session = $session;
@@ -195,6 +204,9 @@ class WebAppTest extends TestCase
         assertTrue(verify($resource, 'applyPostInterceptors')->wasNeverCalled());
     }
 
+    /**
+     * @return  ExceptionLogger&\bovigo\callmap\ClassProxy
+     */
     private function setUpExceptionLogger(): ExceptionLogger
     {
         $exceptionLogger = NewInstance::stub(ExceptionLogger::class);
