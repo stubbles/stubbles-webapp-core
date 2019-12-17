@@ -40,6 +40,9 @@ class UploadsTest extends TestCase
         assertTrue($uploads->contain('example'));
     }
 
+    /**
+     * @return  array<string,mixed[]>
+     */
     public function _FILES(): array
     {
         return [
@@ -51,6 +54,8 @@ class UploadsTest extends TestCase
     }
 
     /**
+     * @param  array<string,array<string,scalar>>  $_files
+     * @param  int                                 $expected
      * @test
      * @dataProvider _FILES
      */
@@ -78,6 +83,9 @@ class UploadsTest extends TestCase
         assertNull($uploads->errorFor('example', 2));
     }
 
+    /**
+     * @return  array<int[]>
+     */
     public function noUserErrors(): array
     {
         return [[\UPLOAD_ERR_NO_TMP_DIR], [\UPLOAD_ERR_CANT_WRITE], [\UPLOAD_ERR_EXTENSION], [10]];
@@ -103,6 +111,9 @@ class UploadsTest extends TestCase
         assertNull($uploads->errorFor('example'));
     }
 
+    /**
+     * @return  array<mixed[]>
+     */
     public function userErrors(): array
     {
         return [
