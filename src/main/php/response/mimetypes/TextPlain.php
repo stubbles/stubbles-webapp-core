@@ -28,9 +28,10 @@ class TextPlain extends MimeType
     /**
      * serializes resource to output stream
      *
+     * @template T of OutputStream
      * @param   mixed  $resource
-     * @param   \stubbles\streams\OutputStream  $out
-     * @return  \stubbles\streams\OutputStream
+     * @param   T      $out
+     * @return  T
      */
     public function serialize($resource, OutputStream $out): OutputStream
     {
