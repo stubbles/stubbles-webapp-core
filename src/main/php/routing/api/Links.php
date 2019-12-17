@@ -18,7 +18,7 @@ use stubbles\peer\http\HttpUri;
 class Links implements \IteratorAggregate, \JsonSerializable, \Countable
 {
     /**
-     * @type  \stubbles\webapp\routing\api\Link
+     * @var  \stubbles\webapp\routing\api\Link
      */
     private $links = [];
 

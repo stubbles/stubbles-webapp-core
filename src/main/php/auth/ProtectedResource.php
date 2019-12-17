@@ -23,29 +23,29 @@ class ProtectedResource implements UriResource
     /**
      * route configuration
      *
-     * @type  \stubbles\webapp\auth\AuthConstraint
+     * @var  \stubbles\webapp\auth\AuthConstraint
      */
     private $authConstraint;
     /**
      * actual resource which requires auth
      *
-     * @type  \stubbles\webapp\routing\ProcessableRoute
+     * @var  \stubbles\webapp\routing\ProcessableRoute
      */
     private $actualResource;
     /**
      * provider which delivers authentication
      *
-     * @type  \stubbles\ioc\Injector
+     * @var  \stubbles\ioc\Injector
      */
     private $injector;
     /**
      * switch whether access to route is authorized
      *
-     * @type  bool
+     * @var  bool
      */
     private $authorized  = false;
     /**
-     * @type  \stubbles\webapp\response\Error
+     * @var  \stubbles\webapp\response\Error
      */
     private $error;
 

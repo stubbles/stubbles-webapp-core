@@ -21,13 +21,13 @@ class Csv extends MimeType
     /**
      * delimiter to be used for csv
      *
-     * @type  char
+     * @var  string
      */
     private $delimiter = ',';
     /**
      * character to enclose single fields with in csv
      *
-     * @type  char
+     * @var  string
      */
     private $enclosure = '"';
 

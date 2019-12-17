@@ -21,7 +21,7 @@ class MethodNotAllowed extends AbstractResource
     /**
      * list of actually allowed request methods
      *
-     * @type  string[]
+     * @var  string[]
      */
     private $allowedMethods;
 

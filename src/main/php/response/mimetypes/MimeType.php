@@ -16,7 +16,7 @@ use stubbles\streams\OutputStream;
 abstract class MimeType
 {
     /**
-     * @type  string
+     * @var  string
      */
     private $name = null;
 

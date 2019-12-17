@@ -23,13 +23,13 @@ class Token
     /**
      * session
      *
-     * @type  Session
+     * @var  Session
      */
     private $session;
     /**
      * the current token of the session, changes on every instantiation
      *
-     * @type  string
+     * @var  string
      */
     private $current;
 

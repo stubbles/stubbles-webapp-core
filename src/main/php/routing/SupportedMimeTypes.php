@@ -26,19 +26,19 @@ class SupportedMimeTypes
     /**
      * list of supported mime types
      *
-     * @type  string[]
+     * @var  string[]
      */
     private $mimeTypes;
     /**
      * whether content negotation is disabled or not
      *
-     * @type  bool
+     * @var  bool
      */
     private $disableContentNegotation = false;
     /**
      * map of mime types classes
      *
-     * @type  array
+     * @var  array<string,class-string<MimeType>>
      */
     private static $supported = [
             'application/json' => Json::class,
@@ -50,7 +50,7 @@ class SupportedMimeTypes
     /**
      * map of xml mime type classes
      *
-     * @type  array
+     * @var  array<string,class-string<MimeType>>
      */
     private static $xml = [
             'text/xml'            => Xml::class,
@@ -60,13 +60,13 @@ class SupportedMimeTypes
     /**
      * map of image mime type classes
      *
-     * @type  array
+     * @var  array<string,class-string<MimeType>>
      */
     private static $image = ['image/png' => Image::class, 'image/jpeg' => Image::class];
     /**
      * map of available mime types classes
      *
-     * @type  array
+     * @var  array
      */
     private $mimeTypeClasses = [];
 
@@ -196,7 +196,7 @@ class SupportedMimeTypes
      * returns special class which was defined for given mime type or null if none defined
      *
      * @param   string  $mimeType
-     * @return  string|null
+     * @return  class-string<MimeType>|null
      * @since   3.2.0
      */
     public function classFor(string $mimeType): ?string
@@ -211,7 +211,7 @@ class SupportedMimeTypes
     /**
      * returns list of supported mime types
      *
-     * @return  string[]
+     * @return  array<string,class-string<MimeType>>
      */
     public function asArray(): array
     {

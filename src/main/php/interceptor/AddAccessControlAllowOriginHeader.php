@@ -34,7 +34,7 @@ class AddAccessControlAllowOriginHeader implements PostInterceptor
     /**
      * list of allowed origin hosts
      *
-     * @type  string[]
+     * @var  string[]
      */
     private $allowedOriginHosts;
 

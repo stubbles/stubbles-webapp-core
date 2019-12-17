@@ -26,73 +26,73 @@ class Route implements ConfigurableRoute
     /**
      * path this route is applicable for
      *
-     * @type  string
+     * @var  string
      */
     private $path;
     /**
      * code to be executed when the route is active
      *
-     * @type  string|callable|\stubbles\webapp\Processor
+     * @var  string|callable|\stubbles\webapp\Processor
      */
     private $target;
     /**
      * list of annotations on callback
      *
-     * @type  \stubbles\webapp\routing\RoutingAnnotations
+     * @var  \stubbles\webapp\routing\RoutingAnnotations
      */
     private $routingAnnotations;
     /**
      * request method this route is applicable for
      *
-     * @type  string[]
+     * @var  string[]
      */
     private $allowedRequestMethods;
     /**
      * list of pre interceptors which should be applied to this route
      *
-     * @type  string[]|callable[]
+     * @var  string[]|callable[]
      */
     private $preInterceptors          = [];
     /**
      * list of post interceptors which should be applied to this route
      *
-     * @type  string[]|callable[]
+     * @var  string[]|callable[]
      */
     private $postInterceptors         = [];
     /**
      * whether route requires https
      *
-     * @type  bool
+     * @var  bool
      */
     private $requiresHttps            = false;
     /**
      * auth constraint for this route
      *
-     * @type  \stubbles\webapp\auth\AuthConstraint
+     * @var  \stubbles\webapp\auth\AuthConstraint
      */
     private $authConstraint;
     /**
      * list of mime types supported by this route
      *
-     * @type  string[]
+     * @var  string[]
      */
     private $mimeTypes                = [];
     /**
      * whether content negotation is disabled or not
      *
-     * @type  bool
+     * @var  bool
      */
     private $disableContentNegotation = false;
     /**
      * map of additional mime type classes for this route
      *
-     * @type  string[]
+     * @var  string[]
      */
     private $mimeTypeClasses          = [];
     /**
      * whether route should be ignored in API index or not
      *
-     * @type   bool
+     * @var    bool
      * @since  6.1.0
      */
     private $ignoreInApiIndex         = false;

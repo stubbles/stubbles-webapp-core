@@ -18,7 +18,7 @@ class Uploads
     /**
      * map of error codes and according param error ids
      *
-     * @type  array<int,string>
+     * @var  array<int,string>
      */
     private static $paramErrorId = [
         \UPLOAD_ERR_INI_SIZE   => 'UPLOAD_EXCEEDS_MAXSIZE_ALLOWED_BY_SERVER',
@@ -27,7 +27,7 @@ class Uploads
         \UPLOAD_ERR_NO_FILE    => 'UPLOAD_MISSING',
     ];
     /**
-     * @type  array<string,array>
+     * @var  array<string,array>
      */
     private $uploads;
 

@@ -16,11 +16,11 @@ namespace stubbles\webapp\routing\api;
 class Status implements \JsonSerializable
 {
     /**
-     * @type  int
+     * @var  int
      */
     private $code;
     /**
-     * @type  string
+     * @var  string
      */
     private $description;
 

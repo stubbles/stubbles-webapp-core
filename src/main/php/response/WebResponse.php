@@ -28,49 +28,49 @@ class WebResponse implements Response
     /**
      * current php sapi
      *
-     * @type  string
+     * @var  string
      */
     private $sapi;
     /**
      * http version to be used
      *
-     * @type  \stubbles\peer\http\HttpVersion
+     * @var  \stubbles\peer\http\HttpVersion
      */
     private $version;
     /**
      * status to be send
      *
-     * @type  \stubbles\webapp\response\Status
+     * @var  \stubbles\webapp\response\Status
      */
     private $status;
     /**
      * list of headers for this response
      *
-     * @type  \stubbles\webapp\response\Headers
+     * @var  \stubbles\webapp\response\Headers
      */
     private $headers;
     /**
      * list of cookies for this response
      *
-     * @type  \stubbles\webapp\response\Cookie[]
+     * @var  \stubbles\webapp\response\Cookie[]
      */
     private $cookies  = [];
     /**
      * data to send as body of response
      *
-     * @type  mixed
+     * @var  mixed
      */
     private $resource;
     /**
      * original request method
      *
-     * @type  string
+     * @var  string
      */
     private $request;
     /**
      * mime type for response body
      *
-     * @type  \stubbles\webapp\response\mimetypes\MimeType
+     * @var  \stubbles\webapp\response\mimetypes\MimeType
      */
     private $mimeType;
 

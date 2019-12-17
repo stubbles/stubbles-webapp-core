@@ -20,19 +20,19 @@ class Interceptors
     /**
      * list of global pre interceptors and to which request method they respond
      *
-     * @type  array
+     * @var  array
      */
     private $preInterceptors;
     /**
      * list of global post interceptors and to which request method they respond
      *
-     * @type  array
+     * @var  array
      */
     private $postInterceptors;
     /**
      * injector instance
      *
-     * @type  \stubbles\ioc\Injector
+     * @var  \stubbles\ioc\Injector
      */
     private $injector;
 

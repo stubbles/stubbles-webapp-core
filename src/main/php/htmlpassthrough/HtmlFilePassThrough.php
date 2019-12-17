@@ -21,7 +21,7 @@ class HtmlFilePassThrough implements Target
     /**
      * path to html files
      *
-     * @type  string
+     * @var  string
      */
     private $routePath;
 

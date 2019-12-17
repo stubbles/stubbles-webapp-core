@@ -22,43 +22,43 @@ class Cookie
     /**
      * name of the cookie
      *
-     * @type  string
+     * @var  string
      */
     private $name     = '';
     /**
      * value of the cookie
      *
-     * @type  string
+     * @var  string
      */
     private $value    = '';
     /**
      * timestamp when cookie expires
      *
-     * @type  int
+     * @var  int
      */
     private $expires  = 0;
     /**
      * path for which the cookie should be available
      *
-     * @type  string
+     * @var  string
      */
     private $path     = null;
     /**
      * domain where this cookie will be available
      *
-     * @type  string
+     * @var  string
      */
     private $domain   = null;
     /**
      * switch whether cookie should only be used in secure connections
      *
-     * @type  bool
+     * @var  bool
      */
     private $secure   = false;
     /**
      * switch whether cookie should only be accessible through http
      *
-     * @type  bool
+     * @var  bool
      */
     private $httpOnly = true;
 

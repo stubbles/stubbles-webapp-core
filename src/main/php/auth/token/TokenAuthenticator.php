@@ -22,19 +22,19 @@ class TokenAuthenticator implements AuthenticationProvider
     /**
      * store where tokens are saved
      *
-     * @type  \stubbles\webapp\auth\token\TokenStore
+     * @var  \stubbles\webapp\auth\token\TokenStore
      */
     private $tokenStore;
     /**
      * salt to be used for token generation
      *
-     * @type  string
+     * @var  string
      */
     private $tokenSalt;
     /**
      * authentication provider which does actual login if no token or user found
      *
-     * @type  AuthenticationProvider
+     * @var  AuthenticationProvider
      */
     private $loginProvider;
 

@@ -26,11 +26,11 @@ use stubbles\webapp\{
 class Index implements Target
 {
     /**
-     * @type  \stubbles\webapp\routing\Routes
+     * @var  \stubbles\webapp\routing\Routes
      */
     private $routes;
     /**
-     * @type  string[]
+     * @var  string[]
      */
     private $globalMimeTypes;
 

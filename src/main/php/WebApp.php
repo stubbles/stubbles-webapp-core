@@ -26,13 +26,13 @@ use stubbles\webapp\session\Session;
 abstract class WebApp extends App
 {
     /**
-     * @type  \stubbles\ioc\Injector
+     * @var  \stubbles\ioc\Injector
      */
     private $injector;
     /**
      * build and contains routing information
      *
-     * @type  \stubbles\webapp\routing\Routing
+     * @var  \stubbles\webapp\routing\Routing
      */
     private $routing;
 

@@ -18,19 +18,19 @@ class UserAgent
     /**
      * name of user agent
      *
-     * @type  string
+     * @var  string
      */
     private $name;
     /**
      * whether user agent is a bot or not
      *
-     * @type  bool
+     * @var  bool
      */
     private $isBot = null;
     /**
      * list of known bot user agents
      *
-     * @type  array
+     * @var  array<string,string>
      */
     private $botSignatures = [
             'google'       => '~Googlebot~',
@@ -44,16 +44,16 @@ class UserAgent
     /**
      * whether user agent accepts cookies or not
      *
-     * @type  bool
+     * @var  bool
      */
     private $acceptsCookies;
 
     /**
      * constructor
      *
-     * @param  string|null  $name            name of user agent
-     * @param  bool         $acceptsCookies  whether user agent accepts cookies or not
-     * @param  string[]     $botSignatures   optional  additional list of bot user agent signatures
+     * @param  string|null           $name            name of user agent
+     * @param  bool                  $acceptsCookies  whether user agent accepts cookies or not
+     * @param  array<string,string>  $botSignatures   optional  additional list of bot user agent signatures
      */
     public function __construct($name, bool $acceptsCookies, array $botSignatures = [])
     {

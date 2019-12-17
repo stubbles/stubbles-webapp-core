@@ -22,7 +22,7 @@ class ResourceOptions extends AbstractResource
     /**
      * list of actually allowed request methods
      *
-     * @type  \stubbles\webapp\routing\MatchingRoutes
+     * @var  \stubbles\webapp\routing\MatchingRoutes
      */
     private $matchingRoutes;
 

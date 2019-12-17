@@ -19,13 +19,13 @@ class CalledUri
     /**
      * current uri
      *
-     * @type  \stubbles\peer\http\HttpUri
+     * @var  \stubbles\peer\http\HttpUri
      */
     private $uri;
     /**
      * current request method
      *
-     * @type  string
+     * @var  string
      */
     private $method;
 

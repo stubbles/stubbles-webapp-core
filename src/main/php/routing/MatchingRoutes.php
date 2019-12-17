@@ -18,13 +18,13 @@ class MatchingRoutes
     /**
      * list of path matching routes
      *
-     * @type  \stubbles\webapp\routing\Route[]
+     * @var  \stubbles\webapp\routing\Route[]
      */
     private $routes;
     /**
      * list of allowed request methods over all matching routes
      *
-     * @type  string[]
+     * @var  string[]
      */
     private $allowedMethods;
 

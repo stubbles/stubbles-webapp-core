@@ -18,7 +18,7 @@ class ArraySessionStorage implements SessionStorage
     /**
      * the data
      *
-     * @type  array
+     * @var  array<string,mixed>
      */
     private $data;
 

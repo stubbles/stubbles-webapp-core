@@ -16,19 +16,19 @@ namespace stubbles\webapp\routing\api;
 class Parameter implements \JsonSerializable
 {
     /**
-     * @type  string
+     * @var  string
      */
     private $name;
     /**
-     * @type  string
+     * @var  string
      */
     private $description;
     /**
-     * @type  string
+     * @var  string
      */
     private $in;
     /**
-     * @type  bool
+     * @var  bool
      */
     private $required = false;
 

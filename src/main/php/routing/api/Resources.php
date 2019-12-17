@@ -18,7 +18,7 @@ class Resources implements \IteratorAggregate, \JsonSerializable
     /**
      * list of available resources
      *
-     * @type  \com\oneandone\sales\uriserver\api\Resource
+     * @var  \com\oneandone\sales\uriserver\api\Resource
      */
     private $resources = [];
 

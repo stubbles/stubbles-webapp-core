@@ -19,7 +19,7 @@ class Headers implements \IteratorAggregate, \ArrayAccess
     /**
      * list of headers for this response
      *
-     * @type  array
+     * @var  array
      */
     private $headers = [];
 

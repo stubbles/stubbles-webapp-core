@@ -23,19 +23,19 @@ class WebSession implements Session
     /**
      * where session data is stored
      *
-     * @type  \stubbles\webapp\session\storage\SessionStorage
+     * @var  \stubbles\webapp\session\storage\SessionStorage
      */
     private $storage;
     /**
      * if of the session
      *
-     * @type  \stubbles\webapp\session\id\SessionId
+     * @var  \stubbles\webapp\session\id\SessionId
      */
     private $id;
     /**
      * switch whether session is new or not
      *
-     * @type  bool
+     * @var  bool
      */
     private $isNew       = false;
 

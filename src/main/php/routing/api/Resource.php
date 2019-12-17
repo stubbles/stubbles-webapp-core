@@ -19,35 +19,35 @@ use stubbles\webapp\routing\RoutingAnnotations;
 class Resource implements \JsonSerializable
 {
     /**
-     * @type  string
+     * @var  string
      */
     private $name;
     /**
      * list of allowed request methods for this resource
      *
-     * @type  string[]
+     * @var  string[]
      */
     private $requestMethods;
     /**
-     * @type  \stubbles\webapp\routing\api\Links
+     * @var  \stubbles\webapp\routing\api\Links
      */
     private $links;
     /**
      * list of mime types supported by this resource
      *
-     * @type  string[]
+     * @var  string[]
      */
     private $mimeTypes;
     /**
      * list of annotations on resource
      *
-     * @type  \stubbles\webapp\routing\RoutingAnnotations
+     * @var  \stubbles\webapp\routing\RoutingAnnotations
      */
     private $annotations;
     /**
      * authentication and authorization constraints of resource
      *
-     * @type  \stubbles\webapp\auth\AuthConstraint
+     * @var  \stubbles\webapp\auth\AuthConstraint
      */
     private $authConstraint;
 

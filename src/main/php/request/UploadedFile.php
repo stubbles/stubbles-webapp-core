@@ -15,27 +15,27 @@ namespace stubbles\webapp\request;
 class UploadedFile
 {
     /**
-     * @type  string
+     * @var  string
      */
     private $name;
     /**
-     * @type  string
+     * @var  string
      */
     private $tmpName;
     /**
-     * @type  int
+     * @var  int
      */
     private $size;
     /**
-     * @type  string|false
+     * @var  string|false
      */
     private $mimeType;
     /**
-     * @type  string
+     * @var  string
      */
     private $mimeTypeError;
     /**
-     * @type  callback
+     * @var  callback
      */
     protected $move_uploaded_file = '\move_uploaded_file';
 

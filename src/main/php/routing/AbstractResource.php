@@ -24,25 +24,25 @@ abstract class AbstractResource implements UriResource
     /**
      * injector instance
      *
-     * @type  \stubbles\ioc\Injector
+     * @var  \stubbles\ioc\Injector
      */
     protected $injector;
     /**
      * actual called uri
      *
-     * @type  \stubbles\webapp\routing\CalledUri
+     * @var  \stubbles\webapp\routing\CalledUri
      */
     protected $calledUri;
     /**
      * interceptors to be processed
      *
-     * @type  \stubbles\webapp\interceptor\Interceptors
+     * @var  \stubbles\webapp\interceptor\Interceptors
      */
     private $interceptors;
     /**
      * list of available mime types for all routes
      *
-     * @type  \stubbles\webapp\response\SupportedMimeTypes
+     * @var  \stubbles\webapp\response\SupportedMimeTypes
      */
     private $supportedMimeTypes;
 

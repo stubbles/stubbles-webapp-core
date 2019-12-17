@@ -22,11 +22,11 @@ use stubbles\webapp\UriPath;
 class Redirect implements Target
 {
     /**
-     * @type  string
+     * @var  string
      */
     private $target;
     /**
-     * @type  int
+     * @var  int
      */
     private $statusCode;
 

@@ -23,7 +23,7 @@ class RoutingAnnotations
     /**
      * list of annotations for a callback
      *
-     * @type  \stubbles\lang\reflect\annotation\Annotations
+     * @var  \stubbles\lang\reflect\annotation\Annotations
      */
     private $annotations;
 

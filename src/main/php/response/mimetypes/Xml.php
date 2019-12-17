@@ -19,7 +19,7 @@ class Xml extends MimeType
     /**
      * serializer to be used
      *
-     * @type  \stubbles\xml\serializer\XmlSerializerFacade
+     * @var  \stubbles\xml\serializer\XmlSerializerFacade
      */
     private $xmlSerializerFacade;
 

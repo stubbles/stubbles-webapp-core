@@ -22,7 +22,7 @@ class Roles implements \Countable, \IteratorAggregate
     /**
      * list of roles
      *
-     * @type  array
+     * @var  array<string,int>
      */
     private $roles;
 

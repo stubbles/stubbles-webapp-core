@@ -17,7 +17,7 @@ abstract class TokenAwareUser implements User
     /**
      * the token
      *
-     * @type  \stubbles\webapp\auth\Token
+     * @var  \stubbles\webapp\auth\Token
      */
     private $token;
 

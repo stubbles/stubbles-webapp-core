@@ -17,7 +17,7 @@ class UploadFailed extends \Exception
     /**
      * map of error codes and according messages
      *
-     * @type  array<int,string>
+     * @var  array<int,string>
      */
     private static $msg = [
         \UPLOAD_ERR_INI_SIZE   => 'The uploaded file exceeds the upload_max_filesize directive in php.ini',
@@ -29,7 +29,7 @@ class UploadFailed extends \Exception
         \UPLOAD_ERR_EXTENSION  => 'File upload stopped by extension',
     ];
     /**
-     * @type  string
+     * @var  string
      */
     private $filename;
 

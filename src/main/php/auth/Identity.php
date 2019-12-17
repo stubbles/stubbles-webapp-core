@@ -15,11 +15,11 @@ namespace stubbles\webapp\auth;
 class Identity
 {
     /**
-     * @type  \stubbles\webapp\auth\User
+     * @var  \stubbles\webapp\auth\User
      */
     private $user;
     /**
-     * @type  \stubbles\webapp\auth\Roles
+     * @var  \stubbles\webapp\auth\Roles
      */
     private $roles;
 

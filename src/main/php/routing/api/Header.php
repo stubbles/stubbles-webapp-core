@@ -16,11 +16,11 @@ namespace stubbles\webapp\routing\api;
 class Header implements \JsonSerializable
 {
     /**
-     * @type  string
+     * @var  string
      */
     private $name;
     /**
-     * @type  string
+     * @var  string
      */
     private $description;
 

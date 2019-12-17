@@ -21,13 +21,13 @@ class NativeSessionStorage implements SessionStorage, SessionId
     /**
      * name of session
      *
-     * @type  string
+     * @var  string
      */
     private $sessionName;
     /**
      * switch whether storage is already initialized or not
      *
-     * @type  bool
+     * @var  bool
      */
     private $initialized = false;
 

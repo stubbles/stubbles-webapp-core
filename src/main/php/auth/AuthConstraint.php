@@ -19,25 +19,25 @@ class AuthConstraint implements \JsonSerializable
     /**
      * list of annotations on callback
      *
-     * @type  \stubbles\webapp\routing\RoutingAnnotations
+     * @var  \stubbles\webapp\routing\RoutingAnnotations
      */
     private $callbackAnnotatedWith;
     /**
      * switch whether login is required for this route
      *
-     * @type  bool
+     * @var  bool
      */
     private $requiresLogin         = false;
     /**
      * switch whether a login is allowed
      *
-     * @type  bool
+     * @var  bool
      */
     private $redirectToLogin       = true;
     /**
      * required role to access the route
      *
-     * @type  string
+     * @var  string
      */
     private $requiredRole;
 

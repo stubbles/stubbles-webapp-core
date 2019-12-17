@@ -17,13 +17,13 @@ class NoneDurableSessionId implements SessionId
     /**
      * actual id
      *
-     * @type  string
+     * @var  string
      */
     private $id;
     /**
      * name of session
      *
-     * @type  string
+     * @var  string
      */
     private $sessionName;
 

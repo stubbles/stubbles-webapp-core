@@ -24,43 +24,43 @@ class Routing implements RoutingConfigurator
     /**
      * list of routes for the web app
      *
-     * @type  \stubbles\webapp\routing\Routes
+     * @var  \stubbles\webapp\routing\Routes
      */
     private $routes;
     /**
      * list of global pre interceptors and to which request method they respond
      *
-     * @type  array
+     * @var  array
      */
     private $preInterceptors          = [];
     /**
      * list of global post interceptors and to which request method they respond
      *
-     * @type  array
+     * @var  array
      */
     private $postInterceptors         = [];
     /**
      * list of route-independent supported mime types
      *
-     * @type  string[]
+     * @var  string[]
      */
     private $mimeTypes                = [];
     /**
      * map of additional mime tyoe classes for this route
      *
-     * @type  string[]
+     * @var  string[]
      */
     private $mimeTypeClasses                = [];
     /**
      * whether content negotation is disabled or not
      *
-     * @type  bool
+     * @var  bool
      */
     private $disableContentNegotation = false;
     /**
      * injector instance
      *
-     * @type  \stubbles\ioc\Injector
+     * @var  \stubbles\ioc\Injector
      */
     private $injector;
 

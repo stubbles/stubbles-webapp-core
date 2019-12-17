@@ -18,31 +18,31 @@ class Status
     /**
      * status code to be send
      *
-     * @type  int
+     * @var  int
      */
     private $code;
     /**
      * reason phrase for status code
      *
-     * @type  string
+     * @var  string
      */
     private $reasonPhrase;
     /**
      * switch whether response is fixed or not
      *
-     * @type  bool
+     * @var  bool
      */
     private $fixed         = false;
     /**
      * list of headers for this response
      *
-     * @type  \stubbles\webapp\response\Headers
+     * @var  \stubbles\webapp\response\Headers
      */
     private $headers;
     /**
      * whether response code allows a response payload
      *
-     * @type  bool
+     * @var  bool
      */
     private $allowsPayload = true;
 

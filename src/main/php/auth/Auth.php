@@ -23,31 +23,31 @@ class Auth implements BindingModule
     /**
      * class name of authentication provider to use
      *
-     * @type  string
+     * @var  string
      */
     private $authenticationProvider;
     /**
      * login provider to use of authentication provider has no own means of login
      *
-     * @type  string
+     * @var  string
      */
     private $loginProvider;
     /**
      * class which stores tokens
      *
-     * @type  string
+     * @var  string
      */
     private $tokenStore;
     /**
      * class name of authorization provider to use
      *
-     * @type  string
+     * @var  string
      */
     private $authorizationProvider;
     /**
      * switch whether to enable session caching or not
      *
-     * @type  bool
+     * @var  bool
      */
     private $enableSessionCaching = false;
 

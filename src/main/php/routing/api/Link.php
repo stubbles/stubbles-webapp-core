@@ -21,11 +21,11 @@ class Link implements \JsonSerializable
     /**
      * relation of this link
      *
-     * @type  string
+     * @var  string
      */
     private $rel;
     /**
-     * @type  \stubbles\peer\http\HttpUri
+     * @var  \stubbles\peer\http\HttpUri
      */
     private $uri;
 

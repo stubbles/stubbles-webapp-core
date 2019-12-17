@@ -18,7 +18,7 @@ class NullSession implements Session
     /**
      * if of the session
      *
-     * @type  SessionId
+     * @var  SessionId
      */
     private $id;
 

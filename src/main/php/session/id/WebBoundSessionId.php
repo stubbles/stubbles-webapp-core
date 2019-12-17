@@ -27,25 +27,25 @@ class WebBoundSessionId implements SessionId
     /**
      * request instance
      *
-     * @type  \stubbles\webapp\Request
+     * @var  \stubbles\webapp\Request
      */
     private $request;
     /**
      * response instance
      *
-     * @type  \stubbles\webapp\response\Response
+     * @var  \stubbles\webapp\response\Response
      */
     private $response;
     /**
      * name of session
      *
-     * @type  string
+     * @var  string
      */
     private $sessionName;
     /**
      * actual id
      *
-     * @type  string
+     * @var  string
      */
     private $id;
 

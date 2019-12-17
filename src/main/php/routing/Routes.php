@@ -17,7 +17,7 @@ class Routes implements \IteratorAggregate
     /**
      * list of routes for the web app
      *
-     * @type  \stubbles\webapp\routing\Route[]
+     * @var  \stubbles\webapp\routing\Route[]
      */
     private $routes = [];
 

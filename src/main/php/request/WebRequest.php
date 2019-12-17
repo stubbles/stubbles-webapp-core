@@ -33,31 +33,31 @@ class WebRequest extends ParamRequest implements Request
     /**
      * generated id for request if no or an invalid X-Request-ID header is present
      *
-     * @type  string
+     * @var  string
      */
     private $id;
     /**
      * list of params
      *
-     * @type  \stubbles\input\Params
+     * @var  \stubbles\input\Params
      */
     private $headers;
     /**
      * list of params
      *
-     * @type  \stubbles\input\Params
+     * @var  \stubbles\input\Params
      */
     private $cookies;
     /**
      * reference to attached session
      *
-     * @type  \stubbles\webapp\session\Session
+     * @var  \stubbles\webapp\session\Session
      */
     private $session;
     /**
      * identity associated with this request
      *
-     * @type  \stubbles\webapp\auth\Identity
+     * @var  \stubbles\webapp\auth\Identity
      */
     private $identity;
 

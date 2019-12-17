@@ -18,19 +18,19 @@ class UriPath
     /**
      * path configured in routing
      *
-     * @type  string
+     * @var  string
      */
     private $configuredPath;
     /**
      * complete called path from request
      *
-     * @type  string
+     * @var  string
      */
     private $calledPath;
     /**
      * map of path arguments
      *
-     * @type  string[]
+     * @var  string[]
      */
     private $arguments;
 

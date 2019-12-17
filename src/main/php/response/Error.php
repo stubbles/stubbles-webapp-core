@@ -19,11 +19,11 @@ use stubbles\sequence\Sequence;
 class Error implements \JsonSerializable
 {
     /**
-     * @type  string
+     * @var  string
      */
     private $type;
     /**
-     * @type  string
+     * @var  string
      */
     private $message;
 

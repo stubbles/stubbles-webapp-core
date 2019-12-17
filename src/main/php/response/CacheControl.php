@@ -27,55 +27,55 @@ class CacheControl
     /**
      * whether the must-revalidate directive is enabled
      *
-     * @type  bool
+     * @var  bool
      */
     private $mustRevalidate  = false;
     /**
      * whether the no-cache directive is enabled
      *
-     * @type  bool
+     * @var  bool
      */
     private $noCache         = false;
     /**
      * whether the no-store directive is enabled
      *
-     * @type  bool
+     * @var  bool
      */
     private $noStore         = false;
     /**
      * whether the no-transform directive is enabled
      *
-     * @type  bool
+     * @var  bool
      */
     private $noTransform     = false;
     /**
      * whether the public directive is enabled
      *
-     * @type  bool
+     * @var  bool
      */
     private $public          = false;
     /**
      * whether the private directive is enabled
      *
-     * @type  bool
+     * @var  bool
      */
     private $private         = true;
     /**
      * whether the proxy-revalidate directive is enabled
      *
-     * @type  bool
+     * @var  bool
      */
     private $proxyRevalidate = false;
     /**
      * value for the max-age=seconds directive
      *
-     * @type  int
+     * @var  int
      */
     private $maxAge          = null;
     /**
      * value for the s-maxage=seconds directive
      *
-     * @type  int
+     * @var  int
      */
     private $sMaxAge         = null;
 

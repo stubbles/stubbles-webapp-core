@@ -19,13 +19,13 @@ use stubbles\webapp\response\Error;
 class Image extends MimeType
 {
     /**
-     * @type  \stubbles\lang\ResourceLoader
+     * @var  \stubbles\lang\ResourceLoader
      */
     private $resourceLoader;
     /**
      * image to be displayed in case of errors
      *
-     * @type  string
+     * @var  string
      */
     private $errorImgResource;
 

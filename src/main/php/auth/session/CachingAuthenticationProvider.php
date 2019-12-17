@@ -21,13 +21,13 @@ class CachingAuthenticationProvider implements AuthenticationProvider
     /**
      * session where user and roles are stored
      *
-     * @type  \stubbles\webapp\session\Session
+     * @var  \stubbles\webapp\session\Session
      */
     private $session;
     /**
      * provider which delivers authentication
      *
-     * @type  \stubbles\webapp\auth\AuthenticationProvider
+     * @var  \stubbles\webapp\auth\AuthenticationProvider
      */
     private $authenticationProvider;
 
