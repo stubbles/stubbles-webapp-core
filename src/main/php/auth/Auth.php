@@ -112,7 +112,7 @@ class Auth implements BindingModule
      * @param  \stubbles\ioc\Binder  $binder
      * @param  string                $projectPath  optional  project base path
      */
-    public function configure(Binder $binder, string $projectPath = null)
+    public function configure(Binder $binder, string $projectPath = null): void
     {
         if ($this->enableSessionCaching) {
             $binder->bind(AuthenticationProvider::class)

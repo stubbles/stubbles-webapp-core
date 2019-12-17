@@ -199,17 +199,15 @@ class WebSession implements Session
      *
      * @param   string  $key    key to store value under
      * @param   mixed   $value  data to store
-     * @return  \stubbles\webapp\session\Session
      * @throws  \LogicException
      */
-    public function putValue(string $key, $value): Session
+    public function putValue(string $key, $value): void
     {
         if (!$this->isValid()) {
             throw new \LogicException('Session is in an invalid state.');
         }
 
         $this->storage->putValue($key, $value);
-        return $this;
     }
 
     /**

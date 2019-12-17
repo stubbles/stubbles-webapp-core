@@ -125,11 +125,10 @@ class NullSession implements Session
      *
      * @param   string  $key    key to store value under
      * @param   mixed   $value  data to store
-     * @return  Session
      */
-    public function putValue(string $key, $value): Session
+    public function putValue(string $key, $value): void
     {
-        return $this;
+        // intentionally empty
     }
 
     /**

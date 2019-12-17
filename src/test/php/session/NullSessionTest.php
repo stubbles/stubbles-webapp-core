@@ -125,13 +125,11 @@ class NullSessionTest extends TestCase
 
     /**
      * @test
+     * @doesNotPerformAssertions
      */
     public function putValueDoesNothing(): void
     {
-        assertThat(
-                $this->nullSession->putValue('foo', 'bar'),
-                equals($this->nullSession)
-        );
+        $this->nullSession->putValue('foo', 'bar');
     }
 
     /**

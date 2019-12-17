@@ -294,8 +294,8 @@ class WebSessionTest extends TestCase
     public function putValueStoresValue(): void
     {
         $webSession = $this->createWebSession();
-        assertThat($webSession->putValue('foo', 'bar'), equals($webSession));
-        assertTrue(verify($this->sessionStorage, 'putValue')->received('foo', 'bar'));
+        $webSession->putValue('foo', 'bar');
+        verify($this->sessionStorage, 'putValue')->received('foo', 'bar');
     }
 
     /**
