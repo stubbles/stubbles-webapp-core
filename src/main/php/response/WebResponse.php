@@ -396,21 +396,19 @@ class WebResponse implements Response
      * body was set the return value is null because no standard stream will be
      * created in such a case.
      *
-     * @param   \stubbles\streams\OutputStream  $out  optional  where to write response body to
-     * @return  \stubbles\streams\OutputStream|null
+     * @template  T of OutputStream
+     * @param   T|null  $out  optional  where to write response body to
+     * @return  T|StandardOutputStream|null
      */
     public function send(OutputStream $out = null): ?OutputStream
     {
         $this->sendHead();
-        if ($this->requestAllowsBody() && null != $this->resource) {
-            $out = (null === $out ? new StandardOutputStream() : $out);
-            $this->mimeType->serialize(
-                    $this->resource,
-                    $out
-            );
+        if (!$this->requestAllowsBody() || null == $this->resource) {
+            return $out;
         }
 
-        return $out;
+        $out = (null === $out ? new StandardOutputStream() : $out);
+        return $this->mimeType->serialize($this->resource, $out);
     }
 
     /**

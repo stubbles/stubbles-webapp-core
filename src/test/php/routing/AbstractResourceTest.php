@@ -152,9 +152,11 @@ class AbstractResourceTest extends TestCase
                 )->negotiateMimeType($request, $this->response)
         );
         assertThat($this->response->statusCode(), equals(500));
+        $out = new MemoryOutputStream();
+        $this->response->send($out);
         assertThat(
-                $this->response->send(new MemoryOutputStream())->buffer(),
-                equals('Internal Server Error: No mime type class defined for negotiated content type application/foo')
+            $out->buffer(),
+            equals('Internal Server Error: No mime type class defined for negotiated content type application/foo')
         );
     }
 
