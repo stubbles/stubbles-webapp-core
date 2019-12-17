@@ -8,3 +8,8 @@ parameters:
   ignoreErrors:
       # False positive
       - '#Call to an undefined method stubbles\\reflect\\annotation\\Annotation::get#'
+      # Explicit tests
+      -
+        message: '#target of class stubbles\\webapp\\routing\\Route constructor expects \(callable\(\): mixed\)|string|\stubbles\\webapp\\Target, 500 given#'
+        path: src/test/php/routing/RouteTest.php
+
