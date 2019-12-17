@@ -35,7 +35,7 @@ class UploadedFile
      */
     private $mimeTypeError;
     /**
-     * @var  callback
+     * @var  callable
      */
     protected $move_uploaded_file = '\move_uploaded_file';
 
