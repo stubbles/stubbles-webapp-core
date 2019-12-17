@@ -38,7 +38,7 @@ class ResolvingResourceTest extends TestCase
      */
     private $response;
     /**
-     * @var  Injector\bovigo\callmap\ClassProxy
+     * @var  Injector&\bovigo\callmap\ClassProxy
      */
     private $injector;
 
@@ -109,7 +109,7 @@ class ResolvingResourceTest extends TestCase
     }
 
     /**
-     * @param   callable|Target  $target
+     * @param   callable|Target|class-string  $target
      * @return  ResolvingResource
      */
     private function createResolvingResourceWithTarget($target): ResolvingResource
