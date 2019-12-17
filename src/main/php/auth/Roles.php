@@ -11,6 +11,7 @@ namespace stubbles\webapp\auth;
  * Represents a list of roles.
  *
  * @since  5.0.0
+ * @implements  \IteratorAggregate<string>
  */
 class Roles implements \Countable, \IteratorAggregate
 {
@@ -69,9 +70,9 @@ class Roles implements \Countable, \IteratorAggregate
     /**
      * returns an iterator that allows iterating over all roles
      *
-     * @return  \ArrayIterator
+     * @return  \Iterator<string>
      */
-    public function getIterator(): \Traversable
+    public function getIterator(): \Iterator
     {
         return new \ArrayIterator(array_flip($this->roles));
     }
