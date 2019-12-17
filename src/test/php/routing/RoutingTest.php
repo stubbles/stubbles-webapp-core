@@ -216,14 +216,16 @@ class RoutingTest extends TestCase
     public function hasNoGlobalPreInterceptorsForDifferentMethod(): void
     {
         $preInterceptor = function() {};
-        $route = $this->createResolvingResource($this->routing->onGet('/hello', function() {}));
+        /** @var  Route  $route */
+        $route = $this->routing->onGet('/hello', function() {});
+        $resource = $this->createResolvingResource($route);
+        $this->routing->preInterceptOnHead($preInterceptor)
+            ->preInterceptOnPost($preInterceptor)
+            ->preInterceptOnPut($preInterceptor)
+            ->preInterceptOnDelete($preInterceptor);
         assertThat(
-                $this->routing->preInterceptOnHead($preInterceptor)
-                        ->preInterceptOnPost($preInterceptor)
-                        ->preInterceptOnPut($preInterceptor)
-                        ->preInterceptOnDelete($preInterceptor)
-                        ->findResource($this->calledUri),
-                equals($route)
+            $this->routing->findResource($this->calledUri),
+            equals($resource)
         );
     }
 
@@ -233,15 +235,16 @@ class RoutingTest extends TestCase
     public function hasGlobalPreInterceptorsEvenWhenNoRouteSelected(): void
     {
         $preInterceptor = function() {};
-        $route = $this->createResolvingResource(
-                $this->routing->onGet('/hello', function() {}),
-                ['array_map', $preInterceptor]
+        /** @var  Route  $route */
+        $route = $this->routing->onGet('/hello', function() {});
+        $resource = $this->createResolvingResource(
+            $route,
+            ['array_map', $preInterceptor]
         );
+        $this->routing->preIntercept('array_map')->preInterceptOnGet($preInterceptor);
         assertThat(
-                $this->routing->preIntercept('array_map')
-                        ->preInterceptOnGet($preInterceptor)
-                        ->findResource($this->calledUri),
-                equals($route)
+            $this->routing->findResource($this->calledUri),
+            equals($resource)
         );
     }
 
@@ -252,15 +255,17 @@ class RoutingTest extends TestCase
     public function hasGlobalPreInterceptorsWithMatchingPath(): void
     {
         $preInterceptor = function() {};
-        $route = $this->createResolvingResource(
-                $this->routing->onGet('/hello', function() {}),
-                ['array_map']
+        /** @var  Route  $route */
+        $route = $this->routing->onGet('/hello', function() {});
+        $resource = $this->createResolvingResource(
+            $route,
+            ['array_map']
         );
+        $this->routing->preIntercept('array_map', '/hello')
+            ->preInterceptOnGet($preInterceptor, '/world');
         assertThat(
-                $this->routing->preIntercept('array_map', '/hello')
-                        ->preInterceptOnGet($preInterceptor, '/world')
-                        ->findResource($this->calledUri),
-                equals($route)
+            $this->routing->findResource($this->calledUri),
+            equals($resource)
         );
     }
 
@@ -271,15 +276,17 @@ class RoutingTest extends TestCase
     {
         $preInterceptor = function() {};
         $preFunction    = 'array_map';
-        $route = $this->createResolvingResource(
-                $this->routing->onGet('/hello', function() {}),
-                [$preInterceptor, $preFunction]
+        /** @var  Route  $route */
+        $route = $this->routing->onGet('/hello', function() {});
+        $resource = $this->createResolvingResource(
+            $route,
+            [$preInterceptor, $preFunction]
         );
+        $this->routing->preIntercept($preInterceptor)
+            ->preIntercept($preFunction);
         assertThat(
-                $this->routing->preIntercept($preInterceptor)
-                        ->preIntercept($preFunction)
-                        ->findResource($this->calledUri),
-                equals($route)
+            $this->routing->findResource($this->calledUri),
+            equals($resource)
         );
     }
 
@@ -289,15 +296,17 @@ class RoutingTest extends TestCase
     public function mergesGlobalAndRoutePreInterceptors(): void
     {
         $preInterceptor = function() {};
-        $route = $this->createResolvingResource(
-                $this->routing->onGet('/hello', function() {})
-                        ->preIntercept('array_map'),
-                [$preInterceptor, 'array_map']
+        /** @var  Route  $route */
+        $route = $this->routing->onGet('/hello', function() {})
+            ->preIntercept('array_map');
+        $resource = $this->createResolvingResource(
+            $route,
+            [$preInterceptor, 'array_map']
         );
+        $this->routing->preInterceptOnGet($preInterceptor);
         assertThat(
-                $this->routing->preInterceptOnGet($preInterceptor)
-                        ->findResource($this->calledUri),
-                equals($route)
+            $this->routing->findResource($this->calledUri),
+            equals($resource)
         );
     }
 
@@ -316,16 +325,16 @@ class RoutingTest extends TestCase
     public function hasNoGlobalPostInterceptorsForDifferentMethod(): void
     {
         $postInterceptor = function() {};
-        $route = $this->createResolvingResource(
-                $this->routing->onGet('/hello', function() {})
-        );
+        /** @var  Route  $route */
+        $route = $this->routing->onGet('/hello', function() {});
+        $resource = $this->createResolvingResource($route);
+        $this->routing->postInterceptOnHead($postInterceptor)
+            ->postInterceptOnPost($postInterceptor)
+            ->postInterceptOnPut($postInterceptor)
+            ->postInterceptOnDelete($postInterceptor);
         assertThat(
-                $this->routing->postInterceptOnHead($postInterceptor)
-                        ->postInterceptOnPost($postInterceptor)
-                        ->postInterceptOnPut($postInterceptor)
-                        ->postInterceptOnDelete($postInterceptor)
-                        ->findResource($this->calledUri),
-                equals($route)
+            $this->routing->findResource($this->calledUri),
+            equals($resource)
         );
     }
 
@@ -335,16 +344,18 @@ class RoutingTest extends TestCase
     public function hasGlobalPostInterceptorsEvenWhenNoRouteSelected(): void
     {
         $postInterceptor = function() {};
-        $route = $this->createResolvingResource(
-                $this->routing->onGet('/hello', function() {}),
-                [],
-                ['array_map', $postInterceptor]
+        /** @var  Route  $route */
+        $route = $this->routing->onGet('/hello', function() {});
+        $resource = $this->createResolvingResource(
+            $route,
+            [],
+            ['array_map', $postInterceptor]
         );
+        $this->routing->postIntercept('array_map')
+            ->postInterceptOnGet($postInterceptor);
         assertThat(
-                $this->routing->postIntercept('array_map')
-                        ->postInterceptOnGet($postInterceptor)
-                        ->findResource($this->calledUri),
-                equals($route)
+            $this->routing->findResource($this->calledUri),
+            equals($resource)
         );
     }
 
@@ -355,16 +366,18 @@ class RoutingTest extends TestCase
     public function hasGlobalPostInterceptorsWithMatchingPath(): void
     {
         $postInterceptor = function() {};
-        $route = $this->createResolvingResource(
-                $this->routing->onGet('/hello', function() {}),
-                [],
-                ['array_map']
+        /** @var  Route  $route */
+        $route = $this->routing->onGet('/hello', function() {});
+        $resource = $this->createResolvingResource(
+            $route,
+            [],
+            ['array_map']
         );
+        $this->routing->postIntercept('array_map', '/hello')
+            ->postInterceptOnGet($postInterceptor, '/world');
         assertThat(
-                $this->routing->postIntercept('array_map', '/hello')
-                        ->postInterceptOnGet($postInterceptor, '/world')
-                        ->findResource($this->calledUri),
-                equals($route)
+            $this->routing->findResource($this->calledUri),
+            equals($resource)
         );
     }
 
@@ -375,18 +388,18 @@ class RoutingTest extends TestCase
     {
         $postInterceptor = function() {};
         $postFunction    = 'array_map';
-        $route = $this->createResolvingResource(
-                $this->routing->onGet('/hello', function() {}),
-                [],
-                [$postInterceptor,
-                 $postFunction
-                ]
+        /** @var  Route  $route */
+        $route = $this->routing->onGet('/hello', function() {});
+        $resource = $this->createResolvingResource(
+            $route,
+            [],
+            [$postInterceptor, $postFunction]
         );
+        $this->routing->postIntercept($postInterceptor)
+            ->postIntercept($postFunction);
         assertThat(
-                $this->routing->postIntercept($postInterceptor)
-                        ->postIntercept($postFunction)
-                        ->findResource($this->calledUri),
-                equals($route)
+            $this->routing->findResource($this->calledUri),
+            equals($resource)
         );
     }
 
@@ -396,16 +409,18 @@ class RoutingTest extends TestCase
     public function mergesGlobalAndRoutePostInterceptors(): void
     {
         $postInterceptor = function() {};
-        $route = $this->createResolvingResource(
-                $this->routing->onGet('/hello', function() {})
-                              ->postIntercept('array_map'),
-                [],
-                ['array_map', $postInterceptor]
+        /** @var  Route  $route */
+        $route = $this->routing->onGet('/hello', function() {})
+            ->postIntercept('array_map');
+        $resource = $this->createResolvingResource(
+            $route,
+            [],
+            ['array_map', $postInterceptor]
         );
+        $this->routing->postInterceptOnGet($postInterceptor);
         assertThat(
-                $this->routing->postInterceptOnGet($postInterceptor)
-                        ->findResource($this->calledUri),
-                equals($route)
+            $this->routing->findResource($this->calledUri),
+            equals($resource)
         );
     }
 
@@ -437,11 +452,10 @@ class RoutingTest extends TestCase
     {
         $this->routing->onGet('/hello', function() {})
                     ->supportsMimeType('application/json');
+        $this->routing->supportsMimeType('application/xml');
         assertThat(
-                $this->routing->supportsMimeType('application/xml')
-                        ->findResource($this->calledUri)
-                        ->supportedMimeTypes(),
-                equals(['application/json', 'application/xml'])
+            $this->routing->findResource($this->calledUri)->supportedMimeTypes(),
+            equals(['application/json', 'application/xml'])
         );
     }
 
@@ -461,8 +475,8 @@ class RoutingTest extends TestCase
         $this->routing->supportsMimeType('application/foo', 'example\Special');
         $response = NewInstance::stub(WebResponse::class);
         assertTrue(
-                $this->routing->findResource($this->calledUri)
-                        ->negotiateMimeType($request, $response)
+            $this->routing->findResource($this->calledUri)
+                ->negotiateMimeType($request, $response)
         );
         verify($response, 'adjustMimeType')->received($mimeType);
     }
@@ -477,9 +491,8 @@ class RoutingTest extends TestCase
         $this->routing->setDefaultMimeTypeClass('application/foo', 'example\Special');
         $this->routing->onGet('/hello', function() {});
         assertThat(
-                $this->routing->findResource($this->calledUri)
-                        ->supportedMimeTypes(),
-                doesNotContain('application/foo')
+            $this->routing->findResource($this->calledUri)->supportedMimeTypes(),
+            doesNotContain('application/foo')
         );
     }
 
@@ -493,9 +506,8 @@ class RoutingTest extends TestCase
         $this->routing->setDefaultMimeTypeClass('application/foo', 'example\Special');
         $this->routing->onGet('/hello', function() {})->supportsMimeType('application/foo');
         assertThat(
-                $this->routing->findResource($this->calledUri)
-                        ->supportedMimeTypes(),
-                contains('application/foo')
+            $this->routing->findResource($this->calledUri)->supportedMimeTypes(),
+            contains('application/foo')
         );
     }
 
@@ -507,13 +519,13 @@ class RoutingTest extends TestCase
     {
         $this->routing->onGet('/hello', function() {});
         $response = NewInstance::stub(WebResponse::class);
+        $this->routing->disableContentNegotiation();
         assertTrue(
-                $this->routing->disableContentNegotiation()
-                        ->findResource($this->calledUri)
-                        ->negotiateMimeType(
-                                NewInstance::of(Request::class),
-                                $response
-                        )
+            $this->routing->findResource($this->calledUri)
+                ->negotiateMimeType(
+                    NewInstance::of(Request::class),
+                    $response
+                )
         );
         verify($response, 'adjustMimeType')->wasNeverCalled();
     }
@@ -527,13 +539,13 @@ class RoutingTest extends TestCase
         $this->routing->onGet('/hello', function() {})
                       ->disableContentNegotiation();
         $response = NewInstance::stub(WebResponse::class);
+        $this->routing->disableContentNegotiation();
         assertTrue(
-                $this->routing->disableContentNegotiation()
-                        ->findResource($this->calledUri)
-                        ->negotiateMimeType(
-                                NewInstance::of(Request::class),
-                                $response
-                        )
+            $this->routing->findResource($this->calledUri)
+                ->negotiateMimeType(
+                    NewInstance::of(Request::class),
+                    $response
+                )
         );
         verify($response, 'adjustMimeType')->wasNeverCalled();
     }
@@ -557,15 +569,12 @@ class RoutingTest extends TestCase
      */
     public function passThroughOnGetAppliesForHtmlFilesWithDefaultPath(string $htmlFile): void
     {
-        $expected = $this->createResolvingResource(
-                $this->routing->passThroughOnGet(),
-                [],
-                [],
-                $htmlFile
-        );
+        /** @var  Route  $route */
+        $route = $this->routing->passThroughOnGet();
+        $expected = $this->createResolvingResource($route, [], [], $htmlFile);
         assertThat(
-                $this->routing->findResource('http://example.net/' . $htmlFile, 'GET'),
-                equals($expected)
+            $this->routing->findResource('http://example.net/' . $htmlFile, 'GET'),
+            equals($expected)
         );
     }
 
@@ -575,11 +584,9 @@ class RoutingTest extends TestCase
      */
     public function apiIndexOnGetCreatesRouteWithIndexTarget(): void
     {
-        assertThat(
-                $this->routing->apiIndexOnGet('/')->target(),
-                isInstanceOf(Index::class)
-        );
-
+        /** @var  Route  $route */
+        $route = $this->routing->apiIndexOnGet('/');
+        assertThat($route->target(), isInstanceOf(Index::class));
     }
 
     /**
@@ -588,10 +595,8 @@ class RoutingTest extends TestCase
      */
     public function redirectOnGetCreatesRouteWithRedirectTarget(): void
     {
-        assertThat(
-                $this->routing->redirectOnGet('/foo', '/bar')->target(),
-                isInstanceOf(Redirect::class)
-        );
-
+        /** @var  Route  $route */
+        $route = $this->routing->redirectOnGet('/foo', '/bar');
+        assertThat($route->target(), isInstanceOf(Redirect::class));
     }
 }
