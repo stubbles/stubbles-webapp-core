@@ -26,21 +26,15 @@ use function bovigo\callmap\verify;
 class InterceptorsTest extends TestCase
 {
     /**
-     * mocked request instance
-     *
-     * @type  \bovigo\callmap\Proxy
+     * @var  Request&\bovigo\callmap\ClassProxy
      */
     private $request;
     /**
-     * mocked response instance
-     *
-     * @type  \bovigo\callmap\Proxy
+     * @var  Response&\bovigo\callmap\ClassProxy
      */
     private $response;
     /**
-     * mocked injector instance
-     *
-     * @type  \bovigo\callmap\Proxy
+     * @type  Injector&\bovigo\callmap\ClassProxy
      */
     private $injector;
 
@@ -51,6 +45,10 @@ class InterceptorsTest extends TestCase
         $this->injector = NewInstance::stub(Injector::class);
     }
 
+    /**
+     * @param  string[]  $preInterceptors
+     * @param  string[]  $postInterceptors
+     */
     private function createInterceptors(
             array $preInterceptors = [],
             array $postInterceptors = []
@@ -66,7 +64,7 @@ class InterceptorsTest extends TestCase
     /**
      * @test
      */
-    public function respondsWithInternalServerErrorIfPreInterceptorDoesNotImplementInterface()
+    public function respondsWithInternalServerErrorIfPreInterceptorDoesNotImplementInterface(): void
     {
         $this->response->returns(['internalServerError' => Error::internalServerError('')]);
         $this->injector->returns(['getInstance' => new \stdClass()]);
@@ -87,7 +85,7 @@ class InterceptorsTest extends TestCase
     /**
      * @test
      */
-    public function doesNotCallOtherPreInterceptorsIfOneReturnsFalse()
+    public function doesNotCallOtherPreInterceptorsIfOneReturnsFalse(): void
     {
         $preInterceptor = NewInstance::of(PreInterceptor::class);
         $preInterceptor->returns(['preProcess' => false]);
@@ -104,7 +102,7 @@ class InterceptorsTest extends TestCase
     /**
      * @test
      */
-    public function returnsTrueWhenNoPreInterceptorReturnsFalse()
+    public function returnsTrueWhenNoPreInterceptorReturnsFalse(): void
     {
         $preInterceptor = NewInstance::of(PreInterceptor::class);
         $this->injector->returns(['getInstance' => $preInterceptor]);
@@ -125,7 +123,7 @@ class InterceptorsTest extends TestCase
     /**
      * @test
      */
-    public function respondsWithInternalServerErrorIfPostInterceptorDoesNotImplementInterface()
+    public function respondsWithInternalServerErrorIfPostInterceptorDoesNotImplementInterface(): void
     {
         $this->response->returns(['internalServerError' => Error::internalServerError('')]);
         $this->injector->returns(['getInstance' => new \stdClass()]);
@@ -145,7 +143,7 @@ class InterceptorsTest extends TestCase
     /**
      * @test
      */
-    public function doesNotCallOtherPostInterceptorsIfOneReturnsFalse()
+    public function doesNotCallOtherPostInterceptorsIfOneReturnsFalse(): void
     {
         $postInterceptor = NewInstance::of(PostInterceptor::class);
         $postInterceptor->returns(['postProcess' => false]);
@@ -162,7 +160,7 @@ class InterceptorsTest extends TestCase
     /**
      * @test
      */
-    public function returnsTrueWhenNoPostInterceptorReturnsFalse()
+    public function returnsTrueWhenNoPostInterceptorReturnsFalse(): void
     {
         $postInterceptor = NewInstance::of(PostInterceptor::class);
         $this->injector->returns(['getInstance' => $postInterceptor]);

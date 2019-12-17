@@ -22,7 +22,7 @@ class FunctionsTest extends TestCase
     /**
      * @test
      */
-    public function nativeCreatesWebSession()
+    public function nativeCreatesWebSession(): void
     {
         if (\headers_sent()) {
             $this->markTestSkipped();
@@ -37,7 +37,7 @@ class FunctionsTest extends TestCase
     /**
      * @test
      */
-    public function noneDurableCreatesWebSession()
+    public function noneDurableCreatesWebSession(): void
     {
         assertThat(noneDurable(), isInstanceOf(WebSession::class));
     }
@@ -46,7 +46,7 @@ class FunctionsTest extends TestCase
      * @test
      * @since  5.0.0
      */
-    public function nullSessionCreatesNullSession()
+    public function nullSessionCreatesNullSession(): void
     {
         assertThat(nullSession(), isInstanceOf(NullSession::class));
     }

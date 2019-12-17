@@ -28,7 +28,7 @@ class TokenTest extends TestCase
     /**
      * @test
      */
-    public function canCreateTokenFromUser()
+    public function canCreateTokenFromUser(): void
     {
         assertThat(
                 Token::create(
@@ -44,6 +44,9 @@ class TokenTest extends TestCase
         );
     }
 
+    /**
+     * @return  mixed[]
+     */
     public function tokenValues(): array
     {
         $tokenValues = $this->emptyValues();
@@ -52,25 +55,30 @@ class TokenTest extends TestCase
     }
 
     /**
+     * @param  mixed  $tokenValue
      * @test
      * @dataProvider  tokenValues
      */
-    public function tokenCanBeCastedToString($tokenValue)
+    public function tokenCanBeCastedToString($tokenValue): void
     {
         $token = new Token($tokenValue);
         assertThat((string) $token, equals($tokenValue));
     }
 
+    /**
+     * @return  array<mixed[]>
+     */
     public function emptyValues(): array
     {
         return [[null], ['']];
     }
 
     /**
+     * @param  mixed  $emptyValue
      * @test
      * @dataProvider  emptyValues
      */
-    public function tokenIsEmptyWhenValueIsEmpty($emptyValue)
+    public function tokenIsEmptyWhenValueIsEmpty($emptyValue): void
     {
         $token = new Token($emptyValue);
         assertTrue($token->isEmpty());
@@ -79,7 +87,7 @@ class TokenTest extends TestCase
     /**
      * @test
      */
-    public function tokenIsNotEmptyWhenValueNotEmpty()
+    public function tokenIsNotEmptyWhenValueNotEmpty(): void
     {
         $token = new Token('someTokenValue');
         assertFalse($token->isEmpty());

@@ -24,11 +24,11 @@ use function bovigo\assert\predicate\equals;
 class XmlTest extends TestCase
 {
     /**
-     * @type  \stubbles\webapp\response\mimetypes\Xml
+     * @var  \stubbles\webapp\response\mimetypes\Xml
      */
     private $xml;
     /**
-     * @type  \bovigo\callmap\Proxy
+     * @var  XmlSerializerFacade&\bovigo\callmap\ClassProxy
      */
     private $xmlSerializerFacade;
 
@@ -41,7 +41,7 @@ class XmlTest extends TestCase
     /**
      * @test
      */
-    public function defaultMimeType()
+    public function defaultMimeType(): void
     {
         assertThat((string) $this->xml, equals('application/xml'));
     }
@@ -49,7 +49,7 @@ class XmlTest extends TestCase
     /**
      * @test
      */
-    public function mimeTypeCanBeSpecialised()
+    public function mimeTypeCanBeSpecialised(): void
     {
         assertThat(
                 (string) $this->xml->specialise('text/xml'),
@@ -60,7 +60,7 @@ class XmlTest extends TestCase
     /**
      * @test
      */
-    public function serializesResourceToXml()
+    public function serializesResourceToXml(): void
     {
         $this->xmlSerializerFacade->returns(['serializeToXml' => '<xml/>']);
         assertThat(

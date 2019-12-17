@@ -29,12 +29,12 @@ class ResourceTest extends TestCase
     /**
      * instance to test
      *
-     * @type  \stubbles\webapp\routing\api\Resource
+     * @var  \stubbles\webapp\routing\api\Resource
      */
     private $resource;
     /**
      *
-     * @type  \stubbles\webapp\routing\RoutingAnnotations
+     * @var  \stubbles\webapp\routing\RoutingAnnotations
      */
     private $routingAnnotations;
 
@@ -54,7 +54,7 @@ class ResourceTest extends TestCase
     /**
      * @test
      */
-    public function returnsProvidedName()
+    public function returnsProvidedName(): void
     {
         assertThat($this->resource->name(), equals('Orders'));
     }
@@ -62,7 +62,7 @@ class ResourceTest extends TestCase
     /**
      * @test
      */
-    public function returnsProvidedRequestMethods()
+    public function returnsProvidedRequestMethods(): void
     {
         assertThat($this->resource->requestMethods(), equals(['GET']));
     }
@@ -70,7 +70,7 @@ class ResourceTest extends TestCase
     /**
      * @test
      */
-    public function hasDescriptionWhenNotNull()
+    public function hasDescriptionWhenNotNull(): void
     {
         $this->routingAnnotations->returns(
                 ['description' => 'Endpoint for handling orders.']
@@ -81,7 +81,7 @@ class ResourceTest extends TestCase
     /**
      * @test
      */
-    public function hasNoDescriptionWhenNoDescriptionAnnotationPresent()
+    public function hasNoDescriptionWhenNoDescriptionAnnotationPresent(): void
     {
         assertFalse($this->resource->hasDescription());
     }
@@ -89,7 +89,7 @@ class ResourceTest extends TestCase
     /**
      * @test
      */
-    public function returnsProvidedDescription()
+    public function returnsProvidedDescription(): void
     {
         $this->routingAnnotations->returns(
                 ['description' => 'Endpoint for handling orders.']
@@ -103,7 +103,7 @@ class ResourceTest extends TestCase
     /**
      * @test
      */
-    public function hasNoMimeTypesWhenEmptyListProvided()
+    public function hasNoMimeTypesWhenEmptyListProvided(): void
     {
         $resource = new Resource(
                 'Orders',
@@ -119,7 +119,7 @@ class ResourceTest extends TestCase
     /**
      * @test
      */
-    public function hasMimeTypesWhenListProvided()
+    public function hasMimeTypesWhenListProvided(): void
     {
         assertTrue($this->resource->hasMimeTypes());
     }
@@ -127,7 +127,7 @@ class ResourceTest extends TestCase
     /**
      * @test
      */
-    public function returnsProvidedListOfMimeTypes()
+    public function returnsProvidedListOfMimeTypes(): void
     {
         assertThat($this->resource->mimeTypes(), equals(['application/xml']));
     }
@@ -135,7 +135,7 @@ class ResourceTest extends TestCase
     /**
      * @test
      */
-    public function providesNoStatusCodesWhenNoStatusAnnotationPresent()
+    public function providesNoStatusCodesWhenNoStatusAnnotationPresent(): void
     {
         $this->routingAnnotations->returns(
                 ['containStatusCodes' => false]
@@ -147,7 +147,7 @@ class ResourceTest extends TestCase
     /**
      * @test
      */
-    public function providesStatusCodesWhenStatusAnnotationPresent()
+    public function providesStatusCodesWhenStatusAnnotationPresent(): void
     {
         $this->routingAnnotations->returns(
                 ['containStatusCodes' => true]
@@ -159,7 +159,7 @@ class ResourceTest extends TestCase
     /**
      * @test
      */
-    public function returnsProvidedListOfAnnotatedStatusCodes()
+    public function returnsProvidedListOfAnnotatedStatusCodes(): void
     {
         $this->routingAnnotations->returns(
                 ['statusCodes' => [new Status(200, 'Default response code')]]
@@ -173,7 +173,7 @@ class ResourceTest extends TestCase
     /**
      * @test
      */
-    public function providesNoHeadersWhenNoHeaderAnnotationPresent()
+    public function providesNoHeadersWhenNoHeaderAnnotationPresent(): void
     {
         $this->routingAnnotations->returns(
                 ['containHeaders' => false]
@@ -185,7 +185,7 @@ class ResourceTest extends TestCase
     /**
      * @test
      */
-    public function providesHeadersWhenHeaderAnnotationPresent()
+    public function providesHeadersWhenHeaderAnnotationPresent(): void
     {
         $this->routingAnnotations->returns(
                 ['containHeaders' => true]
@@ -197,7 +197,7 @@ class ResourceTest extends TestCase
     /**
      * @test
      */
-    public function returnsProvidedListOfAnnotatedHeaders()
+    public function returnsProvidedListOfAnnotatedHeaders(): void
     {
         $this->routingAnnotations->returns(
                 ['headers' => [new Header('X-Binford', 'More power!')]]
@@ -211,7 +211,7 @@ class ResourceTest extends TestCase
     /**
      * @test
      */
-    public function providesNoParametersWhenNoParameterAnnotationPresent()
+    public function providesNoParametersWhenNoParameterAnnotationPresent(): void
     {
         $this->routingAnnotations->returns(
                 ['containParameters' => false]
@@ -223,7 +223,7 @@ class ResourceTest extends TestCase
     /**
      * @test
      */
-    public function providesParametersWhenParameterAnnotationPresent()
+    public function providesParametersWhenParameterAnnotationPresent(): void
     {
         $this->routingAnnotations->returns(
                 ['containParameters' => true]
@@ -235,7 +235,7 @@ class ResourceTest extends TestCase
     /**
      * @test
      */
-    public function returnsProvidedListOfAnnotatedParameters()
+    public function returnsProvidedListOfAnnotatedParameters(): void
     {
         $this->routingAnnotations->returns(
                 ['parameters' => [new Parameter('binford', 'More power!', 'query')]]
@@ -249,7 +249,7 @@ class ResourceTest extends TestCase
     /**
      * @test
      */
-    public function returnsProvidedAuthConstraint()
+    public function returnsProvidedAuthConstraint(): void
     {
         assertThat(
                 $this->resource->authConstraint(),
@@ -260,7 +260,7 @@ class ResourceTest extends TestCase
     /**
      * @test
      */
-    public function returnsLinksWithProvidedLinkAsSelf()
+    public function returnsLinksWithProvidedLinkAsSelf(): void
     {
         assertThat(
                 $this->resource->links()->with('self'),

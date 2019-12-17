@@ -24,9 +24,7 @@ use function bovigo\assert\predicate\matches;
 class NoneDurableSessionIdTest extends TestCase
 {
     /**
-     * instance to test
-     *
-     * @type  NoneDurableSessionId
+     * @var  NoneDurableSessionId
      */
     private $noneDurableSessionId;
 
@@ -39,7 +37,7 @@ class NoneDurableSessionIdTest extends TestCase
      * @test
      * @since  4.0.0
      */
-    public function sessionNameStaysSameForInstance()
+    public function sessionNameStaysSameForInstance(): void
     {
         assertThat(
                 $this->noneDurableSessionId->name(),
@@ -51,7 +49,7 @@ class NoneDurableSessionIdTest extends TestCase
      * @test
      * @since  4.0.0
      */
-    public function sessionNameIsDifferentForDifferentInstances()
+    public function sessionNameIsDifferentForDifferentInstances(): void
     {
         $other = new NoneDurableSessionId();
         assertThat(
@@ -63,7 +61,7 @@ class NoneDurableSessionIdTest extends TestCase
     /**
      * @test
      */
-    public function hasSessionId()
+    public function hasSessionId(): void
     {
         assertThat(
                 (string) $this->noneDurableSessionId,
@@ -74,7 +72,7 @@ class NoneDurableSessionIdTest extends TestCase
     /**
      * @test
      */
-    public function regenerateChangesSessionId()
+    public function regenerateChangesSessionId(): void
     {
         $previous = (string) $this->noneDurableSessionId;
         assertThat(
@@ -86,7 +84,7 @@ class NoneDurableSessionIdTest extends TestCase
     /**
      * @test
      */
-    public function regeneratedSessionIdIsValid()
+    public function regeneratedSessionIdIsValid(): void
     {
         assertThat(
                 (string) $this->noneDurableSessionId->regenerate(),
@@ -97,7 +95,7 @@ class NoneDurableSessionIdTest extends TestCase
     /**
      * @test
      */
-    public function invalidateDoesNothing()
+    public function invalidateDoesNothing(): void
     {
         assertThat(
                 $this->noneDurableSessionId->invalidate(),
@@ -109,7 +107,7 @@ class NoneDurableSessionIdTest extends TestCase
      * @test
      * @since  5.0.1
      */
-    public function hasGivenSessionNameWhenProvided()
+    public function hasGivenSessionNameWhenProvided(): void
     {
         assertThat((new NoneDurableSessionId('foo'))->name(), equals('foo'));
     }
@@ -118,7 +116,7 @@ class NoneDurableSessionIdTest extends TestCase
      * @test
      * @since  5.0.1
      */
-    public function hasGivenSessionIdWhenProvided()
+    public function hasGivenSessionIdWhenProvided(): void
     {
         assertThat((string) new NoneDurableSessionId('foo', '313'), equals('313'));
     }

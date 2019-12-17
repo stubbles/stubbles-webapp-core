@@ -22,9 +22,7 @@ use function stubbles\reflect\annotationsOf;
 class UserAgentTest extends TestCase
 {
     /**
-     * instance to test
-     *
-     * @type  \stubbles\webapp\request\UserAgent
+     * @var  \stubbles\webapp\request\UserAgent
      */
     private $userAgent;
 
@@ -36,11 +34,14 @@ class UserAgentTest extends TestCase
     /**
      * @test
      */
-    public function xmlAnnotationPresentClass()
+    public function xmlAnnotationPresentClass(): void
     {
         assertTrue(annotationsOf($this->userAgent)->contain('XmlTag'));
     }
 
+    /**
+     * @return  array<string[]>
+     */
     public function getXmlRelatedMethodAnnotations(): array
     {
         return [['name', 'XmlAttribute'],
@@ -54,7 +55,7 @@ class UserAgentTest extends TestCase
      * @test
      * @dataProvider  getXmlRelatedMethodAnnotations
      */
-    public function xmlAnnotationsPresentOnMethods(string $method, string $annotation)
+    public function xmlAnnotationsPresentOnMethods(string $method, string $annotation): void
     {
         assertTrue(
                 annotationsOf($this->userAgent, $method)->contain($annotation)
@@ -64,7 +65,7 @@ class UserAgentTest extends TestCase
     /**
      * @test
      */
-    public function instanceReturnsGivenName()
+    public function instanceReturnsGivenName(): void
     {
         assertThat($this->userAgent->name(), equals('name'));
     }
@@ -72,12 +73,15 @@ class UserAgentTest extends TestCase
     /**
      * @test
      */
-    public function castToStringReturnsName()
+    public function castToStringReturnsName(): void
     {
         assertThat((string) $this->userAgent, equals('name'));
     }
 
 
+    /**
+     * @return  array<string[]>
+     */
     public function botsRecognizedByDefault(): array
     {
         return [
@@ -97,7 +101,7 @@ class UserAgentTest extends TestCase
      * @test
      * @dataProvider  botsRecognizedByDefault
      */
-    public function recognizesSomeBotsByDefault(string $userAgentValue)
+    public function recognizesSomeBotsByDefault(string $userAgentValue): void
     {
         $userAgent = new UserAgent($userAgentValue, true);
         assertTrue($userAgent->isBot());
@@ -107,7 +111,7 @@ class UserAgentTest extends TestCase
      * @since  2.0.0
      * @test
      */
-    public function instanceReturnsGivenCookieAcceptanceSetting()
+    public function instanceReturnsGivenCookieAcceptanceSetting(): void
     {
         assertTrue($this->userAgent->acceptsCookies());
     }

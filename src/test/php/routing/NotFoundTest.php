@@ -26,9 +26,7 @@ use function bovigo\assert\predicate\equals;
 class NotFoundTest extends TestCase
 {
     /**
-     * instance to test
-     *
-     * @type  \stubbles\webapp\routing\NotFound
+     * @var  \stubbles\webapp\routing\NotFound
      */
     private $notFound;
 
@@ -45,7 +43,7 @@ class NotFoundTest extends TestCase
     /**
      * @test
      */
-    public function doesNotRequireSwitchToHttps()
+    public function doesNotRequireSwitchToHttps(): void
     {
         assertFalse($this->notFound->requiresHttps());
     }
@@ -53,7 +51,7 @@ class NotFoundTest extends TestCase
     /**
      * @test
      */
-    public function returns404NotFoundError()
+    public function returns404NotFoundError(): void
     {
         $request = NewInstance::of(Request::class)->returns([
                 'protocolVersion' => new HttpVersion(1, 1)
@@ -68,7 +66,7 @@ class NotFoundTest extends TestCase
     /**
      * @test
      */
-    public function sets404NotFoundStatusCode()
+    public function sets404NotFoundStatusCode(): void
     {
         $request = NewInstance::of(Request::class)->returns([
                 'protocolVersion' => new HttpVersion(1, 1)

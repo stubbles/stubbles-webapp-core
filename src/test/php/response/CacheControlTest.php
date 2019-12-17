@@ -21,9 +21,7 @@ use function bovigo\assert\predicate\equals;
 class CacheControlTest extends TestCase
 {
     /**
-     * instance to test
-     *
-     * @type  \stubbles\webapp\response\CacheControl
+     * @var  \stubbles\webapp\response\CacheControl
      */
     private $cacheControl;
 
@@ -35,7 +33,7 @@ class CacheControlTest extends TestCase
     /**
      * @test
      */
-    public function onlyPrivateEnabledByDefault()
+    public function onlyPrivateEnabledByDefault(): void
     {
         assertThat($this->cacheControl, equals('private'));
     }
@@ -43,7 +41,7 @@ class CacheControlTest extends TestCase
     /**
      * @test
      */
-    public function enablePublicDisablesPrivate()
+    public function enablePublicDisablesPrivate(): void
     {
         assertThat($this->cacheControl->enablePublic(), equals('public'));
     }
@@ -51,7 +49,7 @@ class CacheControlTest extends TestCase
     /**
      * @test
      */
-    public function mustRevalidateEnabled()
+    public function mustRevalidateEnabled(): void
     {
         assertThat(
                 $this->cacheControl->disablePrivate()->mustRevalidate(),
@@ -62,7 +60,7 @@ class CacheControlTest extends TestCase
     /**
      * @test
      */
-    public function proxyRevalidateEnabled()
+    public function proxyRevalidateEnabled(): void
     {
         assertThat(
                 $this->cacheControl->disablePrivate()->proxyRevalidate(),
@@ -73,7 +71,7 @@ class CacheControlTest extends TestCase
     /**
      * @test
      */
-    public function noCacheEnabled()
+    public function noCacheEnabled(): void
     {
         assertThat(
                 $this->cacheControl->disablePrivate()->noCache(),
@@ -84,7 +82,7 @@ class CacheControlTest extends TestCase
     /**
      * @test
      */
-    public function noStoreEnabled()
+    public function noStoreEnabled(): void
     {
         assertThat(
                 $this->cacheControl->disablePrivate()->noStore(),
@@ -95,7 +93,7 @@ class CacheControlTest extends TestCase
     /**
      * @test
      */
-    public function noTransformEnabled()
+    public function noTransformEnabled(): void
     {
         assertThat(
                 $this->cacheControl->disablePrivate()->noTransform(),
@@ -106,7 +104,7 @@ class CacheControlTest extends TestCase
     /**
      * @test
      */
-    public function maxAgeSet()
+    public function maxAgeSet(): void
     {
         assertThat(
                 $this->cacheControl->disablePrivate()->maxAge(3),
@@ -117,7 +115,7 @@ class CacheControlTest extends TestCase
     /**
      * @test
      */
-    public function sMaxAgeSet()
+    public function sMaxAgeSet(): void
     {
         assertThat(
                 $this->cacheControl->disablePrivate()->sMaxAge(3),
@@ -128,7 +126,7 @@ class CacheControlTest extends TestCase
     /**
      * @test
      */
-    public function severalDirectives()
+    public function severalDirectives(): void
     {
         assertThat(
                 $this->cacheControl->mustRevalidate()->noCache()->noStore(),

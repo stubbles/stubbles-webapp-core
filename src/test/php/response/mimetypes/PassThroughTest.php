@@ -23,7 +23,7 @@ use function bovigo\assert\predicate\equals;
 class PassThroughTest extends TestCase
 {
     /**
-     * @type  \stubbles\webapp\response\mimetypes\PassThrough
+     * @var  \stubbles\webapp\response\mimetypes\PassThrough
      */
     private $passThrough;
 
@@ -35,7 +35,7 @@ class PassThroughTest extends TestCase
     /**
      * @test
      */
-    public function defaultMimeType()
+    public function defaultMimeType(): void
     {
         assertThat((string) $this->passThrough, equals('text/html'));
     }
@@ -43,7 +43,7 @@ class PassThroughTest extends TestCase
     /**
      * @test
      */
-    public function mimeTypeCanBeSpecialised()
+    public function mimeTypeCanBeSpecialised(): void
     {
         assertThat(
                 (string) $this->passThrough->specialise('text/plain'),
@@ -54,7 +54,7 @@ class PassThroughTest extends TestCase
     /**
      * @test
      */
-    public function serializesPassesThroughString()
+    public function serializesPassesThroughString(): void
     {
         assertThat(
                 $this->passThrough->serialize(
@@ -68,7 +68,7 @@ class PassThroughTest extends TestCase
     /**
      * @test
      */
-    public function serializesHandlesErrorAsString()
+    public function serializesHandlesErrorAsString(): void
     {
         assertThat(
                 $this->passThrough->serialize(

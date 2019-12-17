@@ -22,7 +22,7 @@ use function bovigo\assert\predicate\equals;
 class JsonTest extends TestCase
 {
     /**
-     * @type  \stubbles\webapp\response\mimetypes\Json
+     * @var  \stubbles\webapp\response\mimetypes\Json
      */
     private $json;
 
@@ -34,7 +34,7 @@ class JsonTest extends TestCase
     /**
      * @test
      */
-    public function defaultMimeType()
+    public function defaultMimeType(): void
     {
         assertThat((string) $this->json, equals('application/json'));
     }
@@ -42,7 +42,7 @@ class JsonTest extends TestCase
     /**
      * @test
      */
-    public function mimeTypeCanBeSpecialised()
+    public function mimeTypeCanBeSpecialised(): void
     {
         assertThat(
                 (string) $this->json->specialise('text/json'),
@@ -53,7 +53,7 @@ class JsonTest extends TestCase
     /**
      * @test
      */
-    public function serializesResourceToJson()
+    public function serializesResourceToJson(): void
     {
         assertThat(
                 $this->json->serialize(

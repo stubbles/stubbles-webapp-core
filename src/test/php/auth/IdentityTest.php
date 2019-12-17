@@ -33,7 +33,7 @@ class IdentityTest extends TestCase
     /**
      * @test
      */
-    public function isAssociatedWithGivenUser()
+    public function isAssociatedWithGivenUser(): void
     {
         $user = NewInstance::of(User::class);
         assertThat(
@@ -45,7 +45,7 @@ class IdentityTest extends TestCase
     /**
      * @test
      */
-    public function identityHasRoleWhenGivenRolesContainRole()
+    public function identityHasRoleWhenGivenRolesContainRole(): void
     {
         assertTrue($this->createIdentity()->hasRole('admin'));
     }
@@ -53,7 +53,7 @@ class IdentityTest extends TestCase
     /**
      * @test
      */
-    public function returnsGivenRoles()
+    public function returnsGivenRoles(): void
     {
         assertThat($this->createIdentity()->roles(), equals(new Roles(['admin'])));
     }

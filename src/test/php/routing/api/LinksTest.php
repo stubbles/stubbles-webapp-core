@@ -35,7 +35,7 @@ class LinksTest extends TestCase
     /**
      * @test
      */
-    public function hasNoLinksByDefault()
+    public function hasNoLinksByDefault(): void
     {
         assertEmpty(new Links());
     }
@@ -43,7 +43,7 @@ class LinksTest extends TestCase
     /**
      * @test
      */
-    public function hasLinkWhenInitiallyProvided()
+    public function hasLinkWhenInitiallyProvided(): void
     {
         assertThat($this->createPrefilled(), isOfSize(1));
     }
@@ -51,7 +51,7 @@ class LinksTest extends TestCase
     /**
      * @test
      */
-    public function canNotCreatePrefilledWithoutUri()
+    public function canNotCreatePrefilledWithoutUri(): void
     {
         expect(function() { new Links('self'); })
                 ->throws(\InvalidArgumentException::class);
@@ -60,7 +60,7 @@ class LinksTest extends TestCase
     /**
      * @test
      */
-    public function canAddNewLink()
+    public function canAddNewLink(): void
     {
         $links = new Links();
         $links->add('self', HttpUri::fromString('http://example.com/foo'));
@@ -70,7 +70,7 @@ class LinksTest extends TestCase
     /**
      * @test
      */
-    public function relWithoutLinks()
+    public function relWithoutLinks(): void
     {
         assertEmptyArray((new Links())->with('self'));
     }
@@ -78,7 +78,7 @@ class LinksTest extends TestCase
     /**
      * @test
      */
-    public function relWithOneLink()
+    public function relWithOneLink(): void
     {
         $links = new Links();
         $links->add(
@@ -94,7 +94,7 @@ class LinksTest extends TestCase
     /**
      * @test
      */
-    public function relWithSeveralLinks()
+    public function relWithSeveralLinks(): void
     {
         $links = new Links();
         $links->add(
@@ -117,7 +117,7 @@ class LinksTest extends TestCase
     /**
      * @test
      */
-    public function canBeSerializedToJson()
+    public function canBeSerializedToJson(): void
     {
         $links = $this->createPrefilled();
         $links->add(

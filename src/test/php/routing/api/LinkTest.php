@@ -24,7 +24,7 @@ class LinkTest extends TestCase
     /**
      * instance to test
      *
-     * @type  \stubbles\webapp\routing\api\Link
+     * @var  \stubbles\webapp\routing\api\Link
      */
     private $link;
 
@@ -39,7 +39,7 @@ class LinkTest extends TestCase
     /**
      * @test
      */
-    public function returnsProvidedRel()
+    public function returnsProvidedRel(): void
     {
         assertThat($this->link->rel(), equals('self'));
     }
@@ -47,7 +47,7 @@ class LinkTest extends TestCase
     /**
      * @test
      */
-    public function returnsProvidedUri()
+    public function returnsProvidedUri(): void
     {
         assertThat($this->link->uri(), equals('http://example.com/foo'));
     }
@@ -55,7 +55,7 @@ class LinkTest extends TestCase
     /**
      * @test
      */
-    public function stringRepresentationIsUri()
+    public function stringRepresentationIsUri(): void
     {
         assertThat($this->link, equals('http://example.com/foo'));
     }
@@ -63,7 +63,7 @@ class LinkTest extends TestCase
     /**
      * @test
      */
-    public function canBeSerializedToJson()
+    public function canBeSerializedToJson(): void
     {
         assertThat(
                 json_encode($this->link),

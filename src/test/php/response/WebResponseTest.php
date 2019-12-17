@@ -31,13 +31,11 @@ use function bovigo\callmap\verify;
 class WebResponseTest extends TestCase
 {
     /**
-     * instance to test
-     *
-     * @type  \stubbles\webapp\response\WebResponse
+     * @var  \stubbles\webapp\response\WebResponse
      */
     private $response;
     /**
-     * @type  \stubbles\streams\memory\MemoryOutputStream
+     * @var  \stubbles\streams\memory\MemoryOutputStream
      */
     private $memory;
 
@@ -66,7 +64,7 @@ class WebResponseTest extends TestCase
     /**
      * @test
      */
-    public function versionIs1_1ByDefault()
+    public function versionIs1_1ByDefault(): void
     {
         $this->response->send($this->memory);
         verify($this->response, 'header')->received('HTTP/1.1 200 OK');
@@ -75,7 +73,7 @@ class WebResponseTest extends TestCase
     /**
      * @test
      */
-    public function versionCanBeSetOnConstruction()
+    public function versionCanBeSetOnConstruction(): void
     {
         $response = $this->createResponse(HttpVersion::HTTP_1_0);
         $response->send($this->memory);
@@ -86,7 +84,7 @@ class WebResponseTest extends TestCase
      * @test
      * @since  4.0.0
      */
-    public function statusCodeIs200ByDefault()
+    public function statusCodeIs200ByDefault(): void
     {
         assertThat($this->response->statusCode(), equals(200));
     }
@@ -95,7 +93,7 @@ class WebResponseTest extends TestCase
      * @test
      * @since  4.0.0
      */
-    public function statusCodeCanBeChanged()
+    public function statusCodeCanBeChanged(): void
     {
         assertThat($this->response->setStatusCode(404)->statusCode(), equals(404));
     }
@@ -103,7 +101,7 @@ class WebResponseTest extends TestCase
     /**
      * @test
      */
-    public function statusCodeInCgiSapi()
+    public function statusCodeInCgiSapi(): void
     {
         $this->response = $this->createResponse(HttpVersion::HTTP_1_1, Http::GET, 'cgi');
         $this->response->send($this->memory);
@@ -113,7 +111,7 @@ class WebResponseTest extends TestCase
     /**
      * @test
      */
-    public function addedHeadersAreSend()
+    public function addedHeadersAreSend(): void
     {
         $this->response->addHeader('name', 'value1')->send($this->memory);
         verify($this->response, 'header')->receivedOn(2, 'name: value1');
@@ -122,7 +120,7 @@ class WebResponseTest extends TestCase
     /**
      * @test
      */
-    public function addingHeaderWithSameNameReplacesExistingHeader()
+    public function addingHeaderWithSameNameReplacesExistingHeader(): void
     {
         $this->response->addHeader('name', 'value1')
                 ->addHeader('name', 'value2')
@@ -134,7 +132,7 @@ class WebResponseTest extends TestCase
      * @test
      * @since  4.0.0
      */
-    public function doesNotContainsNonAddedHeader()
+    public function doesNotContainsNonAddedHeader(): void
     {
         assertFalse($this->response->containsHeader('X-Foo'));
     }
@@ -143,7 +141,7 @@ class WebResponseTest extends TestCase
      * @test
      * @since  4.0.0
      */
-    public function doesNotContainsAddedHeaderWithDifferentValue()
+    public function doesNotContainsAddedHeaderWithDifferentValue(): void
     {
         assertFalse(
                 $this->response->addHeader('X-Foo', 'bar')
@@ -155,7 +153,7 @@ class WebResponseTest extends TestCase
      * @test
      * @since  4.0.0
      */
-    public function containsAddedHeader()
+    public function containsAddedHeader(): void
     {
         assertTrue(
                 $this->response->addHeader('X-Foo', 'bar')
@@ -167,7 +165,7 @@ class WebResponseTest extends TestCase
      * @test
      * @since  4.0.0
      */
-    public function containsAddedHeaderWithValue()
+    public function containsAddedHeaderWithValue(): void
     {
         assertTrue(
                 $this->response->addHeader('X-Foo', 'bar')
@@ -175,7 +173,7 @@ class WebResponseTest extends TestCase
         );
     }
 
-    protected function createCookie($value = null): Cookie
+    protected function createCookie(?string $value = null): Cookie
     {
         return NewInstance::of(Cookie::class, ['foo', $value])
                 ->stub('send'); // disable actual sending of cookie
@@ -184,7 +182,7 @@ class WebResponseTest extends TestCase
     /**
      * @test
      */
-    public function cookiesAreSend()
+    public function cookiesAreSend(): void
     {
         $cookie = $this->createCookie();
         $this->response->addCookie($cookie)
@@ -195,7 +193,7 @@ class WebResponseTest extends TestCase
     /**
      * @test
      */
-    public function addingCookieWithSameNameReplacesExistingCookie()
+    public function addingCookieWithSameNameReplacesExistingCookie(): void
     {
         $cookie = $this->createCookie();
         $this->response->addCookie($cookie)
@@ -208,7 +206,7 @@ class WebResponseTest extends TestCase
      * @test
      * @since  4.0.0
      */
-    public function doesNotContainsNonAddedCookie()
+    public function doesNotContainsNonAddedCookie(): void
     {
         assertFalse($this->response->containsCookie('foo'));
     }
@@ -217,7 +215,7 @@ class WebResponseTest extends TestCase
      * @test
      * @since  4.0.0
      */
-    public function doesNotContainsAddedCookieWithDifferentValue()
+    public function doesNotContainsAddedCookieWithDifferentValue(): void
     {
         assertFalse(
                 $this->response->addCookie($this->createCookie('bar'))
@@ -229,7 +227,7 @@ class WebResponseTest extends TestCase
      * @test
      * @since  4.0.0
      */
-    public function containsAddedCookie()
+    public function containsAddedCookie(): void
     {
         assertTrue(
                 $this->response->addCookie($this->createCookie('bar'))
@@ -241,7 +239,7 @@ class WebResponseTest extends TestCase
      * @test
      * @since  4.0.0
      */
-    public function containsAddedCookieWithValue()
+    public function containsAddedCookieWithValue(): void
     {
         assertTrue(
                 $this->response->addCookie($this->createCookie('bar'))
@@ -252,7 +250,7 @@ class WebResponseTest extends TestCase
     /**
      * @test
      */
-    public function hasNoBodyByDefault()
+    public function hasNoBodyByDefault(): void
     {
         $outputStream = NewInstance::of(OutputStream::class);
         $this->response->send($outputStream);
@@ -262,7 +260,7 @@ class WebResponseTest extends TestCase
     /**
      * @test
      */
-    public function doesNotReturnOutputStreamWhenNonePassedAndNoResourceGiven()
+    public function doesNotReturnOutputStreamWhenNonePassedAndNoResourceGiven(): void
     {
         assertNull($this->response->send());
     }
@@ -270,7 +268,7 @@ class WebResponseTest extends TestCase
     /**
      * @test
      */
-    public function bodyIsSend()
+    public function bodyIsSend(): void
     {
         assertThat(
                 $this->response->write('foo')->send($this->memory)->buffer(),
@@ -282,7 +280,7 @@ class WebResponseTest extends TestCase
      * @test
      * @since  4.0.0
      */
-    public function bodyIsNotSendWhenRequestMethodIsHead()
+    public function bodyIsNotSendWhenRequestMethodIsHead(): void
     {
         $this->response = $this->createResponse(HttpVersion::HTTP_1_1, Http::HEAD);
         $outputStream = NewInstance::of(OutputStream::class);
@@ -295,7 +293,7 @@ class WebResponseTest extends TestCase
      * @since  3.1.0
      * @group  final_response
      */
-    public function isNotFixedByDefault()
+    public function isNotFixedByDefault(): void
     {
         assertFalse($this->response->isFixed());
     }
@@ -304,7 +302,7 @@ class WebResponseTest extends TestCase
      * @since  1.3.0
      * @test
      */
-    public function redirectAddsLocationHeaderAndStatusCode()
+    public function redirectAddsLocationHeaderAndStatusCode(): void
     {
         $this->response->redirect('http://example.com/', 301);
         $this->response->send();
@@ -319,7 +317,7 @@ class WebResponseTest extends TestCase
      * @test
      * @group  bug251
      */
-    public function redirectWithoutStatusCodeAndReasonPhraseAddsLocationHeaderAndStatusCode302()
+    public function redirectWithoutStatusCodeAndReasonPhraseAddsLocationHeaderAndStatusCode302(): void
     {
         $this->response->redirect('http://example.com/');
         $this->response->send();
@@ -334,7 +332,7 @@ class WebResponseTest extends TestCase
      * @test
      * @group  issue_73
      */
-    public function unauthorizedSetsStatusCodeTo401()
+    public function unauthorizedSetsStatusCodeTo401(): void
     {
         $this->response->unauthorized(['Basic realm="simple"']);
         $this->response->send();
@@ -346,7 +344,7 @@ class WebResponseTest extends TestCase
      * @test
      * @group  issue_73
      */
-    public function unauthorizedAddsWwwAuthenticateHeaderWithChallenges()
+    public function unauthorizedAddsWwwAuthenticateHeaderWithChallenges(): void
     {
         $this->response->unauthorized([
             'Newauth realm="apps", type=1, title="Login to \"apps\""',
@@ -363,7 +361,7 @@ class WebResponseTest extends TestCase
      * @test
      * @group  issue_73
      */
-    public function unauthorizedReturnsErrorInstance()
+    public function unauthorizedReturnsErrorInstance(): void
     {
         assertThat(
             $this->response->unauthorized(['Basic realm="simple"']),
@@ -376,7 +374,7 @@ class WebResponseTest extends TestCase
      * @test
      * @group  issue_73
      */
-    public function unauthorizedFixatesResponse()
+    public function unauthorizedFixatesResponse(): void
     {
         $this->response->unauthorized(['Basic realm="simple"']);
         assertTrue($this->response->isFixed());
@@ -386,7 +384,7 @@ class WebResponseTest extends TestCase
      * @since  2.0.0
      * @test
      */
-    public function forbiddenSetsStatusCodeTo403()
+    public function forbiddenSetsStatusCodeTo403(): void
     {
         $this->response->forbidden();
         $this->response->send();
@@ -397,7 +395,7 @@ class WebResponseTest extends TestCase
      * @since  6.0.0
      * @test
      */
-    public function forbiddenReturnsErrorInstance()
+    public function forbiddenReturnsErrorInstance(): void
     {
         assertThat($this->response->forbidden(), equals(Error::forbidden()));
     }
@@ -407,7 +405,7 @@ class WebResponseTest extends TestCase
      * @since  3.1.0
      * @group  final_response
      */
-    public function forbiddenFixatesResponse()
+    public function forbiddenFixatesResponse(): void
     {
         $this->response->forbidden();
         assertTrue($this->response->isFixed());
@@ -417,7 +415,7 @@ class WebResponseTest extends TestCase
      * @since  2.0.0
      * @test
      */
-    public function notFoundSetsStatusCodeTo404()
+    public function notFoundSetsStatusCodeTo404(): void
     {
         $this->response->notFound();
         $this->response->send();
@@ -428,7 +426,7 @@ class WebResponseTest extends TestCase
      * @since  6.0.0
      * @test
      */
-    public function notFoundReturnsErrorInstance()
+    public function notFoundReturnsErrorInstance(): void
     {
         assertThat($this->response->notFound(), equals(Error::notFound()));
     }
@@ -438,7 +436,7 @@ class WebResponseTest extends TestCase
      * @since  3.1.0
      * @group  final_response
      */
-    public function notFoundFixatesResponse()
+    public function notFoundFixatesResponse(): void
     {
         $this->response->notFound();
         assertTrue($this->response->isFixed());
@@ -448,7 +446,7 @@ class WebResponseTest extends TestCase
      * @since  2.0.0
      * @test
      */
-    public function methodNotAllowedSetsStatusCodeTo405()
+    public function methodNotAllowedSetsStatusCodeTo405(): void
     {
         $this->response->methodNotAllowed('POST', ['GET', 'HEAD']);
         $this->response->send();
@@ -462,7 +460,7 @@ class WebResponseTest extends TestCase
      * @since  6.0.0
      * @test
      */
-    public function methodNotAllowedReturnsErrorInstance()
+    public function methodNotAllowedReturnsErrorInstance(): void
     {
         assertThat(
                 $this->response->methodNotAllowed('POST', ['GET', 'HEAD']),
@@ -475,7 +473,7 @@ class WebResponseTest extends TestCase
      * @since  3.1.0
      * @group  final_response
      */
-    public function methodNotAllowedFixatesResponse()
+    public function methodNotAllowedFixatesResponse(): void
     {
         $this->response->methodNotAllowed('POST', ['GET', 'HEAD']);
         assertTrue($this->response->isFixed());
@@ -485,7 +483,7 @@ class WebResponseTest extends TestCase
      * @since  2.0.0
      * @test
      */
-    public function notAcceptableSetsStatusCodeTo406()
+    public function notAcceptableSetsStatusCodeTo406(): void
     {
         $this->response->notAcceptable();
         $this->response->send();
@@ -497,7 +495,7 @@ class WebResponseTest extends TestCase
      * @since  3.1.0
      * @group  final_response
      */
-    public function notAcceptableFixatesResponse()
+    public function notAcceptableFixatesResponse(): void
     {
         $this->response->notAcceptable();
         assertTrue($this->response->isFixed());
@@ -507,7 +505,7 @@ class WebResponseTest extends TestCase
      * @since  2.0.0
      * @test
      */
-    public function notAcceptableWithSupportedMimeTypesSetsStatusCodeTo406()
+    public function notAcceptableWithSupportedMimeTypesSetsStatusCodeTo406(): void
     {
         $this->response->notAcceptable(['application/json', 'application/xml']);
         $this->response->send();
@@ -521,7 +519,7 @@ class WebResponseTest extends TestCase
      * @since  2.0.0
      * @test
      */
-    public function internalServerErrorSetsStatusCodeTo500()
+    public function internalServerErrorSetsStatusCodeTo500(): void
     {
         $this->response->internalServerError('ups!');
         $this->response->send();
@@ -533,7 +531,7 @@ class WebResponseTest extends TestCase
      * @since  6.0.0
      * @test
      */
-    public function internalServerErrorReturnsErrorInstance()
+    public function internalServerErrorReturnsErrorInstance(): void
     {
         assertThat(
                 $this->response->internalServerError('ups!'),
@@ -546,7 +544,7 @@ class WebResponseTest extends TestCase
      * @since  3.1.0
      * @group  final_response
      */
-    public function internalServerErrorFixatesResponse()
+    public function internalServerErrorFixatesResponse(): void
     {
         $this->response->internalServerError('ups');
         assertTrue($this->response->isFixed());
@@ -556,7 +554,7 @@ class WebResponseTest extends TestCase
      * @since  2.0.0
      * @test
      */
-    public function httpVersionNotSupportedSetsStatusCodeTo505()
+    public function httpVersionNotSupportedSetsStatusCodeTo505(): void
     {
         $this->response->httpVersionNotSupported();
         assertThat(
@@ -572,12 +570,15 @@ class WebResponseTest extends TestCase
      * @since  3.1.0
      * @group  final_response
      */
-    public function httpVersionNotSupportedFixatesResponse()
+    public function httpVersionNotSupportedFixatesResponse(): void
     {
         $this->response->httpVersionNotSupported();
         assertTrue($this->response->isFixed());
     }
 
+    /**
+     * @return  array<HttpVersion[]>
+     */
     public function unsupportedHttpVersions(): array
     {
         return [
@@ -591,7 +592,7 @@ class WebResponseTest extends TestCase
      * @test
      * @dataProvider  unsupportedHttpVersions
      */
-    public function createInstanceWithHttpMajorVersionOtherThanOneFixatesResponseToHttpVersionNotSupported(HttpVersion $unsupportedHttpVersion)
+    public function createInstanceWithHttpMajorVersionOtherThanOneFixatesResponseToHttpVersionNotSupported(HttpVersion $unsupportedHttpVersion): void
     {
         $response = $this->createResponse($unsupportedHttpVersion);
         assertTrue($response->isFixed());
@@ -609,7 +610,7 @@ class WebResponseTest extends TestCase
      * @group  issue_74
      * @since  5.1.0
      */
-    public function requestIdAddedByDefault()
+    public function requestIdAddedByDefault(): void
     {
         $this->response->send($this->memory);
         verify($this->response, 'header')
@@ -621,7 +622,7 @@ class WebResponseTest extends TestCase
      * @group  issue_74
      * @since  5.1.0
      */
-    public function requestIdCanBeChanged()
+    public function requestIdCanBeChanged(): void
     {
         $this->response->headers()->requestId('another-request-id-bar');
         $this->response->send($this->memory);

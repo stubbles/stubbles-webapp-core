@@ -27,15 +27,11 @@ use function stubbles\reflect\annotationsOfConstructor;
 class AddAccessControlAllowOriginHeaderTest extends TestCase
 {
     /**
-     * mocked request instance
-     *
-     * @type  \bovigo\callmap\Proxy
+     * @var  Request&\bovigo\callmap\ClassProxy
      */
     private $request;
     /**
-     * mocked response instance
-     *
-     * @type  \bovigo\callmap\Proxy
+     * @var  Response&\bovigo\callmap\ClassProxy
      */
     private $response;
 
@@ -48,7 +44,7 @@ class AddAccessControlAllowOriginHeaderTest extends TestCase
     /**
      * @test
      */
-    public function annotationsPresentOnConstructor()
+    public function annotationsPresentOnConstructor(): void
     {
         $annotations = annotationsOfConstructor(
                 AddAccessControlAllowOriginHeader::class
@@ -60,22 +56,29 @@ class AddAccessControlAllowOriginHeaderTest extends TestCase
         );
     }
 
-    private function apply($config)
+    /**
+     * @param  string|string[]  $config
+     */
+    private function apply($config): void
     {
         (new AddAccessControlAllowOriginHeader($config))
                 ->postProcess($this->request, $this->response);
     }
 
+    /**
+     * @return  array<mixed[]>
+     */
     public function emptyConfigs(): array
     {
         return [[null], [''], [[]]];
     }
 
     /**
+     * @param  mixed  $emptyConfig
      * @test
      * @dataProvider  emptyConfigs
      */
-    public function doesNotAddHeaderWhenNoAllowedOriginHostConfigured($emptyConfig)
+    public function doesNotAddHeaderWhenNoAllowedOriginHostConfigured($emptyConfig): void
     {
         $this->request->returns(['hasHeader' => false]);
         $this->apply($emptyConfig);
@@ -85,7 +88,7 @@ class AddAccessControlAllowOriginHeaderTest extends TestCase
     /**
      * @test
      */
-    public function doesNotAddHeaderWhenRequestContainsNoOriginHeader()
+    public function doesNotAddHeaderWhenRequestContainsNoOriginHeader(): void
     {
         $this->request->returns(['hasHeader' => false]);
         $this->apply('^http://[a-zA-Z0-9-\.]+example\.com(:[0-9]{4})?$');
@@ -95,7 +98,7 @@ class AddAccessControlAllowOriginHeaderTest extends TestCase
     /**
      * @test
      */
-    public function doesNotAddHeaderWhenRequestContainsEmptyOriginHeader()
+    public function doesNotAddHeaderWhenRequestContainsEmptyOriginHeader(): void
     {
         $this->request->returns([
             'hasHeader'  => true,
@@ -108,7 +111,7 @@ class AddAccessControlAllowOriginHeaderTest extends TestCase
     /**
      * @test
      */
-    public function doesNotAddHeaderWhenOriginFromRequestDoesNotMatchAllowedOriginHosts()
+    public function doesNotAddHeaderWhenOriginFromRequestDoesNotMatchAllowedOriginHosts(): void
     {
         $this->request->returns([
                 'hasHeader'  => true,
@@ -122,7 +125,7 @@ class AddAccessControlAllowOriginHeaderTest extends TestCase
     /**
      * @test
      */
-    public function addsHeaderWhenOriginFromRequestIsAllowed()
+    public function addsHeaderWhenOriginFromRequestIsAllowed(): void
     {
         $this->request->returns([
                 'hasHeader'  => true,

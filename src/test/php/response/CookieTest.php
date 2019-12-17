@@ -27,7 +27,7 @@ class CookieTest extends TestCase
     /**
      * @test
      */
-    public function returnsGivenName()
+    public function returnsGivenName(): void
     {
         assertThat(Cookie::create('foo', 'bar')->name(), equals('foo'));
     }
@@ -35,7 +35,7 @@ class CookieTest extends TestCase
     /**
      * @test
      */
-    public function returnsGivenValue()
+    public function returnsGivenValue(): void
     {
         assertThat(Cookie::create('foo', 'bar')->value(), equals('bar'));
     }
@@ -43,7 +43,7 @@ class CookieTest extends TestCase
     /**
      * @test
      */
-    public function hasNoExpirationDateByDefault()
+    public function hasNoExpirationDateByDefault(): void
     {
         assertThat(Cookie::create('foo', 'bar')->expiration(), equals(0));
     }
@@ -51,7 +51,7 @@ class CookieTest extends TestCase
     /**
      * @test
      */
-    public function hasNoPathByDefault()
+    public function hasNoPathByDefault(): void
     {
         assertNull(Cookie::create('foo', 'bar')->path());
     }
@@ -59,7 +59,7 @@ class CookieTest extends TestCase
     /**
      * @test
      */
-    public function hasNoDomainByDefault()
+    public function hasNoDomainByDefault(): void
     {
         assertNull(Cookie::create('foo', 'bar')->domain());
     }
@@ -67,7 +67,7 @@ class CookieTest extends TestCase
     /**
      * @test
      */
-    public function isNotRestrictedToSslByDefault()
+    public function isNotRestrictedToSslByDefault(): void
     {
         assertFalse(Cookie::create('foo', 'bar')->isRestrictedToSsl());
     }
@@ -75,7 +75,7 @@ class CookieTest extends TestCase
     /**
      * @test
      */
-    public function isHttpOnlyByDefault()
+    public function isHttpOnlyByDefault(): void
     {
         assertTrue(Cookie::create('foo', 'bar')->isHttpOnly());
     }
@@ -83,7 +83,7 @@ class CookieTest extends TestCase
     /**
      * @test
      */
-    public function expiresAtUsesGivenTimestamp()
+    public function expiresAtUsesGivenTimestamp(): void
     {
         $expires = time() + 100; // expire after 100 seconds
         assertThat(
@@ -96,7 +96,7 @@ class CookieTest extends TestCase
      * @test
      * @group  bug255
      */
-    public function expiresInAddsCurrentTime()
+    public function expiresInAddsCurrentTime(): void
     {
         assertThat(
                 Cookie::create('foo', 'bar')->expiringIn(100)->expiration(),
@@ -107,7 +107,7 @@ class CookieTest extends TestCase
     /**
      * @test
      */
-    public function usesGivenPath()
+    public function usesGivenPath(): void
     {
         assertThat(
                 Cookie::create('foo', 'bar')->forPath('bar')->path(),
@@ -118,7 +118,7 @@ class CookieTest extends TestCase
     /**
      * @test
      */
-    public function usesGivenDomain()
+    public function usesGivenDomain(): void
     {
         assertThat(
                 Cookie::create('foo', 'bar')->forDomain('.example.org')->domain(),
@@ -129,7 +129,7 @@ class CookieTest extends TestCase
     /**
      * @test
      */
-    public function isRestrictedToSslIfEnabled()
+    public function isRestrictedToSslIfEnabled(): void
     {
         assertTrue(
                 Cookie::create('foo', 'bar')->restrictToSsl()->isRestrictedToSsl()
@@ -139,7 +139,7 @@ class CookieTest extends TestCase
     /**
      * @test
      */
-    public function httpOnlyCanBeDisabled()
+    public function httpOnlyCanBeDisabled(): void
     {
         assertFalse(
                 Cookie::create('foo', 'bar')->disableHttpOnly()->isHttpOnly()

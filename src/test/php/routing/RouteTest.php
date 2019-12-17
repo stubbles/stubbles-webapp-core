@@ -35,7 +35,7 @@ class RouteTest extends TestCase
     /**
      * @test
      */
-    public function constructRouteWithInvalidCallbackThrowsIllegalArgumentException()
+    public function constructRouteWithInvalidCallbackThrowsIllegalArgumentException(): void
     {
         expect(function() { new Route('/hello', 500, 'GET'); })
                 ->throws(\InvalidArgumentException::class);
@@ -45,12 +45,16 @@ class RouteTest extends TestCase
      * @test
      * @since  4.0.0
      */
-    public function constructRouteWithInvalidRequestMethodThrowsIllegalArgumentException()
+    public function constructRouteWithInvalidRequestMethodThrowsIllegalArgumentException(): void
     {
         expect(function() { new Route('/hello', function() {}, 500); })
                 ->throws(\InvalidArgumentException::class);
     }
 
+    /**
+     * @param   string|string[]  $method
+     * @return  Route
+     */
     private function createRoute($method = 'GET'): Route
     {
         return new Route(
@@ -68,7 +72,7 @@ class RouteTest extends TestCase
     /**
      * @test
      */
-    public function allowedRequestMethodsContainAllIfNoneGiven()
+    public function allowedRequestMethodsContainAllIfNoneGiven(): void
     {
         assertThat(
                 $this->createRoute(null)->allowedRequestMethods(),
@@ -79,7 +83,7 @@ class RouteTest extends TestCase
     /**
      * @test
      */
-    public function allowedRequestMethodsContainGivenSingleMethodOnly()
+    public function allowedRequestMethodsContainGivenSingleMethodOnly(): void
     {
         assertThat($this->createRoute()->allowedRequestMethods(), equals(['GET']));
     }
@@ -88,7 +92,7 @@ class RouteTest extends TestCase
      * @test
      * @since  4.0.0
      */
-    public function allowedRequestMethodsContainGivenListOfMethodOnly()
+    public function allowedRequestMethodsContainGivenListOfMethodOnly(): void
     {
         assertThat(
                 $this->createRoute(['POST', 'PUT'])->allowedRequestMethods(),
@@ -99,7 +103,7 @@ class RouteTest extends TestCase
     /**
      * @test
      */
-    public function doesNotMatchUriRequestIfRequestMethodsDiffer()
+    public function doesNotMatchUriRequestIfRequestMethodsDiffer(): void
     {
         assertFalse(
                 $this->createRoute()->matches(
@@ -111,7 +115,7 @@ class RouteTest extends TestCase
     /**
      * @test
      */
-    public function doesNotMatchUriRequestIfRequestPathsDiffers()
+    public function doesNotMatchUriRequestIfRequestPathsDiffers(): void
     {
         assertFalse(
                 $this->createRoute()->matches(
@@ -123,7 +127,7 @@ class RouteTest extends TestCase
     /**
      * @test
      */
-    public function matchesIfPathAndMethodAreOk()
+    public function matchesIfPathAndMethodAreOk(): void
     {
         assertTrue(
                 $this->createRoute()->matches(
@@ -135,7 +139,7 @@ class RouteTest extends TestCase
     /**
      * @test
      */
-    public function doesNotMatchPathIfDiffers()
+    public function doesNotMatchPathIfDiffers(): void
     {
         assertFalse(
                 $this->createRoute()->matchesPath(
@@ -147,7 +151,7 @@ class RouteTest extends TestCase
     /**
      * @test
      */
-    public function matchesPathIfPathOk()
+    public function matchesPathIfPathOk(): void
     {
         assertTrue(
                 $this->createRoute()->matchesPath(
@@ -159,7 +163,7 @@ class RouteTest extends TestCase
     /**
      * @test
      */
-    public function matchesForHeadIfPathOkAndAllowedMethodIsGet()
+    public function matchesForHeadIfPathOkAndAllowedMethodIsGet(): void
     {
         assertTrue(
                 $this->createRoute()->matches(
@@ -171,7 +175,7 @@ class RouteTest extends TestCase
     /**
      * @test
      */
-    public function returnsGivenPath()
+    public function returnsGivenPath(): void
     {
         assertThat($this->createRoute()->configuredPath(), equals('/hello/{name}'));
     }
@@ -179,7 +183,7 @@ class RouteTest extends TestCase
     /**
      * @test
      */
-    public function returnsGivenCallback()
+    public function returnsGivenCallback(): void
     {
         $route = new Route('/hello/{name}', __CLASS__);
         assertThat($route->target(), equals(__CLASS__));
@@ -188,7 +192,7 @@ class RouteTest extends TestCase
     /**
      * @test
      */
-    public function hasNoPreInterceptorsByDefault()
+    public function hasNoPreInterceptorsByDefault(): void
     {
         assertEmptyArray($this->createRoute()->preInterceptors());
     }
@@ -196,7 +200,7 @@ class RouteTest extends TestCase
     /**
      * @test
      */
-    public function addInvalidPreInterceptorThrowsIllegalArgumentException()
+    public function addInvalidPreInterceptorThrowsIllegalArgumentException(): void
     {
         expect(function() { $this->createRoute()->preIntercept(303); })
                 ->throws(\InvalidArgumentException::class);
@@ -205,7 +209,7 @@ class RouteTest extends TestCase
     /**
      * @test
      */
-    public function hasGivenListOfPreInterceptors()
+    public function hasGivenListOfPreInterceptors(): void
     {
         $preInterceptorClosure  = function() {};
         $preInterceptor         = NewInstance::of(PreInterceptor::class);
@@ -228,7 +232,7 @@ class RouteTest extends TestCase
     /**
      * @test
      */
-    public function hasNoPostInterceptorsByDefault()
+    public function hasNoPostInterceptorsByDefault(): void
     {
         assertEmptyArray($this->createRoute()->postInterceptors());
     }
@@ -236,7 +240,7 @@ class RouteTest extends TestCase
     /**
      * @test
      */
-    public function addInvalidPostInterceptorThrowsIllegalArgumentException()
+    public function addInvalidPostInterceptorThrowsIllegalArgumentException(): void
     {
         expect(function() { $this->createRoute()->postIntercept(303); })
                 ->throws(\InvalidArgumentException::class);
@@ -245,7 +249,7 @@ class RouteTest extends TestCase
     /**
      * @test
      */
-    public function hasGivenListOfPostInterceptors()
+    public function hasGivenListOfPostInterceptors(): void
     {
         $postInterceptorClosure  = function() {};
         $postInterceptor         = NewInstance::of(PostInterceptor::class);
@@ -268,7 +272,7 @@ class RouteTest extends TestCase
     /**
      * @test
      */
-    public function doesNotRequireHttpsByDefault()
+    public function doesNotRequireHttpsByDefault(): void
     {
         assertFalse($this->createRoute()->requiresHttps());
     }
@@ -276,7 +280,7 @@ class RouteTest extends TestCase
     /**
      * @test
      */
-    public function requiresHttpsWhenWhenRestrictedToHttps()
+    public function requiresHttpsWhenWhenRestrictedToHttps(): void
     {
         assertTrue($this->createRoute()->httpsOnly()->requiresHttps());
     }
@@ -285,7 +289,7 @@ class RouteTest extends TestCase
      * @test
      * @since  3.1.0
      */
-    public function requiresHttpsWhenCallbackInstanceAnnotatedWithRequiresHttps()
+    public function requiresHttpsWhenCallbackInstanceAnnotatedWithRequiresHttps(): void
     {
         $route = new Route('/hello/{name}', new AnnotatedProcessor(), 'GET');
         assertTrue($route->requiresHttps());
@@ -295,7 +299,7 @@ class RouteTest extends TestCase
      * @test
      * @since  3.1.0
      */
-    public function requiresHttpsWhenCallbackClassAnnotatedWithRequiresHttps()
+    public function requiresHttpsWhenCallbackClassAnnotatedWithRequiresHttps(): void
     {
         $route = new Route(
                 '/hello/{name}',
@@ -309,7 +313,7 @@ class RouteTest extends TestCase
      * @test
      * @since  3.0.0
      */
-    public function doesNotRequireAuthByDefault()
+    public function doesNotRequireAuthByDefault(): void
     {
         assertFalse($this->createRoute()->requiresAuth());
     }
@@ -318,7 +322,7 @@ class RouteTest extends TestCase
      * @test
      * @since  3.0.0
      */
-    public function requiresAuthWhenLoginIsRequired()
+    public function requiresAuthWhenLoginIsRequired(): void
     {
         assertTrue($this->createRoute()->withLoginOnly()->requiresAuth());
     }
@@ -327,7 +331,7 @@ class RouteTest extends TestCase
      * @test
      * @since  3.1.0
      */
-    public function requiresAuthWhenCallbackInstanceAnnotatedWithRequiresLogin()
+    public function requiresAuthWhenCallbackInstanceAnnotatedWithRequiresLogin(): void
     {
         $route = new Route('/hello/{name}', new AnnotatedProcessor(), 'GET');
         assertTrue($route->requiresAuth());
@@ -337,7 +341,7 @@ class RouteTest extends TestCase
      * @test
      * @since  3.1.0
      */
-    public function requiresAuthWhenCallbackClassAnnotatedWithRequiresLogin()
+    public function requiresAuthWhenCallbackClassAnnotatedWithRequiresLogin(): void
     {
         $route = new Route('/hello/{name}',
                            AnnotatedProcessor::class,
@@ -350,7 +354,7 @@ class RouteTest extends TestCase
      * @test
      * @since  3.0.0
      */
-    public function requiresAuthWhenRoleIsRequired()
+    public function requiresAuthWhenRoleIsRequired(): void
     {
         assertTrue($this->createRoute()->withRoleOnly('admin')->requiresAuth());
     }
@@ -359,7 +363,7 @@ class RouteTest extends TestCase
      * @test
      * @since  3.1.0
      */
-    public function requiresAuthWhenCallbackInstanceAnnotatedWithRequiresRole()
+    public function requiresAuthWhenCallbackInstanceAnnotatedWithRequiresRole(): void
     {
         $route = new Route('/hello/{name}', new OtherAnnotatedProcessor(), 'GET');
         assertTrue($route->requiresAuth());
@@ -369,7 +373,7 @@ class RouteTest extends TestCase
      * @test
      * @since  3.1.0
      */
-    public function requiresAuthWhenCallbackClassAnnotatedWithRequiresRole()
+    public function requiresAuthWhenCallbackClassAnnotatedWithRequiresRole(): void
     {
         $route = new Route(
                 '/hello/{name}',
@@ -384,7 +388,7 @@ class RouteTest extends TestCase
      * @since  5.0.0
      * @group  role_aware
      */
-    public function requiresAuthWhenCallbackInstanceAnnotatedWithRoleAware()
+    public function requiresAuthWhenCallbackInstanceAnnotatedWithRoleAware(): void
     {
         $route = new Route(
                 '/hello/{name}',
@@ -399,7 +403,7 @@ class RouteTest extends TestCase
      * @since  5.0.0
      * @group  role_aware
      */
-    public function requiresAuthWhenCallbackClassAnnotatedWithRoleAware()
+    public function requiresAuthWhenCallbackClassAnnotatedWithRoleAware(): void
     {
         $route = new Route(
                 '/hello/{name}',
@@ -413,7 +417,7 @@ class RouteTest extends TestCase
      * @test
      * @since  3.0.0
      */
-    public function requiresAuthWhenLoginAndRoleIsRequired()
+    public function requiresAuthWhenLoginAndRoleIsRequired(): void
     {
         assertTrue(
                 $this->createRoute()
@@ -426,7 +430,7 @@ class RouteTest extends TestCase
     /**
      * @test
      */
-    public function doesNotRequireRolesByDefault()
+    public function doesNotRequireRolesByDefault(): void
     {
         assertFalse($this->createRoute()->authConstraint()->requiresRoles());
     }
@@ -434,7 +438,7 @@ class RouteTest extends TestCase
     /**
      * @test
      */
-    public function requiresRolesWhenRoleIsSet()
+    public function requiresRolesWhenRoleIsSet(): void
     {
         assertTrue(
                 $this->createRoute()
@@ -448,7 +452,7 @@ class RouteTest extends TestCase
      * @test
      * @since  3.1.0
      */
-    public function requiresRolesWhenCallbackInstanceAnnotatedWithRequiresRole()
+    public function requiresRolesWhenCallbackInstanceAnnotatedWithRequiresRole(): void
     {
         $route = new Route(
                 '/hello/{name}',
@@ -462,7 +466,7 @@ class RouteTest extends TestCase
      * @test
      * @since  3.1.0
      */
-    public function requiresRolesWhenCallbackClassAnnotatedWithRequiresRole()
+    public function requiresRolesWhenCallbackClassAnnotatedWithRequiresRole(): void
     {
         $route = new Route(
                 '/hello/{name}',
@@ -477,7 +481,7 @@ class RouteTest extends TestCase
      * @since  5.0.0
      * @group  role_aware
      */
-    public function requiresRolesWhenCallbackInstanceAnnotatedWithRoleAware()
+    public function requiresRolesWhenCallbackInstanceAnnotatedWithRoleAware(): void
     {
         $route = new Route(
                 '/hello/{name}',
@@ -492,7 +496,7 @@ class RouteTest extends TestCase
      * @since  5.0.0
      * @group  role_aware
      */
-    public function requiresRolesWhenCallbackClassAnnotatedWithRoleAware()
+    public function requiresRolesWhenCallbackClassAnnotatedWithRoleAware(): void
     {
         $route = new Route(
                 '/hello/{name}',
@@ -507,7 +511,7 @@ class RouteTest extends TestCase
      * @since  5.0.0
      * @group  role_aware
      */
-    public function isNotSatisfiedByRolesWhenRolesAreNull()
+    public function isNotSatisfiedByRolesWhenRolesAreNull(): void
     {
         assertFalse($this->createRoute()->authConstraint()->satisfiedByRoles());
     }
@@ -517,7 +521,7 @@ class RouteTest extends TestCase
      * @since  5.0.0
      * @group  role_aware
      */
-    public function isSatisfiedByRolesWhenRolesAwareWithCallbackClass()
+    public function isSatisfiedByRolesWhenRolesAwareWithCallbackClass(): void
     {
         $route = new Route(
                 '/hello/{name}',
@@ -532,7 +536,7 @@ class RouteTest extends TestCase
      * @since  5.0.0
      * @group  role_aware
      */
-    public function isSatisfiedByRolesWhenRolesAwareWithCallbackInstance()
+    public function isSatisfiedByRolesWhenRolesAwareWithCallbackInstance(): void
     {
         $route = new Route(
                 '/hello/{name}',
@@ -547,7 +551,7 @@ class RouteTest extends TestCase
      * @since  5.0.0
      * @group  role_aware
      */
-    public function isSatisfiedByRolesWhenRolesContainRequiredRoleFromAnnotatedCallbackInstance()
+    public function isSatisfiedByRolesWhenRolesContainRequiredRoleFromAnnotatedCallbackInstance(): void
     {
         $route = new Route(
                 '/hello/{name}',
@@ -562,7 +566,7 @@ class RouteTest extends TestCase
      * @since  5.0.0
      * @group  role_aware
      */
-    public function isNotSatisfiedByRolesWhenRolesDoNotContainRequiredRoleFromAnnotatedCallbackInstance()
+    public function isNotSatisfiedByRolesWhenRolesDoNotContainRequiredRoleFromAnnotatedCallbackInstance(): void
     {
         $route = new Route(
                 '/hello/{name}',
@@ -577,7 +581,7 @@ class RouteTest extends TestCase
      * @since  5.0.0
      * @group  role_aware
      */
-    public function isSatisfiedByRolesWhenRolesContainRequiredRoleFromAnnotatedCallbackClass()
+    public function isSatisfiedByRolesWhenRolesContainRequiredRoleFromAnnotatedCallbackClass(): void
     {
         $route = new Route(
                 '/hello/{name}',
@@ -592,7 +596,7 @@ class RouteTest extends TestCase
      * @since  5.0.0
      * @group  role_aware
      */
-    public function isNotSatisfiedByRolesWhenRolesDoNotContainRequiredRoleFromAnnotatedCallbackClass()
+    public function isNotSatisfiedByRolesWhenRolesDoNotContainRequiredRoleFromAnnotatedCallbackClass(): void
     {
         $route = new Route(
                 '/hello/{name}',
@@ -607,7 +611,7 @@ class RouteTest extends TestCase
      * @since  5.0.0
      * @group  forbid_login
      */
-    public function forbiddenWhenNotAlreadyLoggedInSetsInfoOnAuthConstraint()
+    public function forbiddenWhenNotAlreadyLoggedInSetsInfoOnAuthConstraint(): void
     {
         $route = new Route(
                 '/hello/{name}',
@@ -620,7 +624,7 @@ class RouteTest extends TestCase
     /**
      * @test
      */
-    public function supportNoMimeTypeByDefault()
+    public function supportNoMimeTypeByDefault(): void
     {
         assertEmptyArray($this->createRoute()->supportedMimeTypes()->asArray());
     }
@@ -629,7 +633,7 @@ class RouteTest extends TestCase
      * @test
      * @since  5.0.0
      */
-    public function addMimeTypeWithoutClassWhenNoDefaultClassIsKnownThrowsInvalidArgumentException()
+    public function addMimeTypeWithoutClassWhenNoDefaultClassIsKnownThrowsInvalidArgumentException(): void
     {
         expect(function() {
                 $this->createRoute()->supportsMimeType('application/foo');
@@ -639,7 +643,7 @@ class RouteTest extends TestCase
     /**
      * @test
      */
-    public function returnsListOfAddedSupportedMimeTypes()
+    public function returnsListOfAddedSupportedMimeTypes(): void
     {
         assertThat(
                 $this->createRoute()
@@ -655,7 +659,7 @@ class RouteTest extends TestCase
      * @test
      * @since  3.2.0
      */
-    public function supportedMimeTypesContainSpecialClass()
+    public function supportedMimeTypesContainSpecialClass(): void
     {
         assertTrue(
                 $this->createRoute()
@@ -669,7 +673,7 @@ class RouteTest extends TestCase
      * @test
      * @since  3.2.0
      */
-    public function supportedMimeTypesReturnSpecialClass()
+    public function supportedMimeTypesReturnSpecialClass(): void
     {
         assertThat(
                 $this->createRoute()
@@ -684,7 +688,7 @@ class RouteTest extends TestCase
      * @test
      * @since  2.1.1
      */
-    public function contentNegotationIsEnabledByDefault()
+    public function contentNegotationIsEnabledByDefault(): void
     {
         assertFalse(
                 $this->createRoute()
@@ -697,7 +701,7 @@ class RouteTest extends TestCase
      * @test
      * @since  2.1.1
      */
-    public function contentNegotationCanBeDisabled()
+    public function contentNegotationCanBeDisabled(): void
     {
         assertTrue(
                 $this->createRoute()
@@ -712,7 +716,7 @@ class RouteTest extends TestCase
      * @group  issue_63
      * @since  5.1.0
      */
-    public function contentNegotationIsDisabledWhenProcessorAnnotated()
+    public function contentNegotationIsDisabledWhenProcessorAnnotated(): void
     {
         $route = new Route(
                 '/hello',
@@ -727,7 +731,7 @@ class RouteTest extends TestCase
      * @group  issue_63
      * @since  5.1.0
      */
-    public function listOfSupportedMimeTypesContainsAnnotatedMimeTypes()
+    public function listOfSupportedMimeTypesContainsAnnotatedMimeTypes(): void
     {
         $route = new Route(
                 '/hello',
@@ -740,6 +744,9 @@ class RouteTest extends TestCase
         );
     }
 
+    /**
+     * @return  array<mixed[]>
+     */
     public function mimeTypeClasses(): array
     {
         return [
@@ -757,7 +764,7 @@ class RouteTest extends TestCase
     public function listOfSupportedMimeTypesContainsClassForAnnotatedMimeTypes(
             string $expectedMimeTypeClass,
             string $mimeType
-    ) {
+    ): void {
         $route = new Route(
                 '/hello',
                 AnnotatedProcessor::class,
@@ -774,7 +781,7 @@ class RouteTest extends TestCase
      * @group  issue_63
      * @since  5.1.0
      */
-    public function annotatedMimeTypeClassCanBeOverwritten()
+    public function annotatedMimeTypeClassCanBeOverwritten(): void
     {
         $route = new Route(
                 '/hello',
@@ -789,6 +796,9 @@ class RouteTest extends TestCase
         );
     }
 
+    /**
+     * @return  array<mixed[]>
+     */
     public function resources(): array
     {
         return [
@@ -817,11 +827,14 @@ class RouteTest extends TestCase
     }
 
     /**
+     * @param  class-string<Target>|Target|callable  $target
+     * @param  string                                $name
+     * @paam   string[]                              $mimeTypes
      * @test
      * @since  6.1.0
      * @dataProvider  resources
      */
-    public function routeCanBeRepresentedAsResource($target, $name, array $mimeTypes)
+    public function routeCanBeRepresentedAsResource($target, ?string $name, array $mimeTypes): void
     {
         $route = new Route(
                 '/orders',
@@ -846,7 +859,7 @@ class RouteTest extends TestCase
      * @test
      * @since  6.1.0
      */
-    public function normalizesPathForResource()
+    public function normalizesPathForResource(): void
     {
         $route = new Route(
                 '/orders/?$',
@@ -864,7 +877,7 @@ class RouteTest extends TestCase
      * @test
      * @since  6.1.0
      */
-    public function uriTransformedToHttpsWhenHttpsRequired()
+    public function uriTransformedToHttpsWhenHttpsRequired(): void
     {
         $route = new Route(
                 '/orders/?$',
@@ -883,7 +896,7 @@ class RouteTest extends TestCase
      * @test
      * @since  6.1.0
      */
-    public function uriNotTransformedToHttpsWhenHttpsNotRequired()
+    public function uriNotTransformedToHttpsWhenHttpsNotRequired(): void
     {
         $route = new Route(
                 '/orders/?$',
@@ -901,7 +914,7 @@ class RouteTest extends TestCase
      * @test
      * @since  6.1.0
      */
-    public function routeIsIncludedInApiIndexByDefault()
+    public function routeIsIncludedInApiIndexByDefault(): void
     {
         $route = new Route(
                 '/orders/?$',
@@ -915,7 +928,7 @@ class RouteTest extends TestCase
      * @test
      * @since  6.1.0
      */
-    public function routeCanBeExcludedFromApiIndexViaSwitch()
+    public function routeCanBeExcludedFromApiIndexViaSwitch(): void
     {
         $route = new Route(
                 '/orders/?$',
@@ -929,7 +942,7 @@ class RouteTest extends TestCase
      * @test
      * @since  6.1.0
      */
-    public function routeCanBeExcludedFromApiIndexViaAnnotation()
+    public function routeCanBeExcludedFromApiIndexViaAnnotation(): void
     {
         $route = new Route(
                 '/orders/?$',
@@ -943,7 +956,7 @@ class RouteTest extends TestCase
      * @test
      * @since  6.1.0
      */
-    public function resourceRepresentationContainsListOfSupportedMimeTypes()
+    public function resourceRepresentationContainsListOfSupportedMimeTypes(): void
     {
         $route = new Route(
                 '/orders/?$',
@@ -967,7 +980,7 @@ class RouteTest extends TestCase
      * @test
      * @since  6.2.1
      */
-    public function resourceRepresentationContainsListOfSupportedMimeTypesIncludingGlobal()
+    public function resourceRepresentationContainsListOfSupportedMimeTypesIncludingGlobal(): void
     {
         $route = new Route(
                 '/orders/?$',
@@ -992,7 +1005,7 @@ class RouteTest extends TestCase
      * @test
      * @since  6.1.0
      */
-    public function resourceRepresentationContainsListOfStatusCodes()
+    public function resourceRepresentationContainsListOfStatusCodes(): void
     {
         $route = new Route(
                 '/orders/?$',
@@ -1013,7 +1026,7 @@ class RouteTest extends TestCase
      * @test
      * @since  6.1.0
      */
-    public function resourceRepresenationContainsListOfHeaders()
+    public function resourceRepresenationContainsListOfHeaders(): void
     {
         $route = new Route(
                 '/orders/?$',
@@ -1034,7 +1047,7 @@ class RouteTest extends TestCase
      * @test
      * @since  6.1.0
      */
-    public function resourceRepresenationContainsListOfParameters()
+    public function resourceRepresenationContainsListOfParameters(): void
     {
         $route = new Route(
                 '/orders/?$',

@@ -30,21 +30,15 @@ use function bovigo\callmap\verify;
 class WebBoundSessionIdTest extends TestCase
 {
     /**
-     * instance to test
-     *
-     * @type  \stubbles\webapp\session\id\WebBoundSessionId
+     * @var  \stubbles\webapp\session\id\WebBoundSessionId
      */
     private $webBoundSessionId;
     /**
-     * mocked request instance
-     *
-     * @type  \bovigo\callmap\Proxy
+     * @var  Request&\bovigo\callmap\ClassProxy
      */
     private $request;
     /**
-     * mocked responsr instance
-     *
-     * @type  \bovigo\callmap\Proxy
+     * @var  Response&\bovigo\callmap\ClassProxy
      */
     private $response;
 
@@ -62,7 +56,7 @@ class WebBoundSessionIdTest extends TestCase
     /**
      * @test
      */
-    public function returnsGivenSessionName()
+    public function returnsGivenSessionName(): void
     {
         assertThat($this->webBoundSessionId->name(), equals('foo'));
     }
@@ -70,7 +64,7 @@ class WebBoundSessionIdTest extends TestCase
     /**
      * @test
      */
-    public function createsSessionIdIfNotInRequest()
+    public function createsSessionIdIfNotInRequest(): void
     {
         $this->request->returns(['hasParam' => false, 'hasCookie' => false]);
         assertThat(
@@ -82,10 +76,9 @@ class WebBoundSessionIdTest extends TestCase
     /**
      * @test
      */
-    public function usesSessionIdNameForRequestValues()
+    public function usesSessionIdNameForRequestValues(): void
     {
         $this->request->returns(['hasParam' => false, 'hasCookie' => false]);
-        (string) $this->webBoundSessionId;
         assertTrue(verify($this->request, 'hasParam')->received('foo'));
         assertTrue(verify($this->request, 'hasCookie')->received('foo'));
     }
@@ -93,7 +86,7 @@ class WebBoundSessionIdTest extends TestCase
     /**
      * @test
      */
-    public function createsSessionIdIfRequestParamInvalid()
+    public function createsSessionIdIfRequestParamInvalid(): void
     {
         $this->request->returns(
                 ['hasParam'  => true,
@@ -109,7 +102,7 @@ class WebBoundSessionIdTest extends TestCase
     /**
      * @test
      */
-    public function usesParamSessionIdIfRequestParamValid()
+    public function usesParamSessionIdIfRequestParamValid(): void
     {
         $this->request->returns(
                 ['hasParam'  => true,
@@ -125,7 +118,7 @@ class WebBoundSessionIdTest extends TestCase
     /**
      * @test
      */
-    public function createsSessionIdIfRequestCookieInvalid()
+    public function createsSessionIdIfRequestCookieInvalid(): void
     {
         $this->request->returns(
                 ['hasParam'   => false,
@@ -142,7 +135,7 @@ class WebBoundSessionIdTest extends TestCase
     /**
      * @test
      */
-    public function usesCookieSessionIdIfRequestCookieValid()
+    public function usesCookieSessionIdIfRequestCookieValid(): void
     {
         $this->request->returns([
                 'hasParam'   => false,
@@ -158,7 +151,7 @@ class WebBoundSessionIdTest extends TestCase
     /**
      * @test
      */
-    public function regenerateChangesSessionId()
+    public function regenerateChangesSessionId(): void
     {
         $this->request->returns(['hasParam' => false, 'hasCookie' => false]);
         $previous = (string) $this->webBoundSessionId;
@@ -171,7 +164,7 @@ class WebBoundSessionIdTest extends TestCase
     /**
      * @test
      */
-    public function regeneratedSessionIdIsValid()
+    public function regeneratedSessionIdIsValid(): void
     {
         assertThat(
                 (string) $this->webBoundSessionId->regenerate(),
@@ -182,7 +175,7 @@ class WebBoundSessionIdTest extends TestCase
     /**
      * @test
      */
-    public function regenerateStoresNewSessionIdInCookie()
+    public function regenerateStoresNewSessionIdInCookie(): void
     {
         $this->webBoundSessionId->regenerate();
         assertTrue(verify($this->response, 'addCookie')->wasCalledOnce());
@@ -191,7 +184,7 @@ class WebBoundSessionIdTest extends TestCase
     /**
      * @test
      */
-    public function invalidateRemovesSessionidCookie()
+    public function invalidateRemovesSessionidCookie(): void
     {
         assertThat(
                 $this->webBoundSessionId->invalidate(),

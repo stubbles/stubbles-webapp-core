@@ -26,15 +26,11 @@ use function stubbles\reflect\{annotationsOf, annotationsOfConstructor};
 class TokenTest extends TestCase
 {
     /**
-     * instance to test
-     *
-     * @type  Token
+     * @var  Token
      */
     private $token;
     /**
-     * mocked session id
-     *
-     * @type  \bovigo\callmap\Proxy
+     * @var  Session&\bovigo\callmap\ClassProxy
      */
     private $session;
 
@@ -47,7 +43,7 @@ class TokenTest extends TestCase
     /**
      * @test
      */
-    public function annotationsPresentOnClass()
+    public function annotationsPresentOnClass(): void
     {
         assertTrue(annotationsOf($this->token)->contain('Singleton'));
     }
@@ -55,7 +51,7 @@ class TokenTest extends TestCase
     /**
      * @test
      */
-    public function annotationsPresentOnConstructor()
+    public function annotationsPresentOnConstructor(): void
     {
         assertTrue(annotationsOfConstructor($this->token)->contain('Inject'));
     }
@@ -63,7 +59,7 @@ class TokenTest extends TestCase
     /**
      * @test
      */
-    public function givenTokenIsNotValidWhenNotEqualToSessionToken()
+    public function givenTokenIsNotValidWhenNotEqualToSessionToken(): void
     {
         $this->session->returns(['value' => 'aToken']);
         assertFalse($this->token->isValid('otherToken'));
@@ -72,7 +68,7 @@ class TokenTest extends TestCase
     /**
      * @test
      */
-    public function givenTokenIsValidWhenEqualToSessionToken()
+    public function givenTokenIsValidWhenEqualToSessionToken(): void
     {
         $this->session->returns(['value' => 'aToken']);
         assertTrue($this->token->isValid('aToken'));
@@ -81,7 +77,7 @@ class TokenTest extends TestCase
     /**
      * @test
      */
-    public function storesNextTokenInSessionWhenTokenIsValidated()
+    public function storesNextTokenInSessionWhenTokenIsValidated(): void
     {
         $this->session->returns(['value' => 'aToken']);
         $this->token->isValid('otherToken');
@@ -91,7 +87,7 @@ class TokenTest extends TestCase
     /**
      * @test
      */
-    public function nextTokenTakenFromSession()
+    public function nextTokenTakenFromSession(): void
     {
         $this->session->returns(
                 ['value' => onConsecutiveCalls('aToken', 'nextToken')]
@@ -102,7 +98,7 @@ class TokenTest extends TestCase
     /**
      * @test
      */
-    public function nextStoresNextTokenInSession()
+    public function nextStoresNextTokenInSession(): void
     {
         $this->session->returns(['value' => 'nextToken']);
         $this->token->next();

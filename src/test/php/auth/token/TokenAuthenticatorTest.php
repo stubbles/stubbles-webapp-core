@@ -41,27 +41,19 @@ use function stubbles\reflect\annotationsOfConstructorParameter;
 class TokenAuthenticatorTest extends TestCase
 {
     /**
-     * instance to test
-     *
-     * @type  \stubbles\webapp\auth\token\TokenAuthenticator
+     * @var  \stubbles\webapp\auth\token\TokenAuthenticator
      */
     private $tokenAuthenticator;
     /**
-     * mocked token store
-     *
-     * @type  \bovigo\callmap\Proxy
+     * @var  TokenStore&\bovigo\callmap\ClassProxy
      */
     private $tokenStore;
     /**
-     * mocked login provider
-     *
-     * @type  \bovigo\callmap\Proxy
+     * @var  AuthenticationProvider&\bovigo\callmap\ClassProxy
      */
     private $loginProvider;
     /**
-     * mocked request
-     *
-     * @type  \bovigo\callmap\Proxy
+     * @var  Request&\bovigo\callmap\ClassProxy
      */
     private $request;
 
@@ -80,7 +72,7 @@ class TokenAuthenticatorTest extends TestCase
     /**
      * @test
      */
-    public function annotationsPresentOnConstructor()
+    public function annotationsPresentOnConstructor(): void
     {
         $tokenSaltParamAnnotations = annotationsOfConstructorParameter(
                 'tokenSalt',
@@ -106,7 +98,7 @@ class TokenAuthenticatorTest extends TestCase
     /**
      * @test
      */
-    public function delegatesAuthenticationToLoginProviderIfNoTokenInRequest()
+    public function delegatesAuthenticationToLoginProviderIfNoTokenInRequest(): void
     {
         $this->request->returns(['hasRedirectHeader' => false]);
         assertNull($this->tokenAuthenticator->authenticate($this->request));
@@ -116,7 +108,7 @@ class TokenAuthenticatorTest extends TestCase
     /**
      * @test
      */
-    public function delegatesAuthenticationToLoginProviderIfAuthorizationHeaderIsSetButEmpty()
+    public function delegatesAuthenticationToLoginProviderIfAuthorizationHeaderIsSetButEmpty(): void
     {
         $this->request->returns([
                 'hasRedirectHeader'  => true,
@@ -139,7 +131,7 @@ class TokenAuthenticatorTest extends TestCase
     /**
      * @test
      */
-    public function throwsInternalAuthProviderExceptionWhenTokenStoreThrowsExceptionWhileStoringToken()
+    public function throwsInternalAuthProviderExceptionWhenTokenStoreThrowsExceptionWhileStoringToken(): void
     {
         $user = $this->createTokenAwareUser();
         $this->request->returns(['hasRedirectHeader' => false]);
@@ -156,7 +148,7 @@ class TokenAuthenticatorTest extends TestCase
     /**
      * @test
      */
-    public function createsAndStoresTokenFromUserReturnedByLoginProvider()
+    public function createsAndStoresTokenFromUserReturnedByLoginProvider(): void
     {
         $token = new Token('value');
         $user  = $this->createTokenAwareUser();
@@ -174,7 +166,7 @@ class TokenAuthenticatorTest extends TestCase
     /**
      * @test
      */
-    public function userReturnedByLoginProviderHasToken()
+    public function userReturnedByLoginProviderHasToken(): void
     {
         $user  = $this->createTokenAwareUser();
         $this->request->returns(['hasRedirectHeader' => false]);
@@ -187,7 +179,7 @@ class TokenAuthenticatorTest extends TestCase
     /**
      * @test
      */
-    public function throwsInternalAuthProviderExceptionWhenTokenStoreThrowsExceptionWhileFindingUser()
+    public function throwsInternalAuthProviderExceptionWhenTokenStoreThrowsExceptionWhileFindingUser(): void
     {
         $this->request->returns([
                 'hasRedirectHeader'  => true,
@@ -203,6 +195,9 @@ class TokenAuthenticatorTest extends TestCase
                 ->withMessage('Error while trying to find user by token: failure');
     }
 
+    /**
+     * @return  array<string[]>
+     */
     public function validTokens(): array
     {
         return [['Bearer 123456789012345678901234567890ab', '123456789012345678901234567890ab'],
@@ -217,7 +212,7 @@ class TokenAuthenticatorTest extends TestCase
     public function returnsUserWhenAuthorizationHeaderContainsValidToken(
             string $headerValue,
             string $tokenValue
-    ) {
+    ): void {
         $this->request->returns([
                 'hasRedirectHeader'  => true,
                 'readRedirectHeader' => ValueReader::forValue($headerValue)
@@ -239,7 +234,7 @@ class TokenAuthenticatorTest extends TestCase
     public function returnedUserFromValidTokenHasToken(
             string $headerValue,
             string $tokenValue
-    ) {
+    ): void {
         $this->request->returns([
                 'hasRedirectHeader'  => true,
                 'readRedirectHeader' => ValueReader::forValue($headerValue)
@@ -256,7 +251,7 @@ class TokenAuthenticatorTest extends TestCase
     /**
      * @test
      */
-    public function delegatesAuthenticationToLoginProviderIfTokenFromAuthorizationHeaderDoesNotYieldUser()
+    public function delegatesAuthenticationToLoginProviderIfTokenFromAuthorizationHeaderDoesNotYieldUser(): void
     {
         $this->request->returns([
                 'hasRedirectHeader'  => true,
@@ -271,7 +266,7 @@ class TokenAuthenticatorTest extends TestCase
     /**
      * @test
      */
-    public function createAndStoresNewTokenIfTokenFromAuthorizationHeaderDoesNotYieldUser()
+    public function createAndStoresNewTokenIfTokenFromAuthorizationHeaderDoesNotYieldUser(): void
     {
         $this->request->returns([
                 'hasRedirectHeader'  => true,
@@ -290,7 +285,7 @@ class TokenAuthenticatorTest extends TestCase
     /**
      * @test
      */
-    public function userReturnedAfterTokenRecreationHasTokenIfTokenFromAuthorizationHeaderDoesNotYieldUser()
+    public function userReturnedAfterTokenRecreationHasTokenIfTokenFromAuthorizationHeaderDoesNotYieldUser(): void
     {
         $this->request->returns([
                 'hasRedirectHeader'  => true,
@@ -308,7 +303,7 @@ class TokenAuthenticatorTest extends TestCase
     /**
      * @test
      */
-    public function userReturnedAfterTokenRecreationHasDifferentTokenIfTokenFromAuthorizationHeaderDoesNotYieldUser()
+    public function userReturnedAfterTokenRecreationHasDifferentTokenIfTokenFromAuthorizationHeaderDoesNotYieldUser(): void
     {
         $this->request->returns([
                 'hasRedirectHeader'  => true,

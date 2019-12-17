@@ -35,23 +35,19 @@ use function bovigo\assert\{
 class AbstractResourceTest extends TestCase
 {
     /**
-     * mocked request instance
-     *
-     * @type  \bovigo\callmap\Proxy
+     * @var  Request&\bovigo\callmap\ClassProxy
      */
     private $request;
     /**
-     * mocked response instance
-     *
-     * @type  \stubbles\webapp\response\WebResponse
+     * @var  WebResponse&\bovigo\callmap\ClassProxy
      */
     private $response;
     /**
-     * @type  \bovigo\callmap\Proxy
+     * @var  Injector&\bovigo\callmap\ClassProxy
      */
     private $injector;
     /**
-     * @type  \bovigo\callmap\Proxy
+     * @var  Interceptors&\bovigo\callmap\ClassProxy
      */
     private $interceptors;
 
@@ -88,7 +84,7 @@ class AbstractResourceTest extends TestCase
     /**
      * @test
      */
-    public function returnsHttpsUriFromCalledUri()
+    public function returnsHttpsUriFromCalledUri(): void
     {
         assertThat(
                 (string) $this->createRoute()->httpsUri(),
@@ -100,7 +96,7 @@ class AbstractResourceTest extends TestCase
      * @test
      * @since  6.0.0
      */
-    public function negotiatesPassThroughIfContentNegotiationDisabled()
+    public function negotiatesPassThroughIfContentNegotiationDisabled(): void
     {
         assertTrue(
                 $this->createRoute(
@@ -117,7 +113,7 @@ class AbstractResourceTest extends TestCase
      * @test
      * @since  6.0.0
      */
-    public function negotiatesNothingIfNoMatchCanBeFound()
+    public function negotiatesNothingIfNoMatchCanBeFound(): void
     {
         $request = NewInstance::of(Request::class)->returns([
                 'readHeader' => ValueReader::forValue('text/html')
@@ -142,7 +138,7 @@ class AbstractResourceTest extends TestCase
      * @test
      * @since  6.0.0
      */
-    public function missingMimeTypeClassForNegotiatedMimeTypeTriggersInternalServerError()
+    public function missingMimeTypeClassForNegotiatedMimeTypeTriggersInternalServerError(): void
     {
         $request = NewInstance::of(Request::class)->returns([
                 'readHeader' => ValueReader::forValue('application/foo'),
@@ -166,7 +162,7 @@ class AbstractResourceTest extends TestCase
      * @test
      * @since  6.0.0
      */
-    public function createsNegotiatedMimeType()
+    public function createsNegotiatedMimeType(): void
     {
         $request = NewInstance::of(Request::class)->returns([
                 'readHeader' => ValueReader::forValue('application/json'),
@@ -188,7 +184,7 @@ class AbstractResourceTest extends TestCase
      * @test
      * @since  2.2.0
      */
-    public function returnsGivenListOfSupportedMimeTypes()
+    public function returnsGivenListOfSupportedMimeTypes(): void
     {
         assertEmptyArray($this->createRoute()->supportedMimeTypes());
     }
@@ -196,7 +192,7 @@ class AbstractResourceTest extends TestCase
     /**
      * @test
      */
-    public function delegatesPreInterceptingToInterceptors()
+    public function delegatesPreInterceptingToInterceptors(): void
     {
         $this->interceptors->returns(['preProcess' => true]);
         assertTrue(
@@ -211,7 +207,7 @@ class AbstractResourceTest extends TestCase
     /**
      * @test
      */
-    public function delegatesPostInterceptingToInterceptors()
+    public function delegatesPostInterceptingToInterceptors(): void
     {
         $this->interceptors->returns(['postProcess' => true]);
         assertTrue(

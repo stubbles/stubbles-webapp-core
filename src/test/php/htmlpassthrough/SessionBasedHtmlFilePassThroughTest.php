@@ -29,27 +29,19 @@ use function bovigo\callmap\verify;
 class SessionBasedHtmlFilePassThroughTest extends TestCase
 {
     /**
-     * instance to test
-     *
-     * @type  \stubbles\webapp\htmlpassthrough\SessionBasedHtmlFilePassThrough
+     * @var  \stubbles\webapp\htmlpassthrough\SessionBasedHtmlFilePassThrough
      */
     private $sessionBasedHtmlFilePassThrough;
     /**
-     * mocked session to use
-     *
-     * @type  \stubbles\webapp\session\Session
+     * @var  \stubbles\webapp\session\Session
      */
     private $session;
     /**
-     * mocked request instance
-     *
-     * @type  \stubbles\webapp\Request
+     * @var  Request&\bovigo\callmap\ClassProxy
      */
     private $request;
     /**
-     * mocked response instance
-     *
-     * @type  \stubbles\webapp\Response
+     * @var  Response&\bovigo\callmap\ClassProxy
      */
     private $response;
 
@@ -71,7 +63,7 @@ class SessionBasedHtmlFilePassThroughTest extends TestCase
     /**
      * @test
      */
-    public function functionReturnsClassName()
+    public function functionReturnsClassName(): void
     {
         assertThat(
                 \stubbles\webapp\sessionBasedHtmlPassThrough(),
@@ -82,7 +74,7 @@ class SessionBasedHtmlFilePassThroughTest extends TestCase
     /**
      * @test
      */
-    public function requestForNonExistingFileWritesNotFoundResponse()
+    public function requestForNonExistingFileWritesNotFoundResponse(): void
     {
         $error = Error::notFound();
         $this->response->returns(['notFound' => $error]);
@@ -99,7 +91,7 @@ class SessionBasedHtmlFilePassThroughTest extends TestCase
     /**
      * @test
      */
-    public function selectsAvailableRoute()
+    public function selectsAvailableRoute(): void
     {
         $this->request->returns([
                 'userAgent'          => new UserAgent('foo', true),
@@ -118,7 +110,7 @@ class SessionBasedHtmlFilePassThroughTest extends TestCase
     /**
      * @test
      */
-    public function fallsBackToIndexFileIfRequestForSlashOnly()
+    public function fallsBackToIndexFileIfRequestForSlashOnly(): void
     {
         $this->request->returns([
                 'userAgent'          => new UserAgent('foo', true),
@@ -141,7 +133,7 @@ class SessionBasedHtmlFilePassThroughTest extends TestCase
     /**
      * @test
      */
-    public function writesNoSessionDataToOutputIfCookiesEnabled()
+    public function writesNoSessionDataToOutputIfCookiesEnabled(): void
     {
         $this->request->returns([
                 'userAgent'          => new UserAgent('foo', true),
@@ -164,7 +156,7 @@ class SessionBasedHtmlFilePassThroughTest extends TestCase
     /**
      * @test
      */
-    public function writesSessionDataToOutputIfCookiesDisabled()
+    public function writesSessionDataToOutputIfCookiesDisabled(): void
     {
         $this->request->returns([
                 'userAgent'          => new UserAgent('foo', false),

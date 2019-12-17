@@ -23,7 +23,7 @@ use function bovigo\assert\predicate\equals;
 class StatusTest extends TestCase
 {
     /**
-     * @type  \stubbles\webapp\routing\api\Status
+     * @var  \stubbles\webapp\routing\api\Status
      */
     private $status;
 
@@ -35,7 +35,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function returnsProvidedStatusCode()
+    public function returnsProvidedStatusCode(): void
     {
         assertThat($this->status->code(), equals(200));
     }
@@ -43,7 +43,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function returnsProvidedDescription()
+    public function returnsProvidedDescription(): void
     {
         assertThat($this->status->description(), equals('Default <b>response</b> code'));
     }
@@ -51,7 +51,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function canBeSerializedToJson()
+    public function canBeSerializedToJson(): void
     {
         assertThat(
                 json_encode($this->status),
@@ -62,7 +62,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function canBeSerializedToXml()
+    public function canBeSerializedToXml(): void
     {
         $binder = new Binder();
         assertThat(

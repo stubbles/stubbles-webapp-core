@@ -22,7 +22,7 @@ use function bovigo\assert\predicate\equals;
 class TextPlainTest extends TestCase
 {
     /**
-     * @type  \stubbles\webapp\response\mimetypes\TextPlain
+     * @var  \stubbles\webapp\response\mimetypes\TextPlain
      */
     private $textPlain;
 
@@ -34,7 +34,7 @@ class TextPlainTest extends TestCase
     /**
      * @test
      */
-    public function defaultMimeType()
+    public function defaultMimeType(): void
     {
         assertThat((string) $this->textPlain, equals('text/plain'));
     }
@@ -42,7 +42,7 @@ class TextPlainTest extends TestCase
     /**
      * @test
      */
-    public function mimeTypeCanBeSpecialised()
+    public function mimeTypeCanBeSpecialised(): void
     {
         assertThat(
                 (string) $this->textPlain->specialise('text/foo'),
@@ -50,6 +50,9 @@ class TextPlainTest extends TestCase
         );
     }
 
+    /**
+     * @return  array<mixed[]>
+     */
     public function serializableResources(): array
     {
         $stdClass = new \stdClass();
@@ -66,10 +69,12 @@ class TextPlainTest extends TestCase
     }
 
     /**
+     * @param  mixed   $resource
+     * @param  string  $expected
      * @test
      * @dataProvider  serializableResources
      */
-    public function serializesResourceToText($resource, string $expected)
+    public function serializesResourceToText($resource, string $expected): void
     {
         assertThat(
                 $this->textPlain->serialize(

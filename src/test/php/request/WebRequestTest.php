@@ -35,15 +35,13 @@ use function bovigo\assert\{
 class WebRequestTest extends TestCase
 {
     /**
-     * instance to test
-     *
-     * @type  \stubbles\webapp\request\WebRequest
+     * @var  \stubbles\webapp\request\WebRequest
      */
     private $webRequest;
     /**
      * backup of globals $_GET, $_POST, $_SERVER, $COOKIE
      *
-     * @type  array
+     * @var  array<string,array<string,string>>
      */
     private $globals;
 
@@ -78,7 +76,7 @@ class WebRequestTest extends TestCase
         return new WebRequest($params, $headers, $cookies);
     }
 
-    private function fillGlobals(string $requestMethod = 'GET')
+    private function fillGlobals(string $requestMethod = 'GET'): void
     {
         $_GET    = ['foo' => 'bar', 'roland' => 'TB-303'];
         $_POST   = ['baz' => 'blubb', 'donald' => '313'];
@@ -89,7 +87,7 @@ class WebRequestTest extends TestCase
     /**
      * @test
      */
-    public function usesGetParamsFromRawSourceWhenRequestMethodIsGET()
+    public function usesGetParamsFromRawSourceWhenRequestMethodIsGET(): void
     {
         $this->fillGlobals('GET');
         assertThat(
@@ -101,7 +99,7 @@ class WebRequestTest extends TestCase
     /**
      * @test
      */
-    public function usesPostParamsFromRawSourceWhenRequestMethodIsPOST()
+    public function usesPostParamsFromRawSourceWhenRequestMethodIsPOST(): void
     {
         $this->fillGlobals('POST');
         assertThat(
@@ -113,7 +111,7 @@ class WebRequestTest extends TestCase
     /**
      * @test
      */
-    public function usesServerForHeaderFromRawSource()
+    public function usesServerForHeaderFromRawSource(): void
     {
         $this->fillGlobals();
         assertThat(
@@ -125,7 +123,7 @@ class WebRequestTest extends TestCase
     /**
      * @test
      */
-    public function usesCookieForCookieFromRawSource()
+    public function usesCookieForCookieFromRawSource(): void
     {
         $this->fillGlobals();
         assertThat(
@@ -137,7 +135,7 @@ class WebRequestTest extends TestCase
     /**
      * @test
      */
-    public function returnsRequestMethodInUpperCase()
+    public function returnsRequestMethodInUpperCase(): void
     {
         assertThat($this->webRequest->method(), equals('POST'));
     }
@@ -145,7 +143,7 @@ class WebRequestTest extends TestCase
     /**
      * @test
      */
-    public function sslCheckReturnsTrueIfHttpsSet()
+    public function sslCheckReturnsTrueIfHttpsSet(): void
     {
         assertTrue(
                 $this->createBaseWebRequest([], ['HTTPS' => true])->isSsl()
@@ -155,7 +153,7 @@ class WebRequestTest extends TestCase
     /**
      * @test
      */
-    public function sslCheckReturnsFalseIfHttpsNotSet()
+    public function sslCheckReturnsFalseIfHttpsNotSet(): void
     {
         assertFalse(
                 $this->createBaseWebRequest([], ['HTTPS' => null])->isSsl()
@@ -166,7 +164,7 @@ class WebRequestTest extends TestCase
      * @since  2.0.2
      * @test
      */
-    public function reportsVersion1_0WhenNoServerProtocolSet()
+    public function reportsVersion1_0WhenNoServerProtocolSet(): void
     {
          assertThat(
                 $this->createBaseWebRequest([], [])->protocolVersion(),
@@ -178,7 +176,7 @@ class WebRequestTest extends TestCase
      * @since  2.0.2
      * @test
      */
-    public function reportsNullWhenServerProtocolContainsInvalidVersion()
+    public function reportsNullWhenServerProtocolContainsInvalidVersion(): void
     {
          assertNull(
                 $this->createBaseWebRequest([], ['SERVER_PROTOCOL' => 'foo'])
@@ -186,6 +184,9 @@ class WebRequestTest extends TestCase
         );
     }
 
+    /**
+     * @return  array<string[]>
+     */
     public function protocolVersions(): array
     {
         return [
@@ -203,7 +204,7 @@ class WebRequestTest extends TestCase
      * @test
      * @dataProvider  protocolVersions
      */
-    public function reportsParsedProtocolVersion(string $protocol)
+    public function reportsParsedProtocolVersion(string $protocol): void
     {
          assertThat(
                 $this->createBaseWebRequest([], ['SERVER_PROTOCOL' => $protocol])
@@ -216,7 +217,7 @@ class WebRequestTest extends TestCase
      * @since  3.0.0
      * @test
      */
-    public function originatingIpAdressIsNullWhenAccordingHeadersNotPresent()
+    public function originatingIpAdressIsNullWhenAccordingHeadersNotPresent(): void
     {
         assertNull($this->createBaseWebRequest()->originatingIpAddress());
     }
@@ -225,7 +226,7 @@ class WebRequestTest extends TestCase
      * @since  3.0.0
      * @test
      */
-    public function originatingIpAdressIsNullWhenRemoteAddressSyntacticallyInvalidAndNoForwardedForHeaderPresent()
+    public function originatingIpAdressIsNullWhenRemoteAddressSyntacticallyInvalidAndNoForwardedForHeaderPresent(): void
     {
         assertNull(
                 $this->createBaseWebRequest([], ['REMOTE_ADDR' => 'foo'])
@@ -237,7 +238,7 @@ class WebRequestTest extends TestCase
      * @since  3.0.0
      * @test
      */
-    public function originatingIpAdressIsNullWhenForwardedForHeaderSyntacticallyInvalid()
+    public function originatingIpAdressIsNullWhenForwardedForHeaderSyntacticallyInvalid(): void
     {
         assertNull(
                 $this->createBaseWebRequest(
@@ -254,7 +255,7 @@ class WebRequestTest extends TestCase
      * @since  3.0.0
      * @test
      */
-    public function originatingIpAddressIsRemoteAddressWhenNoForwardedForHeaderPresent()
+    public function originatingIpAddressIsRemoteAddressWhenNoForwardedForHeaderPresent(): void
     {
         assertThat(
                 $this->createBaseWebRequest([], ['REMOTE_ADDR' => '127.0.0.1'])
@@ -267,7 +268,7 @@ class WebRequestTest extends TestCase
      * @since  3.0.0
      * @test
      */
-    public function originatingIpAddressIsInstanceOfIpAddress()
+    public function originatingIpAddressIsInstanceOfIpAddress(): void
     {
         assertThat(
                 $this->createBaseWebRequest([], ['REMOTE_ADDR' => '127.0.0.1'])
@@ -280,7 +281,7 @@ class WebRequestTest extends TestCase
      * @since  3.0.0
      * @test
      */
-    public function originatingIpAddressIsForwardedAddressWhenForwardedForHeaderPresent()
+    public function originatingIpAddressIsForwardedAddressWhenForwardedForHeaderPresent(): void
     {
         assertThat(
                 $this->createBaseWebRequest(
@@ -298,7 +299,7 @@ class WebRequestTest extends TestCase
      * @since  3.0.0
      * @test
      */
-    public function originatingIpAddressIsFirstFromForwardedAddressesWhenForwardedForHeaderContainsList()
+    public function originatingIpAddressIsFirstFromForwardedAddressesWhenForwardedForHeaderContainsList(): void
     {
         assertThat(
                 $this->createBaseWebRequest(
@@ -315,7 +316,7 @@ class WebRequestTest extends TestCase
     /**
      * @test
      */
-    public function uriThrowsMalformedUriExceptionOnInvalidRequestUri()
+    public function uriThrowsMalformedUriExceptionOnInvalidRequestUri(): void
     {
         expect(function() { $this->createBaseWebRequest([], [])->uri(); })
                 ->throws(MalformedUri::class);
@@ -324,7 +325,7 @@ class WebRequestTest extends TestCase
     /**
      * @test
      */
-    public function uriReturnsCompleteRequestUri()
+    public function uriReturnsCompleteRequestUri(): void
     {
         assertThat(
                 $this->createBaseWebRequest(
@@ -345,7 +346,7 @@ class WebRequestTest extends TestCase
      * @test
      * @since  8.0.1
      */
-    public function uriWithInvalidServerPortIgnoresPort()
+    public function uriWithInvalidServerPortIgnoresPort(): void
     {
         assertThat(
                 $this->createBaseWebRequest(
@@ -366,7 +367,7 @@ class WebRequestTest extends TestCase
      * @test
      * @since  2.3.2
      */
-    public function uriReturnsCompleteRequestUriWithoutDoublePortIfPortIsInHost()
+    public function uriReturnsCompleteRequestUriWithoutDoublePortIfPortIsInHost(): void
     {
         assertThat(
                 $this->createBaseWebRequest(
@@ -387,7 +388,7 @@ class WebRequestTest extends TestCase
      * @test
      * @since  2.3.2
      */
-    public function uriReturnsCompleteRequestUriWithNonDefaultPort()
+    public function uriReturnsCompleteRequestUriWithNonDefaultPort(): void
     {
         assertThat(
                 $this->createBaseWebRequest(
@@ -407,7 +408,7 @@ class WebRequestTest extends TestCase
     /**
      * @test
      */
-    public function uriReturnsCompleteRequestUriForHttps()
+    public function uriReturnsCompleteRequestUriForHttps(): void
     {
         assertThat(
                 $this->createBaseWebRequest(
@@ -437,7 +438,7 @@ class WebRequestTest extends TestCase
     /**
      * @test
      */
-    public function returnsListOfParamNames()
+    public function returnsListOfParamNames(): void
     {
         assertThat($this->webRequest->paramNames(), equals(['foo', 'roland']));
     }
@@ -445,7 +446,7 @@ class WebRequestTest extends TestCase
     /**
      * @test
      */
-    public function returnsFalseOnCheckForNonExistingParam()
+    public function returnsFalseOnCheckForNonExistingParam(): void
     {
         assertFalse($this->webRequest->hasParam('baz'));
     }
@@ -453,7 +454,7 @@ class WebRequestTest extends TestCase
     /**
      * @test
      */
-    public function returnsTrueOnCheckForExistingParam()
+    public function returnsTrueOnCheckForExistingParam(): void
     {
         assertTrue($this->webRequest->hasParam('foo'));
     }
@@ -461,7 +462,7 @@ class WebRequestTest extends TestCase
     /**
      * @test
      */
-    public function validateParamReturnsValueValidator()
+    public function validateParamReturnsValueValidator(): void
     {
         assertThat(
                 $this->webRequest->validateParam('foo'),
@@ -472,7 +473,7 @@ class WebRequestTest extends TestCase
     /**
      * @test
      */
-    public function validateParamReturnsValueValidatorForNonExistingParam()
+    public function validateParamReturnsValueValidatorForNonExistingParam(): void
     {
         assertThat(
                 $this->webRequest->validateParam('baz'),
@@ -483,7 +484,7 @@ class WebRequestTest extends TestCase
     /**
      * @test
      */
-    public function readParamReturnsValueReader()
+    public function readParamReturnsValueReader(): void
     {
         assertThat(
                 $this->webRequest->readParam('foo'),
@@ -494,7 +495,7 @@ class WebRequestTest extends TestCase
     /**
      * @test
      */
-    public function readParamReturnsValueReaderForNonExistingParam()
+    public function readParamReturnsValueReaderForNonExistingParam(): void
     {
         assertThat(
                 $this->webRequest->readParam('baz'),
@@ -505,7 +506,7 @@ class WebRequestTest extends TestCase
     /**
      * @test
      */
-    public function returnsListOfHeaderNames()
+    public function returnsListOfHeaderNames(): void
     {
         assertThat(
                 $this->webRequest->headerNames(),
@@ -516,7 +517,7 @@ class WebRequestTest extends TestCase
     /**
      * @test
      */
-    public function returnsHeaderErrors()
+    public function returnsHeaderErrors(): void
     {
         assertThat(
                 $this->webRequest->headerErrors(),
@@ -527,7 +528,7 @@ class WebRequestTest extends TestCase
     /**
      * @test
      */
-    public function returnsFalseOnCheckForNonExistingHeader()
+    public function returnsFalseOnCheckForNonExistingHeader(): void
     {
         assertFalse($this->webRequest->hasHeader('baz'));
     }
@@ -535,7 +536,7 @@ class WebRequestTest extends TestCase
     /**
      * @test
      */
-    public function returnsTrueOnCheckForExistingHeader()
+    public function returnsTrueOnCheckForExistingHeader(): void
     {
         assertTrue($this->webRequest->hasHeader('HTTP_ACCEPT'));
     }
@@ -544,7 +545,7 @@ class WebRequestTest extends TestCase
      * @test
      * @since  3.1.1
      */
-    public function returnsFalseOnCheckForRedirectHeaderWhenBothRedirectAndCurrentDoNotExist()
+    public function returnsFalseOnCheckForRedirectHeaderWhenBothRedirectAndCurrentDoNotExist(): void
     {
         $webRequest = $this->createBaseWebRequest([], []);
         assertFalse($webRequest->hasRedirectHeader('HTTP_AUTHORIZATION'));
@@ -554,7 +555,7 @@ class WebRequestTest extends TestCase
      * @test
      * @since  3.1.1
      */
-    public function returnsTrueOnCheckForRedirectHeaderWhenRedirectDoesNotButCurrentDoesExist()
+    public function returnsTrueOnCheckForRedirectHeaderWhenRedirectDoesNotButCurrentDoesExist(): void
     {
         $webRequest = $this->createBaseWebRequest(
                 [],
@@ -567,7 +568,7 @@ class WebRequestTest extends TestCase
      * @test
      * @since  3.1.1
      */
-    public function returnsTrueOnCheckForRedirectHeaderWhenBothRedirectAndCurrentExist()
+    public function returnsTrueOnCheckForRedirectHeaderWhenBothRedirectAndCurrentExist(): void
     {
         $webRequest = $this->createBaseWebRequest(
                 [],
@@ -581,7 +582,7 @@ class WebRequestTest extends TestCase
     /**
      * @test
      */
-    public function validateHeaderReturnsValueValidator()
+    public function validateHeaderReturnsValueValidator(): void
     {
         assertThat(
                 $this->webRequest->validateHeader('HTTP_ACCEPT'),
@@ -592,7 +593,7 @@ class WebRequestTest extends TestCase
     /**
      * @test
      */
-    public function validateHeaderReturnsValueValidatorForNonExistingParam()
+    public function validateHeaderReturnsValueValidatorForNonExistingParam(): void
     {
         assertThat(
                 $this->webRequest->validateHeader('baz'),
@@ -605,7 +606,7 @@ class WebRequestTest extends TestCase
      * @since  3.1.0
      * @group  redirect_header
      */
-    public function validateRedirectHeaderReturnsValueValidatorForNonExistingHeader()
+    public function validateRedirectHeaderReturnsValueValidatorForNonExistingHeader(): void
     {
         $webRequest = $this->createBaseWebRequest([], []);
         assertThat(
@@ -619,7 +620,7 @@ class WebRequestTest extends TestCase
      * @since  3.1.0
      * @group  redirect_header
      */
-    public function validateRedirectHeaderReturnsValueValidatorWithOriginalHeaderIfRedirectHeaderNotPresent()
+    public function validateRedirectHeaderReturnsValueValidatorWithOriginalHeaderIfRedirectHeaderNotPresent(): void
     {
         $webRequest = $this->createBaseWebRequest([], ['HTTP_AUTHORIZATION' => 'someCoolToken']);
         assertTrue(
@@ -633,7 +634,7 @@ class WebRequestTest extends TestCase
      * @since  3.1.0
      * @group  redirect_header
      */
-    public function validateRedirectHeaderReturnsValueValidatorWithRedirectHeaderIfRedirectHeaderPresent()
+    public function validateRedirectHeaderReturnsValueValidatorWithRedirectHeaderIfRedirectHeaderPresent(): void
     {
         $webRequest = $this->createBaseWebRequest(
                 [],
@@ -650,7 +651,7 @@ class WebRequestTest extends TestCase
     /**
      * @test
      */
-    public function readHeaderReturnsValueReader()
+    public function readHeaderReturnsValueReader(): void
     {
         assertThat(
                 $this->webRequest->readHeader('HTTP_ACCEPT'),
@@ -661,7 +662,7 @@ class WebRequestTest extends TestCase
     /**
      * @test
      */
-    public function readHeaderReturnsValueReaderForNonExistingParam()
+    public function readHeaderReturnsValueReaderForNonExistingParam(): void
     {
         assertThat(
                 $this->webRequest->readHeader('baz'),
@@ -674,7 +675,7 @@ class WebRequestTest extends TestCase
      * @since  3.1.0
      * @group  redirect_header
      */
-    public function readRedirectHeaderReturnsValueReaderForNonExistingHeader()
+    public function readRedirectHeaderReturnsValueReaderForNonExistingHeader(): void
     {
         $webRequest = $this->createBaseWebRequest([], []);
         assertNull(
@@ -687,7 +688,7 @@ class WebRequestTest extends TestCase
      * @since  3.1.0
      * @group  redirect_header
      */
-    public function readRedirectHeaderReturnsValueReaderWithOriginalHeaderIfRedirectHeaderNotPresent()
+    public function readRedirectHeaderReturnsValueReaderWithOriginalHeaderIfRedirectHeaderNotPresent(): void
     {
         $webRequest = $this->createBaseWebRequest([], ['HTTP_AUTHORIZATION' => 'someCoolToken']);
         assertThat(
@@ -701,7 +702,7 @@ class WebRequestTest extends TestCase
      * @since  3.1.0
      * @group  redirect_header
      */
-    public function readRedirectHeaderReturnsValueReaderWithRedirectHeaderIfRedirectHeaderPresent()
+    public function readRedirectHeaderReturnsValueReaderWithRedirectHeaderIfRedirectHeaderPresent(): void
     {
         $webRequest = $this->createBaseWebRequest(
                 [],
@@ -718,7 +719,7 @@ class WebRequestTest extends TestCase
     /**
      * @test
      */
-    public function returnsListOfCookieNames()
+    public function returnsListOfCookieNames(): void
     {
         assertThat($this->webRequest->cookieNames(), equals(['chocolateChip', 'master']));
     }
@@ -726,7 +727,7 @@ class WebRequestTest extends TestCase
     /**
      * @test
      */
-    public function returnsCookieErrors()
+    public function returnsCookieErrors(): void
     {
         assertThat(
                 $this->webRequest->cookieErrors(),
@@ -737,7 +738,7 @@ class WebRequestTest extends TestCase
     /**
      * @test
      */
-    public function returnsFalseOnCheckForNonExistingCookie()
+    public function returnsFalseOnCheckForNonExistingCookie(): void
     {
         assertFalse($this->webRequest->hasCookie('baz'));
     }
@@ -745,7 +746,7 @@ class WebRequestTest extends TestCase
     /**
      * @test
      */
-    public function returnsTrueOnCheckForExistingCookie()
+    public function returnsTrueOnCheckForExistingCookie(): void
     {
         assertTrue($this->webRequest->hasCookie('chocolateChip'));
     }
@@ -753,7 +754,7 @@ class WebRequestTest extends TestCase
     /**
      * @test
      */
-    public function validateCookieReturnsValueValidator()
+    public function validateCookieReturnsValueValidator(): void
     {
         assertThat(
                 $this->webRequest->validateCookie('chocolateChip'),
@@ -764,7 +765,7 @@ class WebRequestTest extends TestCase
     /**
      * @test
      */
-    public function validateCookieReturnsValueValidatorForNonExistingParam()
+    public function validateCookieReturnsValueValidatorForNonExistingParam(): void
     {
         assertThat(
                 $this->webRequest->validateCookie('baz'),
@@ -775,7 +776,7 @@ class WebRequestTest extends TestCase
     /**
      * @test
      */
-    public function readCookieReturnsValueReader()
+    public function readCookieReturnsValueReader(): void
     {
         assertThat(
                 $this->webRequest->readCookie('chocolateChip'),
@@ -786,7 +787,7 @@ class WebRequestTest extends TestCase
     /**
      * @test
      */
-    public function readCookieReturnsValueReaderForNonExistingParam()
+    public function readCookieReturnsValueReaderForNonExistingParam(): void
     {
         assertThat(
                 $this->webRequest->readCookie('baz'),
@@ -799,7 +800,7 @@ class WebRequestTest extends TestCase
      * @test
      * @group  issue_65
      */
-    public function returnsUserAgent()
+    public function returnsUserAgent(): void
     {
         assertThat(
                 $this->createBaseWebRequest(
@@ -816,7 +817,7 @@ class WebRequestTest extends TestCase
      * @test
      * @group  issue_65
      */
-    public function returnsUserAgentWhenHeaderNotPresent()
+    public function returnsUserAgentWhenHeaderNotPresent(): void
     {
         assertThat(
                 $this->createBaseWebRequest(
@@ -833,7 +834,7 @@ class WebRequestTest extends TestCase
      * @test
      * @group  issue_65
      */
-    public function userAgentDoesNotAcceptCookiesWhenNoCookiesInRequest()
+    public function userAgentDoesNotAcceptCookiesWhenNoCookiesInRequest(): void
     {
         assertFalse(
                 $this->createBaseWebRequest([], ['HTTP_USER_AGENT' => 'foo'], [])
@@ -847,7 +848,7 @@ class WebRequestTest extends TestCase
      * @test
      * @group  issue_65
      */
-    public function userAgentDoesNotRecognizeBotWithoutAdditionalSignature()
+    public function userAgentDoesNotRecognizeBotWithoutAdditionalSignature(): void
     {
         assertFalse(
                 $this->createBaseWebRequest([], ['HTTP_USER_AGENT' => 'foo'], [])
@@ -861,7 +862,7 @@ class WebRequestTest extends TestCase
      * @test
      * @group  issue_65
      */
-    public function userAgentRecognizedAsBotWithDefaultSignatures()
+    public function userAgentRecognizedAsBotWithDefaultSignatures(): void
     {
         assertTrue(
                 $this->createBaseWebRequest([], ['HTTP_USER_AGENT' => 'Googlebot /v1.1'], [])
@@ -875,7 +876,7 @@ class WebRequestTest extends TestCase
      * @test
      * @group  issue_65
      */
-    public function userAgentRecognizedAsBotWithAdditionalSignature()
+    public function userAgentRecognizedAsBotWithAdditionalSignature(): void
     {
         assertTrue(
                 $this->createBaseWebRequest([], ['HTTP_USER_AGENT' => 'foo'], [])
@@ -889,7 +890,7 @@ class WebRequestTest extends TestCase
      * @group  request_id
      * @since  4.2.0
      */
-    public function generatesIdIfNoRequestIdHeaderPresent()
+    public function generatesIdIfNoRequestIdHeaderPresent(): void
     {
         assertThat($this->createBaseWebRequest()->id(), isOfSize(25));
     }
@@ -899,12 +900,15 @@ class WebRequestTest extends TestCase
      * @group  request_id
      * @since  4.2.0
      */
-    public function generatedIdIsPersistentThroughoutRequest()
+    public function generatedIdIsPersistentThroughoutRequest(): void
     {
         $request = $this->createBaseWebRequest();
         assertThat($request->id(), equals($request->id()));
     }
 
+    /**
+     * @return  array<mixed[]>
+     */
     public function invalidRequestIdValues(): array
     {
         return [
@@ -921,7 +925,7 @@ class WebRequestTest extends TestCase
      * @dataProvider  invalidRequestIdValues
      * @since  4.2.0
      */
-    public function generatesIdIfRequestContainsInvalidValue(string $invalidValue)
+    public function generatesIdIfRequestContainsInvalidValue(string $invalidValue): void
     {
         assertThat(
                 $this->createBaseWebRequest([], ['HTTP_X_REQUEST_ID' => $invalidValue])->id(),
@@ -929,6 +933,9 @@ class WebRequestTest extends TestCase
         );
     }
 
+    /**
+     * @return  array<mixed[]>
+     */
     public function validRequestIdValues(): array
     {
         return [
@@ -944,7 +951,7 @@ class WebRequestTest extends TestCase
      * @dataProvider  validRequestIdValues
      * @since  4.2.0
      */
-    public function returnsValidValueFromHeader(string $validValue)
+    public function returnsValidValueFromHeader(string $validValue): void
     {
         assertThat(
                 $this->createBaseWebRequest([], ['HTTP_X_REQUEST_ID' => $validValue])->id(),
@@ -956,7 +963,7 @@ class WebRequestTest extends TestCase
      * @test
      * @since  6.0.0
      */
-    public function bodyReturnsInputStream()
+    public function bodyReturnsInputStream(): void
     {
         assertThat(
                 $this->createBaseWebRequest()->body(),
@@ -968,7 +975,7 @@ class WebRequestTest extends TestCase
      * @test
      * @since  6.0.0
      */
-    public function hasNoSessionAttachedByDefault()
+    public function hasNoSessionAttachedByDefault(): void
     {
         assertFalse($this->createBaseWebRequest()->hasSessionAttached());
     }
@@ -977,7 +984,7 @@ class WebRequestTest extends TestCase
      * @test
      * @since  6.0.0
      */
-    public function defaultSessionIsNull()
+    public function defaultSessionIsNull(): void
     {
         assertNull($this->createBaseWebRequest()->attachedSession());
     }
@@ -986,7 +993,7 @@ class WebRequestTest extends TestCase
      * @test
      * @since  6.0.0
      */
-    public function hasSessionWhenAttached()
+    public function hasSessionWhenAttached(): void
     {
         $request = $this->createBaseWebRequest();
         $session = NewInstance::of(Session::class);
@@ -998,7 +1005,7 @@ class WebRequestTest extends TestCase
      * @test
      * @since  6.0.0
      */
-    public function returnsAttachedSession()
+    public function returnsAttachedSession(): void
     {
         $request = $this->createBaseWebRequest();
         $session = NewInstance::of(Session::class);
@@ -1012,7 +1019,7 @@ class WebRequestTest extends TestCase
      * @test
      * @since  6.0.0
      */
-    public function hasNoIdentityAssociatedByDefault()
+    public function hasNoIdentityAssociatedByDefault(): void
     {
         assertFalse($this->createBaseWebRequest()->hasAssociatedIdentity());
     }
@@ -1021,7 +1028,7 @@ class WebRequestTest extends TestCase
      * @test
      * @since  6.0.0
      */
-    public function defaultIdentityIsNull()
+    public function defaultIdentityIsNull(): void
     {
         assertNull($this->createBaseWebRequest()->identity());
     }
@@ -1030,7 +1037,7 @@ class WebRequestTest extends TestCase
      * @test
      * @since  6.0.0
      */
-    public function hasIdentityWhenAssociated()
+    public function hasIdentityWhenAssociated(): void
     {
         $identity = new Identity(NewInstance::of(User::class), Roles::none());
         assertTrue(
@@ -1044,7 +1051,7 @@ class WebRequestTest extends TestCase
      * @test
      * @since  6.0.0
      */
-    public function returnsAssociatedIdentity()
+    public function returnsAssociatedIdentity(): void
     {
         $identity = new Identity(NewInstance::of(User::class), Roles::none());
         assertThat(

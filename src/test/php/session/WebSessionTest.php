@@ -30,15 +30,11 @@ use function bovigo\callmap\verify;
 class WebSessionTest extends TestCase
 {
     /**
-     * mocked session storage
-     *
-     * @type  \bovigo\callmap\Proxy
+     * @var  SessionStorage&\bovigo\callmap\ClassProxy
      */
     private $sessionStorage;
     /**
-     * mocked session id
-     *
-     * @type  \bovigo\callmap\Proxy
+     * @var  SessionId&\bovigo\callmap\ClassProxy
      */
     private $sessionId;
 
@@ -50,7 +46,7 @@ class WebSessionTest extends TestCase
 
     private function createWebSession(
             string $givenFingerprint = 'aFingerprint',
-            $storageFingerprint      = 'aFingerprint'
+            ?string $storageFingerprint      = 'aFingerprint'
     ): WebSession {
         $this->sessionStorage->returns([
                 'hasValue' => null !== $storageFingerprint,
@@ -66,7 +62,7 @@ class WebSessionTest extends TestCase
     /**
      * @test
      */
-    public function isNewWhenSessionContainsNoFingerprint()
+    public function isNewWhenSessionContainsNoFingerprint(): void
     {
         assertTrue($this->createWebSession('aFingerprint', null)->isNew());
     }
@@ -74,7 +70,7 @@ class WebSessionTest extends TestCase
     /**
      * @test
      */
-    public function regeneratesSessionIdWhenSessionIsNew()
+    public function regeneratesSessionIdWhenSessionIsNew(): void
     {
         $this->createWebSession('aFingerprint', null);
         assertTrue(verify($this->sessionId, 'regenerate')->wasCalledOnce());
@@ -83,7 +79,7 @@ class WebSessionTest extends TestCase
     /**
      * @test
      */
-    public function storesFingerPrintWhenSessionIsNew()
+    public function storesFingerPrintWhenSessionIsNew(): void
     {
         $this->createWebSession('aFingerprint', null);
         assertTrue(verify($this->sessionStorage, 'putValue')
@@ -93,7 +89,7 @@ class WebSessionTest extends TestCase
     /**
      * @test
      */
-    public function regeneratesSessionIdWhenSessionIsHijacked()
+    public function regeneratesSessionIdWhenSessionIsHijacked(): void
     {
         $this->createWebSession('otherFingerprint');
         assertTrue(verify($this->sessionId, 'regenerate')->wasCalledOnce());
@@ -102,7 +98,7 @@ class WebSessionTest extends TestCase
     /**
      * @test
      */
-    public function clearsSessionDataWhenSessionIsHijacked()
+    public function clearsSessionDataWhenSessionIsHijacked(): void
     {
         $this->createWebSession('otherFingerprint');
         assertTrue(verify($this->sessionStorage, 'clear')->wasCalledOnce());
@@ -111,7 +107,7 @@ class WebSessionTest extends TestCase
     /**
      * @test
      */
-    public function storesGivenFingerPrintWhenSessionIsHijacked()
+    public function storesGivenFingerPrintWhenSessionIsHijacked(): void
     {
         $this->createWebSession('otherFingerprint');
         assertTrue(verify($this->sessionStorage, 'putValue')
@@ -121,7 +117,7 @@ class WebSessionTest extends TestCase
     /**
      * @test
      */
-    public function idIsSessionId()
+    public function idIsSessionId(): void
     {
         $this->sessionId->returns(['__toString' => '303']);
         assertThat($this->createWebSession()->id(), equals('303'));
@@ -130,7 +126,7 @@ class WebSessionTest extends TestCase
     /**
      * @test
      */
-    public function regenerateCreatesNewSessionId()
+    public function regenerateCreatesNewSessionId(): void
     {
         $webSession = $this->createWebSession();
         assertThat($webSession->regenerateId(), equals($webSession));
@@ -140,7 +136,7 @@ class WebSessionTest extends TestCase
     /**
      * @test
      */
-    public function nameIsSessionIdName()
+    public function nameIsSessionIdName(): void
     {
         $this->sessionId->returns(['name' => 'foo']);
         assertThat($this->createWebSession()->name(), equals('foo'));
@@ -149,7 +145,7 @@ class WebSessionTest extends TestCase
     /**
      * @test
      */
-    public function isValidByDefault()
+    public function isValidByDefault(): void
     {
         assertTrue($this->createWebSession()->isValid());
     }
@@ -178,7 +174,7 @@ class WebSessionTest extends TestCase
     /**
      * @test
      */
-    public function isNotValidWhenFingerprintIsRemoved()
+    public function isNotValidWhenFingerprintIsRemoved(): void
     {
         assertFalse($this->createInvalidWebSession()->isValid());
     }
@@ -186,7 +182,7 @@ class WebSessionTest extends TestCase
     /**
      * @test
      */
-    public function invalidateClearsSessionData()
+    public function invalidateClearsSessionData(): void
     {
         $webSession = $this->createWebSession();
         assertThat($webSession->invalidate(), equals($webSession));
@@ -196,7 +192,7 @@ class WebSessionTest extends TestCase
     /**
      * @test
      */
-    public function invalidateInvalidatesSessionId()
+    public function invalidateInvalidatesSessionId(): void
     {
         $webSession = $this->createWebSession();
         assertThat($webSession->invalidate(), equals($webSession));
@@ -206,7 +202,7 @@ class WebSessionTest extends TestCase
     /**
      * @test
      */
-    public function hasValueReturnsFalseOnInvalidSession()
+    public function hasValueReturnsFalseOnInvalidSession(): void
     {
         assertFalse($this->createInvalidWebSession()->hasValue('foo'));
     }
@@ -217,7 +213,7 @@ class WebSessionTest extends TestCase
      * @param   string  $value
      * @return  \stubbles\webapp\session\WebSession
      */
-    private function createWebSessionWithValues($value = null)
+    private function createWebSessionWithValues($value = null): WebSession
     {
         $this->sessionStorage->returns([
                 'hasValue' => function($key) use ($value)
@@ -240,7 +236,7 @@ class WebSessionTest extends TestCase
     /**
      * @test
      */
-    public function hasNeverAnyValueByDefault()
+    public function hasNeverAnyValueByDefault(): void
     {
         assertFalse($this->createWebSessionWithValues()->hasValue('foo'));
     }
@@ -248,7 +244,7 @@ class WebSessionTest extends TestCase
     /**
      * @test
      */
-    public function hasValueIfStored()
+    public function hasValueIfStored(): void
     {
         assertTrue($this->createWebSessionWithValues('bar')->hasValue('foo'));
     }
@@ -256,7 +252,7 @@ class WebSessionTest extends TestCase
     /**
      * @test
      */
-    public function getValueReturnsNullIfValueNotStored()
+    public function getValueReturnsNullIfValueNotStored(): void
     {
         assertNull($this->createWebSessionWithValues()->value('foo'));
     }
@@ -264,7 +260,7 @@ class WebSessionTest extends TestCase
     /**
      * @test
      */
-    public function getValueReturnsDefaultIfValueNotStoredAndDefaultGiven()
+    public function getValueReturnsDefaultIfValueNotStoredAndDefaultGiven(): void
     {
         assertThat(
                 $this->createWebSessionWithValues()->value('foo', 'bar'),
@@ -275,7 +271,7 @@ class WebSessionTest extends TestCase
     /**
      * @test
      */
-    public function getValueReturnsStoredValue()
+    public function getValueReturnsStoredValue(): void
     {
         assertThat(
                 $this->createWebSessionWithValues('baz')->value('foo', 'bar'),
@@ -286,7 +282,7 @@ class WebSessionTest extends TestCase
     /**
      * @test
      */
-    public function getValueThrowsIllegalStateExceptionFalseOnInvalidSession()
+    public function getValueThrowsIllegalStateExceptionFalseOnInvalidSession(): void
     {
         expect(function() { $this->createInvalidWebSession()->value('foo'); })
                 ->throws(\LogicException::class);
@@ -295,7 +291,7 @@ class WebSessionTest extends TestCase
     /**
      * @test
      */
-    public function putValueStoresValue()
+    public function putValueStoresValue(): void
     {
         $webSession = $this->createWebSession();
         assertThat($webSession->putValue('foo', 'bar'), equals($webSession));
@@ -305,7 +301,7 @@ class WebSessionTest extends TestCase
     /**
      * @test
      */
-    public function putValueThrowsIllegalStateExceptionFalseOnInvalidSession()
+    public function putValueThrowsIllegalStateExceptionFalseOnInvalidSession(): void
     {
         expect(function() {
                 $this->createInvalidWebSession()->putValue('foo', 'bar');
@@ -315,7 +311,7 @@ class WebSessionTest extends TestCase
     /**
      * @test
      */
-    public function removeReturnsFalseIfValueWasNotStoredBefore()
+    public function removeReturnsFalseIfValueWasNotStoredBefore(): void
     {
         assertFalse($this->createWebSessionWithValues()->removeValue('foo'));
     }
@@ -323,7 +319,7 @@ class WebSessionTest extends TestCase
     /**
      * @test
      */
-    public function removeReturnsTrueIfValueWasNotStoredBefore()
+    public function removeReturnsTrueIfValueWasNotStoredBefore(): void
     {
         assertTrue($this->createWebSessionWithValues('bar')->removeValue('foo'));
         assertTrue(verify($this->sessionStorage, 'removeValue')->received('foo'));
@@ -332,7 +328,7 @@ class WebSessionTest extends TestCase
     /**
      * @test
      */
-    public function removeValueThrowsIllegalStateExceptionFalseOnInvalidSession()
+    public function removeValueThrowsIllegalStateExceptionFalseOnInvalidSession(): void
     {
         expect(function() { $this->createInvalidWebSession()->removeValue('foo'); })
                 ->throws(\LogicException::class);
@@ -341,7 +337,7 @@ class WebSessionTest extends TestCase
     /**
      * @test
      */
-    public function getValueKeysReturnsAllKeysWithoutFingerprint()
+    public function getValueKeysReturnsAllKeysWithoutFingerprint(): void
     {
         $session = $this->createWebSession();
         $this->sessionStorage->returns(
@@ -353,7 +349,7 @@ class WebSessionTest extends TestCase
     /**
      * @test
      */
-    public function getValueKeysThrowsIllegalStateExceptionFalseOnInvalidSession()
+    public function getValueKeysThrowsIllegalStateExceptionFalseOnInvalidSession(): void
     {
         expect(function() { $this->createInvalidWebSession()->valueKeys(); })
                 ->throws(\LogicException::class);

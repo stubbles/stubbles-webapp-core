@@ -27,15 +27,11 @@ use function bovigo\callmap\verify;
 class NullSessionTest extends TestCase
 {
     /**
-     * instance to test
-     *
-     * @type  \stubbles\webapp\session\NullSession
+     * @var  \stubbles\webapp\session\NullSession
      */
     private $nullSession;
     /**
-     * mocked session id
-     *
-     * @type  \bovigo\callmap\Proxy
+     * @var  SessionId&\bovigo\callmap\ClassProxy
      */
     private $sessionId;
 
@@ -48,7 +44,7 @@ class NullSessionTest extends TestCase
     /**
      * @test
      */
-    public function isAlwaysNew()
+    public function isAlwaysNew(): void
     {
         assertTrue($this->nullSession->isNew());
     }
@@ -56,7 +52,7 @@ class NullSessionTest extends TestCase
     /**
      * @test
      */
-    public function idIsSessionId()
+    public function idIsSessionId(): void
     {
         $this->sessionId->returns(['__toString' => '303']);
         assertThat($this->nullSession->id(), equals('303'));
@@ -65,7 +61,7 @@ class NullSessionTest extends TestCase
     /**
      * @test
      */
-    public function regenerateCreatesNewSessionId()
+    public function regenerateCreatesNewSessionId(): void
     {
         assertThat(
                 $this->nullSession->regenerateId(),
@@ -77,7 +73,7 @@ class NullSessionTest extends TestCase
     /**
      * @test
      */
-    public function nameIsSessionIdName()
+    public function nameIsSessionIdName(): void
     {
         $this->sessionId->returns(['name' => 'foo']);
         assertThat($this->nullSession->name(), equals('foo'));
@@ -86,7 +82,7 @@ class NullSessionTest extends TestCase
     /**
      * @test
      */
-    public function isAlwaysValid()
+    public function isAlwaysValid(): void
     {
         assertTrue($this->nullSession->isValid());
     }
@@ -94,7 +90,7 @@ class NullSessionTest extends TestCase
     /**
      * @test
      */
-    public function invalidateInvalidatesSessionId()
+    public function invalidateInvalidatesSessionId(): void
     {
         assertThat(
                 $this->nullSession->invalidate(),
@@ -106,7 +102,7 @@ class NullSessionTest extends TestCase
     /**
      * @test
      */
-    public function hasNeverAnyValue()
+    public function hasNeverAnyValue(): void
     {
         assertFalse($this->nullSession->hasValue('foo'));
     }
@@ -114,7 +110,7 @@ class NullSessionTest extends TestCase
     /**
      * @test
      */
-    public function neverReturnsValue()
+    public function neverReturnsValue(): void
     {
         assertNull($this->nullSession->value('foo'));
     }
@@ -122,7 +118,7 @@ class NullSessionTest extends TestCase
     /**
      * @test
      */
-    public function alwaysReturnsDefaultValue()
+    public function alwaysReturnsDefaultValue(): void
     {
         assertThat($this->nullSession->value('foo', 'bar'), equals('bar'));
     }
@@ -130,7 +126,7 @@ class NullSessionTest extends TestCase
     /**
      * @test
      */
-    public function putValueDoesNothing()
+    public function putValueDoesNothing(): void
     {
         assertThat(
                 $this->nullSession->putValue('foo', 'bar'),
@@ -141,7 +137,7 @@ class NullSessionTest extends TestCase
     /**
      * @test
      */
-    public function removeAlwaysTellsValueWasNotPresent()
+    public function removeAlwaysTellsValueWasNotPresent(): void
     {
         assertFalse($this->nullSession->removeValue('foo'));
     }
@@ -149,7 +145,7 @@ class NullSessionTest extends TestCase
     /**
      * @test
      */
-    public function hasNoValueKeys()
+    public function hasNoValueKeys(): void
     {
         assertEmptyArray($this->nullSession->valueKeys());
     }

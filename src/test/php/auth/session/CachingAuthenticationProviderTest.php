@@ -33,21 +33,15 @@ use function stubbles\reflect\annotationsOfConstructorParameter;
 class CachingAuthenticationProviderTest extends TestCase
 {
     /**
-     * instance to test
-     *
-     * @type  \stubbles\webapp\auth\session\CachingAuthenticationProvider
+     * @var  \stubbles\webapp\auth\session\CachingAuthenticationProvider
      */
     private $cachingAuthenticationProvider;
     /**
-     * mocked session
-     *
-     * @type  \bovigo\callmap\Proxy
+     * @var  Session&\bovigo\callmap\ClassProxy
      */
     private $session;
     /**
-     * mocked base authentication provider
-     *
-     * @type  \bovigo\callmap\Proxy
+     * @var  AuthenticationProvider&\bovigo\callmap\ClassProxy
      */
     private $authenticationProvider;
 
@@ -64,7 +58,7 @@ class CachingAuthenticationProviderTest extends TestCase
     /**
      * @test
      */
-    public function annotationsPresentOnConstructor()
+    public function annotationsPresentOnConstructor(): void
     {
         $parameterAnnotations = annotationsOfConstructorParameter(
             'authenticationProvider',
@@ -80,7 +74,7 @@ class CachingAuthenticationProviderTest extends TestCase
     /**
      * @test
      */
-    public function usesSessionValueIfUserStoredInSession()
+    public function usesSessionValueIfUserStoredInSession(): void
     {
         $user = NewInstance::of(User::class);
         $this->session->returns(['hasValue' => true, 'value' => $user]);
@@ -94,7 +88,7 @@ class CachingAuthenticationProviderTest extends TestCase
     /**
      * @test
      */
-    public function doesNotStoreReturnValueWhenOriginalAuthenticationProviderReturnsNull()
+    public function doesNotStoreReturnValueWhenOriginalAuthenticationProviderReturnsNull(): void
     {
         $this->session->returns(['hasValue' => false]);
         assertNull(
@@ -106,7 +100,7 @@ class CachingAuthenticationProviderTest extends TestCase
     /**
      * @test
      */
-    public function storeReturnValueInSessionWhenOriginalAuthenticationProviderReturnsUser()
+    public function storeReturnValueInSessionWhenOriginalAuthenticationProviderReturnsUser(): void
     {
         $user = NewInstance::of(User::class);
         $this->session->returns(['hasValue' => false]);
@@ -123,7 +117,7 @@ class CachingAuthenticationProviderTest extends TestCase
     /**
      * @test
      */
-    public function returnsLoginUriFromOriginalAuthenticationProvider()
+    public function returnsLoginUriFromOriginalAuthenticationProvider(): void
     {
         $this->authenticationProvider->returns([
             'loginUri' => 'http://login.example.net/'
@@ -141,7 +135,7 @@ class CachingAuthenticationProviderTest extends TestCase
      * @group  issue_73
      * @since  8.0.0
      */
-    public function returnsChallengesFromOriginalAuthenticationProvider()
+    public function returnsChallengesFromOriginalAuthenticationProvider(): void
     {
         $this->authenticationProvider->returns([
             'challengesFor' => ['Basic realm="simple"']

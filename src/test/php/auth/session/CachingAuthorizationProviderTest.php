@@ -32,21 +32,16 @@ use function stubbles\reflect\annotationsOfConstructorParameter;
 class CachingAuthorizationProviderTest extends TestCase
 {
     /**
-     * instance to test
-     *
-     * @type  \stubbles\webapp\auth\session\CachingAuthorizationProvider
+     * @var  \stubbles\webapp\auth\session\CachingAuthorizationProvider
      */
     private $cachingAuthorizationProvider;
     /**
      * mocked session
-     *
-     * @type  \bovigo\callmap\Proxy
+     * @var  Session&\bovigo\callmap\ClassProxy
      */
     private $session;
     /**
-     * mocked base authentication provider
-     *
-     * @type  \bovigo\callmap\Proxy
+     * @var  AuthorizationProvider&\bovigo\callmap\ClassProxy
      */
     private $authorizationProvider;
 
@@ -63,7 +58,7 @@ class CachingAuthorizationProviderTest extends TestCase
     /**
      * @test
      */
-    public function annotationsPresentOnConstructor()
+    public function annotationsPresentOnConstructor(): void
     {
         $annotations = annotationsOfConstructorParameter(
                 'authorizationProvider',
@@ -79,7 +74,7 @@ class CachingAuthorizationProviderTest extends TestCase
     /**
      * @test
      */
-    public function usesSessionValueIfRolesStoredInSession()
+    public function usesSessionValueIfRolesStoredInSession(): void
     {
         $roles = new Roles(['admin']);
         $this->session->returns(['hasValue' => true, 'value' => $roles]);
@@ -95,7 +90,7 @@ class CachingAuthorizationProviderTest extends TestCase
     /**
      * @test
      */
-    public function storeReturnValueInSessionWhenOriginalAuthenticationProviderReturnsRoles()
+    public function storeReturnValueInSessionWhenOriginalAuthenticationProviderReturnsRoles(): void
     {
         $roles = new Roles(['admin']);
         $this->session->returns(['hasValue' => false]);

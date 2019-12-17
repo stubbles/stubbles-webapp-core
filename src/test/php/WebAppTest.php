@@ -33,19 +33,19 @@ class WebAppTest extends TestCase
     /**
      * instance to test
      *
-     * @type  WebApp
+     * @var  WebApp
      */
     private $webApp;
     /**
      * mocked injector
      *
-     * @type  \bovigo\callmap\Proxy
+     * @var  \bovigo\callmap\Proxy
      */
     private $injector;
     /**
      * partially mocked routing
      *
-     * @type  \bovigo\callmap\Proxy
+     * @var  \bovigo\callmap\Proxy
      */
     private $routing;
 
@@ -87,6 +87,10 @@ class WebAppTest extends TestCase
         return $resource;
     }
 
+    /**
+     * @param   array<string,mixed>  $callmap
+     * @return  UriResource
+     */
     private function createNonHttpsResource(array $callmap = []): UriResource
     {
         $resource = $this->createResource();
@@ -104,7 +108,7 @@ class WebAppTest extends TestCase
     /**
      * @test
       */
-    public function respondsWithRedirectHttpsUriIfRequiresHttps()
+    public function respondsWithRedirectHttpsUriIfRequiresHttps(): void
     {
         $resource = $this->createResource();
         $resource->returns([
@@ -124,7 +128,7 @@ class WebAppTest extends TestCase
     /**
      * @test
      */
-    public function doesNotExecuteInterceptorsAndResourceIfMimeTypeNegotiationFails  ()
+    public function doesNotExecuteInterceptorsAndResourceIfMimeTypeNegotiationFails(): void
     {
         $resource = NewInstance::of(UriResource::class);
         $this->routing->returns(['findResource' => $resource]);
@@ -143,7 +147,7 @@ class WebAppTest extends TestCase
      * @test
      * @since  6.0.0
      */
-    public function enablesSessionScopeWhenSessionIsAvailable()
+    public function enablesSessionScopeWhenSessionIsAvailable(): void
     {
         $session = NewInstance::of(Session::class);
         $webApp  = new class($this->injector, $this->routing, $session) extends WebApp
@@ -173,7 +177,7 @@ class WebAppTest extends TestCase
      * @test
      * @since  6.0.0
      */
-    public function doesNotEnableSessionScopeWhenSessionNotAvailable()
+    public function doesNotEnableSessionScopeWhenSessionNotAvailable(): void
     {
         $this->createNonHttpsResource();
         $this->webApp->run();
@@ -183,7 +187,7 @@ class WebAppTest extends TestCase
     /**
      * @test
      */
-    public function doesNotExecuteRouteAndPostInterceptorsIfPreInterceptorCancelsRequest()
+    public function doesNotExecuteRouteAndPostInterceptorsIfPreInterceptorCancelsRequest(): void
     {
         $resource = $this->createNonHttpsResource(['applyPreInterceptors' => false]);
         $this->webApp->run();
@@ -202,7 +206,7 @@ class WebAppTest extends TestCase
     /**
      * @test
      */
-    public function sendsInternalServerErrorIfExceptionThrownFromPreInterceptors()
+    public function sendsInternalServerErrorIfExceptionThrownFromPreInterceptors(): void
     {
         $exception = new \Exception('some error');
         $resource  = $this->createNonHttpsResource(
@@ -219,7 +223,7 @@ class WebAppTest extends TestCase
     /**
      * @test
      */
-    public function sendsInternalServerErrorIfExceptionThrownFromRoute()
+    public function sendsInternalServerErrorIfExceptionThrownFromRoute(): void
     {
         $exception = new \Exception('some error');
         $resource = $this->createNonHttpsResource([
@@ -236,7 +240,7 @@ class WebAppTest extends TestCase
     /**
      * @test
      */
-    public function sendsInternalServerErrorIfExceptionThrownFromPostInterceptors()
+    public function sendsInternalServerErrorIfExceptionThrownFromPostInterceptors(): void
     {
         $exception = new \Exception('some error');
         $this->createNonHttpsResource([
@@ -253,7 +257,7 @@ class WebAppTest extends TestCase
     /**
      * @test
      */
-    public function executesEverythingIfRequestNotCancelled()
+    public function executesEverythingIfRequestNotCancelled(): void
     {
         $resource = $this->createNonHttpsResource([
                 'applyPreInterceptors' => true
@@ -267,7 +271,7 @@ class WebAppTest extends TestCase
      * @since  4.0.0
      * @test
      */
-    public function createCreatesInstance()
+    public function createCreatesInstance(): void
     {
         $webAppClass = get_class($this->webApp);
         assertThat($webAppClass::create('projectPath'), isInstanceOf($webAppClass));
@@ -278,7 +282,7 @@ class WebAppTest extends TestCase
      * @test
      * @group  issue_70
      */
-    public function malformedUriInRequestLeadsToResponse400BadRequest()
+    public function malformedUriInRequestLeadsToResponse400BadRequest(): void
     {
         $_SERVER['REQUEST_URI'] = '/hello';
         $_SERVER['HTTP_HOST']   = '%&$§!&$!§invalid';

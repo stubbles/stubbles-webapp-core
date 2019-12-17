@@ -25,7 +25,7 @@ class ResourceOptionsTest extends TestCase
     /**
      * instance to test
      *
-     * @type  \stubbles\webapp\routing\ResourceOptions
+     * @var  \stubbles\webapp\routing\ResourceOptions
      */
     private $resourceOptions;
 
@@ -43,7 +43,7 @@ class ResourceOptionsTest extends TestCase
     /**
      * @test
      */
-    public function doesNotRequireSwitchToHttps()
+    public function doesNotRequireSwitchToHttps(): void
     {
         assertFalse($this->resourceOptions->requiresHttps());
     }
@@ -51,7 +51,7 @@ class ResourceOptionsTest extends TestCase
     /**
      * @test
      */
-    public function addsAllowHeader()
+    public function addsAllowHeader(): void
     {
         $response = NewInstance::of(Response::class);
         $this->resourceOptions->resolve(
@@ -65,7 +65,7 @@ class ResourceOptionsTest extends TestCase
     /**
      * @test
      */
-    public function addsAllowMethodsHeader()
+    public function addsAllowMethodsHeader(): void
     {
         $response = NewInstance::of(Response::class);
         $this->resourceOptions->resolve(

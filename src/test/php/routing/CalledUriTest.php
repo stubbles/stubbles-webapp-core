@@ -28,15 +28,11 @@ use function bovigo\assert\{
 class CalledUriTest extends TestCase
 {
     /**
-     * instance to test
-     *
-     * @type  \stubbles\webapp\CalledUri
+     * @var  \stubbles\webapp\CalledUri
      */
     private $calledUri;
     /**
-     * mocked http uri
-     *
-     * @type  \bovigo\callmap\Proxy
+     * @var  HttpUri&\bovigo\callmap\ClassProxy
      */
     private $httpUri;
 
@@ -50,7 +46,7 @@ class CalledUriTest extends TestCase
      * @since  4.0.0
      * @test
      */
-    public function createInstanceWithEmptyRequestMethodThrowsIllegalArgumentException()
+    public function createInstanceWithEmptyRequestMethodThrowsIllegalArgumentException(): void
     {
         expect(function() { new CalledUri($this->httpUri, ''); })
                 ->throws(\InvalidArgumentException::class);
@@ -60,7 +56,7 @@ class CalledUriTest extends TestCase
      * @test
      * @since  4.0.0
      */
-    public function castFromOtherInstanceReturnsInstance()
+    public function castFromOtherInstanceReturnsInstance(): void
     {
         assertThat(
                 CalledUri::castFrom($this->calledUri, null),
@@ -72,7 +68,7 @@ class CalledUriTest extends TestCase
      * @test
      * @since  4.0.0
      */
-    public function castFromHttpUriInstanceReturnsInstance()
+    public function castFromHttpUriInstanceReturnsInstance(): void
     {
         assertThat(
                 CalledUri::castFrom($this->httpUri, 'GET'),
@@ -84,7 +80,7 @@ class CalledUriTest extends TestCase
      * @test
      * @since  4.0.0
      */
-    public function castFromHttpUriInstanceWithoutRequestMethodThrowsIllegalArgumentException()
+    public function castFromHttpUriInstanceWithoutRequestMethodThrowsIllegalArgumentException(): void
     {
         expect(function() { CalledUri::castFrom($this->httpUri, ''); })
                 ->throws(\InvalidArgumentException::class);
@@ -94,7 +90,7 @@ class CalledUriTest extends TestCase
      * @test
      * @since  4.0.0
      */
-    public function castFromHttpUriStringReturnsInstance()
+    public function castFromHttpUriStringReturnsInstance(): void
     {
 
         assertThat(
@@ -107,7 +103,7 @@ class CalledUriTest extends TestCase
      * @test
      * @since  4.0.0
      */
-    public function castFromHttpUriStringWithoutRequestMethodThrowsIllegalArgumentException()
+    public function castFromHttpUriStringWithoutRequestMethodThrowsIllegalArgumentException(): void
     {
         expect(function()  { CalledUri::castFrom('http://example.net/', ''); })
                 ->throws(\InvalidArgumentException::class);
@@ -117,7 +113,7 @@ class CalledUriTest extends TestCase
      * @since  2.0.0
      * @test
      */
-    public function methodAlwaysEqualsNullMethod()
+    public function methodAlwaysEqualsNullMethod(): void
     {
         assertTrue($this->calledUri->methodEquals(null));
     }
@@ -126,7 +122,7 @@ class CalledUriTest extends TestCase
      * @since  2.0.0
      * @test
      */
-    public function methodAlwaysEqualsEmptyMethod()
+    public function methodAlwaysEqualsEmptyMethod(): void
     {
         assertTrue($this->calledUri->methodEquals(''));
     }
@@ -135,7 +131,7 @@ class CalledUriTest extends TestCase
      * @since  2.0.0
      * @test
      */
-    public function methodEqualsGivenMethod()
+    public function methodEqualsGivenMethod(): void
     {
         assertTrue($this->calledUri->methodEquals('GET'));
     }
@@ -144,11 +140,14 @@ class CalledUriTest extends TestCase
      * @since  2.0.0
      * @test
      */
-    public function methodDoesNotEqualsGivenMethod()
+    public function methodDoesNotEqualsGivenMethod(): void
     {
         assertFalse($this->calledUri->methodEquals('POST'));
     }
 
+    /**
+     * @return  array<mixed[]>
+     */
     public function provideSatisfiedPathPattern(): array
     {
         return [
@@ -166,7 +165,7 @@ class CalledUriTest extends TestCase
      * @test
      * @dataProvider  provideSatisfiedPathPattern
      */
-    public function returnsTrueForSatisfiedPathPattern(string $path, string $pathPattern = null)
+    public function returnsTrueForSatisfiedPathPattern(string $path, string $pathPattern = null): void
     {
         $this->httpUri->returns(['path' => $path]);
         assertTrue($this->calledUri->satisfiesPath($pathPattern));
@@ -186,7 +185,7 @@ class CalledUriTest extends TestCase
      * @test
      * @dataProvider  provideNonSatisfiedPathPattern
      */
-    public function returnsFalseForNonSatisfiedCondition(string $path, string $pathPattern)
+    public function returnsFalseForNonSatisfiedCondition(string $path, string $pathPattern): void
     {
         $this->httpUri->returns(['path' => $path]);
         assertFalse($this->calledUri->satisfiesPath($pathPattern));
@@ -196,7 +195,7 @@ class CalledUriTest extends TestCase
      * @since  2.0.0
      * @test
      */
-    public function isHttpsWhenRequestUriHasHttps()
+    public function isHttpsWhenRequestUriHasHttps(): void
     {
         $this->httpUri->returns(['isHttps' => true]);
         assertTrue($this->calledUri->isHttps());
@@ -206,7 +205,7 @@ class CalledUriTest extends TestCase
      * @since  2.0.0
      * @test
      */
-    public function toHttpReturnsTransformedUri()
+    public function toHttpReturnsTransformedUri(): void
     {
         $httpUri = NewInstance::stub(HttpUri::class);
         $this->httpUri->returns(['toHttp' => $httpUri]);
@@ -217,7 +216,7 @@ class CalledUriTest extends TestCase
      * @since  2.0.0
      * @test
      */
-    public function toHttpsReturnsTransformedUri()
+    public function toHttpsReturnsTransformedUri(): void
     {
         $httpUri = NewInstance::stub(HttpUri::class);
         $this->httpUri->returns(['toHttps' => $httpUri]);
@@ -228,7 +227,7 @@ class CalledUriTest extends TestCase
      * @since  2.0.0
      * @test
      */
-    public function returnsStringRepresentationOfUri()
+    public function returnsStringRepresentationOfUri(): void
     {
         $this->httpUri->returns(['__toString' => 'http://example.net/foo/bar']);
         assertThat((string) $this->calledUri, equals('http://example.net/foo/bar'));

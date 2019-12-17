@@ -28,11 +28,11 @@ class StatusTest extends TestCase
     /**
      * instance to test
      *
-     * @type  \stubbles\webapp\response\Status
+     * @var  \stubbles\webapp\response\Status
      */
     private $status;
     /**
-     * @type  stubbles\webapp\response\Headers
+     * @var  stubbles\webapp\response\Headers
      */
     private $headers;
 
@@ -45,7 +45,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function statusCodeIs200ByDefault()
+    public function statusCodeIs200ByDefault(): void
     {
         assertThat($this->status->code(), equals(200));
     }
@@ -53,7 +53,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function isNotFixedByDefault()
+    public function isNotFixedByDefault(): void
     {
         assertFalse($this->status->isFixed());
     }
@@ -61,7 +61,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function allowsPayloadByDefault()
+    public function allowsPayloadByDefault(): void
     {
         assertTrue($this->status->allowsPayload());
     }
@@ -69,7 +69,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function lineForCgiSapi()
+    public function lineForCgiSapi(): void
     {
         assertThat(
                 $this->status->line(HttpVersion::HTTP_1_1, 'cgi'),
@@ -80,7 +80,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function lineForOtherSapi()
+    public function lineForOtherSapi(): void
     {
         assertThat(
                 $this->status->line(HttpVersion::HTTP_1_1),
@@ -91,7 +91,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function setUnknownStatusCodeWithoutReasonPhraseThrowsIllegalArgumentException()
+    public function setUnknownStatusCodeWithoutReasonPhraseThrowsIllegalArgumentException(): void
     {
         expect(function() { $this->status->setCode(909); })
                 ->throws(\InvalidArgumentException::class);
@@ -100,7 +100,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function setUnknownStatusCodeWithReasonPhraseIsAccepted()
+    public function setUnknownStatusCodeWithReasonPhraseIsAccepted(): void
     {
         assertThat(
                 $this->status->setCode(909, 'Sound Is Awesome')
@@ -112,7 +112,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function createdSetsStatusCodeTo201()
+    public function createdSetsStatusCodeTo201(): void
     {
         assertThat(
                 $this->status->created('http://example.com/foo')->code(),
@@ -123,7 +123,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function createdAddsLocationHeaderWithGivenUri()
+    public function createdAddsLocationHeaderWithGivenUri(): void
     {
         $this->status->created('http://example.com/foo');
         assertThat($this->headers['Location'], equals('http://example.com/foo'));
@@ -132,7 +132,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function createdDoesNotAddEtagHeaderByDefault()
+    public function createdDoesNotAddEtagHeaderByDefault(): void
     {
         $this->status->created('http://example.com/foo');
         assertFalse(isset($this->headers['ETag']));
@@ -141,7 +141,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function createdAddsEtagHeaderWhenGiven()
+    public function createdAddsEtagHeaderWhenGiven(): void
     {
         $this->status->created('http://example.com/foo', 'someValue');
         assertThat($this->headers['ETag'], equals('someValue'));
@@ -150,7 +150,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function createdFixatesStatusCode()
+    public function createdFixatesStatusCode(): void
     {
         assertTrue($this->status->created('http://example.com/foo')->isFixed());
     }
@@ -158,7 +158,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function acceptedSetsStatusCodeTo202()
+    public function acceptedSetsStatusCodeTo202(): void
     {
         assertThat($this->status->accepted()->code(), equals(202));
     }
@@ -166,7 +166,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function acceptedFixatesStatusCode()
+    public function acceptedFixatesStatusCode(): void
     {
         assertTrue($this->status->accepted()->isFixed());
     }
@@ -174,7 +174,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function noContentSetsStatusCodeTo204()
+    public function noContentSetsStatusCodeTo204(): void
     {
         assertThat($this->status->noContent()->code(), equals(204));
     }
@@ -182,7 +182,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function noContentAddsContentLengthHeaderWithValue0()
+    public function noContentAddsContentLengthHeaderWithValue0(): void
     {
         $this->status->noContent();
         assertThat($this->headers['Content-Length'], equals('0'));
@@ -191,7 +191,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function noContentDisallowsPayload()
+    public function noContentDisallowsPayload(): void
     {
         assertFalse($this->status->noContent()->allowsPayload());
     }
@@ -199,7 +199,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function noContentFixatesStatusCode()
+    public function noContentFixatesStatusCode(): void
     {
         assertTrue($this->status->noContent()->isFixed());
     }
@@ -207,7 +207,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function resetContentSetsStatusCodeTo205()
+    public function resetContentSetsStatusCodeTo205(): void
     {
         assertThat($this->status->resetContent()->code(), equals(205));
     }
@@ -215,7 +215,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function resetContentAddsContentLengthHeaderWithValue0()
+    public function resetContentAddsContentLengthHeaderWithValue0(): void
     {
         $this->status->resetContent();
         assertThat($this->headers['Content-Length'], equals('0'));
@@ -224,7 +224,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function resetContentDisallowsPayload()
+    public function resetContentDisallowsPayload(): void
     {
         assertFalse($this->status->resetContent()->allowsPayload());
     }
@@ -232,7 +232,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function resetContentFixatesStatusCode()
+    public function resetContentFixatesStatusCode(): void
     {
         assertTrue($this->status->resetContent()->isFixed());
     }
@@ -240,7 +240,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function partialContentSetsStatusCodeTo206()
+    public function partialContentSetsStatusCodeTo206(): void
     {
         assertThat($this->status->partialContent(0, 10)->code(), equals(206));
     }
@@ -248,7 +248,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function partialContentAddsContentRangeHeader()
+    public function partialContentAddsContentRangeHeader(): void
     {
         $this->status->partialContent(0, 10);
         assertThat($this->headers['Content-Range'], equals('bytes 0-10/*'));
@@ -257,7 +257,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function partialContentAddsContentRangeHeaderWithTotalSizeAndDifferentUnit()
+    public function partialContentAddsContentRangeHeaderWithTotalSizeAndDifferentUnit(): void
     {
         $this->status->partialContent(0, 10, 25, 'elements');
         assertThat($this->headers['Content-Range'], equals('elements 0-10/25'));
@@ -266,7 +266,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function partialContentFixatesStatusCode()
+    public function partialContentFixatesStatusCode(): void
     {
         assertTrue($this->status->partialContent(0, 10)->isFixed());
     }
@@ -274,7 +274,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function redirectSetsStatusCodeTo302ByDefault()
+    public function redirectSetsStatusCodeTo302ByDefault(): void
     {
         assertThat(
                 $this->status->redirect('http://example.com/foo')->code(),
@@ -285,7 +285,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function redirectSetsStatusCodeToGivenStatusCode()
+    public function redirectSetsStatusCodeToGivenStatusCode(): void
     {
         assertThat(
                 $this->status->redirect('http://example.com/foo', 301)->code(),
@@ -296,7 +296,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function redirectAddsLocationHeaderWithGivenUri()
+    public function redirectAddsLocationHeaderWithGivenUri(): void
     {
         $this->status->redirect('http://example.com/foo');
         assertThat($this->headers['Location'], equals('http://example.com/foo'));
@@ -305,7 +305,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function redirectFixatesStatusCode()
+    public function redirectFixatesStatusCode(): void
     {
         assertTrue($this->status->redirect('http://example.com/foo')->isFixed());
     }
@@ -313,7 +313,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function notModifiedSetsStatusCodeTo304()
+    public function notModifiedSetsStatusCodeTo304(): void
     {
         assertThat($this->status->notModified()->code(), equals(304));
     }
@@ -321,7 +321,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function notModifiedFixatesStatusCode()
+    public function notModifiedFixatesStatusCode(): void
     {
         assertTrue($this->status->notModified()->isFixed());
     }
@@ -329,7 +329,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function badRequestSetsStatusCodeTo400()
+    public function badRequestSetsStatusCodeTo400(): void
     {
         assertThat($this->status->badRequest()->code(), equals(400));
     }
@@ -337,7 +337,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function badRequestFixatesStatusCode()
+    public function badRequestFixatesStatusCode(): void
     {
         assertTrue($this->status->badRequest()->isFixed());
     }
@@ -345,7 +345,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function unauthorizedSetsStatusCodeTo401()
+    public function unauthorizedSetsStatusCodeTo401(): void
     {
         assertThat(
                 $this->status->unauthorized(['Basic realm="RealmName"'])->code(),
@@ -356,7 +356,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function unauthorizedThrowsInvalidArgumentExceptionWhenListOfChallengesIsEmpty()
+    public function unauthorizedThrowsInvalidArgumentExceptionWhenListOfChallengesIsEmpty(): void
     {
         expect(function() { $this->status->unauthorized([]); })
                 ->throws(\InvalidArgumentException::class);
@@ -365,7 +365,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function unauthorizedAddsWwwAuthenticateHeader()
+    public function unauthorizedAddsWwwAuthenticateHeader(): void
     {
         $this->status->unauthorized(
                 ['MyAuth realm="Yo"', 'Basic realm="RealmName"']
@@ -379,7 +379,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function unauthorizedFixatesStatusCode()
+    public function unauthorizedFixatesStatusCode(): void
     {
         assertTrue(
                 $this->status->unauthorized(['Basic realm="RealmName"'])
@@ -390,7 +390,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function forbiddenSetsStatusCodeTo403()
+    public function forbiddenSetsStatusCodeTo403(): void
     {
         assertThat($this->status->forbidden()->code(), equals(403));
     }
@@ -398,7 +398,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function forbiddenFixatesStatusCode()
+    public function forbiddenFixatesStatusCode(): void
     {
         assertTrue($this->status->forbidden()->isFixed());
     }
@@ -406,7 +406,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function notFoundSetsStatusCodeTo404()
+    public function notFoundSetsStatusCodeTo404(): void
     {
         assertThat($this->status->notFound()->code(), equals(404));
     }
@@ -414,7 +414,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function notFoundFixatesStatusCode()
+    public function notFoundFixatesStatusCode(): void
     {
         assertTrue($this->status->notFound()->isFixed());
     }
@@ -422,7 +422,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function methodNotAllowedSetsStatusCodeTo405()
+    public function methodNotAllowedSetsStatusCodeTo405(): void
     {
         assertThat(
                 $this->status->methodNotAllowed(['GET', 'HEAD'])->code(),
@@ -433,7 +433,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function methodNotAllowedAddsAllowHeader()
+    public function methodNotAllowedAddsAllowHeader(): void
     {
         $this->status->methodNotAllowed(['GET', 'HEAD']);
         assertThat($this->headers['Allow'], equals('GET, HEAD'));
@@ -442,7 +442,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function methodNotAllowedFixatesStatusCode()
+    public function methodNotAllowedFixatesStatusCode(): void
     {
         assertTrue($this->status->methodNotAllowed(['GET', 'HEAD'])->isFixed());
     }
@@ -450,7 +450,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function notAcceptableSetsStatusCodeTo406()
+    public function notAcceptableSetsStatusCodeTo406(): void
     {
         assertThat(
                 $this->status->notAcceptable(['text/plain', 'application/foo'])
@@ -462,7 +462,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function notAcceptableAddsAcceptableHeader()
+    public function notAcceptableAddsAcceptableHeader(): void
     {
         $this->status->notAcceptable(['text/plain', 'application/foo']);
         assertThat(
@@ -474,7 +474,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function notAcceptableFixatesStatusCode()
+    public function notAcceptableFixatesStatusCode(): void
     {
         assertTrue(
                 $this->status->notAcceptable(['text/plain', 'application/foo'])
@@ -485,7 +485,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function conflictSetsStatusCodeTo409()
+    public function conflictSetsStatusCodeTo409(): void
     {
         assertThat($this->status->conflict()->code(), equals(409));
     }
@@ -493,7 +493,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function conflictFixatesStatusCode()
+    public function conflictFixatesStatusCode(): void
     {
         assertTrue($this->status->conflict()->isFixed());
     }
@@ -501,7 +501,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function goneSetsStatusCodeTo410()
+    public function goneSetsStatusCodeTo410(): void
     {
         assertThat($this->status->gone()->code(), equals(410));
     }
@@ -509,7 +509,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function goneFixatesStatusCode()
+    public function goneFixatesStatusCode(): void
     {
         assertTrue($this->status->gone()->isFixed());
     }
@@ -517,7 +517,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function lengthRequiredSetsStatusCodeTo411()
+    public function lengthRequiredSetsStatusCodeTo411(): void
     {
         assertThat($this->status->lengthRequired()->code(), equals(411));
     }
@@ -525,7 +525,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function lengthRequiredFixatesStatusCode()
+    public function lengthRequiredFixatesStatusCode(): void
     {
         assertTrue($this->status->lengthRequired()->isFixed());
     }
@@ -533,7 +533,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function preconditionFailedSetsStatusCodeTo412()
+    public function preconditionFailedSetsStatusCodeTo412(): void
     {
         assertThat($this->status->preconditionFailed()->code(), equals(412));
     }
@@ -541,7 +541,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function preconditionFailedFixatesStatusCode()
+    public function preconditionFailedFixatesStatusCode(): void
     {
         assertTrue($this->status->preconditionFailed()->isFixed());
     }
@@ -549,7 +549,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function unsupportedMediaTypeSetsStatusCodeTo415()
+    public function unsupportedMediaTypeSetsStatusCodeTo415(): void
     {
         assertThat($this->status->unsupportedMediaType()->code(), equals(415));
     }
@@ -557,7 +557,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function unsupportedMediaTypeFixatesStatusCode()
+    public function unsupportedMediaTypeFixatesStatusCode(): void
     {
         assertTrue($this->status->unsupportedMediaType()->isFixed());
     }
@@ -565,7 +565,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function rangeNotSatisfiableSetsStatusCodeTo416()
+    public function rangeNotSatisfiableSetsStatusCodeTo416(): void
     {
         assertThat($this->status->rangeNotSatisfiable(22)->code(), equals(416));
     }
@@ -573,7 +573,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function rangeNotSatisfiableAddsContentRangeHeader()
+    public function rangeNotSatisfiableAddsContentRangeHeader(): void
     {
         $this->status->rangeNotSatisfiable(22);
         assertThat($this->headers['Content-Range'], equals('bytes */22'));
@@ -582,7 +582,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function rangeNotSatisfiableAddsContentRangeHeaderWithDifferentUnit()
+    public function rangeNotSatisfiableAddsContentRangeHeaderWithDifferentUnit(): void
     {
         $this->status->rangeNotSatisfiable(22, 'elements');
         assertThat($this->headers['Content-Range'], equals('elements */22'));
@@ -591,7 +591,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function rangeNotSatisfiableFixatesStatusCode()
+    public function rangeNotSatisfiableFixatesStatusCode(): void
     {
         assertTrue($this->status->rangeNotSatisfiable(22)->isFixed());
     }
@@ -599,7 +599,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function internalServerErrorSetsStatusCodeTo500()
+    public function internalServerErrorSetsStatusCodeTo500(): void
     {
         assertThat($this->status->internalServerError()->code(), equals(500));
     }
@@ -607,7 +607,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function internalServerErrorFixatesStatusCode()
+    public function internalServerErrorFixatesStatusCode(): void
     {
         assertTrue($this->status->internalServerError()->isFixed());
     }
@@ -615,7 +615,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function notImplementedSetsStatusCodeTo501()
+    public function notImplementedSetsStatusCodeTo501(): void
     {
         assertThat($this->status->notImplemented()->code(), equals(501));
     }
@@ -623,7 +623,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function notImplementedFixatesStatusCode()
+    public function notImplementedFixatesStatusCode(): void
     {
         assertTrue($this->status->notImplemented()->isFixed());
     }
@@ -631,7 +631,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function serviceUnavailableSetsStatusCodeTo503()
+    public function serviceUnavailableSetsStatusCodeTo503(): void
     {
         assertThat($this->status->serviceUnavailable()->code(), equals(503));
     }
@@ -639,7 +639,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function serviceUnavailableFixatesStatusCode()
+    public function serviceUnavailableFixatesStatusCode(): void
     {
         assertTrue($this->status->serviceUnavailable()->isFixed());
     }
@@ -647,7 +647,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function httpVersionNotSupportedSetsStatusCodeTo505()
+    public function httpVersionNotSupportedSetsStatusCodeTo505(): void
     {
         assertThat($this->status->httpVersionNotSupported()->code(), equals(505));
     }
@@ -655,7 +655,7 @@ class StatusTest extends TestCase
     /**
      * @test
      */
-    public function httpVersionNotSupportedFixatesStatusCode()
+    public function httpVersionNotSupportedFixatesStatusCode(): void
     {
         assertTrue($this->status->httpVersionNotSupported()->isFixed());
     }

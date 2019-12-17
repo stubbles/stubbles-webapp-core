@@ -25,7 +25,7 @@ class UriPathTest extends TestCase
     /**
      * instance to test
      *
-     * @type  UriPath
+     * @var  UriPath
      */
     private $uriPath;
 
@@ -37,7 +37,7 @@ class UriPathTest extends TestCase
     /**
      * @test
      */
-    public function returnsGivenConfiguredPath()
+    public function returnsGivenConfiguredPath(): void
     {
         assertThat($this->uriPath->configured(), equals('/hello/{name}'));
     }
@@ -46,7 +46,7 @@ class UriPathTest extends TestCase
      * @test
      * @since  4.0.0
      */
-    public function returnsGivenActualPath()
+    public function returnsGivenActualPath(): void
     {
         assertThat($this->uriPath->actual(), equals('/hello/world/foo'));
     }
@@ -55,11 +55,14 @@ class UriPathTest extends TestCase
      * @test
      * @since  4.0.0
      */
-    public function castingToStringReturnsActualPath()
+    public function castingToStringReturnsActualPath(): void
     {
         assertThat((string) $this->uriPath, equals('/hello/world/foo'));
     }
 
+    /**
+     * @return  array<mixed[]>
+     */
     public function providePathArguments(): array
     {
         return [['/hello/mikey', '/hello/{name}', ['name' => 'mikey']],
@@ -68,6 +71,9 @@ class UriPathTest extends TestCase
     }
 
     /**
+     * @param  string                $calledPath
+     * @param  string                $configuredPath
+     * @param  array<string,string>  $expectedArguments
      * @test
      * @dataProvider  providePathArguments
      */
@@ -75,7 +81,7 @@ class UriPathTest extends TestCase
             string $calledPath,
             string $configuredPath,
             array $expectedArguments
-    ) {
+    ): void {
         $uriPath = new UriPath($configuredPath, $calledPath);
         foreach ($expectedArguments as $name => $value) {
             assertTrue($uriPath->hasArgument($name));
@@ -86,7 +92,7 @@ class UriPathTest extends TestCase
     /**
      * @test
      */
-    public function doesNotHaveNonGivenArgument()
+    public function doesNotHaveNonGivenArgument(): void
     {
         assertFalse($this->uriPath->hasArgument('id'));
     }
@@ -94,11 +100,14 @@ class UriPathTest extends TestCase
     /**
      * @test
      */
-    public function returnsNullForNonGivenArgument()
+    public function returnsNullForNonGivenArgument(): void
     {
         assertNull($this->uriPath->readArgument('id')->unsecure());
     }
 
+    /**
+     * @return  array<mixed[]>
+     */
     public function provideRemainingPath(): array
     {
         return [['/hello/mikey', '/hello/{name}', null],
@@ -118,8 +127,8 @@ class UriPathTest extends TestCase
     public function returnsRemainingPath(
             string $calledPath,
             string $configuredPath,
-            $expected
-    ) {
+            ?string $expected
+    ): void {
         $uriPath = new UriPath($configuredPath, $calledPath);
         assertThat($uriPath->remaining(), equals($expected));
     }
@@ -127,7 +136,7 @@ class UriPathTest extends TestCase
     /**
      * @test
      */
-    public function returnsDefaultIfRemainingPathIsNull()
+    public function returnsDefaultIfRemainingPathIsNull(): void
     {
         $this->uriPath = new UriPath('/hello/{name}', '/hello/world');
         assertThat($this->uriPath->remaining('index.html'), equals('index.html'));

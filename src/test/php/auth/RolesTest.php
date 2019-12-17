@@ -28,7 +28,7 @@ class RolesTest extends TestCase
     /**
      * @test
      */
-    public function noneYieldsNoRoles()
+    public function noneYieldsNoRoles(): void
     {
         assertEmpty(Roles::none());
     }
@@ -36,7 +36,7 @@ class RolesTest extends TestCase
     /**
      * @test
      */
-    public function hasAmountOfInitialRoles()
+    public function hasAmountOfInitialRoles(): void
     {
         assertThat(new Roles(['admin']), isOfSize(1));
     }
@@ -44,7 +44,7 @@ class RolesTest extends TestCase
     /**
      * @test
      */
-    public function doesNotContainNonAddedRole()
+    public function doesNotContainNonAddedRole(): void
     {
         $roles = new Roles(['admin']);
         assertFalse($roles->contain('superadmin'));
@@ -53,7 +53,7 @@ class RolesTest extends TestCase
     /**
      * @test
      */
-    public function containsAddedRole()
+    public function containsAddedRole(): void
     {
         $roles = new Roles(['admin']);
         assertTrue($roles->contain('admin'));
@@ -62,7 +62,7 @@ class RolesTest extends TestCase
     /**
      * @test
      */
-    public function rolesCanBeIterated()
+    public function rolesCanBeIterated(): void
     {
         $expected = ['admin', 'superadmin'];
         $roles    = new Roles($expected);

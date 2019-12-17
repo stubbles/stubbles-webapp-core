@@ -30,9 +30,7 @@ use function bovigo\assert\{
 class ArraySessionStorageTest extends TestCase
 {
     /**
-     * instance to test
-     *
-     * @type  \stubbles\webapp\session\storage\ArraySessionStorage
+     * @var  \stubbles\webapp\session\storage\ArraySessionStorage
      */
     private $arraySessionStorage;
 
@@ -44,7 +42,7 @@ class ArraySessionStorageTest extends TestCase
     /**
      * @test
      */
-    public function hasFingerprintByDefault()
+    public function hasFingerprintByDefault(): void
     {
         assertTrue(
                 $this->arraySessionStorage->hasValue(Session::FINGERPRINT)
@@ -54,7 +52,7 @@ class ArraySessionStorageTest extends TestCase
     /**
      * @test
      */
-    public function fingerprintIsEmptyByDefault()
+    public function fingerprintIsEmptyByDefault(): void
     {
         assertEmptyString($this->arraySessionStorage->value(Session::FINGERPRINT));
     }
@@ -62,7 +60,7 @@ class ArraySessionStorageTest extends TestCase
     /**
      * @test
      */
-    public function isEmptyAfterClear()
+    public function isEmptyAfterClear(): void
     {
         assertEmptyArray(
                 $this->arraySessionStorage->putValue('foo', 'bar')
@@ -74,7 +72,7 @@ class ArraySessionStorageTest extends TestCase
     /**
      * @test
      */
-    public function hasNoOtherValueByDefault()
+    public function hasNoOtherValueByDefault(): void
     {
         assertFalse($this->arraySessionStorage->hasValue('foo'));
     }
@@ -82,7 +80,7 @@ class ArraySessionStorageTest extends TestCase
     /**
      * @test
      */
-    public function returnsNullForNonExistingValue()
+    public function returnsNullForNonExistingValue(): void
     {
         assertNull($this->arraySessionStorage->value('foo'));
     }
@@ -90,7 +88,7 @@ class ArraySessionStorageTest extends TestCase
     /**
      * @test
      */
-    public function doesNothingWenRemovingNonExistingValue()
+    public function doesNothingWenRemovingNonExistingValue(): void
     {
         assertThat(
                 $this->arraySessionStorage->removeValue('foo'),
@@ -101,7 +99,7 @@ class ArraySessionStorageTest extends TestCase
     /**
      * @test
      */
-    public function hasValueWhichWasSet()
+    public function hasValueWhichWasSet(): void
     {
         assertTrue(
                 $this->arraySessionStorage->putValue('foo', 'bar')
@@ -112,7 +110,7 @@ class ArraySessionStorageTest extends TestCase
     /**
      * @test
      */
-    public function returnsValueWhichWasSet()
+    public function returnsValueWhichWasSet(): void
     {
         assertThat(
                 $this->arraySessionStorage->putValue('foo', 'bar')
@@ -124,7 +122,7 @@ class ArraySessionStorageTest extends TestCase
     /**
      * @test
      */
-    public function removesExistingValue()
+    public function removesExistingValue(): void
     {
         assertFalse(
                 $this->arraySessionStorage->putValue('foo', 'bar')
@@ -136,7 +134,7 @@ class ArraySessionStorageTest extends TestCase
     /**
      * @test
      */
-    public function returnsDefaultValueKeysAfterCreation()
+    public function returnsDefaultValueKeysAfterCreation(): void
     {
         assertThat(
                 $this->arraySessionStorage->valueKeys(),
@@ -147,7 +145,7 @@ class ArraySessionStorageTest extends TestCase
     /**
      * @test
      */
-    public function valueKeysIncludeKeysOfAddedValues()
+    public function valueKeysIncludeKeysOfAddedValues(): void
     {
         assertThat(
                 $this->arraySessionStorage->putValue('foo', 'bar')

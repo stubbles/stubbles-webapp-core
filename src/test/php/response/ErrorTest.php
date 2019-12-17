@@ -28,7 +28,7 @@ class ErrorTest extends TestCase
     /**
      * @test
      */
-    public function canCreateInstanceFromListOfParamErrors()
+    public function canCreateInstanceFromListOfParamErrors(): void
     {
         $paramErrors = new ParamErrors();
         $paramErrors->append('foo', 'FIELD_EMPTY');

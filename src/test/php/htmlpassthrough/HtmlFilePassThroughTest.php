@@ -29,13 +29,11 @@ use function stubbles\reflect\annotationsOfConstructor;
 class HtmlFilePassThroughTest extends TestCase
 {
     /**
-     * instance to test
-     *
-     * @type  \stubbles\webapp\htmlpassthrough\HtmlFilePassThrough
+     * @var  \stubbles\webapp\htmlpassthrough\HtmlFilePassThrough
      */
     private $htmlFilePassThrough;
     /**
-     * @type  \org\bovigo\vfs\vfsStreamFile
+     * @var  \org\bovigo\vfs\vfsStreamFile
      */
     private $file;
 
@@ -51,7 +49,7 @@ class HtmlFilePassThroughTest extends TestCase
     /**
      * @test
      */
-    public function functionReturnsClassName()
+    public function functionReturnsClassName(): void
     {
         assertThat(
                 \stubbles\webapp\htmlPassThrough(),
@@ -62,7 +60,7 @@ class HtmlFilePassThroughTest extends TestCase
     /**
      * @test
      */
-    public function annotationsPresentOnConstructor()
+    public function annotationsPresentOnConstructor(): void
     {
         $annotations = annotationsOfConstructor($this->htmlFilePassThrough);
         assertTrue($annotations->contain('Named'));
@@ -75,7 +73,7 @@ class HtmlFilePassThroughTest extends TestCase
     /**
      * @test
      */
-    public function requestForNonExistingFileWritesNotFoundResponse()
+    public function requestForNonExistingFileWritesNotFoundResponse(): void
     {
         $error = Error::notFound();
         assertThat(
@@ -93,7 +91,7 @@ class HtmlFilePassThroughTest extends TestCase
      * @test
      * @since  8.0.0
      */
-    public function requestForNonReadableFileWritesInternalServerErrorResponse()
+    public function requestForNonReadableFileWritesInternalServerErrorResponse(): void
     {
         $this->file->chmod(0000);
         $error = Error::internalServerError('');
@@ -111,7 +109,7 @@ class HtmlFilePassThroughTest extends TestCase
     /**
      * @test
      */
-    public function selectsAvailableRoute()
+    public function selectsAvailableRoute(): void
     {
         assertThat(
                 $this->htmlFilePassThrough->resolve(
@@ -126,7 +124,7 @@ class HtmlFilePassThroughTest extends TestCase
     /**
      * @test
      */
-    public function fallsBackToIndexFileIfRequestForSlashOnly()
+    public function fallsBackToIndexFileIfRequestForSlashOnly(): void
     {
         assertThat(
                 $this->htmlFilePassThrough->resolve(

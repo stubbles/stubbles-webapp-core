@@ -34,11 +34,11 @@ use function stubbles\reflect\annotationsOfConstructorParameter;
 class ImageTest extends TestCase
 {
     /**
-     * @type  \stubbles\webapp\response\mimetypes\Image
+     * @var  \stubbles\webapp\response\mimetypes\Image
      */
     private $image;
     /**
-     * @type  \bovigo\callmap\Proxy
+     * @var  ResourceLoader&\bovigo\callmap\ClassProxy
      */
     private $resourceLoader;
 
@@ -51,7 +51,7 @@ class ImageTest extends TestCase
     /**
      * @test
      */
-    public function annotationsPresent()
+    public function annotationsPresent(): void
     {
         $annotations = annotationsOfConstructorParameter(
                 'errorImgResource',
@@ -67,7 +67,7 @@ class ImageTest extends TestCase
     /**
      * @test
      */
-    public function defaultMimeType()
+    public function defaultMimeType(): void
     {
         assertThat((string) $this->image, equals('image/*'));
     }
@@ -75,7 +75,7 @@ class ImageTest extends TestCase
     /**
      * @test
      */
-    public function mimeTypeCanBeSpecialised()
+    public function mimeTypeCanBeSpecialised(): void
     {
         assertThat(
                 (string) $this->image->specialise('image/png'),
@@ -83,16 +83,20 @@ class ImageTest extends TestCase
         );
     }
 
+    /**
+     * @return  array<mixed[]>
+     */
     public function emptyValues(): array
     {
         return [[null], ['']];
     }
 
     /**
+     * @param  mixed  $empty
      * @test
      * @dataProvider  emptyValues
      */
-    public function doesNothingWhenPassedResourceIsEmpty($empty)
+    public function doesNothingWhenPassedResourceIsEmpty($empty): void
     {
         $out = new MemoryOutputStream();
         $this->image->serialize($empty, $out);
@@ -107,7 +111,7 @@ class ImageTest extends TestCase
     /**
      * @test
      */
-    public function usesErrorImgResourceWhenResourceIsError()
+    public function usesErrorImgResourceWhenResourceIsError(): void
     {
         $handle = imagecreatefrompng(dirname(__DIR__) . '/../../resources/' . 'empty.png');
         if (false === $handle) {
@@ -127,7 +131,7 @@ class ImageTest extends TestCase
     /**
      * @test
      */
-    public function displaysImageLoadedFromFilename()
+    public function displaysImageLoadedFromFilename(): void
     {
         $handle = imagecreatefrompng(dirname(__DIR__) . '/../../resources/' . 'empty.png');
         if (false === $handle) {
@@ -147,7 +151,7 @@ class ImageTest extends TestCase
     /**
      * @test
      */
-    public function displaysImagePassedAsResource()
+    public function displaysImagePassedAsResource(): void
     {
         $handle = imagecreatefrompng(dirname(__DIR__) . '/../../resources/' . 'empty.png');
         if (false === $handle) {
@@ -169,7 +173,7 @@ class ImageTest extends TestCase
     /**
      * @test
      */
-    public function triggersUserErrorWhenImageLoadingFails()
+    public function triggersUserErrorWhenImageLoadingFails(): void
     {
         $this->resourceLoader->returns(
                 ['load' => throws(new \Exception('hm...'))]

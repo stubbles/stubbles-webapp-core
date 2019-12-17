@@ -26,11 +26,11 @@ use function bovigo\assert\predicate\isEmpty;
 class CsvTest extends TestCase
 {
     /**
-     * @type  \stubbles\webapp\response\mimetypes\Csv
+     * @var  \stubbles\webapp\response\mimetypes\Csv
      */
     private $csv;
     /**
-     * @type  \stubbles\streams\memory\MemoryOutputStream
+     * @var  \stubbles\streams\memory\MemoryOutputStream
      */
     private $memory;
 
@@ -43,7 +43,7 @@ class CsvTest extends TestCase
     /**
      * @test
      */
-    public function defaultMimeType()
+    public function defaultMimeType(): void
     {
         assertThat((string) $this->csv, equals('text/csv'));
     }
@@ -51,7 +51,7 @@ class CsvTest extends TestCase
     /**
      * @test
      */
-    public function mimeTypeCanBeSpecialised()
+    public function mimeTypeCanBeSpecialised(): void
     {
         assertThat(
                 (string) $this->csv->specialise('text/vendor-csv'),
@@ -59,6 +59,9 @@ class CsvTest extends TestCase
         );
     }
 
+    /**
+     * @return  array<scalar[]>
+     */
     public function scalarValues(): array
     {
         return [[1, '1'], ['some text', 'some text'], [true, '1'], [false, '']];
@@ -66,10 +69,11 @@ class CsvTest extends TestCase
 
     /**
      * @param  scalar  $scalarValue
+     * @param  string  $expected
      * @test
      * @dataProvider  scalarValues
      */
-    public function scalarResourcesAreConvertedToOneLineCsv($scalarValue, string $expected)
+    public function scalarResourcesAreConvertedToOneLineCsv($scalarValue, string $expected): void
     {
         assertThat(
                 $this->csv->serialize($scalarValue, $this->memory)->buffer(),
@@ -80,7 +84,7 @@ class CsvTest extends TestCase
     /**
      * @test
      */
-    public function errorResourceIsConvertedToOneLineCsv()
+    public function errorResourceIsConvertedToOneLineCsv(): void
     {
         assertThat(
                 $this->csv->serialize(new Error('ups'), $this->memory)->buffer(),
@@ -91,7 +95,7 @@ class CsvTest extends TestCase
     /**
      * @test
      */
-    public function incompatibleResourceTriggersError()
+    public function incompatibleResourceTriggersError(): void
     {
         expect(function() {
                 $this->csv->serialize(fopen(__FILE__, 'r'), $this->memory);
@@ -104,7 +108,7 @@ class CsvTest extends TestCase
     /**
      * @test
      */
-    public function serializeSimpleObjectExtractsProperties()
+    public function serializeSimpleObjectExtractsProperties(): void
     {
         $object = new \stdClass();
         $object->column1 = 'bar';
@@ -118,7 +122,7 @@ class CsvTest extends TestCase
     /**
      * @test
      */
-    public function serializeSimpleListWritesOneLine()
+    public function serializeSimpleListWritesOneLine(): void
     {
         assertThat(
                 $this->csv->serialize(
@@ -136,7 +140,7 @@ class CsvTest extends TestCase
      * \Traversable we can not inspect the first element to check if it is
      * something iterable or just a scalar value as we can with arrays.
      */
-    public function serializeSimpleTravsersableListWritesOneLineForEachEntry()
+    public function serializeSimpleTravsersableListWritesOneLineForEachEntry(): void
     {
         assertThat(
                 $this->csv->serialize(
@@ -150,7 +154,7 @@ class CsvTest extends TestCase
     /**
      * @test
      */
-    public function serializeSimpleMapWritesHeaderLineAndOneValueLine()
+    public function serializeSimpleMapWritesHeaderLineAndOneValueLine(): void
     {
         assertThat(
                 $this->csv->serialize(
@@ -164,7 +168,7 @@ class CsvTest extends TestCase
     /**
      * @test
      */
-    public function serializeNestedArray()
+    public function serializeNestedArray(): void
     {
         assertThat(
                 $this->csv->serialize(
@@ -178,7 +182,7 @@ class CsvTest extends TestCase
     /**
      * @test
      */
-    public function serializeNestedAssociativeArray()
+    public function serializeNestedAssociativeArray(): void
     {
         assertThat(
                 $this->csv->serialize(
@@ -194,7 +198,7 @@ class CsvTest extends TestCase
     /**
      * @test
      */
-    public function serializeListOfObjects()
+    public function serializeListOfObjects(): void
     {
         $object1 = new \stdClass();
         $object1->column1 = 'bar';
@@ -214,7 +218,7 @@ class CsvTest extends TestCase
     /**
      * @test
      */
-    public function serializeTraversableOfObjects()
+    public function serializeTraversableOfObjects(): void
     {
         $object1 = new \stdClass();
         $object1->column1 = 'bar';
@@ -234,7 +238,7 @@ class CsvTest extends TestCase
     /**
      * @test
      */
-    public function serializeTraversable()
+    public function serializeTraversable(): void
     {
         assertThat(
                 $this->csv->serialize(
@@ -252,7 +256,7 @@ class CsvTest extends TestCase
     /**
      * @test
      */
-    public function serializeNonAssociativeTraversable()
+    public function serializeNonAssociativeTraversable(): void
     {
         assertThat(
                 $this->csv->serialize(
@@ -266,7 +270,7 @@ class CsvTest extends TestCase
     /**
      * @test
      */
-    public function serializeNestedTraversable()
+    public function serializeNestedTraversable(): void
     {
         assertThat(
                 $this->csv->serialize(
@@ -284,7 +288,7 @@ class CsvTest extends TestCase
     /**
      * @test
      */
-    public function supportsToArrayOnObjects()
+    public function supportsToArrayOnObjects(): void
     {
         assertThat(
                 $this->csv->serialize(
@@ -298,7 +302,7 @@ class CsvTest extends TestCase
     /**
      * @test
      */
-    public function supportsNestedToArrayOnObjects()
+    public function supportsNestedToArrayOnObjects(): void
     {
         assertThat(
                 $this->csv->serialize(
@@ -312,7 +316,7 @@ class CsvTest extends TestCase
     /**
      * @test
      */
-    public function supportsAsArrayOnObjects()
+    public function supportsAsArrayOnObjects(): void
     {
         assertThat(
                 $this->csv->serialize(
@@ -326,7 +330,7 @@ class CsvTest extends TestCase
     /**
      * @test
      */
-    public function supportsNestedAsArrayOnObjects()
+    public function supportsNestedAsArrayOnObjects(): void
     {
         assertThat(
                 $this->csv->serialize(
@@ -340,7 +344,7 @@ class CsvTest extends TestCase
     /**
      * @test
      */
-    public function serializeWithChangedDelimiter()
+    public function serializeWithChangedDelimiter(): void
     {
         assertThat(
                 $this->csv->changeDelimiterTo(';')
@@ -353,7 +357,7 @@ class CsvTest extends TestCase
     /**
      * @test
      */
-    public function serializeWithChangedEnclosure()
+    public function serializeWithChangedEnclosure(): void
     {
         assertThat(
                 $this->csv->changeEnclosureTo('/')

@@ -37,19 +37,15 @@ use function bovigo\callmap\verify;
 class RoutingTest extends TestCase
 {
     /**
-     * instance to test
-     *
-     * @type  \stubbles\webapp\routing\Routing
+     * @var  \stubbles\webapp\routing\Routing
      */
     private $routing;
     /**
-     * @type  \bovigo\callmap\Proxy
+     * @var  Injector&\bovigo\callmap\ClassProxy
      */
     private $injector;
     /**
-     * called uri during tests
-     *
-     * @type  \stubbles\webapp\routing\CalledUri
+     * @var  \stubbles\webapp\routing\CalledUri
      */
     private $calledUri;
 
@@ -69,7 +65,7 @@ class RoutingTest extends TestCase
     /**
      * @test
      */
-    public function returnsNotFoundOnRouteSelectionWhenNoRouteAdded()
+    public function returnsNotFoundOnRouteSelectionWhenNoRouteAdded(): void
     {
         assertThat(
                 $this->routing->findResource($this->calledUri),
@@ -80,7 +76,7 @@ class RoutingTest extends TestCase
     /**
      * @test
      */
-    public function returnsNotFoundOnRouteSelectionWhenNoSuitableRouteAdded()
+    public function returnsNotFoundOnRouteSelectionWhenNoSuitableRouteAdded(): void
     {
         $this->routing->onHead('/bar', function() {});
         $this->routing->onGet('/foo', function() {});
@@ -94,7 +90,7 @@ class RoutingTest extends TestCase
      * @test
      * @since  2.2.0
      */
-    public function returnsResourceOptionsOnRouteSelectionWhenNoSuitableRouteForMethodAddedButIsOptionsRequest()
+    public function returnsResourceOptionsOnRouteSelectionWhenNoSuitableRouteForMethodAddedButIsOptionsRequest(): void
     {
         $this->routing->onHead('/hello', function() {});
         $this->routing->onGet('/foo', function() {});
@@ -108,7 +104,7 @@ class RoutingTest extends TestCase
      * @test
      * @since  2.2.0
      */
-    public function returnsMethodNotAllowedOnRouteSelectionWhenNoSuitableRouteForMethodAdded()
+    public function returnsMethodNotAllowedOnRouteSelectionWhenNoSuitableRouteForMethodAdded(): void
     {
         $this->routing->onHead('/hello', function() {});
         $this->routing->onGet('/foo', function() {});
@@ -122,7 +118,7 @@ class RoutingTest extends TestCase
      * @test
      * @since  5.0.0
      */
-    public function returnsProtectedResourceWhenMatchingRouteRequiresLogin()
+    public function returnsProtectedResourceWhenMatchingRouteRequiresLogin(): void
     {
         $this->routing->onGet('/hello', function() {})->withLoginOnly();
         assertThat(
@@ -135,7 +131,7 @@ class RoutingTest extends TestCase
      * @test
      * @since  5.0.0
      */
-    public function returnsProtectedResourceWhenMatchingRouteRequiresRole()
+    public function returnsProtectedResourceWhenMatchingRouteRequiresRole(): void
     {
         $this->routing->onGet('/hello', function() {})->withRoleOnly('admin');
         assertThat(
@@ -148,7 +144,7 @@ class RoutingTest extends TestCase
      * @test
      * @since  4.0.0
      */
-    public function routeWithoutMethodRestrictionReturnsResourceOptionsOnOptionRequest()
+    public function routeWithoutMethodRestrictionReturnsResourceOptionsOnOptionRequest(): void
     {
         $this->routing->onAll('/hello', function() { });
         assertThat(
@@ -161,7 +157,7 @@ class RoutingTest extends TestCase
      * @test
      * @since  4.0.0
      */
-    public function routeWithoutMethodRestrictionProvidesListOfAllMethodsOnOptionRequest()
+    public function routeWithoutMethodRestrictionProvidesListOfAllMethodsOnOptionRequest(): void
     {
         $this->routing->onAll('/hello', function() { });
         $response = NewInstance::of(Response::class);
@@ -171,6 +167,13 @@ class RoutingTest extends TestCase
                 ->received('Allow', 'GET, HEAD, POST, PUT, DELETE, OPTIONS');
     }
 
+    /**
+     * @param   Route     $route
+     * @param   string[]  $preInterceptors
+     * @param   string[]  $postInterceptors
+     * @param   string    $path
+     * @return  ResolvingResource
+     */
     private function createResolvingResource(
             Route $route,
             array $preInterceptors = [],
@@ -190,7 +193,7 @@ class RoutingTest extends TestCase
     /**
      * @test
      */
-    public function returnsRouteWhichFitsMethodAndPath()
+    public function returnsRouteWhichFitsMethodAndPath(): void
     {
         $route = $this->createResolvingResource($this->routing->onGet('/hello', function() {}));
         assertThat($this->routing->findResource($this->calledUri), equals($route));
@@ -199,7 +202,7 @@ class RoutingTest extends TestCase
     /**
      * @test
      */
-    public function addInvalidPreInterceptorThrowsIllegalArgumentException()
+    public function addInvalidPreInterceptorThrowsIllegalArgumentException(): void
     {
         expect(function() { $this->routing->preIntercept(303); })
                 ->throws(\InvalidArgumentException::class);
@@ -208,7 +211,7 @@ class RoutingTest extends TestCase
     /**
      * @test
      */
-    public function hasNoGlobalPreInterceptorsForDifferentMethod()
+    public function hasNoGlobalPreInterceptorsForDifferentMethod(): void
     {
         $preInterceptor = function() {};
         $route = $this->createResolvingResource($this->routing->onGet('/hello', function() {}));
@@ -225,7 +228,7 @@ class RoutingTest extends TestCase
     /**
      * @test
      */
-    public function hasGlobalPreInterceptorsEvenWhenNoRouteSelected()
+    public function hasGlobalPreInterceptorsEvenWhenNoRouteSelected(): void
     {
         $preInterceptor = function() {};
         $route = $this->createResolvingResource(
@@ -244,7 +247,7 @@ class RoutingTest extends TestCase
      * @test
      * @since  3.4.0
      */
-    public function hasGlobalPreInterceptorsWithMatchingPath()
+    public function hasGlobalPreInterceptorsWithMatchingPath(): void
     {
         $preInterceptor = function() {};
         $route = $this->createResolvingResource(
@@ -262,7 +265,7 @@ class RoutingTest extends TestCase
     /**
      * @test
      */
-    public function hasGlobalPreInterceptorsEvenWhenRouteSelected()
+    public function hasGlobalPreInterceptorsEvenWhenRouteSelected(): void
     {
         $preInterceptor = function() {};
         $preFunction    = 'array_map';
@@ -281,7 +284,7 @@ class RoutingTest extends TestCase
     /**
      * @test
      */
-    public function mergesGlobalAndRoutePreInterceptors()
+    public function mergesGlobalAndRoutePreInterceptors(): void
     {
         $preInterceptor = function() {};
         $route = $this->createResolvingResource(
@@ -299,7 +302,7 @@ class RoutingTest extends TestCase
     /**
      * @test
      */
-    public function addInvalidPostInterceptorThrowsIllegalArgumentException()
+    public function addInvalidPostInterceptorThrowsIllegalArgumentException(): void
     {
         expect(function() { $this->routing->postIntercept(303); })
                 ->throws(\InvalidArgumentException::class);
@@ -308,7 +311,7 @@ class RoutingTest extends TestCase
     /**
      * @test
      */
-    public function hasNoGlobalPostInterceptorsForDifferentMethod()
+    public function hasNoGlobalPostInterceptorsForDifferentMethod(): void
     {
         $postInterceptor = function() {};
         $route = $this->createResolvingResource(
@@ -327,7 +330,7 @@ class RoutingTest extends TestCase
     /**
      * @test
      */
-    public function hasGlobalPostInterceptorsEvenWhenNoRouteSelected()
+    public function hasGlobalPostInterceptorsEvenWhenNoRouteSelected(): void
     {
         $postInterceptor = function() {};
         $route = $this->createResolvingResource(
@@ -347,7 +350,7 @@ class RoutingTest extends TestCase
      * @test
      * @since  3.4.0
      */
-    public function hasGlobalPostInterceptorsWithMatchingPath()
+    public function hasGlobalPostInterceptorsWithMatchingPath(): void
     {
         $postInterceptor = function() {};
         $route = $this->createResolvingResource(
@@ -366,7 +369,7 @@ class RoutingTest extends TestCase
     /**
      * @test
      */
-    public function hasGlobalPostInterceptorsEvenWhenRouteSelected()
+    public function hasGlobalPostInterceptorsEvenWhenRouteSelected(): void
     {
         $postInterceptor = function() {};
         $postFunction    = 'array_map';
@@ -388,7 +391,7 @@ class RoutingTest extends TestCase
     /**
      * @test
      */
-    public function mergesGlobalAndRoutePostInterceptors()
+    public function mergesGlobalAndRoutePostInterceptors(): void
     {
         $postInterceptor = function() {};
         $route = $this->createResolvingResource(
@@ -407,7 +410,7 @@ class RoutingTest extends TestCase
     /**
      * @test
      */
-    public function supportsNoMimeTypeByDefault()
+    public function supportsNoMimeTypeByDefault(): void
     {
         assertEmptyArray(
                 $this->routing->findResource($this->calledUri)
@@ -419,7 +422,7 @@ class RoutingTest extends TestCase
      * @test
      * @since  5.0.0
      */
-    public function addMimeTypeWithoutClassWhenNoDefaultClassIsKnownThrowsInvalidArgumentException()
+    public function addMimeTypeWithoutClassWhenNoDefaultClassIsKnownThrowsInvalidArgumentException(): void
     {
         expect(function() { $this->routing->supportsMimeType('application/foo'); })
                 ->throws(\InvalidArgumentException::class);
@@ -428,7 +431,7 @@ class RoutingTest extends TestCase
     /**
      * @test
      */
-    public function supportsGlobalAndRouteMimeTypesWhenRouteFound()
+    public function supportsGlobalAndRouteMimeTypesWhenRouteFound(): void
     {
         $this->routing->onGet('/hello', function() {})
                     ->supportsMimeType('application/json');
@@ -444,7 +447,7 @@ class RoutingTest extends TestCase
      * @since 5.0.0
      * @test
      */
-    public function passesGlobalClassToSupportedMimeTypesOfSelectedRoute()
+    public function passesGlobalClassToSupportedMimeTypesOfSelectedRoute(): void
     {
         $request = NewInstance::of(Request::class)->returns([
                 'readHeader' => ValueReader::forValue('application/foo')
@@ -467,7 +470,7 @@ class RoutingTest extends TestCase
      * @test
      * @group  issue_72
      */
-    public function doesNotEnableMimeTypeForDefaultClassWhenRouteDoesNotSupportMimeType()
+    public function doesNotEnableMimeTypeForDefaultClassWhenRouteDoesNotSupportMimeType(): void
     {
         $this->routing->setDefaultMimeTypeClass('application/foo', 'example\Special');
         $this->routing->onGet('/hello', function() {});
@@ -483,7 +486,7 @@ class RoutingTest extends TestCase
      * @test
      * @group  issue_72
      */
-    public function passesDefaultClassToSupportedMimeTypesOfSelectedRouteWhenRouteSupportsMimeType()
+    public function passesDefaultClassToSupportedMimeTypesOfSelectedRouteWhenRouteSupportsMimeType(): void
     {
         $this->routing->setDefaultMimeTypeClass('application/foo', 'example\Special');
         $this->routing->onGet('/hello', function() {})->supportsMimeType('application/foo');
@@ -498,7 +501,7 @@ class RoutingTest extends TestCase
      * @test
      * @since  2.1.1
      */
-    public function contentNegotationCanBeDisabled()
+    public function contentNegotationCanBeDisabled(): void
     {
         $this->routing->onGet('/hello', function() {});
         $response = NewInstance::stub(WebResponse::class);
@@ -517,7 +520,7 @@ class RoutingTest extends TestCase
      * @test
      * @since  2.1.1
      */
-    public function contentNegotationIsDisabledWhenDisabledForRoute()
+    public function contentNegotationIsDisabledWhenDisabledForRoute(): void
     {
         $this->routing->onGet('/hello', function() {})
                       ->disableContentNegotiation();
@@ -533,6 +536,9 @@ class RoutingTest extends TestCase
         verify($response, 'adjustMimeType')->wasNeverCalled();
     }
 
+    /**
+     * @return  array<string[]>
+     */
     public function calledHtmlUris(): array
     {
         return [
@@ -547,7 +553,7 @@ class RoutingTest extends TestCase
      * @dataProvider  calledHtmlUris
      * @since  4.0.0
      */
-    public function passThroughOnGetAppliesForHtmlFilesWithDefaultPath(string $htmlFile)
+    public function passThroughOnGetAppliesForHtmlFilesWithDefaultPath(string $htmlFile): void
     {
         $expected = $this->createResolvingResource(
                 $this->routing->passThroughOnGet(),
@@ -565,7 +571,7 @@ class RoutingTest extends TestCase
      * @test
      * @since  6.1.0
      */
-    public function apiIndexOnGetCreatesRouteWithIndexTarget()
+    public function apiIndexOnGetCreatesRouteWithIndexTarget(): void
     {
         assertThat(
                 $this->routing->apiIndexOnGet('/')->target(),
@@ -578,7 +584,7 @@ class RoutingTest extends TestCase
      * @test
      * @since  6.1.0
      */
-    public function redirectOnGetCreatesRouteWithRedirectTarget()
+    public function redirectOnGetCreatesRouteWithRedirectTarget(): void
     {
         assertThat(
                 $this->routing->redirectOnGet('/foo', '/bar')->target(),

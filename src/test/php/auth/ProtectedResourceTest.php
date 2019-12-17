@@ -35,39 +35,31 @@ use function bovigo\callmap\{onConsecutiveCalls, throws, verify};
 class ProtectedResourceTest extends TestCase
 {
     /**
-     * instance to test
-     *
-     * @type  \stubbles\webapp\auth\ProtectedResource
+     * @var  \stubbles\webapp\auth\ProtectedResource
      */
     private $protectedResource;
     /**
      * route configuration
      *
-     * @type  \stubbles\webapp\auth\AuthConstraint
+     * @var  \stubbles\webapp\auth\AuthConstraint
      */
     private $authConstraint;
     /**
      * actual route to execute
      *
-     * @type  \bovigo\callmap\Proxy
+     * @var  UriResource&\bovigo\callmap\ClassProxy
      */
     private $actualResource;
     /**
-     * mocked injector
-     *
-     * @type  \bovigo\callmap\Proxy
+     * @var  Injector&\bovigo\callmap\ClassProxy
      */
     private $injector;
     /**
-     * mocked request instance
-     *
-     * @type  \bovigo\callmap\Proxy
+     * @var  Request&\bovigo\callmap\ClassProxy
      */
     private $request;
     /**
-     * mocked response instance
-     *
-     * @type  \bovigo\callmap\Proxy
+     * @var  Response&\bovigo\callmap\ClassProxy
      */
     private $response;
 
@@ -88,7 +80,7 @@ class ProtectedResourceTest extends TestCase
     /**
      * @test
      */
-    public function requiresSwitchToHttpsWhenActualRouteDoes()
+    public function requiresSwitchToHttpsWhenActualRouteDoes(): void
     {
         $this->actualResource->returns(['requiresHttps' => true]);
         assertTrue($this->protectedResource->requiresHttps());
@@ -97,7 +89,7 @@ class ProtectedResourceTest extends TestCase
     /**
      * @test
      */
-    public function returnsHttpsUriOfActualRoute()
+    public function returnsHttpsUriOfActualRoute(): void
     {
         $httpsUri = HttpUri::fromString('https://example.com/hello');
         $this->actualResource->returns(['httpsUri' => $httpsUri]);
@@ -108,7 +100,7 @@ class ProtectedResourceTest extends TestCase
      * @test
      * @since  6.0.0
      */
-    public function delegatesMimeTypeNegotiationToActualRoute()
+    public function delegatesMimeTypeNegotiationToActualRoute(): void
     {
         $this->actualResource->returns(['negotiateMimeType' => true]);
         assertTrue(
@@ -122,7 +114,7 @@ class ProtectedResourceTest extends TestCase
     /**
      * @test
      */
-    public function returnsSupportedMimeTypesOfActualRoute()
+    public function returnsSupportedMimeTypesOfActualRoute(): void
     {
         $this->actualResource->returns(['supportedMimeTypes' => ['application/foo']]);
         assertThat(
@@ -131,6 +123,10 @@ class ProtectedResourceTest extends TestCase
         );
     }
 
+    /**
+     * @param   array<string,mixed>  $callmap
+     * @return  AuthenticationProvider
+     */
     private function createAuthenticationProvider(array $callmap = []): AuthenticationProvider
     {
         $authenticationProvider = NewInstance::of(AuthenticationProvider::class);
@@ -142,7 +138,7 @@ class ProtectedResourceTest extends TestCase
      * @test
      * @group  issue_32
      */
-    public function applyPreInterceptorsTriggersInternalServerErrorWhenAuthenticationThrowsInternalAuthProviderException()
+    public function applyPreInterceptorsTriggersInternalServerErrorWhenAuthenticationThrowsInternalAuthProviderException(): void
     {
         $e = new InternalAuthProviderException('error');
         $this->createAuthenticationProvider(['authenticate' =>  throws($e)]);
@@ -169,7 +165,7 @@ class ProtectedResourceTest extends TestCase
      * @group  issue_32
      * @group  issue_69
      */
-    public function applyPreInterceptorsTriggersStatusCode504WhenAuthenticationThrowsExternalAuthHandlerException()
+    public function applyPreInterceptorsTriggersStatusCode504WhenAuthenticationThrowsExternalAuthHandlerException(): void
     {
         $this->createAuthenticationProvider([
                 'authenticate' => throws(new ExternalAuthProviderException('error'))
@@ -193,7 +189,7 @@ class ProtectedResourceTest extends TestCase
     /**
      * @test
      */
-    public function applyPreInterceptorsTriggersRedirectToLoginUriWhenNotAuthenticated()
+    public function applyPreInterceptorsTriggersRedirectToLoginUriWhenNotAuthenticated(): void
     {
         $this->createAuthenticationProvider(['loginUri' => 'https://login.example.com/']);
         assertTrue($this->protectedResource->applyPreInterceptors(
@@ -214,7 +210,7 @@ class ProtectedResourceTest extends TestCase
      * @since  8.0.0
      * @group  issue_73
      */
-    public function applyPreInterceptorsTriggers401UnauthorizedWhenNotAuthenticatedAndRedirectToLoginForbidden()
+    public function applyPreInterceptorsTriggers401UnauthorizedWhenNotAuthenticatedAndRedirectToLoginForbidden(): void
     {
         $this->authConstraint->sendChallengeWhenNotLoggedIn();
         $this->createAuthenticationProvider(['challengesFor' => ['Basic realm="simple"']]);
@@ -238,7 +234,7 @@ class ProtectedResourceTest extends TestCase
     /**
      * @test
      */
-    public function applyPreInterceptorsCallsActualRouteWhenAuthenticatedAndNoSpecificAuthorizationRequired()
+    public function applyPreInterceptorsCallsActualRouteWhenAuthenticatedAndNoSpecificAuthorizationRequired(): void
     {
         $this->authConstraint->requireLogin();
         $this->createAuthenticationProvider([
@@ -256,7 +252,7 @@ class ProtectedResourceTest extends TestCase
     /**
      * @test
      */
-    public function storesUserInRequestIdentityWhenAuthenticated()
+    public function storesUserInRequestIdentityWhenAuthenticated(): void
     {
         $user = NewInstance::of(User::class);
         $this->authConstraint->requireLogin();
@@ -273,6 +269,11 @@ class ProtectedResourceTest extends TestCase
         assertThat($identity->user(), isSameAs($user));
     }
 
+    /**
+     * @param   Roles|callable  $roles
+     * @param   User            $user
+     * @return  AuthorizationProvider
+     */
     private function createAuthorizationProvider($roles, User $user = null): AuthorizationProvider
     {
         $authenticationProvider = NewInstance::of(AuthenticationProvider::class)
@@ -292,7 +293,7 @@ class ProtectedResourceTest extends TestCase
      * @test
      * @group  issue_32
      */
-    public function applyPreInterceptorsTriggersInternalServerErrorWhenAuthorizationThrowsAuthHandlerException()
+    public function applyPreInterceptorsTriggersInternalServerErrorWhenAuthorizationThrowsAuthHandlerException(): void
     {
         $e = new InternalAuthProviderException('error');
         $this->authConstraint->requireRole('admin');
@@ -318,7 +319,7 @@ class ProtectedResourceTest extends TestCase
      * @group  issue_32
      * @group  issue_69
      */
-    public function applyPreInterceptorsTriggersStatusCode504WhenAuthorizationThrowsExternalAuthHandlerException()
+    public function applyPreInterceptorsTriggersStatusCode504WhenAuthorizationThrowsExternalAuthHandlerException(): void
     {
         $this->authConstraint->requireRole('admin');
         $this->createAuthorizationProvider(
@@ -343,7 +344,7 @@ class ProtectedResourceTest extends TestCase
     /**
      * @test
      */
-    public function applyPreInterceptorsTriggers403ForbiddenWhenNotAuthorized()
+    public function applyPreInterceptorsTriggers403ForbiddenWhenNotAuthorized(): void
     {
         $this->authConstraint->requireRole('admin');
         $this->createAuthorizationProvider(Roles::none());
@@ -366,7 +367,7 @@ class ProtectedResourceTest extends TestCase
     /**
      * @test
      */
-    public function applyPreInterceptorsCallsActualRouteWhenAuthenticatedAndAuthorized()
+    public function applyPreInterceptorsCallsActualRouteWhenAuthenticatedAndAuthorized(): void
     {
         $this->authConstraint->requireRole('admin');
         $this->createAuthorizationProvider(new Roles(['admin']));
@@ -381,7 +382,7 @@ class ProtectedResourceTest extends TestCase
     /**
      * @test
      */
-    public function storesUserInRequestIdentityWhenAuthenticatedAndAuthorized()
+    public function storesUserInRequestIdentityWhenAuthenticatedAndAuthorized(): void
     {
         $user = NewInstance::of(User::class);
         $this->authConstraint->requireRole('admin');
@@ -404,7 +405,7 @@ class ProtectedResourceTest extends TestCase
     /**
      * @test
      */
-    public function storesRolesInRequestIdentityWhenAuthenticatedAndAuthorized()
+    public function storesRolesInRequestIdentityWhenAuthenticatedAndAuthorized(): void
     {
         $this->authConstraint->requireRole('admin');
         $roles = new Roles(['admin']);
@@ -427,7 +428,7 @@ class ProtectedResourceTest extends TestCase
     /**
      * @test
      */
-    public function doesNotCallResolveOfActualRouteWhenNotAuthorized()
+    public function doesNotCallResolveOfActualRouteWhenNotAuthorized(): void
     {
         assertNull($this->protectedResource->resolve(
                 $this->request,
@@ -439,7 +440,7 @@ class ProtectedResourceTest extends TestCase
     /**
      * @test
      */
-    public function resolveCallsResolveOfActualRouteWhenAuthorized()
+    public function resolveCallsResolveOfActualRouteWhenAuthorized(): void
     {
         $this->authConstraint->requireRole('admin');
         $this->createAuthorizationProvider(new Roles(['admin']));
@@ -462,7 +463,7 @@ class ProtectedResourceTest extends TestCase
     /**
      * @test
      */
-    public function appliesPostInterceptorsWhenNotAuthorized()
+    public function appliesPostInterceptorsWhenNotAuthorized(): void
     {
         $this->authConstraint->requireRole('admin');
         $this->createAuthorizationProvider(Roles::none());
@@ -483,7 +484,7 @@ class ProtectedResourceTest extends TestCase
     /**
      * @test
      */
-    public function appliesPostInterceptorsWhenAuthorized()
+    public function appliesPostInterceptorsWhenAuthorized(): void
     {
         $this->authConstraint->requireRole('admin');
         $this->createAuthorizationProvider(new Roles(['admin']));

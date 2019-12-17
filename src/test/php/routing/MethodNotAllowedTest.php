@@ -26,9 +26,7 @@ use function bovigo\assert\predicate\equals;
 class MethodNotAllowedTest extends TestCase
 {
     /**
-     * instance to test
-     *
-     * @type  \stubbles\webapp\routing\MethodNotAllowed
+     * @var  \stubbles\webapp\routing\MethodNotAllowed
      */
     private $methodNotAllowed;
 
@@ -46,7 +44,7 @@ class MethodNotAllowedTest extends TestCase
     /**
      * @test
      */
-    public function doesNotRequireSwitchToHttps()
+    public function doesNotRequireSwitchToHttps(): void
     {
         assertFalse($this->methodNotAllowed->requiresHttps());
     }
@@ -54,7 +52,7 @@ class MethodNotAllowedTest extends TestCase
     /**
      * @test
      */
-    public function returnsMethodNotAllowedError()
+    public function returnsMethodNotAllowedError(): void
     {
         $request = NewInstance::of(Request::class)->returns([
                 'method'          => Http::DELETE,
@@ -73,7 +71,7 @@ class MethodNotAllowedTest extends TestCase
     /**
      * @test
      */
-    public function sets405MethodNotAllowedStatusCode()
+    public function sets405MethodNotAllowedStatusCode(): void
     {
         $request = NewInstance::of(Request::class)->returns([
                 'method'          => Http::DELETE,

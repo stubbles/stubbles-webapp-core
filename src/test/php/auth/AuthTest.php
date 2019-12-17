@@ -33,17 +33,17 @@ class AuthTest extends TestCase
     /**
      * an authentication provider which can be used for the tests
      *
-     * @type  string
+     * @var  string
      */
     private $authenticationProviderClass;
     /**
      * an authorization provider which can be used for the tests
      *
-     * @type  string
+     * @var  string
      */
     private $authorizationProviderClass;
     /**
-     * @type  \stubbles\ioc\Binder
+     * @var  \stubbles\ioc\Binder
      */
     private $binder;
 
@@ -62,7 +62,7 @@ class AuthTest extends TestCase
     /**
      * @test
      */
-    public function bindsOriginalAuthenticationProviderOnlyIfSessionCachingNotEnabled()
+    public function bindsOriginalAuthenticationProviderOnlyIfSessionCachingNotEnabled(): void
     {
         Auth::with($this->authenticationProviderClass)
             ->configure($this->binder);
@@ -76,7 +76,7 @@ class AuthTest extends TestCase
     /**
      * @test
      */
-    public function bindsNoAuthorizationProviderIfNoneGiven()
+    public function bindsNoAuthorizationProviderIfNoneGiven(): void
     {
         Auth::with($this->authenticationProviderClass)
             ->configure($this->binder);
@@ -87,7 +87,7 @@ class AuthTest extends TestCase
     /**
      * @test
      */
-    public function bindsOriginalAuthorizationProviderOnlyIfSessionCachingNotEnabled()
+    public function bindsOriginalAuthorizationProviderOnlyIfSessionCachingNotEnabled(): void
     {
         Auth::with($this->authenticationProviderClass, $this->authorizationProviderClass)
             ->configure($this->binder);
@@ -101,7 +101,7 @@ class AuthTest extends TestCase
     /**
      * @test
      */
-    public function bindsAllAuthenticationProviderOnlyIfSessionCachingEnabled()
+    public function bindsAllAuthenticationProviderOnlyIfSessionCachingEnabled(): void
     {
         Auth::with($this->authenticationProviderClass)
             ->enableSessionCaching()
@@ -120,7 +120,7 @@ class AuthTest extends TestCase
     /**
      * @test
      */
-    public function bindsAllAuthorizationProviderOnlyIfSessionCachingNotEnabled()
+    public function bindsAllAuthorizationProviderOnlyIfSessionCachingNotEnabled(): void
     {
         Auth::with($this->authenticationProviderClass, $this->authorizationProviderClass)
             ->enableSessionCaching()
@@ -139,7 +139,7 @@ class AuthTest extends TestCase
     /**
      * @test
      */
-    public function usingTokensBindsTokenStore()
+    public function usingTokensBindsTokenStore(): void
     {
         $tokenStoreClass = NewInstance::classname(TokenStore::class);
         Auth::usingTokens($tokenStoreClass, $this->authenticationProviderClass)
@@ -154,7 +154,7 @@ class AuthTest extends TestCase
     /**
      * @test
      */
-    public function usingTokensBindsLoginProvider()
+    public function usingTokensBindsLoginProvider(): void
     {
         $tokenStoreClass = NewInstance::classname(TokenStore::class);
         Auth::usingTokens($tokenStoreClass, $this->authenticationProviderClass)
@@ -176,7 +176,7 @@ class AuthTest extends TestCase
     /**
      * @test
      */
-    public function usingTokensWithSessionEnabledBindsLoginProvider()
+    public function usingTokensWithSessionEnabledBindsLoginProvider(): void
     {
         $tokenStoreClass = NewInstance::classname(TokenStore::class);
         Auth::usingTokens($tokenStoreClass, $this->authenticationProviderClass)

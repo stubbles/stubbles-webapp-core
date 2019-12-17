@@ -30,21 +30,15 @@ use function bovigo\callmap\verify;
 class ResolvingResourceTest extends TestCase
 {
     /**
-     * mocked request instance
-     *
-     * @type  \bovigo\callmap\Proxy
+     * @var  Request&\bovigo\callmap\ClassProxy
      */
     private $request;
     /**
-     * mocked response instance
-     *
-     * @type  \bovigo\callmap\Proxy
+     * @var  Response&\bovigo\callmap\ClassProxy
      */
     private $response;
     /**
-     * mocked injector instance
-     *
-     * @type  \bovigo\callmap\Proxy
+     * @var  Injector\bovigo\callmap\ClassProxy
      */
     private $injector;
 
@@ -57,7 +51,7 @@ class ResolvingResourceTest extends TestCase
 
     private function createResolvingResource(
             Route $route,
-            $uri = 'http://example.com/hello/world'
+            ?string $uri = 'http://example.com/hello/world'
     ): ResolvingResource {
         return new ResolvingResource(
                 $this->injector,
@@ -71,7 +65,7 @@ class ResolvingResourceTest extends TestCase
     /**
      * @test
      */
-    public function requiresSwitchToHttpsIfCalledUriIsNotHttpsButRouteRequiresHttps()
+    public function requiresSwitchToHttpsIfCalledUriIsNotHttpsButRouteRequiresHttps(): void
     {
         $route = new Route('/hello/{name}', function() {}, 'GET');
         $processableRoute = $this->createResolvingResource($route->httpsOnly());
@@ -81,7 +75,7 @@ class ResolvingResourceTest extends TestCase
     /**
      * @test
      */
-    public function doesNotrequireSwitchToHttpsIfCalledUriIsNotHttpsAndRouteDoesNotRequireHttps()
+    public function doesNotrequireSwitchToHttpsIfCalledUriIsNotHttpsAndRouteDoesNotRequireHttps(): void
     {
         assertFalse(
                 $this->createResolvingResourceWithTarget(function() {})
@@ -92,7 +86,7 @@ class ResolvingResourceTest extends TestCase
     /**
      * @test
      */
-    public function doesNotrequireSwitchToHttpsIfCalledUriIsHttps()
+    public function doesNotrequireSwitchToHttpsIfCalledUriIsHttps(): void
     {
         $route = new Route('/hello/{name}', function() {}, 'GET');
         $processableRoute = $this->createResolvingResource(
@@ -105,7 +99,7 @@ class ResolvingResourceTest extends TestCase
     /**
      * @test
      */
-    public function returnsHttpsUriFromCalledUri()
+    public function returnsHttpsUriFromCalledUri(): void
     {
         assertThat(
                 (string) $this->createResolvingResourceWithTarget(function() {})
@@ -114,6 +108,10 @@ class ResolvingResourceTest extends TestCase
         );
     }
 
+    /**
+     * @param   callable|Target  $target
+     * @return  ResolvingResource
+     */
     private function createResolvingResourceWithTarget($target): ResolvingResource
     {
         return $this->createResolvingResource(
@@ -124,7 +122,7 @@ class ResolvingResourceTest extends TestCase
     /**
      * @test
      */
-    public function processCallsClosureGivenAsCallback()
+    public function processCallsClosureGivenAsCallback(): void
     {
         assertThat(
                 $this->createResolvingResourceWithTarget(
@@ -141,11 +139,8 @@ class ResolvingResourceTest extends TestCase
 
     /**
      * helper method for the test
-     *
-     * @param  \stubbles\webapp\Request   $request
-     * @param  \stubbles\webapp\Response  $response
      */
-    public function theCallable(Request $request, Response $response, UriPath $uriPath)
+    public function theCallable(Request $request, Response $response, UriPath $uriPath): string
     {
         $response->setStatusCode(418);
         return 'Hello world';
@@ -154,7 +149,7 @@ class ResolvingResourceTest extends TestCase
     /**
      * @test
      */
-    public function processCallsGivenCallback()
+    public function processCallsGivenCallback(): void
     {
         assertThat(
                 $this->createResolvingResourceWithTarget([$this, 'theCallable'])
@@ -171,7 +166,7 @@ class ResolvingResourceTest extends TestCase
      * @param   \stubbles\webapp\Response  $response
      * @throws  \Exception
      */
-    public function failingCallable(Request $request, Response $response, UriPath $uriPath)
+    public function failingCallable(Request $request, Response $response, UriPath $uriPath): void
     {
         throw new \Exception('some error occurred');
     }
@@ -179,7 +174,7 @@ class ResolvingResourceTest extends TestCase
     /**
      * @test
      */
-    public function processCallsGivenProcessorInstance()
+    public function processCallsGivenProcessorInstance(): void
     {
         $target = NewInstance::of(Target::class);
         $target->returns(['resolve' => 'Hello world']);
@@ -198,7 +193,7 @@ class ResolvingResourceTest extends TestCase
     /**
      * @test
      */
-    public function respondsWithInternalServerErrorIfProcessorDoesNotImplementInterface()
+    public function respondsWithInternalServerErrorIfProcessorDoesNotImplementInterface(): void
     {
         $this->injector->returns(['getInstance' => new \stdClass()]);
         $error = new Error('error');
@@ -213,7 +208,7 @@ class ResolvingResourceTest extends TestCase
     /**
      * @test
      */
-    public function processCreatesAndCallsGivenProcessorClass()
+    public function processCreatesAndCallsGivenProcessorClass(): void
     {
         $target = NewInstance::of(Target::class);
         $target->returns(['resolve' => 'Hello world']);
