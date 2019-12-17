@@ -32,7 +32,7 @@ class StatusTest extends TestCase
      */
     private $status;
     /**
-     * @var  stubbles\webapp\response\Headers
+     * @var  \stubbles\webapp\response\Headers
      */
     private $headers;
 
