@@ -4,7 +4,8 @@ parameters:
   inferPrivatePropertyTypeFromConstructor: true
   level: 7
   paths:
-      - ./src
+      - ./src/main/php
+      - ./src/test/php
   ignoreErrors:
       # False positive
       - '#Call to an undefined method stubbles\\reflect\\annotation\\Annotation::get#'
