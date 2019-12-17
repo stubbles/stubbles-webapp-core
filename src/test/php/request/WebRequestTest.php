@@ -68,6 +68,12 @@ class WebRequestTest extends TestCase
         $_COOKIE = $this->globals['COOKIE'];
     }
 
+    /**
+     * @param   array<string,scalar|null>  $params
+     * @param   array<string,scalar|null>  $headers
+     * @param   array<string,scalar|null>  $cookies
+     * @return  WebRequest
+     */
     private function createBaseWebRequest(
             array $params  = [],
             array $headers = [],
