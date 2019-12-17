@@ -12,6 +12,7 @@ use stubbles\peer\http\HttpUri;
  * List of response headers.
  *
  * @since  4.0.0
+ * @implements  \IteratorAggregate<string,mixed>
  */
 class Headers implements \IteratorAggregate, \ArrayAccess
 {
@@ -146,9 +147,9 @@ class Headers implements \IteratorAggregate, \ArrayAccess
     /**
      * returns an external iterator
      *
-     * @return  \Traversable
+     * @return  \Iterator<string,mixed>
      */
-    public function getIterator(): \Traversable
+    public function getIterator(): \Iterator
     {
         return new \ArrayIterator($this->headers);
     }
