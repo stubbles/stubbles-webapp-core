@@ -183,7 +183,7 @@ class Error implements \JsonSerializable
     /**
      * returns a representation that can be serialized to json
      *
-     * @return  array
+     * @return  array<string,string>
      * @XmlIgnore
      */
     public function jsonSerialize(): array
