@@ -174,9 +174,9 @@ class TokenAuthenticatorTest extends TestCase
         $user  = $this->createTokenAwareUser();
         $this->request->returns(['hasRedirectHeader' => false]);
         $this->loginProvider->returns(['authenticate' => $user]);
-        assertNotNull(
-                $this->tokenAuthenticator->authenticate($this->request)->token()
-        );
+        /** @var  \stubbles\webapp\auth\User  $loggedInUser */
+        $loggedInUser = $this->tokenAuthenticator->authenticate($this->request);
+        assertNotNull($loggedInUser->token());
     }
 
     /**
@@ -245,10 +245,9 @@ class TokenAuthenticatorTest extends TestCase
         $user  = $this->createTokenAwareUser();
         $token = new Token($tokenValue);
         $this->tokenStore->returns(['findUserByToken' => $user]);
-        assertThat(
-                $this->tokenAuthenticator->authenticate($this->request)->token(),
-                equals($token)
-        );
+        /** @var  \stubbles\webapp\auth\User  $loggedInUser */
+        $loggedInUser = $this->tokenAuthenticator->authenticate($this->request);
+        assertThat($loggedInUser->token(), equals($token));
     }
 
     /**
@@ -296,9 +295,9 @@ class TokenAuthenticatorTest extends TestCase
         ]);
         $user = $this->createTokenAwareUser();
         $this->loginProvider->returns(['authenticate' => $user]);
-        assertNotNull(
-                $this->tokenAuthenticator->authenticate($this->request)->token()
-        );
+        /** @var  \stubbles\webapp\auth\User  $loggedInUser */
+        $loggedInUser = $this->tokenAuthenticator->authenticate($this->request);
+        assertNotNull($loggedInUser->token());
         verify($this->tokenStore, 'findUserByToken')
                 ->received($this->request, new Token('someOtherToken'));
     }
@@ -314,9 +313,8 @@ class TokenAuthenticatorTest extends TestCase
         ]);
         $user = $this->createTokenAwareUser();
         $this->loginProvider->returns(['authenticate' => $user]);
-        assertThat(
-                $this->tokenAuthenticator->authenticate($this->request)->token(),
-                isNotEqualTo(new Token('someOtherToken'))
-        );
+        /** @var  \stubbles\webapp\auth\User  $loggedInUser */
+        $loggedInUser = $this->tokenAuthenticator->authenticate($this->request);
+        assertThat($loggedInUser->token(), isNotEqualTo(new Token('someOtherToken')));
     }
 }
