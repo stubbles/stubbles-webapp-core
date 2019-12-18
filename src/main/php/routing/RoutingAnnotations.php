@@ -23,14 +23,14 @@ class RoutingAnnotations
     /**
      * list of annotations for a callback
      *
-     * @var  \stubbles\lang\reflect\annotation\Annotations
+     * @var  \stubbles\reflect\annotation\Annotations
      */
     private $annotations;
 
     /**
      * constructor
      *
-     * @param  string|callable|\stubbles\webapp\Target  $callback
+     * @param  class-string<\stubbles\webapp\Target>|callable|\stubbles\webapp\Target  $callback
      */
     public function __construct($callback)
     {
@@ -134,8 +134,8 @@ class RoutingAnnotations
     /**
      * returns class name of mime type class
      *
-     * @param   string|\ReflectionClass  $class
-     * @return  string
+     * @param   class-string<\stubbles\webapp\response\mimetypes\MimeType>|\ReflectionClass<\stubbles\webapp\response\mimetypes\MimeType>  $class
+     * @return  class-string<\stubbles\webapp\response\mimetypes\MimeType>
      */
     private function nameForMimeTypeClass($class): string
     {
