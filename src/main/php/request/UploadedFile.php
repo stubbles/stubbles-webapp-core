@@ -99,7 +99,8 @@ class UploadedFile
         $mimeType = @\mime_content_type($this->tmpName);
         if (false === $mimeType) {
             $error = \error_get_last();
-            $this->mimeTypeError = 'Could not detect mimetype of uploaded file: ' . $error['message'];
+            $msg = $error['message'] ?? 'unknown error while trying to detect mimetype';
+            $this->mimeTypeError = 'Could not detect mimetype of uploaded file: ' . $msg;
             throw new MimetypeCheckFailed($this->mimeTypeError);
         }
 
@@ -127,10 +128,9 @@ class UploadedFile
         }
 
         $error = \error_get_last();
+        $msg = $error['message'] ?? 'unknown error while trying to move uploaded file';
         throw new \RuntimeException(\sprintf(
-            'Could not move uploaded file "%s": %s',
-            $this->name,
-            $error['message']
+            'Could not move uploaded file "%s": %s', $this->name, $msg
         ));
     }
 
@@ -148,10 +148,9 @@ class UploadedFile
         }
 
         $error = \error_get_last();
+        $msg = $error['message'] ?? 'unknown error';
         throw new \RuntimeException(\sprintf(
-            'Could not remove uploaded file "%s": %s',
-            $this->name,
-            $error['message']
+            'Could not remove uploaded file "%s": %s', $this->name, $msg
         ));
     }
 }
