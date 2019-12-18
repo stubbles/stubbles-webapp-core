@@ -57,14 +57,15 @@ class MatchingRoutes
      * returns the first route
      *
      * @return  \stubbles\webapp\routing\Route
+     * @throws  \LogicException
      */
-    public function exactMatch(): ?Route
+    public function exactMatch(): Route
     {
         if ($this->hasExactMatch()) {
             return $this->routes['exact'];
         }
 
-        return null;
+        throw new \LogicException('No exact route available, check with hasExactMatch() before');
     }
 
     /**
