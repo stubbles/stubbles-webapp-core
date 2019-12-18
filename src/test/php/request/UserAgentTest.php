@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace stubbles\webapp\request;
 use PHPUnit\Framework\TestCase;
 
+use function bovigo\assert\assertFalse;
 use function bovigo\assert\assertThat;
 use function bovigo\assert\assertTrue;
 use function bovigo\assert\predicate\equals;
@@ -105,6 +106,16 @@ class UserAgentTest extends TestCase
     {
         $userAgent = new UserAgent($userAgentValue, true);
         assertTrue($userAgent->isBot());
+    }
+
+    /**
+     * @since  9.0.0
+     * @test
+     */
+    public function userAgentIsNoBotWhenUserAgentStringIsNull(): void
+    {
+        $userAgent = new UserAgent(null, true);
+        assertFalse($userAgent->isBot());
     }
 
     /**

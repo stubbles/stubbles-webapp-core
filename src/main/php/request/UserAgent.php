@@ -18,7 +18,7 @@ class UserAgent
     /**
      * name of user agent
      *
-     * @var  string
+     * @var  string|null
      */
     private $name;
     /**
@@ -55,7 +55,7 @@ class UserAgent
      * @param  bool                  $acceptsCookies  whether user agent accepts cookies or not
      * @param  array<string,string>  $botSignatures   optional  additional list of bot user agent signatures
      */
-    public function __construct($name, bool $acceptsCookies, array $botSignatures = [])
+    public function __construct(?string $name, bool $acceptsCookies, array $botSignatures = [])
     {
         $this->name           = $name;
         $this->acceptsCookies = $acceptsCookies;
@@ -83,7 +83,9 @@ class UserAgent
      */
     public function isBot(): bool
     {
-        if (null === $this->isBot) {
+        if (null === $this->name) {
+            $this->isBot = false;
+        } elseif (null === $this->isBot) {
             $this->isBot = false;
             foreach ($this->botSignatures as $botSignature) {
                 if (preg_match($botSignature, $this->name) === 1) {
