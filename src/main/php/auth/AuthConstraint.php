@@ -37,7 +37,7 @@ class AuthConstraint implements \JsonSerializable
     /**
      * required role to access the route
      *
-     * @var  string
+     * @var  string|null
      */
     private $requiredRole;
 
@@ -212,7 +212,7 @@ class AuthConstraint implements \JsonSerializable
     /**
      * returns data suitable for encoding to JSON
      *
-     * @return  array<string,string|bool>
+     * @return  array<string,string|bool|null>
      * @since   6.1.0
      * @XmlIgnore
      */
