@@ -69,7 +69,7 @@ abstract class WebApp extends App
         }
 
         $this->configureRouting($this->routing);
-        $uriResource = $this->routing->findResource($requestUri, $request->method());
+        $uriResource = $this->routing->findResource((string) $requestUri, $request->method());
         if ($this->switchToHttps($request, $uriResource)) {
             $response->redirect($uriResource->httpsUri());
             return $response;
