@@ -19,7 +19,7 @@ use stubbles\webapp\routing\RoutingAnnotations;
 class Resource implements \JsonSerializable
 {
     /**
-     * @var  string
+     * @var  string|null
      */
     private $name;
     /**

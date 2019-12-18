@@ -110,7 +110,7 @@ class Route implements ConfigurableRoute
      */
     public function __construct(string $path, $target, $requestMethod = null)
     {
-        if (!is_callable($target) && !($target instanceof Target) && !class_exists((string) $target)) {
+        if (!\is_callable($target) && !($target instanceof Target) && !\class_exists((string) $target)) {
             throw new \InvalidArgumentException(
                     'Given target for path "' . $path . '" must be a callable,'
                     . ' an instance of ' . Target::class . ' or a classname of'
@@ -132,7 +132,7 @@ class Route implements ConfigurableRoute
      */
     private function arrayFrom($requestMethod): array
     {
-        if (is_string($requestMethod)) {
+        if (\is_string($requestMethod)) {
             return [$requestMethod];
         }
 
@@ -140,7 +140,7 @@ class Route implements ConfigurableRoute
             return [Http::GET, Http::HEAD, Http::POST, Http::PUT, Http::DELETE];
         }
 
-        if (is_array($requestMethod)) {
+        if (\is_array($requestMethod)) {
             return $requestMethod;
         }
 
@@ -172,11 +172,11 @@ class Route implements ConfigurableRoute
             return false;
         }
 
-        if (in_array($calledUri->method(), $this->allowedRequestMethods)) {
+        if (\in_array($calledUri->method(), $this->allowedRequestMethods)) {
             return true;
         }
 
-        if (in_array(Http::GET, $this->allowedRequestMethods)) {
+        if (\in_array(Http::GET, $this->allowedRequestMethods)) {
             return $calledUri->methodEquals(Http::HEAD);
         }
 
@@ -223,7 +223,7 @@ class Route implements ConfigurableRoute
      */
     public function preIntercept($preInterceptor): ConfigurableRoute
     {
-        if (!is_callable($preInterceptor) && !($preInterceptor instanceof PreInterceptor) && !class_exists((string) $preInterceptor)) {
+        if (!\is_callable($preInterceptor) && !($preInterceptor instanceof PreInterceptor) && !\class_exists((string) $preInterceptor)) {
             throw new \InvalidArgumentException(
                     'Given pre interceptor must be a callable, an instance of '
                     . PreInterceptor::class
@@ -254,7 +254,7 @@ class Route implements ConfigurableRoute
      */
     public function postIntercept($postInterceptor): ConfigurableRoute
     {
-        if (!is_callable($postInterceptor) && !($postInterceptor instanceof PostInterceptor) && !class_exists((string) $postInterceptor)) {
+        if (!\is_callable($postInterceptor) && !($postInterceptor instanceof PostInterceptor) && !\class_exists((string) $postInterceptor)) {
             throw new \InvalidArgumentException(
                     'Given pre interceptor must be a callable, an instance of '
                     . PostInterceptor::class
@@ -418,13 +418,13 @@ class Route implements ConfigurableRoute
         }
 
         /** @var  array<string,class-string<\stubbles\webapp\response\mimetypes\MimeType>>  $mimeTypeClasses */
-        $mimeTypeClasses = array_merge(
+        $mimeTypeClasses = \array_merge(
             $globalClasses,
             $this->routingAnnotations()->mimeTypeClasses(),
             $this->mimeTypeClasses
         );
         return new SupportedMimeTypes(
-            array_merge(
+            \array_merge(
                 $this->routingAnnotations()->mimeTypes(),
                 $this->mimeTypes,
                 $globalMimeTypes
@@ -515,12 +515,12 @@ class Route implements ConfigurableRoute
     private function normalizePath(): string
     {
         $path = $this->path;
-        if (substr($path, -1) === '$') {
-            $path = substr($path, 0, strlen($path) - 1);
+        if (\substr($path, -1) === '$') {
+            $path = \substr($path, 0, \strlen($path) - 1);
         }
 
-        if (substr($path, -1) === '?') {
-            $path = substr($path, 0, strlen($path) - 1);
+        if (\substr($path, -1) === '?') {
+            $path = \substr($path, 0, \strlen($path) - 1);
         }
 
         return $path;
@@ -531,21 +531,21 @@ class Route implements ConfigurableRoute
      *
      * @return  string|null
      */
-    private function resourceName()
+    private function resourceName(): ?string
     {
         if ($this->routingAnnotations()->hasName()) {
             return $this->routingAnnotations()->name();
         }
 
-        if (is_string($this->target) && class_exists($this->target)) {
-            return substr(
-                    $this->target,
-                    strrpos($this->target, '\\') + 1
+        if (\is_string($this->target) && \class_exists($this->target)) {
+            return \substr(
+                $this->target,
+                \strrpos($this->target, '\\') + 1
             );
-        } elseif (!is_callable($this->target) && is_object($this->target)) {
-            return substr(
-                    get_class($this->target),
-                    strrpos(get_class($this->target), '\\') + 1
+        } elseif (!\is_callable($this->target) && \is_object($this->target)) {
+            return \substr(
+                \get_class($this->target),
+                \strrpos(get_class($this->target), '\\') + 1
             );
         }
 
