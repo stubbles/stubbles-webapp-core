@@ -202,7 +202,7 @@ class SupportedMimeTypesTest extends TestCase
     {
         assertThat(
                 $this->createInstance()->classFor('application/xml'),
-                equals('example\SpecialMimeType')
+                equals('stubbles\webapp\response\mimetypes\Xml')
         );
     }
 
