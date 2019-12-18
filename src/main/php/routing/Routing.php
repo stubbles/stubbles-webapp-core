@@ -30,13 +30,13 @@ class Routing implements RoutingConfigurator
     /**
      * list of global pre interceptors and to which request method they respond
      *
-     * @var  array
+     * @var  array<array<string,mixed>>
      */
     private $preInterceptors          = [];
     /**
      * list of global post interceptors and to which request method they respond
      *
-     * @var  array
+     * @var  array<array<string,mixed>>
      */
     private $postInterceptors         = [];
     /**
@@ -48,7 +48,7 @@ class Routing implements RoutingConfigurator
     /**
      * map of additional mime tyoe classes for this route
      *
-     * @var  string[]
+     * @var  array<string,class-string<\stubbles\webapp\response\mimetypes\MimeType>>
      */
     private $mimeTypeClasses                = [];
     /**
@@ -79,8 +79,8 @@ class Routing implements RoutingConfigurator
     /**
      * reply with given class or callable for GET request on given path
      *
-     * @param   string                                   $path    path this route is applicable for
-     * @param   string|callable|\stubbles\webapp\Target  $target  code to be executed when the route is active
+     * @param   string                                                                  $path    path this route is applicable for
+     * @param   class-string<\stubbles\webapp\Target>|callable|\stubbles\webapp\Target  $target  code to be executed when the route is active
      * @return  \stubbles\webapp\routing\ConfigurableRoute
      */
     public function onGet(string $path, $target): ConfigurableRoute
@@ -91,8 +91,8 @@ class Routing implements RoutingConfigurator
     /**
      * reply with HTML file stored in pages path
      *
-     * @param   string                                   $path    optional  path this route is applicable for
-     * @param   string|callable|\stubbles\webapp\Target  $target  optional  code to be executed when the route is active
+     * @param   string                                                                  $path    optional  path this route is applicable for
+     * @param   class-string<\stubbles\webapp\Target>|callable|\stubbles\webapp\Target  $target  optional  code to be executed when the route is active
      * @return  \stubbles\webapp\routing\ConfigurableRoute
      * @since   4.0.0
      */
@@ -136,8 +136,8 @@ class Routing implements RoutingConfigurator
     /**
      * reply with given class or callable for HEAD request on given path
      *
-     * @param   string                                   $path    path this route is applicable for
-     * @param   string|callable|\stubbles\webapp\Target  $target  code to be executed when the route is active
+     * @param   string                                                                  $path    path this route is applicable for
+     * @param   class-string<\stubbles\webapp\Target>|callable|\stubbles\webapp\Target  $target  code to be executed when the route is active
      * @return  \stubbles\webapp\routing\ConfigurableRoute
      */
     public function onHead(string $path, $target): ConfigurableRoute
@@ -148,8 +148,8 @@ class Routing implements RoutingConfigurator
     /**
      * reply with given class or callable for POST request on given path
      *
-     * @param   string                                   $path    path this route is applicable for
-     * @param   string|callable|\stubbles\webapp\Target  $target  code to be executed when the route is active
+     * @param   string                                                                  $path    path this route is applicable for
+     * @param   class-string<\stubbles\webapp\Target>|callable|\stubbles\webapp\Target  $target  code to be executed when the route is active
      * @return  \stubbles\webapp\routing\ConfigurableRoute
      */
     public function onPost(string $path, $target): ConfigurableRoute
@@ -160,8 +160,8 @@ class Routing implements RoutingConfigurator
     /**
      * reply with given class or callable for PUT request on given path
      *
-     * @param   string                                   $path    path this route is applicable for
-     * @param   string|callable|\stubbles\webapp\Target  $target  code to be executed when the route is active
+     * @param   string                                                                  $path    path this route is applicable for
+     * @param   class-string<\stubbles\webapp\Target>|callable|\stubbles\webapp\Target  $target  code to be executed when the route is active
      * @return  \stubbles\webapp\routing\ConfigurableRoute
      */
     public function onPut(string $path, $target): ConfigurableRoute
@@ -172,8 +172,8 @@ class Routing implements RoutingConfigurator
     /**
      * reply with given class or callable for DELETE request on given path
      *
-     * @param   string                                   $path    path this route is applicable for
-     * @param   string|callable|\stubbles\webapp\Target  $target  code to be executed when the route is active
+     * @param   string                                                                  $path    path this route is applicable for
+     * @param   class-string<\stubbles\webapp\Target>|callable|\stubbles\webapp\Target  $target  code to be executed when the route is active
      * @return  \stubbles\webapp\routing\ConfigurableRoute
      */
     public function onDelete(string $path, $target): ConfigurableRoute
@@ -187,9 +187,9 @@ class Routing implements RoutingConfigurator
      * If no request method(s) specified it replies to request methods GET, HEAD,
      * POST, PUT and DELETE.
      *
-     * @param   string                                   $path           path this route is applicable for
-     * @param   string|callable|\stubbles\webapp\Target  $target         code to be executed when the route is active
-     * @param   string|string[]                          $requestMethod  optional  request method(s) this route is applicable for
+     * @param   string                                                                  $path           path this route is applicable for
+     * @param   class-string<\stubbles\webapp\Target>|callable|\stubbles\webapp\Target  $target         code to be executed when the route is active
+     * @param   string|string[]                                                         $requestMethod  optional  request method(s) this route is applicable for
      * @return  \stubbles\webapp\routing\ConfigurableRoute
      * @since   4.0.0
      */
@@ -314,8 +314,8 @@ class Routing implements RoutingConfigurator
     /**
      * pre intercept with given class or callable on all GET requests
      *
-     * @param   string|callable|\stubbles\webapp\interceptor\PreInterceptor  $preInterceptor  pre interceptor to add
-     * @param   string                                                      $path            optional  path for which pre interceptor should be executed
+     * @param   class-string<PreInterceptor>|callable|PreInterceptor  $preInterceptor  pre interceptor to add
+     * @param   string                                                $path            optional  path for which pre interceptor should be executed
      * @return  \stubbles\webapp\RoutingConfigurator
      */
     public function preInterceptOnGet($preInterceptor, string $path = null): RoutingConfigurator
@@ -326,8 +326,8 @@ class Routing implements RoutingConfigurator
     /**
      * pre intercept with given class or callable on all HEAD requests
      *
-     * @param   string|callable|\stubbles\webapp\interceptor\PreInterceptor  $preInterceptor  pre interceptor to add
-     * @param   string                                                       $path            optional  path for which pre interceptor should be executed
+     * @param   class-string<PreInterceptor>|callable|PreInterceptor  $preInterceptor  pre interceptor to add
+     * @param   string                                                $path            optional  path for which pre interceptor should be executed
      * @return  \stubbles\webapp\RoutingConfigurator
      */
     public function preInterceptOnHead($preInterceptor, string $path = null): RoutingConfigurator
@@ -338,8 +338,8 @@ class Routing implements RoutingConfigurator
     /**
      * pre intercept with given class or callable on all POST requests
      *
-     * @param   string|callable|\stubbles\webapp\interceptor\PreInterceptor  $preInterceptor  pre interceptor to add
-     * @param   string                                                       $path            optional  path for which pre interceptor should be executed
+     * @param   class-string<PreInterceptor>|callable|PreInterceptor  $preInterceptor  pre interceptor to add
+     * @param   string                                                $path            optional  path for which pre interceptor should be executed
      * @return  \stubbles\webapp\RoutingConfigurator
      */
     public function preInterceptOnPost($preInterceptor, string $path = null): RoutingConfigurator
@@ -350,8 +350,8 @@ class Routing implements RoutingConfigurator
     /**
      * pre intercept with given class or callable on all PUT requests
      *
-     * @param   string|callable|\stubbles\webapp\interceptor\PreInterceptor  $preInterceptor  pre interceptor to add
-     * @param   string                                                       $path            optional  path for which pre interceptor should be executed
+     * @param   class-string<PreInterceptor>|callable|PreInterceptor  $preInterceptor  pre interceptor to add
+     * @param   string                                                $path            optional  path for which pre interceptor should be executed
      * @return  \stubbles\webapp\RoutingConfigurator
      */
     public function preInterceptOnPut($preInterceptor, string $path = null): RoutingConfigurator
@@ -362,8 +362,8 @@ class Routing implements RoutingConfigurator
     /**
      * pre intercept with given class or callable on all DELETE requests
      *
-     * @param   string|callable|\stubbles\webapp\interceptor\PreInterceptor  $preInterceptor  pre interceptor to add
-     * @param   string                                                       $path            optional  path for which pre interceptor should be executed
+     * @param   class-string<PreInterceptor>|callable|PreInterceptor  $preInterceptor  pre interceptor to add
+     * @param   string                                                $path            optional  path for which pre interceptor should be executed
      * @return  \stubbles\webapp\RoutingConfigurator
      */
     public function preInterceptOnDelete($preInterceptor, string $path = null): RoutingConfigurator
@@ -374,9 +374,9 @@ class Routing implements RoutingConfigurator
     /**
      * pre intercept with given class or callable on all requests
      *
-     * @param   string|callable|\stubbles\webapp\interceptor\PreInterceptor  $preInterceptor  pre interceptor to add
-     * @param   string                                                       $path            optional  path for which pre interceptor should be executed
-     * @param   string                                                       $requestMethod   request method for which interceptor should be executed
+     * @param   class-string<PreInterceptor>|callable|PreInterceptor  $preInterceptor  pre interceptor to add
+     * @param   string                                                $path            optional  path for which pre interceptor should be executed
+     * @param   string                                                $requestMethod   request method for which interceptor should be executed
      * @return  \stubbles\webapp\RoutingConfigurator
      * @throws  \InvalidArgumentException
      */
@@ -401,8 +401,8 @@ class Routing implements RoutingConfigurator
     /**
      * post intercept with given class or callable on all GET requests
      *
-     * @param   string|callable|\stubbles\webapp\interceptor\PostInterceptor  $postInterceptor  post interceptor to add
-     * @param   string                                                        $path             optional  path for which post interceptor should be executed
+     * @param   class-string<PostInterceptor>|callable|PostInterceptor  $postInterceptor  post interceptor to add
+     * @param   string                                                  $path             optional  path for which post interceptor should be executed
      * @return  \stubbles\webapp\RoutingConfigurator
      */
     public function postInterceptOnGet($postInterceptor, string $path = null): RoutingConfigurator
@@ -413,8 +413,8 @@ class Routing implements RoutingConfigurator
     /**
      * post intercept with given class or callable on all HEAD requests
      *
-     * @param   string|callable|\stubbles\webapp\interceptor\PostInterceptor  $postInterceptor  post interceptor to add
-     * @param   string                                                        $path             optional  path for which post interceptor should be executed
+     * @param   class-string<PostInterceptor>|callable|PostInterceptor  $postInterceptor  post interceptor to add
+     * @param   string                                                  $path             optional  path for which post interceptor should be executed
      * @return  \stubbles\webapp\RoutingConfigurator
      */
     public function postInterceptOnHead($postInterceptor, string $path = null): RoutingConfigurator
@@ -425,8 +425,8 @@ class Routing implements RoutingConfigurator
     /**
      * post intercept with given class or callable on all POST requests
      *
-     * @param   string|callable|\stubbles\webapp\interceptor\PostInterceptor  $postInterceptor  post interceptor to add
-     * @param   string                                                        $path             optional  path for which post interceptor should be executed
+     * @param   class-string<PostInterceptor>|callable|PostInterceptor  $postInterceptor  post interceptor to add
+     * @param   string                                                  $path             optional  path for which post interceptor should be executed
      * @return  \stubbles\webapp\RoutingConfigurator
      */
     public function postInterceptOnPost($postInterceptor, string $path = null): RoutingConfigurator
@@ -437,8 +437,8 @@ class Routing implements RoutingConfigurator
     /**
      * post intercept with given class or callable on all PUT requests
      *
-     * @param   string|callable|\stubbles\webapp\interceptor\PostInterceptor  $postInterceptor  post interceptor to add
-     * @param   string                                                        $path             optional  path for which post interceptor should be executed
+     * @param   class-string<PostInterceptor>|callable|PostInterceptor  $postInterceptor  post interceptor to add
+     * @param   string                                                  $path             optional  path for which post interceptor should be executed
      * @return  \stubbles\webapp\RoutingConfigurator
      */
     public function postInterceptOnPut($postInterceptor, string $path = null): RoutingConfigurator
@@ -449,8 +449,8 @@ class Routing implements RoutingConfigurator
     /**
      * post intercept with given class or callable on all DELETE requests
      *
-     * @param   string|callable|\stubbles\webapp\interceptor\PostInterceptor  $postInterceptor  post interceptor to add
-     * @param   string                                                        $path             optional  path for which post interceptor should be executed
+     * @param   class-string<PostInterceptor>|callable|PostInterceptor  $postInterceptor  post interceptor to add
+     * @param   string                                                  $path             optional  path for which post interceptor should be executed
      * @return  \stubbles\webapp\RoutingConfigurator
      */
     public function postInterceptOnDelete($postInterceptor, string $path = null): RoutingConfigurator
@@ -461,9 +461,9 @@ class Routing implements RoutingConfigurator
     /**
      * post intercept with given class or callable on all requests
      *
-     * @param   string|callable|\stubbles\webapp\interceptor\PostInterceptor  $postInterceptor  post interceptor to add
-     * @param   string                                                        $path             optional  path for which post interceptor should be executed
-     * @param   string                                                        $requestMethod    optional  request method for which interceptor should be executed
+     * @param   class-string<PostInterceptor>|callable|PostInterceptor  $postInterceptor  post interceptor to add
+     * @param   string                                                  $path             optional  path for which post interceptor should be executed
+     * @param   string                                                  $requestMethod    optional  request method for which interceptor should be executed
      * @return  \stubbles\webapp\RoutingConfigurator
      * @throws  \InvalidArgumentException
      */
@@ -506,7 +506,7 @@ class Routing implements RoutingConfigurator
      *
      * @param   \stubbles\webapp\routing\CalledUri  $calledUri
      * @param   \stubbles\webapp\routing\Route      $route
-     * @return  array
+     * @return  array<class-string<PreInterceptor>|callable|PreInterceptor>
      */
     private function getPreInterceptors(CalledUri $calledUri, Route $route = null): array
     {
@@ -523,7 +523,7 @@ class Routing implements RoutingConfigurator
      *
      * @param   \stubbles\webapp\routing\CalledUri  $calledUri
      * @param   \stubbles\webapp\routing\Route      $route
-     * @return  array
+     * @return  array<class-string<PostInterceptor>|callable|PostInterceptor>
      */
     private function getPostInterceptors(CalledUri $calledUri, Route $route = null): array
     {
@@ -539,8 +539,8 @@ class Routing implements RoutingConfigurator
      * calculates which interceptors are applicable for given request method
      *
      * @param   \stubbles\webapp\routing\CalledUri  $calledUri
-     * @param   array[]                             $interceptors   list of interceptors to check
-     * @return  array
+     * @param   array<array<string,mixed>>          $interceptors   list of interceptors to check
+     * @return  array<class-string<PreInterceptor|PreInterceptor>|callable|PreInterceptor|PreInterceptor>
      */
     private function getApplicable(CalledUri $calledUri, array $interceptors): array
     {
@@ -557,8 +557,8 @@ class Routing implements RoutingConfigurator
     /**
      * sets a default mime type class for given mime type, but doesn't mark the mime type as supported for all routes
      *
-     * @param   string  $mimeType       mime type to set default class for
-     * @param   string  $mimeTypeClass  class to use
+     * @param   string                                                      $mimeType       mime type to set default class for
+     * @param   class-string<\stubbles\webapp\response\mimetypes\MimeType>  $mimeTypeClass  class to use
      * @return  \stubbles\webapp\routing\Routing
      * @since   5.1.0
      */
@@ -571,8 +571,8 @@ class Routing implements RoutingConfigurator
     /**
      * add a supported mime type
      *
-     * @param   string  $mimeType
-     * @param   string  $mimeTypeClass  optional  special class to be used for given mime type on this route
+     * @param   string                                                      $mimeType
+     * @param   class-string<\stubbles\webapp\response\mimetypes\MimeType>  $mimeTypeClass  optional  special class to be used for given mime type on this route
      * @return  \stubbles\webapp\routing\Routing
      * @throws  \InvalidArgumentException
      */

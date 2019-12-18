@@ -32,7 +32,7 @@ class Route implements ConfigurableRoute
     /**
      * code to be executed when the route is active
      *
-     * @var  string|callable|\stubbles\webapp\Processor
+     * @var  class-string<Target>|callable|Target
      */
     private $target;
     /**
@@ -50,13 +50,13 @@ class Route implements ConfigurableRoute
     /**
      * list of pre interceptors which should be applied to this route
      *
-     * @var  string[]|callable[]
+     * @var  array<class-string<PreInterceptor>|callable|PreInterceptor>
      */
     private $preInterceptors          = [];
     /**
      * list of post interceptors which should be applied to this route
      *
-     * @var  string[]|callable[]
+     * @var  array<class-string<PostInterceptor>|callable|PostInterceptor>
      */
     private $postInterceptors         = [];
     /**
@@ -103,9 +103,9 @@ class Route implements ConfigurableRoute
      * If no request method(s) specified it matches request methods GET, HEAD,
      * POST, PUT and DELETE.
      *
-     * @param   string                                   $path           path this route is applicable for
-     * @param   string|callable|\stubbles\webapp\Target  $target         code to be executed when the route is active
-     * @param   string|string[]                          $requestMethod  optional  request method(s) this route is applicable for
+     * @param   string                                $path           path this route is applicable for
+     * @param   class-string<Target>|callable|Target  $target         code to be executed when the route is active
+     * @param   string|string[]                       $requestMethod  optional  request method(s) this route is applicable for
      * @throws  \InvalidArgumentException
      */
     public function __construct(string $path, $target, $requestMethod = null)
@@ -207,7 +207,7 @@ class Route implements ConfigurableRoute
     /**
      * returns callback for this route
      *
-     * @return  string|callable|\stubbles\webapp\Target
+     * @return  class-string<Target>|callable|Target
      */
     public function target()
     {
@@ -217,7 +217,7 @@ class Route implements ConfigurableRoute
     /**
      * add a pre interceptor for this route
      *
-     * @param   string|callable|\stubbles\webapp\interceptor\PreInterceptor  $preInterceptor
+     * @param   class-string<PreInterceptor>|callable|PreInterceptor  $preInterceptor
      * @return  \stubbles\webapp\routing\Route
      * @throws  \InvalidArgumentException
      */
@@ -238,7 +238,7 @@ class Route implements ConfigurableRoute
     /**
      * returns list of pre interceptors which should be applied to this route
      *
-     * @return  string[]|callable[]
+     * @return  array<class-string<PreInterceptor>|callable|PreInterceptor>
      */
     public function preInterceptors(): array
     {
@@ -248,7 +248,7 @@ class Route implements ConfigurableRoute
     /**
      * add a post interceptor for this route
      *
-     * @param   string|callable|\stubbles\webapp\interceptor\PostInterceptor  $postInterceptor
+     * @param   class-string<PostInterceptor>|callable|PostInterceptor  $postInterceptor
      * @return  \stubbles\webapp\routing\Route
      * @throws  \InvalidArgumentException
      */
@@ -269,7 +269,7 @@ class Route implements ConfigurableRoute
     /**
      * returns list of post interceptors which should be applied to this route
      *
-     * @return  string[]|callable[]
+     * @return  array<class-string<PostInterceptor>|callable|PostInterceptor>
      */
     public function postInterceptors(): array
     {
@@ -406,7 +406,7 @@ class Route implements ConfigurableRoute
      * returns list of mime types supported by this route
      *
      * @param   string[]  $globalMimeTypes  optional list of globally supported mime types
-     * @param   string[]  $globalClasses    optional list of globally defined mime type classes
+     * @param   array<string,class-string<\stubbles\webapp\response\mimetypes\MimeType>>  $globalClasses    optional list of globally defined mime type classes
      * @return  \stubbles\webapp\routing\SupportedMimeTypes
      */
     public function supportedMimeTypes(
@@ -417,18 +417,19 @@ class Route implements ConfigurableRoute
             return SupportedMimeTypes::createWithDisabledContentNegotation();
         }
 
-
+        /** @var  array<string,class-string<\stubbles\webapp\response\mimetypes\MimeType>>  $mimeTypeClasses */
+        $mimeTypeClasses = array_merge(
+            $globalClasses,
+            $this->routingAnnotations()->mimeTypeClasses(),
+            $this->mimeTypeClasses
+        );
         return new SupportedMimeTypes(
-                array_merge(
-                        $this->routingAnnotations()->mimeTypes(),
-                        $this->mimeTypes,
-                        $globalMimeTypes
-                ),
-                array_merge(
-                        $globalClasses,
-                        $this->routingAnnotations()->mimeTypeClasses(),
-                        $this->mimeTypeClasses
-                )
+            array_merge(
+                $this->routingAnnotations()->mimeTypes(),
+                $this->mimeTypes,
+                $globalMimeTypes
+            ),
+            $mimeTypeClasses
         );
     }
 
@@ -489,7 +490,7 @@ class Route implements ConfigurableRoute
      * returns route as resource
      *
      * @param   \stubbles\peer\http\HttpUri  $uri
-     * @param   string[]                      $globalMimeTypes  list of globally supported mime types
+     * @param   string[]                     $globalMimeTypes  list of globally supported mime types
      * @return  \stubbles\webapp\routing\api\Resource
      * @since   6.1.0
      */

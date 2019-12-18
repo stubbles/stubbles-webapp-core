@@ -21,7 +21,7 @@ class ResolvingResource extends AbstractResource
     /**
      * route configuration
      *
-     * @var  \stubbles\webapp\Route
+     * @var  Route
      */
     private $route;
 

@@ -109,7 +109,7 @@ class ResolvingResourceTest extends TestCase
     }
 
     /**
-     * @param   callable|Target|class-string  $target
+     * @param   callable|Target|class-string<Target>  $target
      * @return  ResolvingResource
      */
     private function createResolvingResourceWithTarget($target): ResolvingResource
@@ -193,7 +193,7 @@ class ResolvingResourceTest extends TestCase
     /**
      * @test
      */
-    public function respondsWithInternalServerErrorIfProcessorDoesNotImplementInterface(): void
+    public function respondsWithInternalServerErrorIfTargetDoesNotImplementInterface(): void
     {
         $this->injector->returns(['getInstance' => new \stdClass()]);
         $error = new Error('error');
@@ -208,7 +208,7 @@ class ResolvingResourceTest extends TestCase
     /**
      * @test
      */
-    public function processCreatesAndCallsGivenProcessorClass(): void
+    public function resolveCreatesAndCallsGivenTargetClass(): void
     {
         $target = NewInstance::of(Target::class);
         $target->returns(['resolve' => 'Hello world']);

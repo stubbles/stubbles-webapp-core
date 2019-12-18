@@ -16,4 +16,11 @@ parameters:
       -
         message: '#preInterceptor of method stubbles\\webapp\\routing\\Routing::preIntercept\(\) expects \(callable\(\): mixed\)|string|stubbles\\webapp\\interceptor\\PreInterceptor, 303 given#'
         path: src/test/php/routing/RoutingTest.php
+      -
+        message: '#target of method stubbles\\webapp\\routing\\ResolvingResourceTest::createResolvingResourceWithTarget\(\) expects \(callable\(\): mixed\)|class-string<stubbles\\webapp\\Target>|stubbles\\webapp\\Target#'
+        path: src/test/php/routing/ResolvingResourceTest.php
+      # Only true when people pass what's allowed
+      -
+        message: '#Unreachable statement - code above always terminates#'
+        path: src/main/php/routing/Route.php
 
