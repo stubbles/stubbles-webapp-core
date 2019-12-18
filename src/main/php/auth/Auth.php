@@ -41,7 +41,7 @@ class Auth implements BindingModule
     /**
      * class name of authorization provider to use
      *
-     * @var  class-string<AuthorizationProvider>
+     * @var  class-string<AuthorizationProvider>|null
      */
     private $authorizationProvider;
     /**
