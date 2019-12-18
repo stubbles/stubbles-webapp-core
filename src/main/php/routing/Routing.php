@@ -495,9 +495,9 @@ class Routing implements RoutingConfigurator
     private function collectInterceptors(CalledUri $calledUri, Route $route = null): Interceptors
     {
         return new Interceptors(
-                $this->injector,
-                $this->getPreInterceptors($calledUri, $route),
-                $this->getPostInterceptors($calledUri, $route)
+            $this->injector,
+            $this->preInterceptors($calledUri, $route),
+            $this->postInterceptors($calledUri, $route)
         );
     }
 
@@ -508,14 +508,32 @@ class Routing implements RoutingConfigurator
      * @param   \stubbles\webapp\routing\Route      $route
      * @return  array<class-string<PreInterceptor>|callable|PreInterceptor>
      */
-    private function getPreInterceptors(CalledUri $calledUri, Route $route = null): array
+    private function preInterceptors(CalledUri $calledUri, Route $route = null): array
     {
-        $global = $this->getApplicable($calledUri, $this->preInterceptors);
+        $global = $this->applicablePreInterceptors($calledUri);
         if (null === $route) {
             return $global;
         }
 
         return array_merge($global, $route->preInterceptors());
+    }
+
+    /**
+     * calculates which pre interceptors are applicable for given request method
+     *
+     * @param   \stubbles\webapp\routing\CalledUri  $calledUri
+     * @return  array<class-string<PreInterceptor>|callable|PreInterceptor>
+     */
+    private function applicablePreInterceptors(CalledUri $calledUri): array
+    {
+        $applicable = [];
+        foreach ($this->preInterceptors as  $interceptor) {
+            if ($calledUri->satisfies($interceptor['requestMethod'], $interceptor['path'])) {
+                $applicable[] = $interceptor['interceptor'];
+            }
+        }
+
+        return $applicable;
     }
 
     /**
@@ -525,9 +543,9 @@ class Routing implements RoutingConfigurator
      * @param   \stubbles\webapp\routing\Route      $route
      * @return  array<class-string<PostInterceptor>|callable|PostInterceptor>
      */
-    private function getPostInterceptors(CalledUri $calledUri, Route $route = null): array
+    private function postInterceptors(CalledUri $calledUri, Route $route = null): array
     {
-        $global = $this->getApplicable($calledUri, $this->postInterceptors);
+        $global = $this->applicablePostInterceptors($calledUri);
         if (null === $route) {
             return $global;
         }
@@ -536,16 +554,15 @@ class Routing implements RoutingConfigurator
     }
 
     /**
-     * calculates which interceptors are applicable for given request method
+     * calculates which post interceptors are applicable for given request method
      *
      * @param   \stubbles\webapp\routing\CalledUri  $calledUri
-     * @param   array<array<string,mixed>>          $interceptors   list of interceptors to check
-     * @return  array<class-string<PreInterceptor|PreInterceptor>|callable|PreInterceptor|PreInterceptor>
+     * @return  array<class-string<PostInterceptor>|callable|PostInterceptor>
      */
-    private function getApplicable(CalledUri $calledUri, array $interceptors): array
+    private function applicablePostInterceptors(CalledUri $calledUri): array
     {
         $applicable = [];
-        foreach ($interceptors as  $interceptor) {
+        foreach ($this->postInterceptors as  $interceptor) {
             if ($calledUri->satisfies($interceptor['requestMethod'], $interceptor['path'])) {
                 $applicable[] = $interceptor['interceptor'];
             }
