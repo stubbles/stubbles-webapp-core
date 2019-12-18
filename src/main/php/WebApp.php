@@ -86,7 +86,9 @@ abstract class WebApp extends App
                 $uriResource->applyPostInterceptors($request, $response);
             }
         } catch (\Exception $e) {
-            $this->injector->getInstance(ExceptionLogger::class)->log($e);
+            /** @var  ExceptionLogger  $exceptionLogger */
+            $exceptionLogger = $this->injector->getInstance(ExceptionLogger::class);
+            $exceptionLogger->log($e);
             $response->write($response->internalServerError($e->getMessage()));
         }
 
