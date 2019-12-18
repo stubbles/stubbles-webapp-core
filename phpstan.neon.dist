@@ -8,7 +8,7 @@ parameters:
       - ./src/test/php
   ignoreErrors:
       # False positive
-      - '#Call to an undefined method stubbles\\reflect\\annotation\\Annotation::get#'
+      - '#Call to an undefined method stubbles\\reflect\\annotation\\Annotation::#'
       # Explicit tests
       -
         message: '#target of class stubbles\\webapp\\routing\\Route constructor expects \(callable\(\): mixed\)|string|\stubbles\\webapp\\Target, 500 given#'
