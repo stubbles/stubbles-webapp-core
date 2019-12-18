@@ -126,7 +126,7 @@ interface Response extends SendableResponse
      * @param   int                                 $statusCode  HTTP status code to redirect with (301, 302, ...)
      * @since   1.3.0
      */
-    public function redirect($uri, int $statusCode = 302);
+    public function redirect($uri, int $statusCode = 302): void;
 
     /**
      * creates a 401 Unauthorized message including a WWW-Authenticate header with given challenge
@@ -169,7 +169,7 @@ interface Response extends SendableResponse
      * @param   string[]  $supportedMimeTypes  list of supported mime types
      * @since   2.0.0
      */
-    public function notAcceptable(array $supportedMimeTypes = []);
+    public function notAcceptable(array $supportedMimeTypes = []): void;
 
     /**
      * creates a 500 Internal Server Error message
