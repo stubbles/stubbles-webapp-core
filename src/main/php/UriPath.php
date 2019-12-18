@@ -42,7 +42,7 @@ class UriPath
      */
     public static function pattern(string $path): ?string
     {
-        return preg_replace('/[{][^}]*[}]/', '([^\/]+)', str_replace('/', '\/', $path));
+        return \preg_replace('/[{][^}]*[}]/', '([^\/]+)', \str_replace('/', '\/', $path));
     }
 
     /**
@@ -127,14 +127,15 @@ class UriPath
         }
 
         $arguments = [];
-        preg_match('/^' . self::pattern($this->configuredPath) . '/', $this->calledPath, $arguments);
-        array_shift($arguments);
+        \preg_match('/^' . self::pattern($this->configuredPath) . '/', $this->calledPath, $arguments);
+        \array_shift($arguments);
         $names  = [];
         $this->arguments = [];
-        preg_match_all('/[{][^}]*[}]/', str_replace('/', '\/', $this->configuredPath), $names);
+        \preg_match_all('/[{][^}]*[}]/', \str_replace('/', '\/', $this->configuredPath), $names);
         foreach ($names[0] as $key => $name) {
+            /** @var  string  $name */
             if (isset($arguments[$key])) {
-                $this->arguments[str_replace(['{', '}'], '', $name)] = $arguments[$key];
+                $this->arguments[\str_replace(['{', '}'], '', $name)] = $arguments[$key];
             }
         }
     }
@@ -148,8 +149,8 @@ class UriPath
     public function remaining(string $default = ''): string
     {
         $matches = [];
-        preg_match('/(' . self::pattern($this->configuredPath) . ')([^?]*)?/', $this->calledPath, $matches);
-        $last = count($matches) - 1;
+        \preg_match('/(' . self::pattern($this->configuredPath) . ')([^?]*)?/', $this->calledPath, $matches);
+        $last = \count($matches) - 1;
         if (2 > $last) {
             return $default;
         }
