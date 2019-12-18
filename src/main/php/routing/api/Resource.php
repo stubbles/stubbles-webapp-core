@@ -245,7 +245,7 @@ class Resource implements \JsonSerializable
     /**
      * returns proper representation which can be serialized to JSON
      *
-     * @return  array
+     * @return  array<string,mixed>
      * @XmlIgnore
      */
     public function jsonSerialize(): array
