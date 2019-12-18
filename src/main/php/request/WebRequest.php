@@ -64,9 +64,9 @@ class WebRequest extends ParamRequest implements Request
     /**
      * constructor
      *
-     * @param  array     $params      map of request parameters
-     * @param  array     $headers     map of request headers
-     * @param  array     $cookies     map of request cookies
+     * @param  array<string,mixed>  $params      map of request parameters
+     * @param  array<string,mixed>  $headers     map of request headers
+     * @param  array<string,mixed>  $cookies     map of request cookies
      */
     public function __construct(array $params, array $headers, array $cookies)
     {
