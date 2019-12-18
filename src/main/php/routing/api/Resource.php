@@ -123,13 +123,13 @@ class Resource implements \JsonSerializable
     /**
      * adds a link for this resource
      *
-     * @param   string  $rel  relation of this link to the resource
-     * @param   string  $uri  actual uri
+     * @param   string                              $rel  relation of this link to the resource
+     * @param   string|\stubbles\peer\http\HttpUri  $uri  actual uri
      * @return  \stubbles\webapp\routing\api\Link
      */
     public function addLink(string $rel, $uri): Link
     {
-        return $this->links->add($rel, $uri);
+        return $this->links->add($rel, HttpUri::castFrom($uri));
     }
 
     /**
