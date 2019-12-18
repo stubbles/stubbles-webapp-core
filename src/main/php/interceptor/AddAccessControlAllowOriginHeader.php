@@ -56,18 +56,19 @@ class AddAccessControlAllowOriginHeader implements PostInterceptor
     /**
      * does the postprocessing stuff
      *
-     * @param  \stubbles\webapp\Request   $request   current request
-     * @param  \stubbles\webapp\Response  $response  response to send
+     * @param   \stubbles\webapp\Request   $request   current request
+     * @param   \stubbles\webapp\Response  $response  response to send
+     * @return  bool
      */
-    public function postProcess(Request $request, Response $response): void
+    public function postProcess(Request $request, Response $response): bool
     {
         if (empty($this->allowedOriginHosts) || !$request->hasHeader('HTTP_ORIGIN')) {
-            return;
+            return true;
         }
 
         $originHost = $request->readHeader('HTTP_ORIGIN')->unsecure();
         if (empty($originHost)) {
-            return;
+            return true;
         }
 
         foreach ($this->allowedOriginHosts as $allowedOriginHost) {
@@ -75,5 +76,7 @@ class AddAccessControlAllowOriginHeader implements PostInterceptor
                 $response->addHeader('Access-Control-Allow-Origin', $originHost);
             }
         }
+
+        return true;
     }
 }

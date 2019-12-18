@@ -87,8 +87,8 @@ class InterceptorsTest extends TestCase
      */
     public function doesNotCallOtherPreInterceptorsIfOneReturnsFalse(): void
     {
-        $preInterceptor = NewInstance::of(PreInterceptor::class);
-        $preInterceptor->returns(['preProcess' => false]);
+        $preInterceptor = NewInstance::of(PreInterceptor::class)
+            ->returns(['preProcess' => false]);
         $this->injector->returns(['getInstance' => $preInterceptor]);
         assertFalse(
                 $this->createInterceptors([
@@ -104,15 +104,17 @@ class InterceptorsTest extends TestCase
      */
     public function returnsTrueWhenNoPreInterceptorReturnsFalse(): void
     {
-        $preInterceptor = NewInstance::of(PreInterceptor::class);
+        $preInterceptor = NewInstance::of(PreInterceptor::class)
+            ->returns(['preProcess' => true]);
         $this->injector->returns(['getInstance' => $preInterceptor]);
         assertTrue(
                 $this->createInterceptors([
                         'some\PreInterceptor',
                         $preInterceptor,
-                        function(Request $request, Response $response)
+                        function(Request $request, Response $response): bool
                         {
                             $response->setStatusCode(418);
+                            return true;
                         },
                         [$this, 'callableMethod']
                 ])->preProcess($this->request, $this->response)
@@ -145,8 +147,8 @@ class InterceptorsTest extends TestCase
      */
     public function doesNotCallOtherPostInterceptorsIfOneReturnsFalse(): void
     {
-        $postInterceptor = NewInstance::of(PostInterceptor::class);
-        $postInterceptor->returns(['postProcess' => false]);
+        $postInterceptor = NewInstance::of(PostInterceptor::class)
+            ->returns(['postProcess' => false]);
         $this->injector->returns(['getInstance' => $postInterceptor]);
         assertFalse(
                 $this->createInterceptors(
@@ -162,7 +164,8 @@ class InterceptorsTest extends TestCase
      */
     public function returnsTrueWhenNoPostInterceptorReturnsFalse(): void
     {
-        $postInterceptor = NewInstance::of(PostInterceptor::class);
+        $postInterceptor = NewInstance::of(PostInterceptor::class)
+            ->returns(['postProcess' => true]);
         $this->injector->returns(['getInstance' => $postInterceptor]);
         assertTrue(
                 $this->createInterceptors(

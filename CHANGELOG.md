@@ -1,6 +1,12 @@
 # Changelog
 
-## 8.1.0 (2019-12-??)
+## 9.0.0 (2019-12-??)
+
+### BC breaks
+
+* changed `stubbles\webapp\interceptor\PreInterceptor::preProcess()` and `stubbles\webapp\interceptor\PostInterceptor::postProcess()` to always return a boolean value
+
+### Other changes
 
 * Added `stubbles\webapp\request\WebRequest::uploads()` which provides access to uploaded files
 * Added `image/jpeg` as default supported mime type when stubbles/image is present
