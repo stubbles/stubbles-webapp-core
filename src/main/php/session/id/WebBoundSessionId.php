@@ -33,7 +33,7 @@ class WebBoundSessionId implements SessionId
     /**
      * response instance
      *
-     * @var  \stubbles\webapp\response\Response
+     * @var  \stubbles\webapp\Response
      */
     private $response;
     /**
