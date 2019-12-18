@@ -38,7 +38,7 @@ class SupportedMimeTypes
     /**
      * map of mime types classes
      *
-     * @var  array<string,class-string<MimeType>>
+     * @var  array<string,class-string<\stubbles\webapp\response\mimetypes\MimeType>>
      */
     private static $supported = [
             'application/json' => Json::class,
@@ -50,7 +50,7 @@ class SupportedMimeTypes
     /**
      * map of xml mime type classes
      *
-     * @var  array<string,class-string<MimeType>>
+     * @var  array<string,class-string<\stubbles\webapp\response\mimetypes\MimeType>>
      */
     private static $xml = [
             'text/xml'            => Xml::class,
@@ -60,21 +60,21 @@ class SupportedMimeTypes
     /**
      * map of image mime type classes
      *
-     * @var  array<string,class-string<MimeType>>
+     * @var  array<string,class-string<\stubbles\webapp\response\mimetypes\MimeType>>
      */
     private static $image = ['image/png' => Image::class, 'image/jpeg' => Image::class];
     /**
      * map of available mime types classes
      *
-     * @var  array
+     * @var  array<string,class-string<\stubbles\webapp\response\mimetypes\MimeType>>
      */
     private $mimeTypeClasses = [];
 
     /**
      * constructor
      *
-     * @param  string[]  $mimeTypes
-     * @param  array     $mimeTypeClasses
+     * @param  string[]                                                                  $mimeTypes
+     * @param  array<string,class-string<\stubbles\webapp\response\mimetypes\MimeType>>  $mimeTypeClasses
      */
     public function __construct(array $mimeTypes, array $mimeTypeClasses = [])
     {
@@ -134,8 +134,8 @@ class SupportedMimeTypes
     /**
      * sets a default mime type class for given mime type
      *
-     * @param  string  $mimeType
-     * @param  string  $mimeTypeClass
+     * @param  string                                                      $mimeType
+     * @param  class-string<\stubbles\webapp\response\mimetypes\MimeType>  $mimeTypeClass
      * @since  5.1.1
      */
     public static function setDefaultMimeTypeClass(string $mimeType, $mimeTypeClass): void
@@ -196,7 +196,7 @@ class SupportedMimeTypes
      * returns special class which was defined for given mime type or null if none defined
      *
      * @param   string  $mimeType
-     * @return  class-string<MimeType>|null
+     * @return  class-string<\stubbles\webapp\response\mimetypes\MimeType>|null
      * @since   3.2.0
      */
     public function classFor(string $mimeType): ?string
@@ -211,7 +211,7 @@ class SupportedMimeTypes
     /**
      * returns list of supported mime types
      *
-     * @return  array<string,class-string<MimeType>>
+     * @return  array<string>
      */
     public function asArray(): array
     {

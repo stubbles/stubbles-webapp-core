@@ -64,7 +64,7 @@ class SupportedMimeTypesTest extends TestCase
     {
         return new SupportedMimeTypes(
                 ['application/xml', 'application/json', 'application/foo'],
-                ['application/xml' => 'example\SpecialMimeType']
+                ['application/xml' => 'stubbles\webapp\response\mimetypes\Xml']
         );
     }
 
