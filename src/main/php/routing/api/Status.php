@@ -61,7 +61,7 @@ class Status implements \JsonSerializable
     /**
      * returns representation suitable for encoding in JSON
      *
-     * @return  array
+     * @return  array<string,scalar>
      * @XmlIgnore
      */
     public function jsonSerialize(): array
