@@ -76,7 +76,7 @@ class Link implements \JsonSerializable
     /**
      * returns proper representation which can be serialized to JSON
      *
-     * @return  array
+     * @return  array<string,string>
      * @XmlIgnore
      */
     public function jsonSerialize(): array

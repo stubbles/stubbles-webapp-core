@@ -61,7 +61,7 @@ class Header implements \JsonSerializable
     /**
      * returns representation suitable for encoding in JSON
      *
-     * @return  array
+     * @return  array<string,string>
      * @XmlIgnore
      */
     public function jsonSerialize(): array

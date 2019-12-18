@@ -18,7 +18,7 @@ use stubbles\peer\http\HttpUri;
 class Links implements \IteratorAggregate, \JsonSerializable, \Countable
 {
     /**
-     * @var  \stubbles\webapp\routing\api\Link
+     * @var  array<string,Link|Link[]>
      */
     private $links = [];
 
@@ -54,10 +54,10 @@ class Links implements \IteratorAggregate, \JsonSerializable, \Countable
         $link = new Link($rel, $uri);
         if (isset($this->links[$rel])) {
             if (!is_array($this->links[$rel])) {
-                $this->links[$rel] = [$this->links[$rel]];
+                $this->links[$rel] = [$this->links[$rel], $link];
+            } else {
+                $this->links[$rel][] = $link;
             }
-
-            $this->links[$rel][] = $link;
         } else {
             $this->links[$rel] = $link;
         }
@@ -106,7 +106,7 @@ class Links implements \IteratorAggregate, \JsonSerializable, \Countable
     /**
      * returns proper representation which can be serialized to JSON
      *
-     * @return  array
+     * @return  array<Link|Link[]>
      * @XmlIgnore
      */
     public function jsonSerialize(): array
