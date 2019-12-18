@@ -33,7 +33,7 @@ class WebRequest extends ParamRequest implements Request
     /**
      * generated id for request if no or an invalid X-Request-ID header is present
      *
-     * @var  string
+     * @var  string|null
      */
     private $id;
     /**
