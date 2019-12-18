@@ -27,7 +27,7 @@ class UploadedFile
      */
     private $size;
     /**
-     * @var  string|false
+     * @var  string
      */
     private $mimeType;
     /**
@@ -96,13 +96,14 @@ class UploadedFile
             return $this->mimeType;
         }
 
-        $this->mimeType = @\mime_content_type($this->tmpName);
-        if (false === $this->mimeType) {
+        $mimeType = @\mime_content_type($this->tmpName);
+        if (false === $mimeType) {
             $error = \error_get_last();
             $this->mimeTypeError = 'Could not detect mimetype of uploaded file: ' . $error['message'];
             throw new MimetypeCheckFailed($this->mimeTypeError);
         }
 
+        $this->mimeType = $mimeType;
         return $this->mimeType;
     }
 
