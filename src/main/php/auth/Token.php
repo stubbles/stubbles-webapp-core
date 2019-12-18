@@ -17,7 +17,7 @@ class Token
     /**
      * actual token value
      *
-     * @var  string
+     * @var  string|null
      */
     private $value;
 
