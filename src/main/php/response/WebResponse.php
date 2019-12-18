@@ -92,10 +92,12 @@ class WebResponse implements Response
         $this->sapi     = $sapi;
         $this->headers  = new Headers();
         $this->status   = new Status($this->headers);
-        $this->version  = $request->protocolVersion();
-        if (null === $this->version || $this->version->major() != 1) {
+        $version  = $request->protocolVersion();
+        if (null === $version || $version->major() != 1) {
             $this->version = HttpVersion::fromString(HttpVersion::HTTP_1_1);
             $this->httpVersionNotSupported();
+        } else {
+            $this->version = $version;
         }
     }
 
