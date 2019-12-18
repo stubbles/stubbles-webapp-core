@@ -20,13 +20,13 @@ class Interceptors
     /**
      * list of global pre interceptors and to which request method they respond
      *
-     * @var  array
+     * @var  array<class-string<PreInterceptor>|callable|PreInterceptor>
      */
     private $preInterceptors;
     /**
      * list of global post interceptors and to which request method they respond
      *
-     * @var  array
+     * @var  array<class-string<PostInterceptor>|callable|PostInterceptor>
      */
     private $postInterceptors;
     /**
@@ -39,9 +39,9 @@ class Interceptors
     /**
      * constructor
      *
-     * @param  \stubbles\ioc\Injector  $injector
-     * @param  array                   $preInterceptors
-     * @param  array                   $postInterceptors
+     * @param  \stubbles\ioc\Injector                                         $injector
+     * @param  array<class-string<PreInterceptor>|callable|PreInterceptor>    $preInterceptors
+     * @param  array<class-string<PostInterceptor>|callable|PostInterceptor>  $postInterceptors
      */
     public function __construct(Injector $injector, array $preInterceptors, array $postInterceptors)
     {
@@ -73,9 +73,9 @@ class Interceptors
     /**
      * executes pre interceptor
      *
-     * @param   mixed                      $preInterceptor
-     * @param   \stubbles\webapp\Request   $request         current request
-     * @param   \stubbles\webapp\Response  $response        response to send
+     * @param   class-string<PreInterceptor>|callable|PreInterceptor  $preInterceptor
+     * @param   \stubbles\webapp\Request                              $request         current request
+     * @param   \stubbles\webapp\Response                             $response        response to send
      * @return  bool|null
      */
     private function executePreInterceptor($preInterceptor, Request $request, Response $response)
@@ -123,9 +123,9 @@ class Interceptors
     /**
      * executes post interceptor
      *
-     * @param   mixed                      $postInterceptor
-     * @param   \stubbles\webapp\Request   $request          current request
-     * @param   \stubbles\webapp\Response  $response         response to send
+     * @param   class-string<PostInterceptor>|callable|PostInterceptor  $postInterceptor
+     * @param   \stubbles\webapp\Request                                $request          current request
+     * @param   \stubbles\webapp\Response                               $response         response to send
      * @return  bool|null
      */
     private function executePostInterceptor($postInterceptor, Request $request, Response $response)
