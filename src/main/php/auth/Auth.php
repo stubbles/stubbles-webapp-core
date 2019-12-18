@@ -23,25 +23,25 @@ class Auth implements BindingModule
     /**
      * class name of authentication provider to use
      *
-     * @var  string
+     * @var  class-string<AuthenticationProvider>
      */
     private $authenticationProvider;
     /**
      * login provider to use of authentication provider has no own means of login
      *
-     * @var  string
+     * @var  class-string<AuthenticationProvider>
      */
     private $loginProvider;
     /**
      * class which stores tokens
      *
-     * @var  string
+     * @var  class-string<TokenStore>
      */
     private $tokenStore;
     /**
      * class name of authorization provider to use
      *
-     * @var  string
+     * @var  class-string<AuthorizationProvider>
      */
     private $authorizationProvider;
     /**
@@ -54,8 +54,8 @@ class Auth implements BindingModule
     /**
      * constructor
      *
-     * @param  string  $authenticationProvider
-     * @param  string  $authorizationProvider   optional
+     * @param  class-string<AuthenticationProvider>  $authenticationProvider
+     * @param  class-string<AuthorizationProvider>   $authorizationProvider   optional
      */
     public function __construct(string $authenticationProvider, string $authorizationProvider = null)
     {
@@ -66,8 +66,8 @@ class Auth implements BindingModule
     /**
      * factory method
      *
-     * @param   string  $authenticationProvider
-     * @param   string  $authorizationProvider   optional
+     * @param   class-string<AuthenticationProvider>  $authenticationProvider
+     * @param   class-string<AuthorizationProvider>   $authorizationProvider   optional
      * @return  self
      */
     public static function with(
@@ -79,9 +79,9 @@ class Auth implements BindingModule
 
     /**
      *
-     * @param   string  $tokenStore             class which stores tokens
-     * @param   string  $loginProvider          login provider to use because token authenticator has no own means of a login
-     * @param   string  $authorizationProvider  optional
+     * @param   class-string<TokenStore>              $tokenStore             class which stores tokens
+     * @param   class-string<AuthenticationProvider>  $loginProvider          login provider to use because token authenticator has no own means of a login
+     * @param   class-string<AuthorizationProvider>   $authorizationProvider  optional
      * @return  self
      */
     public static function usingTokens(

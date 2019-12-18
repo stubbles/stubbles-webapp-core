@@ -33,13 +33,13 @@ class AuthTest extends TestCase
     /**
      * an authentication provider which can be used for the tests
      *
-     * @var  string
+     * @var  class-string<AuthenticationProvider>
      */
     private $authenticationProviderClass;
     /**
      * an authorization provider which can be used for the tests
      *
-     * @var  string
+     * @var  class-string<AuthorizationProvider>
      */
     private $authorizationProviderClass;
     /**
