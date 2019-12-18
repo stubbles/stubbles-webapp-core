@@ -22,7 +22,7 @@ use stubbles\webapp\UriPath;
 class Redirect implements Target
 {
     /**
-     * @var  string
+     * @var  string|\stubbles\peer\http\HttpUri
      */
     private $target;
     /**
@@ -61,9 +61,10 @@ class Redirect implements Target
     /**
      * resolves the request and returns resource data
      *
-     * @param  \stubbles\webapp\Request   $request   current request
-     * @param  \stubbles\webapp\Response  $response  response to send
-     * @param  \stubbles\webapp\UriPath   $uriPath   information about called uri path
+     * @param   \stubbles\webapp\Request   $request   current request
+     * @param   \stubbles\webapp\Response  $response  response to send
+     * @param   \stubbles\webapp\UriPath   $uriPath   information about called uri path
+     * @return  null
      */
     public function resolve(Request $request, Response $response, UriPath $uriPath)
     {
@@ -74,5 +75,6 @@ class Redirect implements Target
         }
 
         $response->redirect($targetUri, $this->statusCode);
+        return null;
     }
 }
