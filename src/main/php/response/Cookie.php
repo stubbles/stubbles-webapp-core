@@ -28,7 +28,7 @@ class Cookie
     /**
      * value of the cookie
      *
-     * @var  string
+     * @var  string|null
      */
     private $value    = '';
     /**
@@ -237,13 +237,13 @@ class Cookie
     public function send(): void
     {
         setcookie(
-                $this->name,
-                $this->value,
-                $this->expires,
-                $this->path,
-                $this->domain,
-                $this->secure,
-                $this->httpOnly
+            $this->name,
+            (string) $this->value, // force empty string in case value is null
+            $this->expires,
+            $this->path,
+            $this->domain,
+            $this->secure,
+            $this->httpOnly
         );
     }
 }
