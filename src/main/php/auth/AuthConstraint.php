@@ -212,7 +212,7 @@ class AuthConstraint implements \JsonSerializable
     /**
      * returns data suitable for encoding to JSON
      *
-     * @return  array
+     * @return  array<string,string|bool>
      * @since   6.1.0
      * @XmlIgnore
      */
