@@ -13,13 +13,14 @@ use stubbles\peer\http\HttpUri;
  *
  * @since  4.0.0
  * @implements  \IteratorAggregate<string,mixed>
+ * @implements  \ArrayAccess<string,mixed>
  */
 class Headers implements \IteratorAggregate, \ArrayAccess
 {
     /**
      * list of headers for this response
      *
-     * @var  array
+     * @var  array<string,mixed>
      */
     private $headers = [];
 
@@ -188,7 +189,7 @@ class Headers implements \IteratorAggregate, \ArrayAccess
      * @param  string  $offset
      * @param  string  $value
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         $this->add($offset, $value);
     }
@@ -199,7 +200,7 @@ class Headers implements \IteratorAggregate, \ArrayAccess
     * @param   string  $offset
     * @throws  \BadMethodCallException
     */
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         throw new \BadMethodCallException('Removing headers is not supported');
     }
