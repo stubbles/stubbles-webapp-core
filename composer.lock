@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "49e264ce7d09cc5c9ed6658bc2d34603",
+    "content-hash": "5ebce136a69380f1488f5684ecaaace8",
     "packages": [
         {
             "name": "stubbles/input",
@@ -59,16 +59,16 @@
         },
         {
             "name": "stubbles/ioc",
-            "version": "v10.0.0",
+            "version": "v10.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/stubbles/stubbles-ioc.git",
-                "reference": "173751c66f7fe6dbcdd19f328bf6c6e6e41ec130"
+                "reference": "901e751c002c012d8597ad15971a8193a4eaa6fa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/stubbles/stubbles-ioc/zipball/173751c66f7fe6dbcdd19f328bf6c6e6e41ec130",
-                "reference": "173751c66f7fe6dbcdd19f328bf6c6e6e41ec130",
+                "url": "https://api.github.com/repos/stubbles/stubbles-ioc/zipball/901e751c002c012d8597ad15971a8193a4eaa6fa",
+                "reference": "901e751c002c012d8597ad15971a8193a4eaa6fa",
                 "shasum": ""
             },
             "require": {
@@ -87,7 +87,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "9.0.x-dev"
+                    "dev-master": "10.1.x-dev"
                 }
             },
             "autoload": {
@@ -101,7 +101,7 @@
             ],
             "description": "Dependency injection.",
             "homepage": "http://stubbles.net/",
-            "time": "2019-12-13T11:25:15+00:00"
+            "time": "2019-12-18T09:26:42+00:00"
         },
         {
             "name": "stubbles/peer",
