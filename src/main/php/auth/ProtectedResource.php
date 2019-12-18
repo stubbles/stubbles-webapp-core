@@ -29,7 +29,7 @@ class ProtectedResource implements UriResource
     /**
      * actual resource which requires auth
      *
-     * @var  \stubbles\webapp\routing\ProcessableRoute
+     * @var  \stubbles\webapp\routing\UriResource
      */
     private $actualResource;
     /**
@@ -164,6 +164,7 @@ class ProtectedResource implements UriResource
      */
     private function authenticate(Request $request, Response $response): ?User
     {
+        /** @var  AuthenticationProvider  $authenticationProvider */
         $authenticationProvider = $this->injector->getInstance(AuthenticationProvider::class);
         try {
             $user = $authenticationProvider->authenticate($request);
@@ -190,8 +191,9 @@ class ProtectedResource implements UriResource
     private function roles(Response $response, User $user): ?Roles
     {
         try {
-            return $this->injector->getInstance(AuthorizationProvider::class)
-                    ->roles($user);
+            /** @var  AuthorizationProvider  $authorizationProvider */
+            $authorizationProvider = $this->injector->getInstance(AuthorizationProvider::class);
+            return $authorizationProvider->roles($user);
         } catch (AuthProviderException $ahe) {
             $this->handleAuthProviderException($ahe, $response);
             return null;
