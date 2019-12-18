@@ -95,8 +95,9 @@ class Csv extends MimeType
     /**
      * serializes iterable to csv
      *
-     * @param  iterable  $resource
-     * @param  \stubbles\streams\OutputStream  $out
+     * @template T of OutputStream
+     * @param  iterable<mixed>  $resource
+     * @param  T                $out
      */
     private function serializeIterable($resource, OutputStream $out): void
     {
@@ -126,6 +127,11 @@ class Csv extends MimeType
         fclose($memory);
     }
 
+    /**
+     * @param   mixed[]   $elements
+     * @param   resource  $memory
+     * @return  string
+     */
     private function toCsvLine(array $elements, $memory): string
     {
         ftruncate($memory, 0);
