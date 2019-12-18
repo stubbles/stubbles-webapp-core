@@ -64,7 +64,7 @@ class WebResponse implements Response
     /**
      * original request method
      *
-     * @var  string
+     * @var  Request
      */
     private $request;
     /**
@@ -428,7 +428,7 @@ class WebResponse implements Response
      */
     private function sendHead(): Response
     {
-        $this->header($this->status->line($this->version, $this->sapi));
+        $this->header($this->status->line((string) $this->version, $this->sapi));
         foreach ($this->headers as $name => $value) {
             $this->header($name . ': ' . $value);
         }
