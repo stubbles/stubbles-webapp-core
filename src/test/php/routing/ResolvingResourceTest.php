@@ -51,7 +51,7 @@ class ResolvingResourceTest extends TestCase
 
     private function createResolvingResource(
             Route $route,
-            ?string $uri = 'http://example.com/hello/world'
+            string $uri = 'http://example.com/hello/world'
     ): ResolvingResource {
         return new ResolvingResource(
                 $this->injector,
