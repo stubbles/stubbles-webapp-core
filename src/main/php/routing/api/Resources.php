@@ -12,13 +12,14 @@ namespace stubbles\webapp\routing\api;
  *
  * @since  6.1.0
  * @XmlTag(tagName='resources')
+ * @implements  \IteratorAggregate<\stubbles\webapp\routing\api\Resource>
  */
 class Resources implements \IteratorAggregate, \JsonSerializable
 {
     /**
      * list of available resources
      *
-     * @var  \com\oneandone\sales\uriserver\api\Resource
+     * @var  \stubbles\webapp\routing\api\Resource[]
      */
     private $resources = [];
 
@@ -37,9 +38,9 @@ class Resources implements \IteratorAggregate, \JsonSerializable
     /**
      * allows to iterate over all resources
      *
-     * @return  \Traversable
+     * @return  \Iterator<\stubbles\webapp\routing\api\Resource>
      */
-    public function getIterator(): \Traversable
+    public function getIterator(): \Iterator
     {
         return new \ArrayIterator($this->resources);
     }
@@ -47,7 +48,7 @@ class Resources implements \IteratorAggregate, \JsonSerializable
     /**
      * returns proper representation which can be serialized to JSON
      *
-     * @return  array
+     * @return  \stubbles\webapp\routing\api\Resource[]
      * @XmlIgnore
      */
     public function jsonSerialize(): array
