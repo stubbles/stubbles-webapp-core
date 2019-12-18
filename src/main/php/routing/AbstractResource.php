@@ -36,13 +36,13 @@ abstract class AbstractResource implements UriResource
     /**
      * interceptors to be processed
      *
-     * @var  \stubbles\webapp\interceptor\Interceptors
+     * @var  \stubbles\webapp\routing\Interceptors
      */
     private $interceptors;
     /**
      * list of available mime types for all routes
      *
-     * @var  \stubbles\webapp\response\SupportedMimeTypes
+     * @var  \stubbles\webapp\routing\SupportedMimeTypes
      */
     private $supportedMimeTypes;
 
@@ -90,27 +90,26 @@ abstract class AbstractResource implements UriResource
             return true;
         }
 
-        $mimeType = $this->supportedMimeTypes->findMatch(
+        $matchedMimeType = $this->supportedMimeTypes->findMatch(
             $request->readHeader('HTTP_ACCEPT')
                     ->defaultingTo(emptyAcceptHeader())
                     ->withFilter(new AcceptFilter())
         );
-        if (null === $mimeType) {
+        if (null === $matchedMimeType) {
             $response->notAcceptable($this->supportedMimeTypes->asArray());
             return false;
         }
 
-        if (!$this->supportedMimeTypes->provideClass($mimeType)) {
+        if (!$this->supportedMimeTypes->provideClass($matchedMimeType)) {
             $response->write($response->internalServerError(
-                'No mime type class defined for negotiated content type ' . $mimeType
+                'No mime type class defined for negotiated content type ' . $matchedMimeType
             ));
             return false;
         }
 
-        $response->adjustMimeType(
-            $this->injector->getInstance($this->supportedMimeTypes->classFor($mimeType))
-                 ->specialise($mimeType)
-        );
+        /** @var  \stubbles\webapp\response\mimetypes\MimeType  $mimeType */
+        $mimeType = $this->injector->getInstance($this->supportedMimeTypes->classFor($matchedMimeType));
+        $response->adjustMimeType($mimeType->specialise($matchedMimeType));
         return true;
     }
 
