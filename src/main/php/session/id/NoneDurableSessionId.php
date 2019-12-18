@@ -17,7 +17,7 @@ class NoneDurableSessionId implements SessionId
     /**
      * actual id
      *
-     * @var  string
+     * @var  string|null
      */
     private $id;
     /**
