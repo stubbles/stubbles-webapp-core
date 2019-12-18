@@ -19,7 +19,7 @@ use stubbles\webapp\response\Error;
 class Image extends MimeType
 {
     /**
-     * @var  \stubbles\lang\ResourceLoader
+     * @var  \stubbles\values\ResourceLoader
      */
     private $resourceLoader;
     /**
