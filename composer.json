@@ -5,7 +5,7 @@
     "description": "Base classes for Stubbles based web applications.",
     "require": {
         "php": "^7.3",
-        "stubbles/ioc": "^10.1",
+        "stubbles/ioc": "^10.2",
         "stubbles/input": "^8.0.2",
         "stubbles/peer": "^9.0.1",
         "stubbles/reflect": "^9.0.1",
