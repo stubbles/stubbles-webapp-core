@@ -130,7 +130,17 @@ class WebRequest extends ParamRequest implements Request
      */
     public function method(): string
     {
-        return strtoupper($this->headers->value('REQUEST_METHOD')->value());
+        $method = strtoupper($this->headers->value('REQUEST_METHOD')->value());
+        if ($method !== Http::POST) {
+            return $method;
+        }
+
+        $supplantedMethod = strtoupper((string) $this->readParam('_method')->asString());
+        if (\in_array($supplantedMethod, [Http::PUT, Http::DELETE])) {
+            return $supplantedMethod;
+        }
+
+        return $method;
     }
 
     /**

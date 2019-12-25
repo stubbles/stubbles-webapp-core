@@ -10,7 +10,7 @@ namespace stubbles\webapp\request;
 use bovigo\callmap\NewInstance;
 use PHPUnit\Framework\TestCase;
 use stubbles\input\{ValueReader, ValueValidator, errors\ParamErrors};
-use stubbles\peer\{IpAddress, MalformedUri, http\HttpVersion};
+use stubbles\peer\{IpAddress, MalformedUri, http\Http, http\HttpVersion};
 use stubbles\streams\InputStream;
 use stubbles\webapp\auth\{Identity, Roles, User};
 use stubbles\webapp\session\Session;
@@ -82,7 +82,7 @@ class WebRequestTest extends TestCase
         return new WebRequest($params, $headers, $cookies);
     }
 
-    private function fillGlobals(string $requestMethod = 'GET'): void
+    private function fillGlobals(string $requestMethod = Http::GET): void
     {
         $_GET    = ['foo' => 'bar', 'roland' => 'TB-303'];
         $_POST   = ['baz' => 'blubb', 'donald' => '313'];
@@ -95,7 +95,7 @@ class WebRequestTest extends TestCase
      */
     public function usesGetParamsFromRawSourceWhenRequestMethodIsGET(): void
     {
-        $this->fillGlobals('GET');
+        $this->fillGlobals(Http::GET);
         assertThat(
                 WebRequest::fromRawSource()->paramNames(),
                 equals(['foo', 'roland'])
@@ -107,7 +107,7 @@ class WebRequestTest extends TestCase
      */
     public function usesPostParamsFromRawSourceWhenRequestMethodIsPOST(): void
     {
-        $this->fillGlobals('POST');
+        $this->fillGlobals(Http::POST);
         assertThat(
                 WebRequest::fromRawSource()->paramNames(),
                 equals(['baz', 'donald'])
@@ -143,7 +143,60 @@ class WebRequestTest extends TestCase
      */
     public function returnsRequestMethodInUpperCase(): void
     {
-        assertThat($this->webRequest->method(), equals('POST'));
+        assertThat($this->webRequest->method(), equals(Http::POST));
+    }
+
+    /**
+     * @return  array<string[]>
+     * @since  9.1.0
+     */
+    public function allowedSupplantedRequestMethods(): array
+    {
+        return [[Http::PUT], [Http::DELETE]];
+    }
+
+    /**
+     * @test
+     * @group  supplanted_request_method
+     * @dataProvider  allowedSupplantedRequestMethods
+     * @since  9.1.0
+     */
+    public function returnsSupplantedRequestMethodWhenSetViaParam(string $requestMethod): void
+    {
+        $request = $this->createBaseWebRequest(['_method' => $requestMethod], ['REQUEST_METHOD' => Http::POST]);
+        assertThat($request->method(), equals($requestMethod));
+    }
+
+    /**
+     * @test
+     * @group  supplanted_request_method
+     * @since  9.1.0
+     */
+    public function returnsOriginalRequestMethodOnInvalidSupplantedRequestMethod(): void
+    {
+        $request = $this->createBaseWebRequest(['_method' => 'NOPE'], ['REQUEST_METHOD' => Http::POST]);
+        assertThat($request->method(), equals(Http::POST));
+    }
+
+    /**
+     * @return  array<string[]>
+     * @since  9.1.0
+     */
+    public function requestMethods(): array
+    {
+        return [[Http::GET], [Http::HEAD], [Http::OPTIONS], [Http::DELETE]];
+    }
+
+    /**
+     * @test
+     * @group  supplanted_request_method
+     * @dataProvider  requestMethods
+     * @since  9.1.0
+     */
+    public function returnsOriginalRequestMethodOnAnyRequestMethodOtherThanPOST(string $requestMethod): void
+    {
+        $request = $this->createBaseWebRequest(['_method' => Http::PUT], ['REQUEST_METHOD' => $requestMethod]);
+        assertThat($request->method(), equals($requestMethod));
     }
 
     /**

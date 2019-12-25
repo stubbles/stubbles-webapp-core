@@ -1,5 +1,9 @@
 # Changelog
 
+## 9.1.0 (2019-12-25)
+
+* Allow to supplant request method for PUT and DELETE on POST requests via request parameter `_method`
+
 ## 9.0.0 (2019-12-18)
 
 ### BC breaks
