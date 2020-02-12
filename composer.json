@@ -20,10 +20,10 @@
     "require-dev": {
         "stubbles/xml": "^8.0",
         "stubbles/image": "^6.1",
-        "phpunit/phpunit": "^8.4",
+        "phpunit/phpunit": "^9.0",
         "mikey179/vfsstream": "^1.6.8",
-        "bovigo/callmap": "^5.2.1",
-        "bovigo/assert": "^5.1.1"
+        "bovigo/callmap": "^6.0",
+        "bovigo/assert": "^6.0"
     },
     "autoload": {
         "psr-4": {
