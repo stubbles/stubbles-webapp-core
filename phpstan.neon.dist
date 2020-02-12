@@ -15,10 +15,16 @@ parameters:
         path: src/main/php/routing/AbstractResource.php
       # Explicit tests
       -
-        message: '#target of class stubbles\\webapp\\routing\\Route constructor expects \(callable\(\): mixed\)|string|\stubbles\\webapp\\Target, 500 given#'
+        message: '#requestMethod of class stubbles\\webapp\\routing\\Route constructor expects array<string>\|string\|null, int given#'
         path: src/test/php/routing/RouteTest.php
       -
-        message: '#preInterceptor of method stubbles\\webapp\\routing\\Routing::preIntercept\(\) expects \(callable\(\): mixed\)|string|stubbles\\webapp\\interceptor\\PreInterceptor, 303 given#'
+        message: '#target of class stubbles\\webapp\\routing\\Route constructor expects \(callable\(\): mixed\)|class-string<stubbles\\webapp\\Target>|\stubbles\\webapp\\Target, 500 given#'
+        path: src/test/php/routing/RouteTest.php
+      -
+        message: '#303 given#'
+        path: src/test/php/routing/RouteTest.php
+      -
+        message: '#303 given#'
         path: src/test/php/routing/RoutingTest.php
       -
         message: '#target of method stubbles\\webapp\\routing\\ResolvingResourceTest::createResolvingResourceWithTarget\(\) expects \(callable\(\): mixed\)|class-string<stubbles\\webapp\\Target>|stubbles\\webapp\\Target#'

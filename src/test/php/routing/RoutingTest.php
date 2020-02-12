@@ -169,8 +169,8 @@ class RoutingTest extends TestCase
 
     /**
      * @param   Route     $route
-     * @param   string[]  $preInterceptors
-     * @param   string[]  $postInterceptors
+     * @param   array<(callable)|class-string<\stubbles\webapp\interceptor\PreInterceptor>|\stubbles\webapp\interceptor\PreInterceptor>  $preInterceptors
+     * @param   array<(callable)|class-string<\stubbles\webapp\interceptor\PostInterceptor>|\stubbles\webapp\interceptor\PostInterceptor>  $postInterceptors
      * @param   string    $path
      * @return  ResolvingResource
      */
@@ -472,7 +472,9 @@ class RoutingTest extends TestCase
         $this->injector->returns(['getInstance' => $mimeType]);
         $this->routing->onGet('/hello', function() {})
                 ->supportsMimeType('application/json');
-        $this->routing->supportsMimeType('application/foo', 'example\Special');
+        /** @var  class-string<\stubbles\webapp\response\mimetypes\MimeType>  $exampleClass */
+        $exampleClass = 'example\Special';
+        $this->routing->supportsMimeType('application/foo', $exampleClass);
         $response = NewInstance::stub(WebResponse::class);
         assertTrue(
             $this->routing->findResource($this->calledUri)
@@ -488,7 +490,9 @@ class RoutingTest extends TestCase
      */
     public function doesNotEnableMimeTypeForDefaultClassWhenRouteDoesNotSupportMimeType(): void
     {
-        $this->routing->setDefaultMimeTypeClass('application/foo', 'example\Special');
+        /** @var  class-string<\stubbles\webapp\response\mimetypes\MimeType>  $exampleClass */
+        $exampleClass = 'example\Special';
+        $this->routing->setDefaultMimeTypeClass('application/foo', $exampleClass);
         $this->routing->onGet('/hello', function() {});
         assertThat(
             $this->routing->findResource($this->calledUri)->supportedMimeTypes(),
@@ -503,7 +507,9 @@ class RoutingTest extends TestCase
      */
     public function passesDefaultClassToSupportedMimeTypesOfSelectedRouteWhenRouteSupportsMimeType(): void
     {
-        $this->routing->setDefaultMimeTypeClass('application/foo', 'example\Special');
+        /** @var  class-string<\stubbles\webapp\response\mimetypes\MimeType>  $exampleClass */
+        $exampleClass = 'example\Special';
+        $this->routing->setDefaultMimeTypeClass('application/foo', $exampleClass);
         $this->routing->onGet('/hello', function() {})->supportsMimeType('application/foo');
         assertThat(
             $this->routing->findResource($this->calledUri)->supportedMimeTypes(),

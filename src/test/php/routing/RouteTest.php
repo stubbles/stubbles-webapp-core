@@ -212,10 +212,11 @@ class RouteTest extends TestCase
     public function hasGivenListOfPreInterceptors(): void
     {
         $preInterceptorClosure  = function() {};
+        $preInterceptorClass    = NewInstance::classname(PreInterceptor::class);
         $preInterceptor         = NewInstance::of(PreInterceptor::class);
         $preInterceptorFunction = 'array_map';
         assertThat(
-                $this->createRoute()->preIntercept(get_class($preInterceptor))
+                $this->createRoute()->preIntercept($preInterceptorClass)
                         ->preIntercept($preInterceptorClosure)
                         ->preIntercept($preInterceptor)
                         ->preIntercept($preInterceptorFunction)
@@ -252,10 +253,11 @@ class RouteTest extends TestCase
     public function hasGivenListOfPostInterceptors(): void
     {
         $postInterceptorClosure  = function() {};
+        $postInterceptorClass    = NewInstance::classname(PostInterceptor::class);
         $postInterceptor         = NewInstance::of(PostInterceptor::class);
         $postInterceptorFunction = 'array_map';
         assertThat(
-                $this->createRoute()->postIntercept(get_class($postInterceptor))
+                $this->createRoute()->postIntercept($postInterceptorClass)
                         ->postIntercept($postInterceptorClosure)
                         ->postIntercept($postInterceptor)
                         ->postIntercept($postInterceptorFunction)
