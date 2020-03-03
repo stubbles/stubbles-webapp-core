@@ -70,7 +70,7 @@ class UploadedFileTest extends TestCase
             }
         };
         $file->move_uploaded_file(function() { return true; });
-        assertThat($file->move('/target'), equals('/target/example.php'));
+        assertThat($file->move('/target'), equals('/target' . \DIRECTORY_SEPARATOR . 'example.php'));
     }
 
     /**
@@ -85,7 +85,7 @@ class UploadedFileTest extends TestCase
             }
         };
         $file->move_uploaded_file(function() { return true; });
-        assertThat($file->move('/target', 'other.php'), equals('/target/other.php'));
+        assertThat($file->move('/target', 'other.php'), equals('/target' . \DIRECTORY_SEPARATOR . 'other.php'));
     }
 
     /**
