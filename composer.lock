@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3fdb0b9f038148f3bb004d236466cc0d",
+    "content-hash": "6dcaed6b7258b87fc718387d55a5ca26",
     "packages": [
         {
             "name": "stubbles/input",
@@ -2202,7 +2202,11 @@
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": "^7.3"
+        "php": "^7.3",
+        "ext-json": "*"
     },
-    "platform-dev": []
+    "platform-dev": {
+        "ext-fileinfo": "*",
+        "ext-session": "*"
+    }
 }
