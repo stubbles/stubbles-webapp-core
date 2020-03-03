@@ -3,7 +3,7 @@ Stubbles Webapp Core classes
 Build status
 ------------
 
-[![Build Status](https://secure.travis-ci.org/stubbles/stubbles-webapp-core.png)](http://travis-ci.org/stubbles/stubbles-webapp-core)
+[![Tests](https://github.com/stubbles/stubbles-webapp-core/workflows/Tests/badge.svg)](https://github.com/stubbles/stubbles-webapp-core/actions?query=workflow%3ATests)
 [![Coverage Status](https://coveralls.io/repos/github/stubbles/stubbles-webapp-core/badge.svg?branch=master)](https://coveralls.io/github/stubbles/stubbles-webapp-core?branch=master)
 
 [![Latest Stable Version](https://poser.pugx.org/stubbles/webapp-core/version.png)](https://packagist.org/packages/stubbles/webapp-core)
