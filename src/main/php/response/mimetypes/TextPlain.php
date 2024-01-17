@@ -27,13 +27,8 @@ class TextPlain extends MimeType
 
     /**
      * serializes resource to output stream
-     *
-     * @template T of OutputStream
-     * @param   mixed  $resource
-     * @param   T      $out
-     * @return  T
      */
-    public function serialize($resource, OutputStream $out): OutputStream
+    public function serialize(mixed $resource, OutputStream $out): OutputStream
     {
         if (is_object($resource) && method_exists($resource, '__toString')) {
             $out->write((string) $resource);

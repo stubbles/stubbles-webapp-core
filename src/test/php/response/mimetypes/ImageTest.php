@@ -115,11 +115,11 @@ class ImageTest extends TestCase
 
         $dummyDriver = new DummyDriver($handle);
         $this->resourceLoader->returns(
-                ['load' => ImageSource::load('error.png', $dummyDriver)]
+            ['loadWith' => ImageSource::load('error.png', $dummyDriver)]
         );
         $this->image->serialize(new Error('ups'), new MemoryOutputStream());
         assertThat($dummyDriver->lastDisplayedHandle(), equals($handle));
-        verify($this->resourceLoader, 'load')->received('error.png');
+        verify($this->resourceLoader, 'loadWith')->received('error.png');
     }
 
     /**
@@ -134,11 +134,11 @@ class ImageTest extends TestCase
 
         $dummyDriver = new DummyDriver($handle);
         $this->resourceLoader->returns(
-                ['load' => ImageSource::load('error.png', $dummyDriver)]
+                ['loadWith' => ImageSource::load('error.png', $dummyDriver)]
         );
         $this->image->serialize('pixel.png', new MemoryOutputStream());
         assertThat($dummyDriver->lastDisplayedHandle(), equals($handle));
-        verify($this->resourceLoader, 'load')->received('pixel.png');
+        verify($this->resourceLoader, 'loadWith')->received('pixel.png');
     }
 
     /**
@@ -168,7 +168,7 @@ class ImageTest extends TestCase
     public function triggersUserErrorWhenImageLoadingFails(): void
     {
         $this->resourceLoader->returns(
-                ['load' => throws(new \Exception('hm...'))]
+                ['loadWith' => throws(new \Exception('hm...'))]
         );
         expect(function() {
                 $this->image->serialize('pixel.png', new MemoryOutputStream());

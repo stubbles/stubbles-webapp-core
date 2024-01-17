@@ -27,13 +27,8 @@ class Json extends MimeType
 
     /**
      * serializes resource to output stream
-     *
-     * @template T of OutputStream
-     * @param   mixed  $resource
-     * @param   T      $out
-     * @return  T
      */
-    public function serialize($resource, OutputStream $out): OutputStream
+    public function serialize(mixed $resource, OutputStream $out): OutputStream
     {
         $out->write(json_encode($resource, JSON_THROW_ON_ERROR));
         return $out;

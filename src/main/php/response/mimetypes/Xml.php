@@ -45,13 +45,8 @@ class Xml extends MimeType
 
     /**
      * serializes resource to output stream
-     *
-     * @template T of OutputStream
-     * @param   mixed  $resource
-     * @param   T      $out
-     * @return  T
      */
-    public function serialize($resource, OutputStream $out): OutputStream
+    public function serialize(mixed $resource, OutputStream $out): OutputStream
     {
         $out->write($this->xmlSerializerFacade->serializeToXml($resource));
         return $out;

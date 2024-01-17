@@ -43,13 +43,11 @@ abstract class MimeType
      * serializes resource to output stream
      *
      * It returns the output stream that was passed.
-     *
-     * @template T of OutputStream
-     * @param   mixed  $resource
-     * @param   T      $out
-     * @return  T
      */
-    public abstract function serialize($resource, OutputStream $out): OutputStream;
+    abstract public function serialize(
+        mixed $resource,
+        OutputStream $out
+    ): OutputStream;
 
     /**
      * returns string representation of mime type

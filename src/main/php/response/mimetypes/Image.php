@@ -11,6 +11,8 @@ use stubbles\img\Image as ImageSource;
 use stubbles\values\ResourceLoader;
 use stubbles\streams\OutputStream;
 use stubbles\webapp\response\Error;
+use Throwable;
+
 /**
  * Can handle images.
  *
@@ -56,13 +58,8 @@ class Image extends MimeType
 
     /**
      * serializes resource to output stream
-     *
-     * @template T of OutputStream
-     * @param   mixed  $resource
-     * @param   T      $out
-     * @return  T
      */
-    public function serialize($resource, OutputStream $out): OutputStream
+    public function serialize(mixed $resource, OutputStream $out): OutputStream
     {
         if (null === $resource) {
             return $out;
@@ -83,25 +80,23 @@ class Image extends MimeType
         return $out;
     }
 
-    /**
-     * loads image from resource pathes
-     *
-     * @param   string  $resource
-     * @return  \stubbles\img\Image|null
-     */
     private function loadImage(string $resource): ?ImageSource
     {
         try {
-            return $this->resourceLoader->load(
-                    $resource,
-                    function($fileName) { return ImageSource::load($fileName); }
+            return $this->resourceLoader->loadWith(
+                $resource,
+                fn(string $fileName): ImageSource => ImageSource::load($fileName)
             );
-        } catch (\Throwable $t) {
+        } catch (Throwable $t) {
             // not allowed to throw exceptions, as we are outside any catching
             // mechanism
             trigger_error(
-                    'Can not load image "' . $resource . '": ' . $t->getMessage(),
-                    E_USER_ERROR
+                sprintf(
+                    'Can not load image "%s": %s',
+                    $resource,
+                    $t->getMessage()
+                ),
+                E_USER_ERROR
             );
             return null;
         }
