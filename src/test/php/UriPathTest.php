@@ -63,7 +63,7 @@ class UriPathTest extends TestCase
     /**
      * @return  array<mixed[]>
      */
-    public function providePathArguments(): array
+    public static function providePathArguments(): array
     {
         return [['/hello/mikey', '/hello/{name}', ['name' => 'mikey']],
                 ['/hello/303/mikey', '/hello/{id}/{name}', ['id' => '303', 'name' => 'mikey']]
@@ -108,7 +108,7 @@ class UriPathTest extends TestCase
     /**
      * @return  array<mixed[]>
      */
-    public function provideRemainingPath(): array
+    public static function provideRemainingPath(): array
     {
         return [['/hello/mikey', '/hello/{name}', null],
                 ['/hello/303/mikey', '/hello/{id}/{name}', ''],

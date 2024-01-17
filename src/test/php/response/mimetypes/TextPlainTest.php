@@ -53,7 +53,7 @@ class TextPlainTest extends TestCase
     /**
      * @return  array<mixed[]>
      */
-    public function serializableResources(): array
+    public static function serializableResources(): array
     {
         $stdClass = new \stdClass();
         $stdClass->foo = 'bar';

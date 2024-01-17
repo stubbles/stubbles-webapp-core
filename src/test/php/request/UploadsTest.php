@@ -43,7 +43,7 @@ class UploadsTest extends TestCase
     /**
      * @return  array<string,mixed[]>
      */
-    public function _FILES(): array
+    public static function _FILES(): array
     {
         return [
             'no uploads' => [[], 0],
@@ -86,7 +86,7 @@ class UploadsTest extends TestCase
     /**
      * @return  array<int[]>
      */
-    public function noUserErrors(): array
+    public static function noUserErrors(): array
     {
         return [[\UPLOAD_ERR_NO_TMP_DIR], [\UPLOAD_ERR_CANT_WRITE], [\UPLOAD_ERR_EXTENSION], [10]];
     }
@@ -114,7 +114,7 @@ class UploadsTest extends TestCase
     /**
      * @return  array<mixed[]>
      */
-    public function userErrors(): array
+    public static function userErrors(): array
     {
         return [
             [\UPLOAD_ERR_INI_SIZE, new ParamError('UPLOAD_EXCEEDS_MAXSIZE_ALLOWED_BY_SERVER')],

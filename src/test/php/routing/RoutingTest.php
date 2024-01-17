@@ -559,7 +559,7 @@ class RoutingTest extends TestCase
     /**
      * @return  array<string[]>
      */
-    public function calledHtmlUris(): array
+    public static function calledHtmlUris(): array
     {
         return [
             ['index.html'],

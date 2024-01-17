@@ -68,7 +68,7 @@ class AddAccessControlAllowOriginHeaderTest extends TestCase
     /**
      * @return  array<mixed[]>
      */
-    public function emptyConfigs(): array
+    public static function emptyConfigs(): array
     {
         return [[null], [''], [[]]];
     }

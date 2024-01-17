@@ -150,7 +150,7 @@ class WebRequestTest extends TestCase
      * @return  array<string[]>
      * @since  9.1.0
      */
-    public function allowedSupplantedRequestMethods(): array
+    public static function allowedSupplantedRequestMethods(): array
     {
         return [[Http::PUT], [Http::DELETE]];
     }
@@ -182,7 +182,7 @@ class WebRequestTest extends TestCase
      * @return  array<string[]>
      * @since  9.1.0
      */
-    public function requestMethods(): array
+    public static function requestMethods(): array
     {
         return [[Http::GET], [Http::HEAD], [Http::OPTIONS], [Http::DELETE]];
     }
@@ -246,7 +246,7 @@ class WebRequestTest extends TestCase
     /**
      * @return  array<string[]>
      */
-    public function protocolVersions(): array
+    public static function protocolVersions(): array
     {
         return [
             ['HTTP/0.9', '0.9'],
@@ -968,7 +968,7 @@ class WebRequestTest extends TestCase
     /**
      * @return  array<mixed[]>
      */
-    public function invalidRequestIdValues(): array
+    public static function invalidRequestIdValues(): array
     {
         return [
             ['too-short'],
@@ -995,7 +995,7 @@ class WebRequestTest extends TestCase
     /**
      * @return  array<mixed[]>
      */
-    public function validRequestIdValues(): array
+    public static function validRequestIdValues(): array
     {
         return [
             [str_pad('minimum-size', 20, '-')],

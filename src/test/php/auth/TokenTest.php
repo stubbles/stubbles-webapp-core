@@ -47,9 +47,9 @@ class TokenTest extends TestCase
     /**
      * @return  mixed[]
      */
-    public function tokenValues(): array
+    public static function tokenValues(): array
     {
-        $tokenValues = $this->emptyValues();
+        $tokenValues = self::emptyValues();
         $tokenValues[] = ['someTokenValue'];
         return $tokenValues;
     }
@@ -68,7 +68,7 @@ class TokenTest extends TestCase
     /**
      * @return  array<mixed[]>
      */
-    public function emptyValues(): array
+    public static function emptyValues(): array
     {
         return [[null], ['']];
     }

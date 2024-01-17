@@ -43,7 +43,7 @@ class UserAgentTest extends TestCase
     /**
      * @return  array<string[]>
      */
-    public function getXmlRelatedMethodAnnotations(): array
+    public static function getXmlRelatedMethodAnnotations(): array
     {
         return [['name', 'XmlAttribute'],
                 ['isBot', 'XmlAttribute'],
@@ -83,7 +83,7 @@ class UserAgentTest extends TestCase
     /**
      * @return  array<string[]>
      */
-    public function botsRecognizedByDefault(): array
+    public static function botsRecognizedByDefault(): array
     {
         return [
             ['Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'],

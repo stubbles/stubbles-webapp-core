@@ -86,7 +86,7 @@ class ImageTest extends TestCase
     /**
      * @return  array<mixed[]>
      */
-    public function emptyValues(): array
+    public static function emptyValues(): array
     {
         return [[null], ['']];
     }

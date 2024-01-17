@@ -201,7 +201,7 @@ class TokenAuthenticatorTest extends TestCase
     /**
      * @return  array<string[]>
      */
-    public function validTokens(): array
+    public static function validTokens(): array
     {
         return [['Bearer 123456789012345678901234567890ab', '123456789012345678901234567890ab'],
                 ['someOtherToken', 'someOtherToken']

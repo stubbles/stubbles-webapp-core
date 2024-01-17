@@ -588,7 +588,7 @@ class WebResponseTest extends TestCase
     /**
      * @return  array<HttpVersion[]>
      */
-    public function unsupportedHttpVersions(): array
+    public static function unsupportedHttpVersions(): array
     {
         return [
             [HttpVersion::fromString('HTTP/0.9')],

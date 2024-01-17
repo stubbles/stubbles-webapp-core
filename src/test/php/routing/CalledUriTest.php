@@ -148,7 +148,7 @@ class CalledUriTest extends TestCase
     /**
      * @return  array<mixed[]>
      */
-    public function provideSatisfiedPathPattern(): array
+    public static function provideSatisfiedPathPattern(): array
     {
         return [
             ['/hello/mikey', '/hello/{name}$'],
@@ -174,7 +174,7 @@ class CalledUriTest extends TestCase
     /**
      * @return  array<string[]>
      */
-    public function provideNonSatisfiedPathPattern(): array
+    public static function provideNonSatisfiedPathPattern(): array
     {
         return [['/rss/articles', '/hello/{name}'],
                 ['/hello/mikey', '/hello$'],

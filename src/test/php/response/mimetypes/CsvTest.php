@@ -62,7 +62,7 @@ class CsvTest extends TestCase
     /**
      * @return  array<scalar[]>
      */
-    public function scalarValues(): array
+    public static function scalarValues(): array
     {
         return [[1, '1'], ['some text', 'some text'], [true, '1'], [false, '']];
     }

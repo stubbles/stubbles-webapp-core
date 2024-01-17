@@ -127,7 +127,7 @@ class SupportedMimeTypesTest extends TestCase
     /**
      * @return  array<string[]>
      */
-    public function predefinedMimeTypes(): array
+    public static function predefinedMimeTypes(): array
     {
         return [
             ['application/json'],
@@ -209,7 +209,7 @@ class SupportedMimeTypesTest extends TestCase
     /**
      * @return  array<string[]>
      */
-    public function imageMimetypes(): array
+    public static function imageMimetypes(): array
     {
         return [['image/png'], ['image/jpeg']];
     }

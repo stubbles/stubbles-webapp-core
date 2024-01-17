@@ -749,7 +749,7 @@ class RouteTest extends TestCase
     /**
      * @return  array<mixed[]>
      */
-    public function mimeTypeClasses(): array
+    public static function mimeTypeClasses(): array
     {
         return [
             ['example\\\Bar', 'application/bar'],
@@ -801,7 +801,7 @@ class RouteTest extends TestCase
     /**
      * @return  array<mixed[]>
      */
-    public function resources(): array
+    public static function resources(): array
     {
         return [
             [
