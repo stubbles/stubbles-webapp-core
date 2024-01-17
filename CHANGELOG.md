@@ -1,5 +1,9 @@
 # Changelog
 
+## 10.0.0 (2024)
+
+* Raised minimum required PHP version to 8.2
+
 ## 9.1.0 (2019-12-25)
 
 * Allow to supplant request method for PUT and DELETE on POST requests via request parameter `_method`
