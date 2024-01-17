@@ -7,6 +7,8 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 namespace stubbles\webapp\session;
+
+use LogicException;
 use stubbles\webapp\session\id\SessionId;
 use stubbles\webapp\session\storage\SessionStorage;
 /**
@@ -176,15 +178,12 @@ class WebSession implements Session
     /**
      * returns a value associated with the key or the default value
      *
-     * @param   string  $key      key where value is stored under
-     * @param   mixed   $default  optional  return this if no data is associated with $key
-     * @return  mixed
-     * @throws  \LogicException
+     * @throws  LogicException
      */
-    public function value(string $key, $default = null)
+    public function value(string $key, mixed $default = null): mixed
     {
         if (!$this->isValid()) {
-            throw new \LogicException('Session is in an invalid state.');
+            throw new LogicException('Session is in an invalid state.');
         }
 
         if ($this->storage->hasValue($key)) {

@@ -110,12 +110,8 @@ class NullSession implements Session
 
     /**
      * returns a value associated with the key or the default value
-     *
-     * @param   string  $key      key where value is stored under
-     * @param   mixed   $default  optional  return this if no data is associated with $key
-     * @return  mixed
      */
-    public function value(string $key, $default = null)
+    public function value(string $key, mixed $default = null): mixed
     {
         return $default;
     }
