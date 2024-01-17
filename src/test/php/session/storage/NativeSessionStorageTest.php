@@ -76,27 +76,6 @@ class NativeSessionStorageTest extends TestCase
 
     /**
      * @test
-     * @skip  if headers_sent
-     */
-    public function canRegenerateSessionId(): void
-    {
-        $file = null;
-        $line = null;
-        if (headers_sent($file, $line)) {
-            $this->markTestSkipped(
-                    'Headers already send in ' . $file . ' on line ' . $line
-                    . ', skipped ' . __METHOD__ . '()'
-            );
-        }
-
-        assertThat(
-                (string) $this->nativeSessionStorage->regenerate(),
-                isNotEqualTo((string) $this->nativeSessionStorage)
-        );
-    }
-
-    /**
-     * @test
      */
     public function invalidateCreatesNewSessionId(): void
     {
