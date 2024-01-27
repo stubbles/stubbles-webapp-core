@@ -7,6 +7,8 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 namespace stubbles\webapp\auth;
+
+use JsonSerializable;
 use stubbles\webapp\routing\RoutingAnnotations;
 /**
  * Contains auth informations about a route.
@@ -14,7 +16,7 @@ use stubbles\webapp\routing\RoutingAnnotations;
  * @since  5.0.0
  * @XmlTag(tagName='auth')
  */
-class AuthConstraint implements \JsonSerializable
+class AuthConstraint implements JsonSerializable
 {
     /**
      * list of annotations on callback
@@ -54,7 +56,6 @@ class AuthConstraint implements \JsonSerializable
     /**
      * require a login
      *
-     * @return  \stubbles\webapp\auth\AuthConstraint
      * @XmlIgnore
      */
     public function requireLogin(): self
@@ -70,7 +71,6 @@ class AuthConstraint implements \JsonSerializable
      * authentication provider.
      *
      * @since   8.0.0
-     * @return  \stubbles\webapp\auth\AuthConstraint
      * @XmlIgnore
      */
     public function sendChallengeWhenNotLoggedIn(): self
@@ -88,7 +88,6 @@ class AuthConstraint implements \JsonSerializable
      * authentication provider.
      *
      * @deprecated  use sendChallengeWhenNotLoggedIn() instead
-     * @return  \stubbles\webapp\auth\AuthConstraint
      * @XmlIgnore
      */
     public function forbiddenWhenNotAlreadyLoggedIn(): self
@@ -100,7 +99,6 @@ class AuthConstraint implements \JsonSerializable
      * checks whether a login is allowed
      *
      * @since   8.0.0
-     * @return  bool
      * @XmlIgnore
      */
     public function redirectToLogin(): bool
@@ -112,7 +110,6 @@ class AuthConstraint implements \JsonSerializable
      * checks whether a login is allowed
      *
      * @deprecated  since 8.0.0, use redirectToLogin() instead
-     * @return  bool
      * @XmlIgnore
      */
     public function loginAllowed(): bool
@@ -123,7 +120,6 @@ class AuthConstraint implements \JsonSerializable
     /**
      * checks whether login is required
      *
-     * @return  bool
      * @XmlAttribute(attributeName='requiresLogin')
      */
     private function requiresLogin(): bool
@@ -139,7 +135,6 @@ class AuthConstraint implements \JsonSerializable
     /**
      * require a specific role
      *
-     * @param   string  $role
      * @return  \stubbles\webapp\auth\AuthConstraint
      */
     public function requireRole(string $role): self
@@ -151,7 +146,6 @@ class AuthConstraint implements \JsonSerializable
     /**
      * checks whether auth is required
      *
-     * @return  bool
      * @XmlAttribute(attributeName='required')
      */
     public function requiresAuth(): bool
@@ -162,7 +156,6 @@ class AuthConstraint implements \JsonSerializable
     /**
      * checks if access to this route required authorization
      *
-     * @return  bool
      * @XmlAttribute(attributeName='requiresRoles')
      */
     public function requiresRoles(): bool
@@ -173,7 +166,6 @@ class AuthConstraint implements \JsonSerializable
     /**
      * returns required role for this route
      *
-     * @return  string|null
      * @XmlAttribute(attributeName='role', skipEmpty=true)
      */
     public function requiredRole(): ?string
@@ -187,9 +179,6 @@ class AuthConstraint implements \JsonSerializable
 
     /**
      * checks whether route is satisfied by the given roles
-     *
-     * @param   \stubbles\webapp\auth\Roles  $roles
-     * @return  bool
      */
     public function satisfiedByRoles(Roles $roles = null): bool
     {

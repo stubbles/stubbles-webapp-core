@@ -7,6 +7,9 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 namespace stubbles\webapp;
+
+use Exception;
+use stubbles\peer\http\HttpUri;
 use stubbles\webapp\response\Cookie;
 use stubbles\webapp\response\Error;
 use stubbles\webapp\response\Headers;
@@ -23,16 +26,11 @@ interface Response extends SendableResponse
 {
     /**
      * adjusts mime type of response to given mime type
-     *
-     * @param   \stubbles\webapp\response\mimetypes\MimeType  $mimeType
-     * @return  \stubbles\webapp\Response
      */
     public function adjustMimeType(MimeType $mimeType): self;
 
     /**
      * returns mime type for response body
-     *
-     * @return  \stubbles\webapp\response\mimetypes\MimeType
      */
     public function mimeType(): MimeType;
 
@@ -44,62 +42,44 @@ interface Response extends SendableResponse
      *
      * If reason phrase is null it will use the default reason phrase for given
      * status code.
-     *
-     * @param   int     $statusCode
-     * @param   string  $reasonPhrase  optional
-     * @return  \stubbles\webapp\Response
      */
     public function setStatusCode(int $statusCode, string $reasonPhrase = null): self;
 
     /**
      * provide direct access to set a status code
      *
-     * @return  \stubbles\webapp\response\Status
-     * @since   5.1.0
+     * @since  5.1.0
      */
     public function status(): Status;
 
     /**
      * add a header to the response
-     *
-     * @param   string  $name   the name of the header
-     * @param   string  $value  the value of the header
-     * @return  \stubbles\webapp\Response
      */
     public function addHeader(string $name, string $value): Response;
 
     /**
      * returns list of headers
      *
-     * @return  \stubbles\webapp\response\Headers
-     * @since   4.0.0
+     * @since  4.0.0
      */
     public function headers(): Headers;
 
     /**
      * add a cookie to the response
-     *
-     * @param   \stubbles\webapp\response\Cookie  $cookie  the cookie to set
-     * @return  \stubbles\webapp\Response
      */
     public function addCookie(Cookie $cookie): self;
 
     /**
      * removes cookie with given name
      *
-     * @param   string  $name
-     * @return  \stubbles\webapp\Response
-     * @since   2.0.0
+     * @since  2.0.0
      */
     public function removeCookie(string $name): self;
 
     /**
      * write body into the response
-     *
-     * @param   mixed  $body
-     * @return  \stubbles\webapp\Response
      */
-    public function write($body): self;
+    public function write(mixed $body): self;
 
     /**
      * a response is fixed when a final status has been set
@@ -112,8 +92,7 @@ interface Response extends SendableResponse
      * - internalServerError()
      * - httpVersionNotSupported()
      *
-     * @return  bool
-     * @since   3.1.0
+     * @since  3.1.0
      */
     public function isFixed(): bool;
 
@@ -122,68 +101,59 @@ interface Response extends SendableResponse
      *
      * Status code is optional, default is 302.
      *
-     * @param   string|\stubbles\peer\http\HttpUri  $uri         http uri to redirect to
-     * @param   int                                 $statusCode  HTTP status code to redirect with (301, 302, ...)
-     * @since   1.3.0
+     * @since  1.3.0
      */
-    public function redirect($uri, int $statusCode = 302): void;
+    public function redirect(string|HttpUri $uri, int $statusCode = 302): void;
 
     /**
      * creates a 401 Unauthorized message including a WWW-Authenticate header with given challenge
      *
-     * @param   string[]  $challenges
-     * @return  \stubbles\webapp\response\Error
-     * @since   8.0.0
+     * @param  string[]  $challenges
+     * @since  8.0.0
      */
     public function unauthorized(array $challenges): Error;
 
     /**
      * creates a 403 Forbidden message
      *
-     * @return  \stubbles\webapp\response\Error
-     * @since   2.0.0
+     * @since  2.0.0
      */
     public function forbidden(): Error;
 
     /**
      * creates a 404 Not Found message into
      *
-     * @return  \stubbles\webapp\response\Error
-     * @since   2.0.0
+     * @since  2.0.0
      */
     public function notFound(): Error;
 
     /**
      * creates a 405 Method Not Allowed message
      *
-     * @param   string    $requestMethod
-     * @param   string[]  $allowedMethods
-     * @return  \stubbles\webapp\response\Error
-     * @since   2.0.0
+     * @param  string[]  $allowedMethods
+     * @since  2.0.0
      */
     public function methodNotAllowed(string $requestMethod, array $allowedMethods): Error;
 
     /**
      * creates a 406 Not Acceptable message
      *
-     * @param   string[]  $supportedMimeTypes  list of supported mime types
-     * @since   2.0.0
+     * @param  string[]  $supportedMimeTypes  list of supported mime types
+     * @since  2.0.0
      */
     public function notAcceptable(array $supportedMimeTypes = []): void;
 
     /**
      * creates a 500 Internal Server Error message
      *
-     * @param   string|\Exception  $error
-     * @return  \stubbles\webapp\response\Error
-     * @since   2.0.0
+     * @since  2.0.0
      */
-    public function internalServerError($error): Error;
+    public function internalServerError(string|Exception $error): Error;
 
     /**
      * creates a 505 HTTP Version Not Supported message
      *
-     * @since   2.0.0
+     * @since  2.0.0
      */
     public function httpVersionNotSupported(): void;
 }

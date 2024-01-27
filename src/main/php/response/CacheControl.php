@@ -20,69 +20,28 @@ namespace stubbles\webapp\response;
  */
 class CacheControl
 {
-    /**
-     * header name
-     */
-    const HEADER_NAME        = 'Cache-Control';
-    /**
-     * whether the must-revalidate directive is enabled
-     *
-     * @var  bool
-     */
-    private $mustRevalidate  = false;
-    /**
-     * whether the no-cache directive is enabled
-     *
-     * @var  bool
-     */
-    private $noCache         = false;
-    /**
-     * whether the no-store directive is enabled
-     *
-     * @var  bool
-     */
-    private $noStore         = false;
-    /**
-     * whether the no-transform directive is enabled
-     *
-     * @var  bool
-     */
-    private $noTransform     = false;
-    /**
-     * whether the public directive is enabled
-     *
-     * @var  bool
-     */
-    private $public          = false;
-    /**
-     * whether the private directive is enabled
-     *
-     * @var  bool
-     */
-    private $private         = true;
-    /**
-     * whether the proxy-revalidate directive is enabled
-     *
-     * @var  bool
-     */
-    private $proxyRevalidate = false;
-    /**
-     * value for the max-age=seconds directive
-     *
-     * @var  int
-     */
-    private $maxAge          = null;
-    /**
-     * value for the s-maxage=seconds directive
-     *
-     * @var  int
-     */
-    private $sMaxAge         = null;
+    public const HEADER_NAME = 'Cache-Control';
+    /** whether the must-revalidate directive is enabled */
+    private bool $mustRevalidate  = false;
+    /** whether the no-cache directive is enabled */
+    private bool $noCache = false;
+    /** whether the no-store directive is enabled */
+    private bool $noStore = false;
+    /** whether the no-transform directive is enabled */
+    private bool $noTransform = false;
+    /** whether the public directive is enabled */
+    private bool $public = false;
+    /** whether the private directive is enabled */
+    private bool $private = true;
+    /** whether the proxy-revalidate directive is enabled */
+    private bool $proxyRevalidate = false;
+    /** value for the max-age=seconds directive */
+    private ?int $maxAge = null;
+    /** value for the s-maxage=seconds directive */
+    private ?int $sMaxAge = null;
 
     /**
      * enables the must-revalidate directive
-     *
-     * @return  \stubbles\webapp\response\CacheControl
      */
     public function mustRevalidate(): self
     {
@@ -92,8 +51,6 @@ class CacheControl
 
     /**
      * enables the no-cache directive
-     *
-     * @return  \stubbles\webapp\response\CacheControl
      */
     public function noCache(): self
     {
@@ -103,8 +60,6 @@ class CacheControl
 
     /**
      * enables the no-store directive
-     *
-     * @return \stubbles\webapp\response\CacheControl
      */
     public function noStore(): self
     {
@@ -114,8 +69,6 @@ class CacheControl
 
     /**
      * enables the no-transform directive
-     *
-     * @return  \stubbles\webapp\response\CacheControl
      */
     public function noTransform(): self
     {
@@ -126,8 +79,6 @@ class CacheControl
 
     /**
      * enables the public directive, disables the private directive
-     *
-     * @return  \stubbles\webapp\response\CacheControl
      */
     public function enablePublic(): self
     {
@@ -138,8 +89,6 @@ class CacheControl
 
     /**
      * disables the private directive
-     *
-     * @return  \stubbles\webapp\response\CacheControl
      */
     public function disablePrivate(): self
     {
@@ -149,8 +98,6 @@ class CacheControl
 
     /**
      * enables the proxy-revalidate directive
-     *
-     * @return  \stubbles\webapp\response\CacheControl
      */
     public function proxyRevalidate(): self
     {
@@ -160,9 +107,6 @@ class CacheControl
 
     /**
      * enables the max-age=seconds directive
-     *
-     * @param   int  $seconds
-     * @return  \stubbles\webapp\response\CacheControl
      */
     public function maxAge(int $seconds): self
     {
@@ -172,9 +116,6 @@ class CacheControl
 
     /**
      * enables the s-maxage=seconds directive
-     *
-     * @param   int  $seconds
-     * @return  \stubbles\webapp\response\CacheControl
      */
     public function sMaxAge(int $seconds): self
     {
@@ -184,8 +125,6 @@ class CacheControl
 
     /**
      * returns a string representation of the Cache-Control header value
-     *
-     * @return  string
      */
     public function __toString(): string
     {

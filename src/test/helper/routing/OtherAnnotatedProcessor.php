@@ -23,7 +23,7 @@ class OtherAnnotatedProcessor implements Target
      * @param  \stubbles\webapp\Response  $response  response to send
      * @param  \stubbles\webapp\UriPath           $uriPath   information about called uri path
      */
-    public function resolve(Request $request, Response $response, UriPath $uriPath)
+    public function resolve(Request $request, Response $response, UriPath $uriPath): mixed
     {
         // intentionally empty
     }

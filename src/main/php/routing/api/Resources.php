@@ -7,27 +7,26 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 namespace stubbles\webapp\routing\api;
+
+use ArrayIterator;
+use IteratorAggregate;
+use JsonSerializable;
+use Traversable;
+
 /**
  * Represents the list of available resources.
  *
  * @since  6.1.0
  * @XmlTag(tagName='resources')
- * @implements  \IteratorAggregate<\stubbles\webapp\routing\api\Resource>
+ * @implements  \IteratorAggregate<Resource>
  */
-class Resources implements \IteratorAggregate, \JsonSerializable
+class Resources implements IteratorAggregate, JsonSerializable
 {
-    /**
-     * list of available resources
-     *
-     * @var  \stubbles\webapp\routing\api\Resource[]
-     */
-    private $resources = [];
+    /** @var  Resource[] */
+    private array $resources = [];
 
     /**
      * adds given resource to list of resources
-     *
-     * @param   \stubbles\webapp\routing\api\Resource  $resource
-     * @return  \stubbles\webapp\routing\api\Resource
      */
     public function add(Resource $resource): Resource
     {
@@ -38,17 +37,17 @@ class Resources implements \IteratorAggregate, \JsonSerializable
     /**
      * allows to iterate over all resources
      *
-     * @return  \Iterator<\stubbles\webapp\routing\api\Resource>
+     * @return  \Iterator<Resource>
      */
-    public function getIterator(): \Iterator
+    public function getIterator(): Traversable
     {
-        return new \ArrayIterator($this->resources);
+        return new ArrayIterator($this->resources);
     }
 
     /**
      * returns proper representation which can be serialized to JSON
      *
-     * @return  \stubbles\webapp\routing\api\Resource[]
+     * @return  Resource[]
      * @XmlIgnore
      */
     public function jsonSerialize(): array

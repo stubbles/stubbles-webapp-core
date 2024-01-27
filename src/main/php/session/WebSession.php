@@ -23,33 +23,15 @@ use stubbles\webapp\session\storage\SessionStorage;
 class WebSession implements Session
 {
     /**
-     * where session data is stored
-     *
-     * @var  \stubbles\webapp\session\storage\SessionStorage
-     */
-    private $storage;
-    /**
-     * if of the session
-     *
-     * @var  \stubbles\webapp\session\id\SessionId
-     */
-    private $id;
-    /**
      * switch whether session is new or not
-     *
-     * @var  bool
      */
-    private $isNew       = false;
+    private bool $isNew = false;
 
-    /**
-     * constructor
-     *
-     * @param  \stubbles\webapp\session\storage\SessionStorage  $storage
-     * @param  \stubbles\webapp\session\id\SessionId            $id
-     * @param  string                                           $fingerPrint
-     */
-    public function __construct(SessionStorage $storage, SessionId $id, $fingerPrint)
-    {
+    public function __construct(
+        private SessionStorage $storage,
+        private SessionId $id,
+        string $fingerPrint
+    ) {
         $this->storage = $storage;
         $this->id      = $id;
         if ($this->isSessionNew()) {
@@ -65,8 +47,6 @@ class WebSession implements Session
 
     /**
      * checks if session is new
-     *
-     * @return  bool
      */
     private function isSessionNew(): bool
     {
@@ -75,9 +55,6 @@ class WebSession implements Session
 
     /**
      * checks if session was probably hijacked by another user
-     *
-     * @param   string  $fingerPrint
-     * @return  bool
      */
     private function isHijacked($fingerPrint): bool
     {
@@ -86,8 +63,6 @@ class WebSession implements Session
 
     /**
      * initializes storage with start time and fingerprint
-     *
-     * @param  string  $fingerPrint
      */
     private function init(string $fingerPrint): void
     {
@@ -99,8 +74,6 @@ class WebSession implements Session
      *
      * Typically, a session is new on the first request of a user,
      * afterwards it should never be new.
-     *
-     * @return  bool  true if session has been started, else false
      */
     public function isNew(): bool
     {
@@ -109,8 +82,6 @@ class WebSession implements Session
 
     /**
      * returns session id
-     *
-     * @return  string  the session id
      */
     public function id(): string
     {
@@ -119,8 +90,6 @@ class WebSession implements Session
 
     /**
      * regenerates the session id but leaves session data
-     *
-     * @return  \stubbles\webapp\session\Session
      */
     public function regenerateId(): Session
     {
@@ -130,8 +99,6 @@ class WebSession implements Session
 
     /**
      * returns the name of the session
-     *
-     * @return  string
      */
     public function name(): string
     {
@@ -140,8 +107,6 @@ class WebSession implements Session
 
     /**
      * checks if this session is valid
-     *
-     * @return  bool
      */
     public function isValid(): bool
     {
@@ -150,8 +115,6 @@ class WebSession implements Session
 
     /**
      * invalidates current session and creates a new one
-     *
-     * @return  \stubbles\webapp\session\Session
      */
     public function invalidate(): Session
     {
@@ -162,9 +125,6 @@ class WebSession implements Session
 
     /**
      * checks whether a value associated with key exists
-     *
-     * @param   string  $key  key where value is stored under
-     * @return  bool
      */
     public function hasValue(string $key): bool
     {
@@ -196,30 +156,28 @@ class WebSession implements Session
     /**
      * stores a value associated with the key
      *
-     * @param   string  $key    key to store value under
-     * @param   mixed   $value  data to store
-     * @throws  \LogicException
+     * @throws  LogicException
      */
     public function putValue(string $key, $value): void
     {
         if (!$this->isValid()) {
-            throw new \LogicException('Session is in an invalid state.');
+            throw new LogicException('Session is in an invalid state.');
         }
 
         $this->storage->putValue($key, $value);
     }
 
     /**
-     * removes a value from the session
+     * removes a value stored under given key from the session
      *
-     * @param   string  $key  key where value is stored under
-     * @return  bool    true if value existed and was removed, else false
-     * @throws  \LogicException
+     * Returns true when value existed, false otherwise.
+     *
+     * @throws  LogicException
      */
     public function removeValue(string $key): bool
     {
         if (!$this->isValid()) {
-            throw new \LogicException('Session is in an invalid state.');
+            throw new LogicException('Session is in an invalid state.');
         }
 
         if ($this->storage->hasValue($key)) {
@@ -234,20 +192,18 @@ class WebSession implements Session
      * return an array of all keys registered in this session
      *
      * @return  string[]
-     * @throws  \LogicException
+     * @throws  LogicException
      */
     public function valueKeys(): array
     {
         if (!$this->isValid()) {
-            throw new \LogicException('Session is in an invalid state.');
+            throw new LogicException('Session is in an invalid state.');
         }
 
+        // remove internal values from internal keys
         return array_values(array_filter(
-                $this->storage->valueKeys(),
-                function($valueKey)
-                {
-                    return substr($valueKey, 0, 11) !== '__stubbles_';
-                }
+            $this->storage->valueKeys(),
+            fn(string $valueKey): bool => substr($valueKey, 0, 11) !== '__stubbles_'
         ));
     }
 }

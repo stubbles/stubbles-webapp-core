@@ -7,34 +7,41 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 namespace stubbles\webapp\routing\api;
+
+use ArrayIterator;
+use Countable;
+use InvalidArgumentException;
+use IteratorAggregate;
+use JsonSerializable;
 use stubbles\peer\http\HttpUri;
+use Traversable;
+
 /**
  * Represents all links for a resource.
  *
  * @since  6.1.0
  * @XmlTag(tagName='links')
- * @implements  \IteratorAggregate<Link>
+ * @implements  IteratorAggregate<Link>
  */
-class Links implements \IteratorAggregate, \JsonSerializable, \Countable
+class Links implements IteratorAggregate, JsonSerializable, Countable
 {
-    /**
-     * @var  array<string,Link|Link[]>
-     */
-    private $links = [];
+    /** @var  array<string,Link|Link[]> */
+    private array $links = [];
 
     /**
-     * constructor
-     *
-     * @param   string                       $rel  relation of this link to the resource  optional
-     * @param   \stubbles\peer\http\HttpUri  $uri  uri for this relation                  optional
-     * @throws  \InvalidArgumentException  in case $uri is empty but $rel is not
+     * @param   string   $rel  relation of this link to the resource
+     * @param   HttpUri  $uri  uri for this relation
+     * @throws  InvalidArgumentException  in case $uri is empty but $rel is not
      */
-    public function __construct(string $rel = null, HttpUri $uri = null)
+    public function __construct(?string $rel = null, ?HttpUri $uri = null)
     {
         if (null !== $rel) {
             if (null === $uri) {
-                throw new \InvalidArgumentException(
-                        'Uri is null, but rel "' . $rel . "' given"
+                throw new InvalidArgumentException(
+                    sprintf(
+                        'Uri is null, but rel "%s" given',
+                        $rel
+                    )
                 );
             }
 
@@ -42,13 +49,6 @@ class Links implements \IteratorAggregate, \JsonSerializable, \Countable
         }
     }
 
-    /**
-     * adds link to collection of links
-     *
-     * @param   string                       $rel
-     * @param   \stubbles\peer\http\HttpUri  $uri
-     * @return  \stubbles\webapp\routing\api\Link
-     */
     public function add(string $rel, HttpUri $uri): Link
     {
         $link = new Link($rel, $uri);
@@ -68,8 +68,7 @@ class Links implements \IteratorAggregate, \JsonSerializable, \Countable
     /**
      * returns all links with given relation
      *
-     * @param   string  $rel
-     * @return  \stubbles\webapp\routing\api\Link[]
+     * @return  Link[]
      */
     public function with(string $rel): array
     {
@@ -89,7 +88,7 @@ class Links implements \IteratorAggregate, \JsonSerializable, \Countable
      *
      * @return  \Iterator<Link>
      */
-    public function getIterator(): \Iterator
+    public function getIterator(): Traversable
     {
         $result = [];
         foreach ($this->links as $link) {
@@ -100,7 +99,7 @@ class Links implements \IteratorAggregate, \JsonSerializable, \Countable
             }
         }
 
-        return new \ArrayIterator($result);
+        return new ArrayIterator($result);
     }
 
     /**
@@ -115,9 +114,6 @@ class Links implements \IteratorAggregate, \JsonSerializable, \Countable
     }
 
     /**
-     * returns amount of links
-     *
-     * @return  int
      * @XmlIgnore
      */
     public function count(): int

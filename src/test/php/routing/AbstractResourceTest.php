@@ -77,7 +77,7 @@ class AbstractResourceTest extends TestCase
 
             public function requiresAuth(): bool { return false;}
 
-            public function resolve(Request $request, Response $response) {}
+            public function resolve(Request $request, Response $response): mixed {}
         };
     }
 

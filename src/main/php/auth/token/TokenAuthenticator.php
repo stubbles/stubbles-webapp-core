@@ -7,6 +7,9 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 namespace stubbles\webapp\auth\token;
+
+use Exception;
+use stubbles\peer\http\HttpUri;
 use stubbles\webapp\Request;
 use stubbles\webapp\auth\AuthenticationProvider;
 use stubbles\webapp\auth\InternalAuthProviderException;
@@ -20,49 +23,19 @@ use stubbles\webapp\auth\User;
 class TokenAuthenticator implements AuthenticationProvider
 {
     /**
-     * store where tokens are saved
-     *
-     * @var  \stubbles\webapp\auth\token\TokenStore
-     */
-    private $tokenStore;
-    /**
-     * salt to be used for token generation
-     *
-     * @var  string
-     */
-    private $tokenSalt;
-    /**
-     * authentication provider which does actual login if no token or user found
-     *
-     * @var  AuthenticationProvider
-     */
-    private $loginProvider;
-
-    /**
-     * constructor
-     *
-     * @param  \stubbles\webapp\auth\token\TokenStore        $tokenStore
-     * @param  string                                        $tokenSalt
-     * @param  \stubbles\webapp\auth\AuthenticationProvider  $loginProvider
      * @Property{tokenSalt}('stubbles.webapp.auth.token.salt')
      * @Named{loginProvider}('stubbles.webapp.auth.token.loginProvider')
      */
     public function __construct(
-            TokenStore $tokenStore,
-            string $tokenSalt,
-            AuthenticationProvider $loginProvider)
-    {
-        $this->tokenStore    = $tokenStore;
-        $this->tokenSalt     = $tokenSalt;
-        $this->loginProvider = $loginProvider;
-    }
+            private TokenStore $tokenStore,
+            private string $tokenSalt,
+            private AuthenticationProvider $loginProvider
+    ) { }
 
     /**
      * authenticates that the given request is valid
      *
-     * @param   \stubbles\webapp\Request  $request
-     * @return  \stubbles\webapp\auth\User|null
-     * @throws  \stubbles\webapp\auth\InternalAuthProviderException
+     * @throws  InternalAuthProviderException
      */
     public function authenticate(Request $request): ?User
     {
@@ -74,10 +47,10 @@ class TokenAuthenticator implements AuthenticationProvider
         try {
             $user = $this->tokenStore->findUserByToken($request, $token);
             return null === $user ? $this->login($request) : $user->setToken($token);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw new InternalAuthProviderException(
-                    'Error while trying to find user by token: ' . $e->getMessage(),
-                    $e
+                'Error while trying to find user by token: ' . $e->getMessage(),
+                $e
             );
         }
     }
@@ -85,9 +58,7 @@ class TokenAuthenticator implements AuthenticationProvider
     /**
      * performs login when token not found or invalid
      *
-     * @param   \stubbles\webapp\Request $request
-     * @return  \stubbles\webapp\auth\User|null
-     * @throws  \stubbles\webapp\auth\InternalAuthProviderException
+     * @throws  InternalAuthProviderException
      */
     private function login(Request $request): ?User
     {
@@ -97,10 +68,10 @@ class TokenAuthenticator implements AuthenticationProvider
                 $token = $user->createToken($this->tokenSalt);
                 $this->tokenStore->store($request, $token, $user);
                 return $user;
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 throw new InternalAuthProviderException(
-                        'Error while trying to store new token for user: ' . $e->getMessage(),
-                        $e
+                    'Error while trying to store new token for user: ' . $e->getMessage(),
+                    $e
                 );
             }
         }
@@ -110,9 +81,6 @@ class TokenAuthenticator implements AuthenticationProvider
 
     /**
      * reads token from authorization header
-     *
-     * @param   \stubbles\webapp\Request  $request  current request
-     * @return  \stubbles\webapp\auth\Token|null
      */
     private function readToken(Request $request): ?Token
     {
@@ -121,30 +89,17 @@ class TokenAuthenticator implements AuthenticationProvider
         }
 
         return $request->readRedirectHeader('HTTP_AUTHORIZATION')
-                ->withFilter(TokenFilter::instance());
+            ->withFilter(TokenFilter::instance());
     }
 
-    /**
-     * returns login uri
-     *
-     * @param   \stubbles\webapp\Request  $request
-     * @return  string|\stubbles\peer\http\HttpUri
-     */
-    public function loginUri(Request $request)
+    public function loginUri(Request $request): string|HttpUri
     {
         return $this->loginProvider->loginUri($request);
     }
 
     /**
-     * returns a list of challenges to send in response's 401 WWW-Authenticate header for given request
-     *
-     * The method is called when the authenticate() method returns <null> and a
-     * redirect to a login URI is not allowed for the resource, but a
-     * 401 Unauthorized response should be send instead.
-     *
      * @since   8.0.0
-     * @param   \stubbles\webapp\Request  $request
-     * @return  string[]  list of challenges for the WWW-Authenticate header, must at least contain one
+     * @return  string[]
      */
     public function challengesFor(Request $request): array
     {

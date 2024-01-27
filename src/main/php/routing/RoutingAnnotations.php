@@ -7,9 +7,15 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 namespace stubbles\webapp\routing;
+
+use ReflectionClass;
+use stubbles\reflect\annotation\Annotation;
+use stubbles\reflect\annotation\Annotations;
+use stubbles\webapp\response\mimetypes\MimeType;
 use stubbles\webapp\routing\api\Header;
 use stubbles\webapp\routing\api\Parameter;
 use stubbles\webapp\routing\api\Status;
+use stubbles\webapp\Target;
 
 use function stubbles\reflect\annotationsOf;
 /**
@@ -20,27 +26,19 @@ use function stubbles\reflect\annotationsOf;
  */
 class RoutingAnnotations
 {
-    /**
-     * list of annotations for a callback
-     *
-     * @var  \stubbles\reflect\annotation\Annotations
-     */
-    private $annotations;
+    private Annotations $annotations;
 
     /**
-     * constructor
-     *
-     * @param  class-string<\stubbles\webapp\Target>|callable|\stubbles\webapp\Target  $callback
+     * @param  class-string<Target>|callable|Target  $callback
      */
-    public function __construct($callback)
-    {
+    public function __construct(
+        string|callable|Target $callback
+    ) {
         $this->annotations = annotationsOf($callback);
     }
 
     /**
      * returns true if callback is annotated with @RequiresHttps
-     *
-     * @return  bool
      */
     public function requiresHttps(): bool
     {
@@ -49,8 +47,6 @@ class RoutingAnnotations
 
     /**
      * returns true if callback is annotated with @RequiresLogin
-     *
-     * @return  bool
      */
     public function requiresLogin(): bool
     {
@@ -63,8 +59,6 @@ class RoutingAnnotations
      * Roles aware means that a route might work different depending on the
      * roles a user has, but that access to the route in general is not
      * forbidden even if the user doesn't have any of the roles.
-     *
-     * @return  bool
      */
     public function rolesAware(): bool
     {
@@ -73,8 +67,6 @@ class RoutingAnnotations
 
     /**
      * returns role value if callback is annotated with @RequiresRole('someRole')
-     *
-     * @return  string|null
      */
     public function requiredRole(): ?string
     {
@@ -88,8 +80,7 @@ class RoutingAnnotations
     /**
      * checks whether route is annotated with @DisableContentNegotiation
      *
-     * @return  bool
-     * @since   5.1.0
+     * @since  5.1.0
      */
     public function isContentNegotiationDisabled(): bool
     {
@@ -105,11 +96,8 @@ class RoutingAnnotations
     public function mimeTypes(): array
     {
         return array_map(
-                function($supportedMimeType)
-                {
-                    return $supportedMimeType->mimeType();
-                },
-                $this->annotations->named('SupportsMimeType')
+            fn(Annotation $supportedMimeType): string => $supportedMimeType->mimeType(),
+            $this->annotations->named('SupportsMimeType')
         );
     }
 
@@ -134,12 +122,12 @@ class RoutingAnnotations
     /**
      * returns class name of mime type class
      *
-     * @param   class-string<\stubbles\webapp\response\mimetypes\MimeType>|\ReflectionClass<\stubbles\webapp\response\mimetypes\MimeType>  $class
-     * @return  class-string<\stubbles\webapp\response\mimetypes\MimeType>
+     * @param   class-string<MimeType>|ReflectionClass<MimeType>  $class
+     * @return  class-string<MimeType>
      */
-    private function nameForMimeTypeClass($class): string
+    private function nameForMimeTypeClass(string|ReflectionClass $class): string
     {
-        if ($class instanceof \ReflectionClass) {
+        if ($class instanceof ReflectionClass) {
             return $class->getName();
         }
 
@@ -149,8 +137,7 @@ class RoutingAnnotations
     /**
      * checks whether route should be ignored when building the API index
      *
-     * @return  bool
-     * @since   6.1.0
+     * @since  6.1.0
      */
     public function shouldBeIgnoredInApiIndex(): bool
     {
@@ -160,8 +147,7 @@ class RoutingAnnotations
     /**
      * checks whether a name is set
      *
-     * @return  bool
-     * @since   6.1.0
+     * @since  6.1.0
      */
     public function hasName(): bool
     {
@@ -171,8 +157,7 @@ class RoutingAnnotations
     /**
      * returns description of resource
      *
-     * @return  string|null
-     * @since   6.1.0
+     * @since  6.1.0
      */
     public function name(): ?string
     {
@@ -186,8 +171,7 @@ class RoutingAnnotations
     /**
      * returns description of resource
      *
-     * @return  string|null
-     * @since   6.1.0
+     * @since  6.1.0
      */
     public function description(): ?string
     {
@@ -201,8 +185,7 @@ class RoutingAnnotations
     /**
      * checks if any annotations of type Status are present
      *
-     * @return  bool
-     * @since   6.1.0
+     * @since  6.1.0
      */
     public function containStatusCodes(): bool
     {
@@ -212,25 +195,21 @@ class RoutingAnnotations
     /**
      * returns list of possible status codes on this route
      *
-     * @return  \stubbles\webapp\routing\api\Status[]
+     * @return  Status[]
      * @since   6.1.0
      */
     public function statusCodes(): array
     {
         return array_map(
-                function($status)
-                {
-                    return new Status($status->getCode(), $status->getDescription());
-                },
-                $this->annotations->named('Status')
+            fn(Annotation $status): Status => new Status($status->getCode(), $status->getDescription()),
+            $this->annotations->named('Status')
         );
     }
 
     /**
      * checks if annotations of type Header are present
      *
-     * @return  bool
-     * @since   6.1.0
+     * @since  6.1.0
      */
     public function containHeaders(): bool
     {
@@ -240,25 +219,21 @@ class RoutingAnnotations
     /**
      * returns list of headers on this route
      *
-     * @return  \stubbles\webapp\routing\api\Header[]
+     * @return  Header[]
      * @since   6.1.0
      */
     public function headers(): array
     {
         return array_map(
-                function($header)
-                {
-                    return new Header($header->getName(), $header->getDescription());
-                },
-                $this->annotations->named('Header')
+            fn(Annotation $header): Header => new Header($header->getName(), $header->getDescription()),
+            $this->annotations->named('Header')
         );
     }
 
     /**
      * checks if annotations of type Parameter are present
      *
-     * @return  bool
-     * @since   6.1.0
+     * @since  6.1.0
      */
     public function containParameters(): bool
     {
@@ -268,27 +243,27 @@ class RoutingAnnotations
     /**
      * returns list of parameters
      *
-     * @return  \stubbles\webapp\routing\api\Parameter[]
+     * @return  Parameter[]
      * @since   6.1.0
      */
     public function parameters(): array
     {
         return array_map(
-                function($parameter)
-                {
-                    $param = new Parameter(
-                            $parameter->getName(),
-                            $parameter->getDescription(),
-                            $parameter->getIn()
-                    );
+            function(Annotation $parameter): Parameter
+            {
+                $param = new Parameter(
+                    $parameter->getName(),
+                    $parameter->getDescription(),
+                    $parameter->getIn()
+                );
 
-                    if ($parameter->hasValueByName('required') && $parameter->isRequired()) {
-                        $param->markRequired();
-                    }
+                if ($parameter->hasValueByName('required') && $parameter->isRequired()) {
+                    $param->markRequired();
+                }
 
-                    return $param;
-                },
-                $this->annotations->named('Parameter')
+                return $param;
+            },
+            $this->annotations->named('Parameter')
         );
     }
 }

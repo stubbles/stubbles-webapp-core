@@ -7,6 +7,8 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 namespace stubbles\webapp\routing;
+
+use InvalidArgumentException;
 use stubbles\peer\http\Http;
 use stubbles\peer\http\HttpUri;
 use stubbles\webapp\Target;
@@ -23,116 +25,72 @@ use function stubbles\values\typeOf;
  */
 class Route implements ConfigurableRoute
 {
-    /**
-     * path this route is applicable for
-     *
-     * @var  string
-     */
-    private $path;
-    /**
-     * code to be executed when the route is active
-     *
-     * @var  class-string<Target>|callable|Target
-     */
+    /** @var string|callable|Target */
     private $target;
-    /**
-     * list of annotations on callback
-     *
-     * @var  \stubbles\webapp\routing\RoutingAnnotations
-     */
-    private $routingAnnotations;
-    /**
-     * request method this route is applicable for
-     *
-     * @var  string[]
-     */
-    private $allowedRequestMethods;
+    private ?RoutingAnnotations $routingAnnotations = null;
+    /** @var  string[] */
+    private array $allowedRequestMethods;
     /**
      * list of pre interceptors which should be applied to this route
      *
      * @var  array<class-string<PreInterceptor>|callable|PreInterceptor>
      */
-    private $preInterceptors          = [];
+    private array $preInterceptors = [];
     /**
      * list of post interceptors which should be applied to this route
      *
      * @var  array<class-string<PostInterceptor>|callable|PostInterceptor>
      */
-    private $postInterceptors         = [];
-    /**
-     * whether route requires https
-     *
-     * @var  bool
-     */
-    private $requiresHttps            = false;
-    /**
-     * auth constraint for this route
-     *
-     * @var  \stubbles\webapp\auth\AuthConstraint
-     */
-    private $authConstraint;
+    private array $postInterceptors = [];
+    private bool $requiresHttps = false;
+    private ?AuthConstraint $authConstraint = null;
     /**
      * list of mime types supported by this route
      *
      * @var  string[]
      */
-    private $mimeTypes                = [];
+    private array $mimeTypes = [];
     /**
      * whether content negotation is disabled or not
-     *
-     * @var  bool
      */
-    private $disableContentNegotation = false;
+    private bool $disableContentNegotation = false;
     /**
      * map of additional mime type classes for this route
      *
      * @var  string[]
      */
-    private $mimeTypeClasses          = [];
+    private array $mimeTypeClasses = [];
     /**
      * whether route should be ignored in API index or not
      *
-     * @var    bool
      * @since  6.1.0
      */
-    private $ignoreInApiIndex         = false;
+    private bool $ignoreInApiIndex = false;
 
     /**
-     * constructor
-     *
      * If no request method(s) specified it matches request methods GET, HEAD,
      * POST, PUT and DELETE.
      *
-     * @param   string                                $path           path this route is applicable for
-     * @param   class-string<Target>|callable|Target  $target         code to be executed when the route is active
-     * @param   string|string[]                       $requestMethod  optional  request method(s) this route is applicable for
-     * @throws  \InvalidArgumentException
+     * @param  string                                $path           path this route is applicable for
+     * @param  class-string<Target>|callable|Target  $target         code to be executed when the route is active
+     * @param  string|string[]                       $requestMethod  request method(s) this route is applicable for
      */
-    public function __construct(string $path, $target, $requestMethod = null)
-    {
-        if (!\is_callable($target) && !($target instanceof Target) && !\class_exists((string) $target)) {
-            throw new \InvalidArgumentException(
-                    'Given target for path "' . $path . '" must be a callable,'
-                    . ' an instance of ' . Target::class . ' or a classname of'
-                    . ' an existing ' . Target::class . ' implementation'
-            );
-        }
-
-        $this->path                  = $path;
-        $this->target                = $target;
+    public function __construct(
+        private string $path,
+        string|callable|Target $target,
+        null|string|array $requestMethod = null
+    ) {
+        $this->target = $target;
         $this->allowedRequestMethods = $this->arrayFrom($requestMethod);
     }
 
     /**
-     * turns given value into a list
-     *
      * @param   string|string[]|null  $requestMethod
      * @return  string[]
-     * @throws  \InvalidArgumentException
      */
-    private function arrayFrom($requestMethod): array
+    private function arrayFrom(null|string|array $requestMethod): array
     {
-        if (\is_string($requestMethod)) {
+        if (is_string($requestMethod)) {
             return [$requestMethod];
         }
 
@@ -140,19 +98,10 @@ class Route implements ConfigurableRoute
             return [Http::GET, Http::HEAD, Http::POST, Http::PUT, Http::DELETE];
         }
 
-        if (\is_array($requestMethod)) {
-            return $requestMethod;
-        }
-
-        throw new \InvalidArgumentException(
-                'Given request method must be null, a string or an array, but received '
-                . typeOf($requestMethod)
-        );
+        return $requestMethod;
     }
 
     /**
-     * returns request method
-     *
      * @return  string[]
      */
     public function allowedRequestMethods(): array
@@ -162,9 +111,6 @@ class Route implements ConfigurableRoute
 
     /**
      * checks if this route is applicable for given request
-     *
-     * @param   \stubbles\webapp\routing\CalledUri  $calledUri  current request uri
-     * @return  bool
      */
     public function matches(CalledUri $calledUri): bool
     {
@@ -172,11 +118,11 @@ class Route implements ConfigurableRoute
             return false;
         }
 
-        if (\in_array($calledUri->method(), $this->allowedRequestMethods)) {
+        if (in_array($calledUri->method(), $this->allowedRequestMethods)) {
             return true;
         }
 
-        if (\in_array(Http::GET, $this->allowedRequestMethods)) {
+        if (in_array(Http::GET, $this->allowedRequestMethods)) {
             return $calledUri->methodEquals(Http::HEAD);
         }
 
@@ -185,9 +131,6 @@ class Route implements ConfigurableRoute
 
     /**
      * checks if this route is applicable for given request path
-     *
-     * @param   \stubbles\webapp\routing\CalledUri  $calledUri  current request uri
-     * @return  bool
      */
     public function matchesPath(CalledUri $calledUri): bool
     {
@@ -196,8 +139,6 @@ class Route implements ConfigurableRoute
 
     /**
      * returns path this route is applicable for
-     *
-     * @return  string
      */
     public function configuredPath(): string
     {
@@ -209,7 +150,7 @@ class Route implements ConfigurableRoute
      *
      * @return  class-string<Target>|callable|Target
      */
-    public function target()
+    public function target(): string|callable|Target
     {
         return $this->target;
     }
@@ -217,20 +158,11 @@ class Route implements ConfigurableRoute
     /**
      * add a pre interceptor for this route
      *
-     * @param   class-string<PreInterceptor>|callable|PreInterceptor  $preInterceptor
-     * @return  \stubbles\webapp\routing\Route
-     * @throws  \InvalidArgumentException
+     * @param  class-string<PreInterceptor>|callable|PreInterceptor  $preInterceptor
      */
-    public function preIntercept($preInterceptor): ConfigurableRoute
-    {
-        if (!\is_callable($preInterceptor) && !($preInterceptor instanceof PreInterceptor) && !\class_exists((string) $preInterceptor)) {
-            throw new \InvalidArgumentException(
-                    'Given pre interceptor must be a callable, an instance of '
-                    . PreInterceptor::class
-                    . ' or a class name of an existing pre interceptor class'
-            );
-        }
-
+    public function preIntercept(
+        string|callable|PreInterceptor $preInterceptor
+    ): ConfigurableRoute {
         $this->preInterceptors[] = $preInterceptor;
         return $this;
     }
@@ -248,20 +180,11 @@ class Route implements ConfigurableRoute
     /**
      * add a post interceptor for this route
      *
-     * @param   class-string<PostInterceptor>|callable|PostInterceptor  $postInterceptor
-     * @return  \stubbles\webapp\routing\Route
-     * @throws  \InvalidArgumentException
+     * @param  class-string<PostInterceptor>|callable|PostInterceptor  $postInterceptor
      */
-    public function postIntercept($postInterceptor): ConfigurableRoute
-    {
-        if (!\is_callable($postInterceptor) && !($postInterceptor instanceof PostInterceptor) && !\class_exists((string) $postInterceptor)) {
-            throw new \InvalidArgumentException(
-                    'Given pre interceptor must be a callable, an instance of '
-                    . PostInterceptor::class
-                    . ' or a class name of an existing post interceptor class'
-            );
-        }
-
+    public function postIntercept(
+        string|callable|PostInterceptor $postInterceptor
+    ): ConfigurableRoute {
         $this->postInterceptors[] = $postInterceptor;
         return $this;
     }
@@ -278,8 +201,6 @@ class Route implements ConfigurableRoute
 
     /**
      * make route only available via https
-     *
-     * @return  \stubbles\webapp\routing\Route
      */
     public function httpsOnly(): ConfigurableRoute
     {
@@ -289,8 +210,6 @@ class Route implements ConfigurableRoute
 
     /**
      * whether route is only available via https
-     *
-     * @return  bool
      */
     public function requiresHttps(): bool
     {
@@ -305,8 +224,7 @@ class Route implements ConfigurableRoute
     /**
      * makes route only available if a user is logged in
      *
-     * @return  \stubbles\webapp\routing\Route
-     * @since   3.0.0
+     * @since  3.0.0
      */
     public function withLoginOnly(): ConfigurableRoute
     {
@@ -320,8 +238,7 @@ class Route implements ConfigurableRoute
      * Otherwise, the user would just be redirected to the login uri of the
      * authentication provider.
      *
-     * @since   8.0.0
-     * @return  \stubbles\webapp\routing\Route
+     * @since  8.0.0
      */
     public function sendChallengeWhenNotLoggedIn(): ConfigurableRoute
     {
@@ -333,7 +250,6 @@ class Route implements ConfigurableRoute
      * forbid the actual login
      *
      * @deprecated  use sendChallengeWhenNotLoggedIn() instead, will be removed with 9.0.0
-     * @return  \stubbles\webapp\routing\Route
      * @since   5.0.0
      */
     public function forbiddenWhenNotAlreadyLoggedIn(): ConfigurableRoute
@@ -343,9 +259,6 @@ class Route implements ConfigurableRoute
 
     /**
      * adds a role which is required to access the route
-     *
-     * @param   string  $requiredRole
-     * @return  \stubbles\webapp\routing\Route
      */
     public function withRoleOnly(string $requiredRole): ConfigurableRoute
     {
@@ -355,8 +268,6 @@ class Route implements ConfigurableRoute
 
     /**
      * checks whether auth is required
-     *
-     * @return  bool
      */
     public function requiresAuth(): bool
     {
@@ -365,8 +276,6 @@ class Route implements ConfigurableRoute
 
     /**
      * returns auth constraint for this route
-     *
-     * @return  \stubbles\webapp\auth\AuthConstraint
      */
     public function authConstraint(): AuthConstraint
     {
@@ -380,17 +289,16 @@ class Route implements ConfigurableRoute
     /**
      * add a mime type which this route supports
      *
-     * @param   string  $mimeType
-     * @param   string  $class     optional  special class to be used for given mime type on this route
-     * @return  \stubbles\webapp\routing\Route
-     * @throws  \InvalidArgumentException
+     * @throws  InvalidArgumentException
      */
-    public function supportsMimeType(string $mimeType, string $class = null): ConfigurableRoute
+    public function supportsMimeType(string $mimeType, ?string $class = null): ConfigurableRoute
     {
         if (null === $class && !SupportedMimeTypes::provideDefaultClassFor($mimeType)) {
-            throw new \InvalidArgumentException(
-                    'No default class known for mime type ' . $mimeType
-                    . ', please provide a class'
+            throw new InvalidArgumentException(
+                sprintf(
+                    'No default class known for mime type %s, please provide a class',
+                    $mimeType
+                )
             );
         }
 
@@ -405,26 +313,28 @@ class Route implements ConfigurableRoute
     /**
      * returns list of mime types supported by this route
      *
-     * @param   string[]  $globalMimeTypes  optional list of globally supported mime types
-     * @param   array<string,class-string<\stubbles\webapp\response\mimetypes\MimeType>>  $globalClasses    optional list of globally defined mime type classes
-     * @return  \stubbles\webapp\routing\SupportedMimeTypes
+     * @param   string[]  $globalMimeTypes  list of globally supported mime types
+     * @param   array<string,class-string<MimeType>>  $globalClasses  list of globally defined mime type classes
      */
     public function supportedMimeTypes(
-            array $globalMimeTypes = [],
-            array $globalClasses = []
+        array $globalMimeTypes = [],
+        array $globalClasses = []
     ): SupportedMimeTypes {
-        if ($this->disableContentNegotation || $this->routingAnnotations()->isContentNegotiationDisabled()) {
+        if (
+            $this->disableContentNegotation
+            || $this->routingAnnotations()->isContentNegotiationDisabled()
+        ) {
             return SupportedMimeTypes::createWithDisabledContentNegotation();
         }
 
-        /** @var  array<string,class-string<\stubbles\webapp\response\mimetypes\MimeType>>  $mimeTypeClasses */
-        $mimeTypeClasses = \array_merge(
+        /** @var  array<string,class-string<MimeType>>  $mimeTypeClasses */
+        $mimeTypeClasses = array_merge(
             $globalClasses,
             $this->routingAnnotations()->mimeTypeClasses(),
             $this->mimeTypeClasses
         );
         return new SupportedMimeTypes(
-            \array_merge(
+            array_merge(
                 $this->routingAnnotations()->mimeTypes(),
                 $this->mimeTypes,
                 $globalMimeTypes
@@ -436,8 +346,7 @@ class Route implements ConfigurableRoute
     /**
      * disables content negotation
      *
-     * @return  \stubbles\webapp\routing\Route
-     * @since   2.1.1
+     * @since  2.1.1
      */
     public function disableContentNegotiation(): ConfigurableRoute
     {
@@ -445,11 +354,6 @@ class Route implements ConfigurableRoute
         return $this;
     }
 
-    /**
-     * returns list of callback annotations
-     *
-     * @return  \stubbles\webapp\routing\RoutingAnnotations
-     */
     private function routingAnnotations(): RoutingAnnotations
     {
         if (null === $this->routingAnnotations) {
@@ -462,8 +366,7 @@ class Route implements ConfigurableRoute
     /**
      * hides route in API index
      *
-     * @return  \stubbles\webapp\routing\Route
-     * @since   6.1.0
+     * @since  6.1.0
      */
     public function excludeFromApiIndex(): ConfigurableRoute
     {
@@ -474,8 +377,7 @@ class Route implements ConfigurableRoute
     /**
      * checks whether route should be ignored when building the API index
      *
-     * @return  bool
-     * @since   6.1.0
+     * @since  6.1.0
      */
     public function shouldBeIgnoredInApiIndex(): bool
     {
@@ -489,38 +391,34 @@ class Route implements ConfigurableRoute
     /**
      * returns route as resource
      *
-     * @param   \stubbles\peer\http\HttpUri  $uri
-     * @param   string[]                     $globalMimeTypes  list of globally supported mime types
-     * @return  \stubbles\webapp\routing\api\Resource
-     * @since   6.1.0
+     * @param  string[]  $globalMimeTypes  list of globally supported mime types
+     * @since  6.1.0
      */
     public function asResource(HttpUri $uri, array $globalMimeTypes = []): Resource
     {
         $routeUri = $uri->withPath($this->normalizePath());
         return new Resource(
-                $this->resourceName(),
-                $this->allowedRequestMethods,
-                $this->requiresHttps() ? $routeUri->toHttps() : $routeUri,
-                $this->supportedMimeTypes($globalMimeTypes)->asArray(),
-                $this->routingAnnotations(),
-                $this->authConstraint()
+            $this->resourceName(),
+            $this->allowedRequestMethods,
+            $this->requiresHttps() ? $routeUri->toHttps() : $routeUri,
+            $this->supportedMimeTypes($globalMimeTypes)->asArray(),
+            $this->routingAnnotations(),
+            $this->authConstraint()
         );
     }
 
     /**
      * normalizes path for better understanding
-     *
-     * @return  string
      */
     private function normalizePath(): string
     {
         $path = $this->path;
-        if (\substr($path, -1) === '$') {
-            $path = \substr($path, 0, \strlen($path) - 1);
+        if (substr($path, -1) === '$') {
+            $path = substr($path, 0, strlen($path) - 1);
         }
 
-        if (\substr($path, -1) === '?') {
-            $path = \substr($path, 0, \strlen($path) - 1);
+        if (substr($path, -1) === '?') {
+            $path = substr($path, 0, strlen($path) - 1);
         }
 
         return $path;
@@ -528,8 +426,6 @@ class Route implements ConfigurableRoute
 
     /**
      * returns useful name for resource
-     *
-     * @return  string|null
      */
     private function resourceName(): ?string
     {
@@ -537,15 +433,15 @@ class Route implements ConfigurableRoute
             return $this->routingAnnotations()->name();
         }
 
-        if (\is_string($this->target) && \class_exists($this->target)) {
-            return \substr(
+        if (is_string($this->target) && class_exists($this->target)) {
+            return substr(
                 $this->target,
-                \strrpos($this->target, '\\') + 1
+                strrpos($this->target, '\\') + 1
             );
-        } elseif (!\is_callable($this->target) && \is_object($this->target)) {
-            return \substr(
-                \get_class($this->target),
-                \strrpos(get_class($this->target), '\\') + 1
+        } elseif (!is_callable($this->target) && is_object($this->target)) {
+            return substr(
+                get_class($this->target),
+                strrpos(get_class($this->target), '\\') + 1
             );
         }
 

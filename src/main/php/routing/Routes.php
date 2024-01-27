@@ -7,27 +7,22 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 namespace stubbles\webapp\routing;
+
+use ArrayIterator;
+use IteratorAggregate;
+use Traversable;
+
 /**
  * Contains list of available routes.
  *
  * @since  5.4.0
  * @implements  \IteratorAggregate<Route>
  */
-class Routes implements \IteratorAggregate
+class Routes implements IteratorAggregate
 {
-    /**
-     * list of routes for the web app
-     *
-     * @var  \stubbles\webapp\routing\Route[]
-     */
-    private $routes = [];
+    /** @var  Route[] */
+    private array $routes = [];
 
-    /**
-     * add a route definition
-     *
-     * @param   \stubbles\webapp\routing\Route  $route
-     * @return  \stubbles\webapp\routing\Route
-     */
     public function add(Route $route): Route
     {
         $this->routes[] = $route;
@@ -36,9 +31,6 @@ class Routes implements \IteratorAggregate
 
     /**
      * finds route based on called uri
-     *
-     * @param   \stubbles\webapp\routing\CalledUri  $calledUri
-     * @return  \stubbles\webapp\routing\MatchingRoutes
      */
     public function match(CalledUri $calledUri): MatchingRoutes
     {
@@ -48,14 +40,14 @@ class Routes implements \IteratorAggregate
             /* @var $route \stubbles\webapp\routing\Route */
             if ($route->matches($calledUri)) {
                 return new MatchingRoutes(
-                        ['exact' => $route],
-                        $route->allowedRequestMethods()
+                    ['exact' => $route],
+                    $route->allowedRequestMethods()
                 );
             } elseif ($route->matchesPath($calledUri)) {
                 $matching[] = $route;
                 $allowedMethods = array_merge(
-                        $allowedMethods,
-                        $route->allowedRequestMethods()
+                    $allowedMethods,
+                    $route->allowedRequestMethods()
                 );
             }
         }
@@ -69,16 +61,13 @@ class Routes implements \IteratorAggregate
      * @return  \Iterator<Route>
      * @since   6.1.0
      */
-    public function getIterator(): \Iterator
+    public function getIterator(): Traversable
     {
         $routes = $this->routes;
         usort(
             $routes,
-            function(Route $a, Route $b)
-            {
-                return strnatcmp($a->configuredPath(), $b->configuredPath());
-            }
+            fn(Route $a, Route $b): int => strnatcmp($a->configuredPath(), $b->configuredPath())
         );
-        return new \ArrayIterator($routes);
+        return new ArrayIterator($routes);
     }
 }

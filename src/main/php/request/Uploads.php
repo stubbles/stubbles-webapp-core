@@ -20,33 +20,22 @@ class Uploads
      *
      * @var  array<int,string>
      */
-    private static $paramErrorId = [
+    private static array $paramErrorId = [
         \UPLOAD_ERR_INI_SIZE   => 'UPLOAD_EXCEEDS_MAXSIZE_ALLOWED_BY_SERVER',
         \UPLOAD_ERR_FORM_SIZE  => 'UPLOAD_EXCEEDS_MAXSIZE_ALLOWED_BY_FORM',
         \UPLOAD_ERR_PARTIAL    => 'UPLOAD_NOT_COMPLETED',
         \UPLOAD_ERR_NO_FILE    => 'UPLOAD_MISSING',
     ];
-    /**
-     * @var  array<string,array>
-     */
-    private $uploads;
 
     /**
-     * constructor
-     *
      * @param  array<string,array>  $uploads  see description of $_FILES for expected structure
      */
-    public function __construct(array $uploads)
-    {
-        $this->uploads = $uploads;
-    }
+    public function __construct(private array $uploads) { }
 
     /**
      * Checks whether a file was uploaded under given field name.
      *
      * @api
-     * @param   string  $field  name of field to select file from
-     * @return  bool
      */
     public function contain(string $field): bool
     {
@@ -57,8 +46,6 @@ class Uploads
      * Returns amount of uploaded files available for given field name.
      *
      * @api
-     * @param   string  $field  name of field to select upload from
-     * @return  int     amount of uploaded files available for given field name
      */
     public function amount(string $field): int
     {
@@ -101,7 +88,6 @@ class Uploads
      * @api
      * @param   string  $field  name of field to select upload from
      * @param   int     $pos    upload position in case of multiple uploads in same field
-     * @return  ParamError|null
      */
     public function errorFor(string $field, int $pos = 0): ?ParamError
     {
@@ -113,7 +99,10 @@ class Uploads
             return new ParamError(self::$paramErrorId[$this->uploads[$field]['error']]);
         }
 
-        if (!isset($this->uploads[$field]['error'][$pos]) || !$this->isClientError($this->uploads[$field]['error'][$pos])) {
+        if (
+            !isset($this->uploads[$field]['error'][$pos])
+            || !$this->isClientError($this->uploads[$field]['error'][$pos])
+        ) {
             return null;
         }
 
@@ -141,7 +130,10 @@ class Uploads
         // for single file uploads the field data are scalar values, and arrays otherwise
         if (!is_array($this->uploads[$field]['name'])) {
             if (\UPLOAD_ERR_OK != $this->uploads[$field]['error']) {
-                throw new UploadFailed($this->uploads[$field]['name'], $this->uploads[$field]['error']);
+                throw new UploadFailed(
+                    $this->uploads[$field]['name'],
+                    $this->uploads[$field]['error']
+                );
             }
 
             return new UploadedFile(
@@ -160,7 +152,10 @@ class Uploads
         }
 
         if (\UPLOAD_ERR_OK != $this->uploads[$field]['error'][$pos]) {
-            throw new UploadFailed($this->uploads[$field]['name'][$pos], $this->uploads[$field]['error'][$pos]);
+            throw new UploadFailed(
+                $this->uploads[$field]['name'][$pos],
+                $this->uploads[$field]['error'][$pos]
+            );
         }
 
         return new UploadedFile(

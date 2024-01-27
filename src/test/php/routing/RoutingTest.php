@@ -204,15 +204,6 @@ class RoutingTest extends TestCase
     /**
      * @test
      */
-    public function addInvalidPreInterceptorThrowsIllegalArgumentException(): void
-    {
-        expect(function() { $this->routing->preIntercept(303); })
-                ->throws(\InvalidArgumentException::class);
-    }
-
-    /**
-     * @test
-     */
     public function hasNoGlobalPreInterceptorsForDifferentMethod(): void
     {
         $preInterceptor = function() {};
@@ -308,15 +299,6 @@ class RoutingTest extends TestCase
             $this->routing->findResource($this->calledUri),
             equals($resource)
         );
-    }
-
-    /**
-     * @test
-     */
-    public function addInvalidPostInterceptorThrowsIllegalArgumentException(): void
-    {
-        expect(function() { $this->routing->postIntercept(303); })
-                ->throws(\InvalidArgumentException::class);
     }
 
     /**

@@ -7,28 +7,28 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 namespace stubbles\webapp\auth;
+
+use ArrayIterator;
+use Countable;
+use IteratorAggregate;
+use Traversable;
+
 /**
  * Represents a list of roles.
  *
  * @since  5.0.0
  * @implements  \IteratorAggregate<string>
  */
-class Roles implements \Countable, \IteratorAggregate
+class Roles implements Countable, IteratorAggregate
 {
     /**
      * session key under which instance is stored within the session
      */
     const SESSION_KEY = 'stubbles.webapp.auth.roles';
-    /**
-     * list of roles
-     *
-     * @var  array<string,int>
-     */
-    private $roles;
+    /** @var  array<string,int> */
+    private array $roles;
 
     /**
-     * constructor
-     *
      * @param  string[]  $roles
      */
     public function __construct(array $roles)
@@ -38,8 +38,6 @@ class Roles implements \Countable, \IteratorAggregate
 
     /**
      * returns an empty role list
-     *
-     * @return  \stubbles\webapp\auth\Roles
      */
     public static function none(): self
     {
@@ -48,9 +46,6 @@ class Roles implements \Countable, \IteratorAggregate
 
     /**
      * checks if given role is contained in list of roles
-     *
-     * @param   string  $roleName
-     * @return  bool
      */
     public function contain(string $roleName): bool
     {
@@ -59,8 +54,6 @@ class Roles implements \Countable, \IteratorAggregate
 
     /**
      * returns amount of roles
-     *
-     * @return  int
      */
     public function count(): int
     {
@@ -72,8 +65,8 @@ class Roles implements \Countable, \IteratorAggregate
      *
      * @return  \Iterator<string>
      */
-    public function getIterator(): \Iterator
+    public function getIterator(): Traversable
     {
-        return new \ArrayIterator(array_flip($this->roles));
+        return new ArrayIterator(array_flip($this->roles));
     }
 }

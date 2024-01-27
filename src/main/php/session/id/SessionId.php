@@ -16,29 +16,21 @@ interface SessionId
 {
     /**
      * returns session name
-     *
-     * @return  string
      */
     public function name(): string;
 
     /**
      * stores session id for given session name
-     *
-     * @return  \stubbles\webapp\session\id\SessionId
      */
     public function regenerate(): self;
 
     /**
      * invalidates session id
-     *
-     * @return  \stubbles\webapp\session\id\SessionId
      */
     public function invalidate(): self;
 
     /**
      * returns session id
-     *
-     * @return  string
      */
     public function __toString(): string;
 }

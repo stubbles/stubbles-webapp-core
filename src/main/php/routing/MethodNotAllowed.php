@@ -11,6 +11,8 @@ use stubbles\ioc\Injector;
 use stubbles\peer\http\Http;
 use stubbles\webapp\Request;
 use stubbles\webapp\Response;
+use stubbles\webapp\response\Error;
+
 /**
  * Represents a resource which was accessed with a not suitable method.
  *
@@ -19,58 +21,29 @@ use stubbles\webapp\Response;
 class MethodNotAllowed extends AbstractResource
 {
     /**
-     * list of actually allowed request methods
-     *
-     * @var  string[]
-     */
-    private $allowedMethods;
-
-    /**
-     * constructor
-     *
-     * @param  \stubbles\ioc\Injector                       $injector
-     * @param  \stubbles\webapp\routing\CalledUri           $calledUri           actual called uri
-     * @param  \stubbles\webapp\routing\Interceptors        $interceptors
-     * @param  \stubbles\webapp\routing\SupportedMimeTypes  $supportedMimeTypes
-     * @param  string[]                                     $allowedMethods
+     * @param  string[]  $allowedMethods
      */
     public function __construct(
-            Injector $injector,
-            CalledUri $calledUri,
-            Interceptors $interceptors,
-            SupportedMimeTypes $supportedMimeTypes,
-            array $allowedMethods
+        Injector $injector,
+        CalledUri $calledUri,
+        Interceptors $interceptors,
+        SupportedMimeTypes $supportedMimeTypes,
+        private array $allowedMethods
     ) {
         parent::__construct($injector, $calledUri, $interceptors, $supportedMimeTypes);
-        $this->allowedMethods = $allowedMethods;
         if (!in_array(Http::OPTIONS, $this->allowedMethods)) {
             $this->allowedMethods[] = Http::OPTIONS;
         }
     }
 
-    /**
-     * checks whether switch to https is required
-     *
-     * @return  bool
-     */
     public function requiresHttps(): bool
     {
         return false;
     }
 
-    /**
-     * creates processor instance
-     *
-     * @param   \stubbles\webapp\Request   $request   current request
-     * @param   \stubbles\webapp\Response  $response  response to send
-     * @return  \stubbles\webapp\response\Error
-     */
-    public function resolve(Request $request, Response $response)
+    public function resolve(Request $request, Response $response): Error
     {
-        return $response->methodNotAllowed(
-                $request->method(),
-                $this->allowedMethods
-        );
+        return $response->methodNotAllowed($request->method(), $this->allowedMethods);
     }
 
 }

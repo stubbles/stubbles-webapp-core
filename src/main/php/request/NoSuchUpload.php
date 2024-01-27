@@ -7,12 +7,15 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 namespace stubbles\webapp\request;
+
+use Exception;
+
 /**
  * Exception in case an UploadedFile is requested but not present.
  *
  * @since  8.1.0
  */
-class NoSuchUpload extends \Exception
+class NoSuchUpload extends Exception
 {
     // intentionally empty
 }

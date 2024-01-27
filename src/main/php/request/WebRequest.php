@@ -7,6 +7,8 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 namespace stubbles\webapp\request;
+
+use InvalidArgumentException;
 use stubbles\input\{
     ParamRequest,
     Params,
@@ -32,34 +34,18 @@ class WebRequest extends ParamRequest implements Request
 {
     /**
      * generated id for request if no or an invalid X-Request-ID header is present
-     *
-     * @var  string|null
      */
-    private $id;
-    /**
-     * list of params
-     *
-     * @var  \stubbles\input\Params
-     */
-    private $headers;
-    /**
-     * list of params
-     *
-     * @var  \stubbles\input\Params
-     */
-    private $cookies;
+    private ?string $id = null;
+    private Params $headers;
+    private Params $cookies;
     /**
      * reference to attached session
-     *
-     * @var  \stubbles\webapp\session\Session
      */
-    private $session;
+    private ?Session $session = null;
     /**
      * identity associated with this request
-     *
-     * @var  \stubbles\webapp\auth\Identity
      */
-    private $identity;
+    private ?Identity $identity = null;
 
     /**
      * constructor
@@ -79,12 +65,13 @@ class WebRequest extends ParamRequest implements Request
      * creates an instance from raw data, meaning $_GET/$_POST, $_SERVER and $_COOKIE
      *
      * @api
-     * @return  \stubbles\webapp\Request
      */
     public static function fromRawSource(): Request
     {
-        if (isset($_SERVER['REQUEST_METHOD'])
-                && strtoupper(trim($_SERVER['REQUEST_METHOD'])) === Http::POST) {
+        if (
+            isset($_SERVER['REQUEST_METHOD'])
+            && strtoupper(trim($_SERVER['REQUEST_METHOD'])) === Http::POST
+        ) {
             $params = $_POST;
         } else {
             $params = $_GET;
@@ -113,7 +100,7 @@ class WebRequest extends ParamRequest implements Request
 
         if ($this->headers->contain('HTTP_X_REQUEST_ID')) {
             $this->id = $this->readHeader('HTTP_X_REQUEST_ID')
-                    ->ifMatches('~^([a-zA-Z0-9+/=-]{20,200})$~');
+                ->ifMatches('~^([a-zA-Z0-9+/=-]{20,200})$~');
         }
 
         if (null === $this->id) {
@@ -125,8 +112,6 @@ class WebRequest extends ParamRequest implements Request
 
     /**
      * returns the request method
-     *
-     * @return  string
      */
     public function method(): string
     {
@@ -145,8 +130,6 @@ class WebRequest extends ParamRequest implements Request
 
     /**
      * checks whether request was made using ssl
-     *
-     * @return  bool
      */
     public function isSsl(): bool
     {
@@ -161,7 +144,6 @@ class WebRequest extends ParamRequest implements Request
      * version according to http://tools.ietf.org/html/rfc7230#section-2.6 the
      * return value will be null.
      *
-     * @return  \stubbles\peer\http\HttpVersion
      * @since   2.0.2
      */
     public function protocolVersion(): ?HttpVersion
@@ -171,8 +153,11 @@ class WebRequest extends ParamRequest implements Request
         }
 
         try {
-            return HttpVersion::fromString($this->headers->value('SERVER_PROTOCOL')->value());
-        } catch (\InvalidArgumentException $ex) {
+            return HttpVersion::fromString(
+                $this->headers->value('SERVER_PROTOCOL')->value()
+            );
+        } catch (InvalidArgumentException $ex) {
+            // treat as if no protocol version available
             return null;
         }
     }
@@ -194,21 +179,23 @@ class WebRequest extends ParamRequest implements Request
      * Also, the return value might not neccessarily be an existing IP address
      * nor the real IP address of the client, as it may be spoofed.
      *
-     * @return  \stubbles\peer\IpAddress
      * @since   3.0.0
      */
     public function originatingIpAddress(): ?IpAddress
     {
         try {
             if ($this->headers->contain('HTTP_X_FORWARDED_FOR')) {
-                $remoteAddresses = explode(',', $this->headers->value('HTTP_X_FORWARDED_FOR')->value());
+                $remoteAddresses = explode(
+                    ',',
+                    $this->headers->value('HTTP_X_FORWARDED_FOR')->value()
+                );
                 return new IpAddress(trim($remoteAddresses[0]));
             }
 
             if ($this->headers->contain('REMOTE_ADDR')) {
                 return new IpAddress($this->headers->value('REMOTE_ADDR')->value());
             }
-        } catch (\InvalidArgumentException $iae) {
+        } catch (InvalidArgumentException $iae) {
             // treat as if no ip address available
         }
 
@@ -225,16 +212,15 @@ class WebRequest extends ParamRequest implements Request
      * signatures can be passed, they must contain a regular expression which
      * matches the user agent of a bot.
      *
-     * @param   string[]  $botSignatures  optional  additional list of bot user agent signatures
-     * @return  \stubbles\webapp\request\UserAgent
-     * @since   4.1.0
+     * @param  string[]  $botSignatures  additional list of bot user agent signatures
+     * @since  4.1.0
      */
     public function userAgent(array $botSignatures = []): UserAgent
     {
         return new UserAgent(
-                $this->headers->value('HTTP_USER_AGENT')->value(),
-                $this->cookies->count() > 0,
-                $botSignatures
+            $this->headers->value('HTTP_USER_AGENT')->value(),
+            $this->cookies->count() > 0,
+            $botSignatures
         );
     }
 
@@ -247,26 +233,23 @@ class WebRequest extends ParamRequest implements Request
      * most likely the request tries to find out if you have a security issue
      * because the request uri data is not checked properly. It is advisable to
      * respond with a 400 Bad Request in such cases.
-     *
-     * @return  \stubbles\peer\http\HttpUri
      */
     public function uri(): HttpUri
     {
         $host = (string) $this->headers->value('HTTP_HOST')->value();
         $port = (int) $this->headers->value('SERVER_PORT')->value();
         return HttpUri::fromParts(
-                $this->headers->contain('HTTPS') ? Http::SCHEME_SSL : Http::SCHEME,
-                $host,
-                strstr($host, ':') === false && 0 !== $port ? $port : null,
-                (string) $this->headers->value('REQUEST_URI')->value() // already contains query string
+            $this->headers->contain('HTTPS') ? Http::SCHEME_SSL : Http::SCHEME,
+            $host,
+            strstr($host, ':') === false && 0 !== $port ? $port : null,
+            (string) $this->headers->value('REQUEST_URI')->value() // already contains query string
         );
     }
 
     /**
      * Provides access to file uploads done with this request.
      *
-     * @return  Uploads
-     * @since   8.1.0
+     * @since  8.1.0
      */
     public function uploads(): Uploads
     {
@@ -287,9 +270,8 @@ class WebRequest extends ParamRequest implements Request
     /**
      * checks whether a request header is set
      *
-     * @param   string  $headerName
-     * @return  bool
-     * @since   1.3.0
+     * @param  string  $headerName
+     * @since  1.3.0
      */
     public function hasHeader(string $headerName): bool
     {
@@ -304,9 +286,8 @@ class WebRequest extends ParamRequest implements Request
      * The method will try to use the header REDIRECT_$headerName first, but
      * falls back to $headerName when REDIRECT_$headerName  is not present.
      *
-     * @param   string  $headerName
-     * @return  bool
-     * @since   3.1.1
+     * @param  string  $headerName
+     * @since  3.1.1
      */
     public function hasRedirectHeader(string $headerName): bool
     {
@@ -316,8 +297,7 @@ class WebRequest extends ParamRequest implements Request
     /**
      * returns error collection for request headers
      *
-     * @return  \stubbles\input\errors\ParamErrors
-     * @since   1.3.0
+     * @since  1.3.0
      */
     public function headerErrors(): ParamErrors
     {
@@ -327,9 +307,8 @@ class WebRequest extends ParamRequest implements Request
     /**
      * checks whether a request value from headers is valid or not
      *
-     * @param   string  $headerName  name of header
-     * @return  \stubbles\input\ValueValidator
-     * @since   1.3.0
+     * @param  string  $headerName  name of header
+     * @since  1.3.0
      */
     public function validateHeader(string $headerName): ValueValidator
     {
@@ -344,9 +323,8 @@ class WebRequest extends ParamRequest implements Request
      * The method will try to use the header REDIRECT_$headerName first, but
      * falls back to $headerName when REDIRECT_$headerName  is not present.
      *
-     * @param   string  $headerName  name of header
-     * @return  \stubbles\input\ValueValidator
-     * @since   3.1.0
+     * @param  string  $headerName  name of header
+     * @since  3.1.0
      */
     public function validateRedirectHeader(string $headerName): ValueValidator
     {
@@ -360,16 +338,15 @@ class WebRequest extends ParamRequest implements Request
     /**
      * returns request value from headers for filtering or validation
      *
-     * @param   string  $headerName  name of header
-     * @return  \stubbles\input\ValueReader
-     * @since   1.3.0
+     * @param  string  $headerName  name of header
+     * @since  1.3.0
      */
     public function readHeader(string $headerName): ValueReader
     {
         return new ValueReader(
-                $this->headers->errors(),
-                $headerName,
-                $this->headers->value($headerName)
+            $this->headers->errors(),
+            $headerName,
+            $this->headers->value($headerName)
         );
     }
 
@@ -381,9 +358,8 @@ class WebRequest extends ParamRequest implements Request
      * The method will try to use the header REDIRECT_$headerName first, but
      * falls back to $headerName when REDIRECT_$headerName  is not present.
      *
-     * @param   string  $headerName  name of header
-     * @return  \stubbles\input\ValueReader
-     * @since   3.1.0
+     * @param  string  $headerName  name of header
+     * @since  3.1.0
      */
     public function readRedirectHeader(string $headerName): ValueReader
     {
@@ -408,9 +384,8 @@ class WebRequest extends ParamRequest implements Request
     /**
      * checks whether a request cookie is set
      *
-     * @param   string  $cookieName
-     * @return  bool
-     * @since   1.3.0
+     * @param  string  $cookieName
+     * @since  1.3.0
      */
     public function hasCookie(string $cookieName): bool
     {
@@ -420,8 +395,7 @@ class WebRequest extends ParamRequest implements Request
     /**
      * returns error collection for request cookies
      *
-     * @return  \stubbles\input\errors\ParamErrors
-     * @since   1.3.0
+     * @since  1.3.0
      */
     public function cookieErrors(): ParamErrors
     {
@@ -431,9 +405,8 @@ class WebRequest extends ParamRequest implements Request
     /**
      * checks whether a request value from cookie is valid or not
      *
-     * @param   string  $cookieName  name of cookie
-     * @return  \stubbles\input\ValueValidator
-     * @since   1.3.0
+     * @param  string  $cookieName  name of cookie
+     * @since  1.3.0
      */
     public function validateCookie(string $cookieName): ValueValidator
     {
@@ -443,16 +416,15 @@ class WebRequest extends ParamRequest implements Request
     /**
      * returns request value from cookies for filtering or validation
      *
-     * @param   string  $cookieName  name of cookie
-     * @return  \stubbles\input\ValueReader
-     * @since   1.3.0
+     * @param  string  $cookieName  name of cookie
+     * @since  1.3.0
      */
     public function readCookie(string $cookieName): ValueReader
     {
         return new ValueReader(
-                $this->cookies->errors(),
-                $cookieName,
-                $this->cookies->value($cookieName)
+            $this->cookies->errors(),
+            $cookieName,
+            $this->cookies->value($cookieName)
         );
     }
 
@@ -462,8 +434,7 @@ class WebRequest extends ParamRequest implements Request
      * It returns the data raw and unsanitized, any filtering and validating
      * must be done by the caller.
      *
-     * @since   6.0.0
-     * @return  \stubbles\streams\InputStream
+     * @since  6.0.0
      */
     public function body(): InputStream
     {
@@ -474,9 +445,7 @@ class WebRequest extends ParamRequest implements Request
      * attaches session to request
      *
      * @internal
-     * @param   \stubbles\webapp\session\Session  $session
-     * @return  \stubbles\webapp\session\Session
-     * @since   6.0.0
+     * @since  6.0.0
      */
     public function attachSession(Session $session): Session
     {
@@ -487,8 +456,7 @@ class WebRequest extends ParamRequest implements Request
     /**
      * checks if a session is attached to the request
      *
-     * @return  bool
-     * @since   6.0.0
+     * @since  6.0.0
      */
     public function hasSessionAttached(): bool
     {
@@ -498,8 +466,7 @@ class WebRequest extends ParamRequest implements Request
     /**
      * returns attached session
      *
-     * @return  \stubbles\webapp\session\Session
-     * @since   6.0.0
+     * @since  6.0.0
      */
     public function attachedSession(): ?Session
     {
@@ -509,9 +476,7 @@ class WebRequest extends ParamRequest implements Request
     /**
      * associates identity with this request
      *
-     * @param   \stubbles\webapp\auth\Identity  $identity
-     * @return  \stubbles\webapp\Request
-     * @since   6.0.0
+     * @since  6.0.0
      */
     public function associate(Identity $identity): Request
     {
@@ -522,8 +487,7 @@ class WebRequest extends ParamRequest implements Request
     /**
      * checks whether request was issued by a confirmed identity
      *
-     * @return  bool
-     * @since   6.0.0
+     * @since  6.0.0
      */
     public function hasAssociatedIdentity(): bool
     {
@@ -533,8 +497,7 @@ class WebRequest extends ParamRequest implements Request
     /**
      * returns the identity associated with this request
      *
-     * @return  \stubbles\webapp\auth\Identity
-     * @since   6.0.0
+     * @since  6.0.0
      */
     public function identity(): ?Identity
     {

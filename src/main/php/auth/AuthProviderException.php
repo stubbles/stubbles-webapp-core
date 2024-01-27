@@ -7,6 +7,9 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 namespace stubbles\webapp\auth;
+
+use Throwable;
+
 /**
  * Can be thrown when an auth provider experiences a problem which it can not solve.
  *
@@ -23,14 +26,7 @@ abstract class AuthProviderException extends \Exception
      */
     const EXTERNAL = 504;
 
-    /**
-     * constructor
-     *
-     * @param  string      $message
-     * @param  \Throwable  $cause
-     * @param  int         $code
-     */
-    public function __construct(string $message, \Throwable $cause = null, $code = 0)
+    public function __construct(string $message, Throwable $cause = null, $code = 0)
     {
         parent::__construct($message, $code, $cause);
 
@@ -38,10 +34,8 @@ abstract class AuthProviderException extends \Exception
 
     /**
      * checks whether the exception denotes an internal error
-     *
-     * @return  bool
      */
-    public function isInternal()
+    public function isInternal(): bool
     {
         return self::INTERNAL === $this->getCode();
     }

@@ -7,31 +7,34 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 namespace stubbles\webapp\response;
+
+use ArrayAccess;
+use ArrayIterator;
+use BadMethodCallException;
+use IteratorAggregate;
 use stubbles\peer\http\HttpUri;
+use Traversable;
+
 /**
  * List of response headers.
  *
  * @since  4.0.0
- * @implements  \IteratorAggregate<string,mixed>
- * @implements  \ArrayAccess<string,mixed>
+ * @implements  IteratorAggregate<string,mixed>
+ * @implements  ArrayAccess<string,mixed>
  */
-class Headers implements \IteratorAggregate, \ArrayAccess
+class Headers implements IteratorAggregate, ArrayAccess
 {
     /**
      * list of headers for this response
      *
      * @var  array<string,mixed>
      */
-    private $headers = [];
+    private array $headers = [];
 
     /**
      * adds header with given name
-     *
-     * @param   string  $name
-     * @param   mixed   $value
-     * @return  \stubbles\webapp\response\Headers
      */
-    public function add(string $name, $value): self
+    public function add(string $name, mixed $value): self
     {
         $this->headers[$name] = $value;
         return $this;
@@ -40,10 +43,8 @@ class Headers implements \IteratorAggregate, \ArrayAccess
     /**
      * adds X-Request-ID with given value
      *
-     * @param   string  $requestId
-     * @return  \stubbles\webapp\response\Headers
-     * @since   5.1.0
-     * @see     https://devcenter.heroku.com/articles/http-request-id
+     * @since  5.1.0
+     * @see    https://devcenter.heroku.com/articles/http-request-id
      */
     public function requestId(string $requestId): self
     {
@@ -52,23 +53,19 @@ class Headers implements \IteratorAggregate, \ArrayAccess
 
     /**
      * adds location header with given uri
-     *
-     * @param   string|\stubbles\peer\http\HttpUri  $uri
-     * @return  \stubbles\webapp\response\Headers
      */
-    public function location($uri): self
+    public function location(string|HttpUri $uri): self
     {
         return $this->add(
-                'Location',
-                (($uri instanceof HttpUri) ? ($uri->asStringWithNonDefaultPort()) : ($uri))
+            'Location',
+            (($uri instanceof HttpUri) ? ($uri->asStringWithNonDefaultPort()) : ($uri))
         );
     }
 
     /**
      * adds allow header with list of allowed methods
      *
-     * @param   string[]  $allowedMethods
-     * @return  \stubbles\webapp\response\Headers
+     * @param  string[]  $allowedMethods
      */
     public function allow(array $allowedMethods): self
     {
@@ -78,12 +75,11 @@ class Headers implements \IteratorAggregate, \ArrayAccess
     /**
      * adds non-standard acceptable header with list of supported mime types
      *
-     * @param   string[]  $supportedMimeTypes
-     * @return  \stubbles\webapp\response\Headers
+     * @param  string[]  $supportedMimeTypes
      */
     public function acceptable(array $supportedMimeTypes): self
     {
-        if (count($supportedMimeTypes) > 0) {
+        if (!empty($supportedMimeTypes)) {
             $this->add('X-Acceptable', join(', ', $supportedMimeTypes));
         }
 
@@ -92,13 +88,13 @@ class Headers implements \IteratorAggregate, \ArrayAccess
 
     /**
      * enforce a download and suggest given file name
-     *
-     * @param   string  $filename
-     * @return  \stubbles\webapp\response\Headers
      */
     public function forceDownload(string $filename): self
     {
-        return $this->add('Content-Disposition', 'attachment; filename="' . $filename . '"');
+        return $this->add(
+            'Content-Disposition',
+            sprintf('attachment; filename="%s"', $filename)
+        );
     }
 
     /**
@@ -108,9 +104,8 @@ class Headers implements \IteratorAggregate, \ArrayAccess
      * <code>Cache-Control: private</code>
      * by default.
      *
-     * @return  \stubbles\webapp\response\CacheControl
-     * @see     http://tools.ietf.org/html/rfc7234#section-5.2
-     * @since   5.1.0
+     * @see    http://tools.ietf.org/html/rfc7234#section-5.2
+     * @since  5.1.0
      */
     public function cacheControl(): CacheControl
     {
@@ -122,10 +117,8 @@ class Headers implements \IteratorAggregate, \ArrayAccess
     /**
      * adds Age header with given amount of seconds
      *
-     * @param   int  $seconds
-     * @return  \stubbles\webapp\response\Headers
-     * @see     http://tools.ietf.org/html/rfc7234#section-5.1
-     * @since   5.1.0
+     * @see    http://tools.ietf.org/html/rfc7234#section-5.1
+     * @since  5.1.0
      */
     public function age(int $seconds): self
     {
@@ -136,9 +129,6 @@ class Headers implements \IteratorAggregate, \ArrayAccess
      * checks if header with given name is present
      *
      * Please note that header names are treated case sensitive.
-     *
-     * @param   string  $name  name of header to check for
-     * @return  bool
      */
     public function contain(string $name): bool
     {
@@ -150,31 +140,25 @@ class Headers implements \IteratorAggregate, \ArrayAccess
      *
      * @return  \Iterator<string,mixed>
      */
-    public function getIterator(): \Iterator
+    public function getIterator(): Traversable
     {
-        return new \ArrayIterator($this->headers);
+        return new ArrayIterator($this->headers);
     }
 
     /**
      * checks if header with given name is present
      *
      * Please note that header names are treated case sensitive.
-     *
-     * @param   string  $offset  name of header to check for
-     * @return  bool
      */
-    public function offsetExists($offset)
+    public function offsetExists(mixed $offset): bool
     {
         return $this->contain($offset);
     }
 
     /**
      * returns header with given name
-     *
-     * @param   string  $offset  name of header to retrieve
-     * @return  string|null
      */
-    public function offsetGet($offset)
+    public function offsetGet(mixed $offset): mixed
     {
         if ($this->contain($offset)) {
             return $this->headers[$offset];
@@ -185,11 +169,8 @@ class Headers implements \IteratorAggregate, \ArrayAccess
 
     /**
      * adds header with given name
-     *
-     * @param  string  $offset
-     * @param  string  $value
      */
-    public function offsetSet($offset, $value): void
+    public function offsetSet(mixed $offset, mixed $value): void
     {
         $this->add($offset, $value);
     }
@@ -197,11 +178,10 @@ class Headers implements \IteratorAggregate, \ArrayAccess
    /**
     * removes header with given name
     *
-    * @param   string  $offset
-    * @throws  \BadMethodCallException
+    * @throws  BadMethodCallException
     */
-    public function offsetUnset($offset): void
+    public function offsetUnset(mixed $offset): void
     {
-        throw new \BadMethodCallException('Removing headers is not supported');
+        throw new BadMethodCallException('Removing headers is not supported');
     }
 }

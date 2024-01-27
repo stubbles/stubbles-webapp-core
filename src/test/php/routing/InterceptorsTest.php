@@ -56,9 +56,10 @@ class InterceptorsTest extends TestCase
         return new Interceptors($this->injector, $preInterceptors, $postInterceptors);
     }
 
-    public function callableMethod(Request $request, Response $response): void
+    public function callableMethod(Request $request, Response $response): bool
     {
         $response->addHeader('X-Binford', '6100 (More power!)');
+        return true;
     }
 
     /**
@@ -172,9 +173,10 @@ class InterceptorsTest extends TestCase
                         [],
                         ['some\PostInterceptor',
                          $postInterceptor,
-                         function(Request $request, Response $response)
+                         function(Request $request, Response $response): bool
                          {
                              $response->setStatusCode(418);
+                             return true;
                          },
                          [$this, 'callableMethod']
                         ]

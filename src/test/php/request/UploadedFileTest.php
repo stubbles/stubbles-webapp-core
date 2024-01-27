@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace stubbles\webapp\request;
 use PHPUnit\Framework\TestCase;
 use org\bovigo\vfs\vfsStream;
+use RuntimeException;
 
 use function bovigo\assert\{assertFalse, assertThat, assertTrue, expect};
 use function bovigo\assert\predicate\equals;
@@ -64,12 +65,12 @@ class UploadedFileTest extends TestCase
     public function moveUploadedFileReturnsPathAfterMoveAndUsesGivenNameIfNotOverruled(): void
     {
         $file = new class('example.php', '/tmp/foobarbaz', 303) extends UploadedFile {
-            public function move_uploaded_file(callable $move_uploaded_file): void
+            public function setMoveUploadedFileFunction(callable $moveUploadedFile): void
             {
-                $this->move_uploaded_file = $move_uploaded_file;
+                $this->moveUploadedFile = $moveUploadedFile;
             }
         };
-        $file->move_uploaded_file(function() { return true; });
+        $file->setMoveUploadedFileFunction(fn() => true);
         assertThat($file->move('/target'), equals('/target' . \DIRECTORY_SEPARATOR . 'example.php'));
     }
 
@@ -79,12 +80,12 @@ class UploadedFileTest extends TestCase
     public function moveUploadedFileReturnsPathAfterMoveAndUsesOverruledName(): void
     {
         $file = new class('example.php', '/tmp/foobarbaz', 303) extends UploadedFile {
-            public function move_uploaded_file(callable $move_uploaded_file): void
+            public function setMoveUploadedFileFunction(callable $moveUploadedFile): void
             {
-                $this->move_uploaded_file = $move_uploaded_file;
+                $this->moveUploadedFile = $moveUploadedFile;
             }
         };
-        $file->move_uploaded_file(function() { return true; });
+        $file->setMoveUploadedFileFunction(fn() => true);
         assertThat($file->move('/target', 'other.php'), equals('/target' . \DIRECTORY_SEPARATOR . 'other.php'));
     }
 
@@ -94,14 +95,14 @@ class UploadedFileTest extends TestCase
     public function moveUploadedThrowsRuntimeExceptionWhenMoveFails(): void
     {
         $file = new class('example.php', '/tmp/foobarbaz', 303) extends UploadedFile {
-            public function move_uploaded_file(callable $move_uploaded_file): void
+            public function setMoveUploadedFileFunction(callable $move_uploaded_file): void
             {
-                $this->move_uploaded_file = $move_uploaded_file;
+                $this->moveUploadedFile = $move_uploaded_file;
             }
         };
-        $file->move_uploaded_file(function() { \trigger_error('some error', \E_USER_NOTICE); return false; });
+        $file->setMoveUploadedFileFunction(function() { \trigger_error('some error', \E_USER_NOTICE); return false; });
         expect(function() use ($file) { $file->move('/target'); })
-            ->throws(\RuntimeException::class)
+            ->throws(RuntimeException::class)
             ->withMessage('Could not move uploaded file "example.php": some error');
     }
 

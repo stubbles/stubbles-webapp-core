@@ -7,39 +7,22 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 namespace stubbles\webapp\routing\api;
+
+use JsonSerializable;
+
 /**
  * Represents a header that a resource may have.
  *
  * @since  6.1.0
  * @XmlTag(tagName='header')
  */
-class Header implements \JsonSerializable
+class Header implements JsonSerializable
 {
-    /**
-     * @var  string
-     */
-    private $name;
-    /**
-     * @var  string
-     */
-    private $description;
-
-    /**
-     * constructor
-     *
-     * @param  string  $name         header name
-     * @param  string  $description  description of header
-     */
-    public function __construct(string $name, string $description)
-    {
-        $this->name        = $name;
-        $this->description = $description;
-    }
+    public function __construct(private string $name, private string $description) { }
 
     /**
      * returns header name
      *
-     * @return  string
      * @XmlAttribute(attributeName='name')
      */
     public function name(): string
@@ -50,7 +33,6 @@ class Header implements \JsonSerializable
     /**
      * returns description of header
      *
-     * @return  string
      * @XmlFragment(tagName='description')
      */
     public function description(): string
@@ -68,5 +50,4 @@ class Header implements \JsonSerializable
     {
         return ['name' => $this->name, 'description' => $this->description];
     }
-
 }

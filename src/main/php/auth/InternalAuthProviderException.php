@@ -7,6 +7,9 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 namespace stubbles\webapp\auth;
+
+use Throwable;
+
 /**
  * Exception to be thrown if an auth provider runs into a problem which is not
  * caused by an upstream service.
@@ -15,13 +18,7 @@ namespace stubbles\webapp\auth;
  */
 class InternalAuthProviderException extends AuthProviderException
 {
-    /**
-     * constructor
-     *
-     * @param  string      $message
-     * @param  \Throwable  $cause    optional
-     */
-    public function __construct(string $message, \Throwable $cause = null)
+    public function __construct(string $message, Throwable $cause = null)
     {
         parent::__construct($message, $cause, AuthProviderException::INTERNAL);
     }

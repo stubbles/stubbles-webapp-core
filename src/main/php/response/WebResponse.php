@@ -7,7 +7,10 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 namespace stubbles\webapp\response;
+
+use Exception;
 use stubbles\peer\http\Http;
+use stubbles\peer\http\HttpUri;
 use stubbles\peer\http\HttpVersion;
 use stubbles\streams\OutputStream;
 use stubbles\streams\StandardOutputStream;
@@ -25,71 +28,30 @@ use stubbles\webapp\response\mimetypes\PassThrough;
  */
 class WebResponse implements Response
 {
-    /**
-     * current php sapi
-     *
-     * @var  string
-     */
-    private $sapi;
-    /**
-     * http version to be used
-     *
-     * @var  \stubbles\peer\http\HttpVersion
-     */
-    private $version;
-    /**
-     * status to be send
-     *
-     * @var  \stubbles\webapp\response\Status
-     */
-    private $status;
-    /**
-     * list of headers for this response
-     *
-     * @var  \stubbles\webapp\response\Headers
-     */
-    private $headers;
-    /**
-     * list of cookies for this response
-     *
-     * @var  \stubbles\webapp\response\Cookie[]
-     */
-    private $cookies  = [];
-    /**
-     * data to send as body of response
-     *
-     * @var  mixed
-     */
-    private $resource;
-    /**
-     * original request method
-     *
-     * @var  Request
-     */
-    private $request;
-    /**
-     * mime type for response body
-     *
-     * @var  \stubbles\webapp\response\mimetypes\MimeType
-     */
-    private $mimeType;
+    private HttpVersion $version;
+    private Status $status;
+    private Headers $headers;
+    /** @var  Cookie[] */
+    private array $cookies = [];
+    /** data to send as body of response */
+    private mixed $resource = null;
+    private MimeType $mimeType;
 
     /**
-     * constructor
-     *
      * In case the request contains an invalid HTTP protocol version or the HTTP
      * protocol major version is not 1 the response automatically sets itself
      * to 500 Method Not Supported.
      *
-     * @param  \stubbles\webapp\Request                      $request   http request for which this is the response
-     * @param  \stubbles\webapp\response\mimetypes\MimeType  $mimeType  optional  mime type for response body
-     * @param  string                                        $sapi      optional  current php sapi, defaults to value of PHP_SAPI constant
+     * @param  Request    $request   http request for which this is the response
+     * @param  MimeType  $mimeType  mime type for response body
+     * @param  string    $sapi      current php sapi, defaults to value of PHP_SAPI constant
      */
-    public function __construct(Request $request, MimeType $mimeType = null, string $sapi = PHP_SAPI)
+    public function __construct(
+        private Request $request,
+        MimeType $mimeType = null,
+        private string $sapi = PHP_SAPI)
     {
-        $this->request  = $request;
         $this->mimeType = null !== $mimeType ? $mimeType : new PassThrough();
-        $this->sapi     = $sapi;
         $this->headers  = new Headers();
         $this->status   = new Status($this->headers);
         $version  = $request->protocolVersion();
@@ -103,9 +65,6 @@ class WebResponse implements Response
 
     /**
      * adjusts mime type of response to given mime type
-     *
-     * @param   \stubbles\webapp\response\mimetypes\MimeType  $mimeType
-     * @return  \stubbles\webapp\Response
      */
     public function adjustMimeType(MimeType $mimeType): Response
     {
@@ -115,8 +74,6 @@ class WebResponse implements Response
 
     /**
      * returns mime type for response body
-     *
-     * @return  \stubbles\webapp\response\mimetypes\MimeType
      */
     public function mimeType(): MimeType
     {
@@ -128,10 +85,6 @@ class WebResponse implements Response
      *
      * This needs only to be done if another status code then the default one
      * 200 OK should be send.
-     *
-     * @param   int     $statusCode
-     * @param   string  $reasonPhrase  optional
-     * @return  \stubbles\webapp\Response
      */
     public function setStatusCode(int $statusCode, string $reasonPhrase = null): Response
     {
@@ -142,8 +95,7 @@ class WebResponse implements Response
     /**
      * returns status code of response
      *
-     * @return  int
-     * @since   4.0.0
+     * @since  4.0.0
      */
     public function statusCode(): int
     {
@@ -153,8 +105,7 @@ class WebResponse implements Response
     /**
      * provide direct access to set a status code
      *
-     * @return  \stubbles\webapp\response\Status
-     * @since   5.1.0
+     * @since  5.1.0
      */
     public function status(): Status
     {
@@ -163,10 +114,6 @@ class WebResponse implements Response
 
     /**
      * add a header to the response
-     *
-     * @param   string  $name   the name of the header
-     * @param   string  $value  the value of the header
-     * @return  \stubbles\webapp\Response
      */
     public function addHeader(string $name, string $value): Response
     {
@@ -177,8 +124,7 @@ class WebResponse implements Response
     /**
      * returns list of headers
      *
-     * @return  \stubbles\webapp\response\Headers
-     * @since   4.0.0
+     * @since  4.0.0
      */
     public function headers(): Headers
     {
@@ -188,10 +134,9 @@ class WebResponse implements Response
     /**
      * check if response contains a certain header
      *
-     * @param   string  $name   name of header to check
-     * @param   string  $value  optional  if given the value is checked as well
-     * @return  bool
-     * @since   4.0.0
+     * @param  string  $name   name of header to check
+     * @param  string  $value  optional  if given the value is checked as well
+     * @since  4.0.0
      */
     public function containsHeader(string $name, string $value = null): bool
     {
@@ -208,9 +153,6 @@ class WebResponse implements Response
 
     /**
      * add a cookie to the response
-     *
-     * @param   \stubbles\webapp\response\Cookie  $cookie  the cookie to set
-     * @return  \stubbles\webapp\Response
      */
     public function addCookie(Cookie $cookie): Response
     {
@@ -221,14 +163,12 @@ class WebResponse implements Response
     /**
      * removes cookie with given name
      *
-     * @param   string  $name
-     * @return  \stubbles\webapp\Response
-     * @since   2.0.0
+     * @since  2.0.0
      */
     public function removeCookie(string $name): Response
     {
         $this->addCookie(
-                Cookie::create($name, 'remove')->expiringAt(time() - 86400)
+            Cookie::create($name, 'remove')->expiringAt(time() - 86400)
         );
         return $this;
     }
@@ -236,10 +176,9 @@ class WebResponse implements Response
     /**
      * checks if response contains a certain cookie
      *
-     * @param   string  $name   name of cookie to check
-     * @param   string  $value  optional  if given the value is checked as well
-     * @return  bool
-     * @since   4.0.0
+     * @param  string  $name   name of cookie to check
+     * @param  string  $value  optional  if given the value is checked as well
+     * @since  4.0.0
      */
     public function containsCookie(string $name, string $value = null): bool
     {
@@ -256,11 +195,8 @@ class WebResponse implements Response
 
     /**
      * write data into the response
-     *
-     * @param   mixed  $resource
-     * @return  \stubbles\webapp\Response
      */
-    public function write($resource): Response
+    public function write(mixed $resource): Response
     {
         $this->resource = $resource;
         return $this;
@@ -277,7 +213,6 @@ class WebResponse implements Response
      * - internalServerError()
      * - httpVersionNotSupported()
      *
-     * @return  bool
      * @since   3.1.0
      */
     public function isFixed(): bool
@@ -290,11 +225,9 @@ class WebResponse implements Response
      *
      * Status code is optional, default is 302.
      *
-     * @param   string|\stubbles\peer\http\HttpUri  $uri         http uri to redirect to
-     * @param   int                                 $statusCode  HTTP status code to redirect with (301, 302, ...)
      * @since   1.3.0
      */
-    public function redirect($uri, int $statusCode = 302): void
+    public function redirect(string|HttpUri $uri, int $statusCode = 302): void
     {
         $this->status->redirect($uri, $statusCode);
     }
@@ -302,9 +235,8 @@ class WebResponse implements Response
     /**
      * creates a 401 Unauthorized message including a WWW-Authenticate header with given challenge
      *
-     * @param   string[]  $challenges
-     * @return  \stubbles\webapp\response\Error
-     * @since   8.0.0
+     * @param  string[]  $challenges
+     * @since  8.0.0
      */
     public function unauthorized(array $challenges): Error
     {
@@ -315,7 +247,6 @@ class WebResponse implements Response
     /**
      * creates a 403 Forbidden message
      *
-     * @return  \stubbles\webapp\response\Error
      * @since   2.0.0
      */
     public function forbidden(): Error
@@ -327,8 +258,7 @@ class WebResponse implements Response
     /**
      * creates a 404 Not Found message
      *
-     * @return  \stubbles\webapp\response\Error
-     * @since   2.0.0
+     * @since  2.0.0
      */
     public function notFound(): Error
     {
@@ -339,10 +269,8 @@ class WebResponse implements Response
     /**
      * creates a 405 Method Not Allowed message
      *
-     * @param   string    $requestMethod
-     * @param   string[]  $allowedMethods
-     * @return  \stubbles\webapp\response\Error
-     * @since   2.0.0
+     * @param  string[]  $allowedMethods
+     * @since  2.0.0
      */
     public function methodNotAllowed(string $requestMethod, array $allowedMethods): Error
     {
@@ -353,8 +281,8 @@ class WebResponse implements Response
     /**
      * creates a 406 Not Acceptable message
      *
-     * @param   string[]  $supportedMimeTypes  list of supported mime types
-     * @since   2.0.0
+     * @param  string[]  $supportedMimeTypes  list of supported mime types
+     * @since  2.0.0
      */
     public function notAcceptable(array $supportedMimeTypes = []): void
     {
@@ -364,11 +292,9 @@ class WebResponse implements Response
     /**
      * creates a 500 Internal Server Error message
      *
-     * @param   string|\Exception  $error
-     * @return  \stubbles\webapp\response\Error
-     * @since   2.0.0
+     * @since  2.0.0
      */
-    public function internalServerError($error): Error
+    public function internalServerError(string|Exception $error): Error
     {
         $this->status->internalServerError();
         return Error::internalServerError($error);
@@ -377,13 +303,13 @@ class WebResponse implements Response
     /**
      * creates a 505 HTTP Version Not Supported message
      *
-     * @since   2.0.0
+     * @since  2.0.0
      */
     public function httpVersionNotSupported(): void
     {
         $this->status->httpVersionNotSupported();
         $this->resource = new Error(
-                'Unsupported HTTP protocol version, expected HTTP/1.0 or HTTP/1.1'
+            'Unsupported HTTP protocol version, expected HTTP/1.0 or HTTP/1.1'
         );
     }
 
@@ -397,9 +323,6 @@ class WebResponse implements Response
      * the request doesn't allow a response body or no resource for the response
      * body was set the return value is null because no standard stream will be
      * created in such a case.
-     *
-     * @param   OutputStream|null  $out  optional  where to write response body to
-     * @return  OutputStream|StandardOutputStream|null
      */
     public function send(OutputStream $out = null): ?OutputStream
     {
@@ -415,8 +338,7 @@ class WebResponse implements Response
     /**
      * checks of the request allows a body in the response
      *
-     * @return  bool
-     * @since   4.0.0
+     * @since  4.0.0
      */
     protected function requestAllowsBody(): bool
     {
@@ -425,8 +347,6 @@ class WebResponse implements Response
 
     /**
      * sends head only
-     *
-     * @return  \stubbles\webapp\Response
      */
     private function sendHead(): Response
     {
@@ -449,8 +369,6 @@ class WebResponse implements Response
 
     /**
      * helper method to send the header
-     *
-     * @param  string  $header
      */
     protected function header(string $header): void
     {

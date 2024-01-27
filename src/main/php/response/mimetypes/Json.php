@@ -15,11 +15,6 @@ use stubbles\streams\OutputStream;
  */
 class Json extends MimeType
 {
-    /**
-     * returns default mime type name
-     *
-     * @return  string
-     */
     protected function defaultName(): string
     {
         return 'application/json';

@@ -15,36 +15,15 @@ namespace stubbles\webapp\session\id;
 class NoneDurableSessionId implements SessionId
 {
     /**
-     * actual id
-     *
-     * @var  string|null
-     */
-    private $id;
-    /**
-     * name of session
-     *
-     * @var  string|null
-     */
-    private $sessionName;
-
-    /**
-     * constructor
-     *
-     * @param  string  $sessionName  name of session  optional  will be created automatically when not provided
-     * @param  string  $id           actual id        optional  will be created automatically when not provided
+     * @param  string  $sessionName  name of session  will be created automatically when not provided
+     * @param  string  $id           actual id        will be created automatically when not provided
      * @since  5.0.1
      */
-    public function __construct(string $sessionName = null, string $id = null)
-    {
-        $this->sessionName = $sessionName;
-        $this->id          = $id;
-    }
+    public function __construct(
+        private ?string $sessionName = null,
+        private ?string $id = null
+    ) { }
 
-    /**
-     * returns session name
-     *
-     * @return  string
-     */
     public function name(): string
     {
         if (null === $this->sessionName) {
@@ -58,11 +37,6 @@ class NoneDurableSessionId implements SessionId
         return $this->sessionName;
     }
 
-    /**
-     * reads session id
-     *
-     * @return  string
-     */
     public function __toString(): string
     {
         if (null === $this->id) {
@@ -72,32 +46,17 @@ class NoneDurableSessionId implements SessionId
         return $this->id;
     }
 
-    /**
-     * creates session id
-     *
-     * @return  string
-     */
     private function create(): string
     {
         return md5(uniqid((string) rand(), true));
     }
 
-    /**
-     * stores session id for given session name
-     *
-     * @return  \stubbles\webapp\session\id\SessionId
-     */
     public function regenerate(): SessionId
     {
         $this->id = $this->create();
         return $this;
     }
 
-    /**
-     * invalidates session id
-     *
-     * @return  \stubbles\webapp\session\id\SessionId
-     */
     public function invalidate(): SessionId
     {
         return $this;

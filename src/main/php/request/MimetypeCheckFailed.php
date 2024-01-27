@@ -7,12 +7,15 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 namespace stubbles\webapp\request;
+
+use Exception;
+
 /**
- * Exception in mimetype check for an UploadedFile failed.
+ * Exception if mimetype check for an UploadedFile failed.
  *
  * @since  8.1.0
  */
-class MimetypeCheckFailed extends \Exception
+class MimetypeCheckFailed extends Exception
 {
     // intentionally empty
 }

@@ -18,46 +18,19 @@ use stubbles\webapp\interceptor\PostInterceptor;
 class Interceptors
 {
     /**
-     * list of global pre interceptors and to which request method they respond
-     *
-     * @var  array<class-string<PreInterceptor>|callable|PreInterceptor>
-     */
-    private $preInterceptors;
-    /**
-     * list of global post interceptors and to which request method they respond
-     *
-     * @var  array<class-string<PostInterceptor>|callable|PostInterceptor>
-     */
-    private $postInterceptors;
-    /**
-     * injector instance
-     *
-     * @var  \stubbles\ioc\Injector
-     */
-    private $injector;
-
-    /**
-     * constructor
-     *
-     * @param  \stubbles\ioc\Injector                                         $injector
      * @param  array<class-string<PreInterceptor>|callable|PreInterceptor>    $preInterceptors
      * @param  array<class-string<PostInterceptor>|callable|PostInterceptor>  $postInterceptors
      */
-    public function __construct(Injector $injector, array $preInterceptors, array $postInterceptors)
-    {
-        $this->injector         = $injector;
-        $this->preInterceptors  = $preInterceptors;
-        $this->postInterceptors = $postInterceptors;
-    }
+    public function __construct(
+        private Injector $injector,
+        private array $preInterceptors,
+        private array $postInterceptors
+    ) { }
 
     /**
      * apply pre interceptors
      *
      * Returns false if one of the pre interceptors cancels the request.
-     *
-     * @param   \stubbles\webapp\Request   $request   current request
-     * @param   \stubbles\webapp\Response  $response  response to send
-     * @return  bool
      */
     public function preProcess(Request $request, Response $response): bool
     {
@@ -73,28 +46,28 @@ class Interceptors
     /**
      * executes pre interceptor
      *
-     * @param   class-string<PreInterceptor>|callable|PreInterceptor  $preInterceptor
-     * @param   \stubbles\webapp\Request                              $request         current request
-     * @param   \stubbles\webapp\Response                             $response        response to send
-     * @return  bool|null
+     * @param  class-string<PreInterceptor>|callable|PreInterceptor  $preInterceptor
      */
-    private function executePreInterceptor($preInterceptor, Request $request, Response $response)
-    {
+    private function executePreInterceptor(
+        string|callable|PreInterceptor $preInterceptor,
+        Request $request,
+        Response $response
+    ): bool {
         if (is_callable($preInterceptor)) {
             return $preInterceptor($request, $response);
         }
 
-        if ($preInterceptor instanceof PreInterceptor) {
-            return $preInterceptor->preProcess($request, $response);
-        }
-
-        $instance = $this->injector->getInstance($preInterceptor);
-        if (!($instance instanceof PreInterceptor)) {
+        $instance = $this->instanceOf($preInterceptor, PreInterceptor::class);
+        if (null === $instance) {
             $response->write(
-                    $response->internalServerError(
-                            'Configured pre interceptor ' . $preInterceptor
-                            . ' is not an instance of ' . PreInterceptor::class
+                $response->internalServerError(
+                    sprintf(
+                        'Configured pre interceptor %s is not an instance of %s',
+                        $preInterceptor,
+                        PreInterceptor::class
                     )
+                    
+                )
             );
             return false;
         }
@@ -104,10 +77,6 @@ class Interceptors
 
     /**
      * apply post interceptors
-     *
-     * @param   \stubbles\webapp\Request   $request   current request
-     * @param   \stubbles\webapp\Response  $response  response to send
-     * @return  bool
      */
     public function postProcess(Request $request, Response $response): bool
     {
@@ -123,32 +92,47 @@ class Interceptors
     /**
      * executes post interceptor
      *
-     * @param   class-string<PostInterceptor>|callable|PostInterceptor  $postInterceptor
-     * @param   \stubbles\webapp\Request                                $request          current request
-     * @param   \stubbles\webapp\Response                               $response         response to send
-     * @return  bool|null
+     * @param  class-string<PostInterceptor>|callable|PostInterceptor  $postInterceptor
      */
-    private function executePostInterceptor($postInterceptor, Request $request, Response $response)
-    {
+    private function executePostInterceptor(
+        string|callable|PostInterceptor $postInterceptor,
+        Request $request,
+        Response $response
+    ): bool {
         if (is_callable($postInterceptor)) {
             return $postInterceptor($request, $response);
         }
 
-        if ($postInterceptor instanceof PostInterceptor) {
-            return $postInterceptor->postProcess($request, $response);
-        }
-
-        $instance = $this->injector->getInstance($postInterceptor);
-        if (!($instance instanceof PostInterceptor)) {
+        $instance = $this->instanceOf($postInterceptor, PostInterceptor::class);
+        if (null === $instance) {
             $response->write(
-                    $response->internalServerError(
-                            'Configured post interceptor ' . $postInterceptor
-                            . ' is not an instance of ' . PostInterceptor::class
+                $response->internalServerError(
+                    sprintf(
+                        'Configured post interceptor %s is not an instance of %s',
+                        $postInterceptor,
+                        PostInterceptor::class
                     )
+                )
             );
             return false;
         }
 
         return $instance->postProcess($request, $response);
+    }
+
+    private function instanceOf(
+        string|PreInterceptor|PostInterceptor $interceptor,
+        string $expectedClass
+    ): null|PreInterceptor|PostInterceptor {
+        if (!is_string($interceptor)) {
+            return $interceptor;
+        }
+
+        $instance = $this->injector->getInstance($interceptor);
+        if (!($instance instanceof $expectedClass)) {
+            return null;
+        }
+
+        return $instance;
     }
 }

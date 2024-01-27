@@ -10,26 +10,17 @@ namespace stubbles\webapp\htmlpassthrough;
 use stubbles\webapp\Request;
 use stubbles\webapp\Response;
 /**
- * Processor to pass through hole HTML pages to ensure session ids are passed in links.
+ * Processor to pass through whole HTML pages to ensure session ids are passed in links.
  *
  * @since  4.0.0
  */
 class SessionBasedHtmlFilePassThrough extends HtmlFilePassThrough
 {
-    /**
-     * hook to modify the content before passing it to the response
-     *
-     * @param  \stubbles\webapp\Request   $request   current request
-     * @param  \stubbles\webapp\Response  $response  response to send
-     * @param   string                    $content    actual content for response
-     * @param   string                    $routeName  name of the route
-     * @return  string
-     */
     protected function modifyContent(
-            Request $request,
-            Response $response,
-            string $content,
-            string $routeName
+        Request $request,
+        Response $response,
+        string $content,
+        string $routeName
     ): string {
         $session = $request->attachedSession();
         if (null === $session) {

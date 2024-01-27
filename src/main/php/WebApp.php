@@ -7,6 +7,8 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 namespace stubbles\webapp;
+
+use Exception;
 use stubbles\App;
 use stubbles\ExceptionLogger;
 use stubbles\ioc\Injector;
@@ -25,33 +27,13 @@ use stubbles\webapp\session\Session;
  */
 abstract class WebApp extends App
 {
-    /**
-     * @var  \stubbles\ioc\Injector
-     */
-    private $injector;
-    /**
-     * build and contains routing information
-     *
-     * @var  \stubbles\webapp\routing\Routing
-     */
-    private $routing;
-
-    /**
-     * constructor
-     *
-     * @param  \stubbles\ioc\Injector            $injector
-     * @param  \stubbles\webapp\routing\Routing  $routing   routes to logic based on request
-     */
-    public function __construct(Injector $injector, Routing $routing)
-    {
-        $this->injector = $injector;
-        $this->routing  = $routing;
-    }
+    public function __construct(
+        private Injector $injector,
+        private Routing $routing
+    ) { }
 
     /**
      * runs the application but does not send the response
-     *
-     * @return  \stubbles\webapp\response\SendableResponse
      */
     public function run(): SendableResponse
     {
@@ -85,7 +67,7 @@ abstract class WebApp extends App
                 $response->write($uriResource->resolve($request, $response));
                 $uriResource->applyPostInterceptors($request, $response);
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             /** @var  ExceptionLogger  $exceptionLogger */
             $exceptionLogger = $this->injector->getInstance(ExceptionLogger::class);
             $exceptionLogger->log($e);
@@ -97,17 +79,14 @@ abstract class WebApp extends App
 
     /**
      * ensures session is present when created
-     *
-     * @param  \stubbles\webapp\Request   $request
-     * @param  \stubbles\webapp\Response  $response
      */
     private function sessionHandshake(Request $request, Response $response): void
     {
         $session = $this->createSession($request, $response);
         if (null !== $session) {
             $this->injector->setSession(
-                    $request->attachSession($session),
-                    Session::class
+                $request->attachSession($session),
+                Session::class
             );
         }
     }
@@ -115,10 +94,7 @@ abstract class WebApp extends App
     /**
      * creates a session instance based on current request
      *
-     * @param   \stubbles\webapp\Request   $request
-     * @param   \stubbles\webapp\Response  $response
-     * @return  \stubbles\webapp\session\Session
-     * @since   6.0.0
+     * @since  6.0.0
      */
     protected function createSession(Request $request, Response $response): ?Session
     {
@@ -127,10 +103,6 @@ abstract class WebApp extends App
 
     /**
      * checks whether a switch to https must be made
-     *
-     * @param   \stubbles\webapp\Request              $request
-     * @param   \stubbles\webapp\routing\UriResource  $uriResource
-     * @return  bool
      */
     protected function switchToHttps(Request $request, UriResource $uriResource): bool
     {
@@ -139,16 +111,13 @@ abstract class WebApp extends App
 
     /**
      * configures routing for this web app
-     *
-     * @param  \stubbles\webapp\RoutingConfigurator  $routing
      */
-    protected abstract function configureRouting(RoutingConfigurator $routing): void;
+    abstract protected function configureRouting(RoutingConfigurator $routing): void;
 
     /**
      * returns post interceptor class which adds Access-Control-Allow-Origin header to the response
      *
-     * @return  string
-     * @since   3.4.0
+     * @since  3.4.0
      */
     protected static function addAccessControlAllowOriginHeaderClass(): string
     {

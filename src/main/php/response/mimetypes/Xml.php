@@ -16,28 +16,8 @@ use stubbles\xml\serializer\XmlSerializerFacade;
  */
 class Xml extends MimeType
 {
-    /**
-     * serializer to be used
-     *
-     * @var  \stubbles\xml\serializer\XmlSerializerFacade
-     */
-    private $xmlSerializerFacade;
+    public function __construct(private XmlSerializerFacade $xmlSerializerFacade) { }
 
-    /**
-     * constructor
-     *
-     * @param  \stubbles\xml\serializer\XmlSerializerFacade  $xmlSerializerFacade
-     */
-    public function __construct(XmlSerializerFacade $xmlSerializerFacade)
-    {
-        $this->xmlSerializerFacade = $xmlSerializerFacade;
-    }
-
-    /**
-     * returns default mime type name
-     *
-     * @return  string
-     */
     protected function defaultName(): string
     {
         return 'application/xml';

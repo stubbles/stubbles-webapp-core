@@ -17,12 +17,5 @@ use stubbles\webapp\Response;
  */
 interface PostInterceptor
 {
-    /**
-     * does the postprocessing stuff
-     *
-     * @param   \stubbles\webapp\Request   $request   current request
-     * @param   \stubbles\webapp\Response  $response  response to send
-     * @return  bool
-     */
     public function postProcess(Request $request, Response $response): bool;
 }

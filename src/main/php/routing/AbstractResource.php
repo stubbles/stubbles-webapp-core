@@ -21,55 +21,15 @@ use function stubbles\peer\http\emptyAcceptHeader;
  */
 abstract class AbstractResource implements UriResource
 {
-    /**
-     * injector instance
-     *
-     * @var  \stubbles\ioc\Injector
-     */
-    protected $injector;
-    /**
-     * actual called uri
-     *
-     * @var  \stubbles\webapp\routing\CalledUri
-     */
-    protected $calledUri;
-    /**
-     * interceptors to be processed
-     *
-     * @var  \stubbles\webapp\routing\Interceptors
-     */
-    private $interceptors;
-    /**
-     * list of available mime types for all routes
-     *
-     * @var  \stubbles\webapp\routing\SupportedMimeTypes
-     */
-    private $supportedMimeTypes;
-
-    /**
-     * constructor
-     *
-     * @param  \stubbles\ioc\Injector                       $injector
-     * @param  \stubbles\webapp\routing\CalledUri           $calledUri           actual called uri
-     * @param  \stubbles\webapp\routing\Interceptors        $interceptors
-     * @param  \stubbles\webapp\routing\SupportedMimeTypes  $supportedMimeTypes
-     */
     public function __construct(
-            Injector $injector,
-            CalledUri $calledUri,
-            Interceptors $interceptors,
-            SupportedMimeTypes $supportedMimeTypes)
-    {
-        $this->injector           = $injector;
-        $this->calledUri          = $calledUri;
-        $this->interceptors       = $interceptors;
-        $this->supportedMimeTypes = $supportedMimeTypes;
-    }
+        protected Injector $injector,
+        protected CalledUri $calledUri,
+        private Interceptors $interceptors,
+        private SupportedMimeTypes $supportedMimeTypes
+    ) { }
 
     /**
      * returns https uri of current route
-     *
-     * @return  \stubbles\peer\http\HttpUri
      */
     public function httpsUri(): HttpUri
     {
@@ -79,10 +39,7 @@ abstract class AbstractResource implements UriResource
     /**
      * negotiates proper mime type for given request
      *
-     * @param   \stubbles\webapp\Request   $request
-     * @param   \stubbles\webapp\Response  $response  response to send
-     * @return  bool
-     * @since   6.0.0
+     * @since  6.0.0
      */
     public function negotiateMimeType(Request $request, Response $response): bool
     {
@@ -92,8 +49,8 @@ abstract class AbstractResource implements UriResource
 
         $matchedMimeType = $this->supportedMimeTypes->findMatch(
             $request->readHeader('HTTP_ACCEPT')
-                    ->defaultingTo(emptyAcceptHeader())
-                    ->withFilter(new AcceptFilter())
+                ->defaultingTo(emptyAcceptHeader())
+                ->withFilter(new AcceptFilter())
         );
         if (null === $matchedMimeType) {
             $response->notAcceptable($this->supportedMimeTypes->asArray());
@@ -101,14 +58,21 @@ abstract class AbstractResource implements UriResource
         }
 
         if (!$this->supportedMimeTypes->provideClass($matchedMimeType)) {
-            $response->write($response->internalServerError(
-                'No mime type class defined for negotiated content type ' . $matchedMimeType
-            ));
+            $response->write(
+                $response->internalServerError(
+                    sprintf(
+                        'No mime type class defined for negotiated content type %s',
+                        $matchedMimeType
+                    )
+                )
+            );
             return false;
         }
 
         /** @var  \stubbles\webapp\response\mimetypes\MimeType  $mimeType */
-        $mimeType = $this->injector->getInstance($this->supportedMimeTypes->classFor($matchedMimeType));
+        $mimeType = $this->injector->getInstance(
+            $this->supportedMimeTypes->classFor($matchedMimeType)
+        );
         $response->adjustMimeType($mimeType->specialise($matchedMimeType));
         return true;
     }
@@ -127,10 +91,6 @@ abstract class AbstractResource implements UriResource
      * apply pre interceptors
      *
      * Returns false if one of the pre interceptors cancels the request.
-     *
-     * @param   \stubbles\webapp\Request   $request   current request
-     * @param   \stubbles\webapp\Response  $response  response to send
-     * @return  bool
      */
     public function applyPreInterceptors(Request $request, Response $response): bool
     {
@@ -139,10 +99,6 @@ abstract class AbstractResource implements UriResource
 
     /**
      * apply post interceptors
-     *
-     * @param   \stubbles\webapp\Request   $request   current request
-     * @param   \stubbles\webapp\Response  $response  response to send
-     * @return  bool
      */
     public function applyPostInterceptors(Request $request, Response $response): bool
     {

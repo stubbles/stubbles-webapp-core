@@ -18,41 +18,19 @@ use stubbles\webapp\Response;
  */
 class ResolvingResource extends AbstractResource
 {
-    /**
-     * route configuration
-     *
-     * @var  Route
-     */
-    private $route;
-
-    /**
-     * constructor
-     *
-     * @param  \stubbles\ioc\Injector                       $injector
-     * @param  \stubbles\webapp\routing\CalledUri           $calledUri           actual called uri
-     * @param  \stubbles\webapp\routing\Interceptors        $interceptors
-     * @param  \stubbles\webapp\routing\SupportedMimeTypes  $supportedMimeTypes
-     * @param  \stubbles\webapp\routing\Route               $route               route configuration
-     */
     public function __construct(
-            Injector $injector,
-            CalledUri $calledUri,
-            Interceptors $interceptors,
-            SupportedMimeTypes $supportedMimeTypes,
-            Route $route)
-    {
+        Injector $injector,
+        CalledUri $calledUri,
+        Interceptors $interceptors,
+        SupportedMimeTypes $supportedMimeTypes,
+        private Route $route
+    ) {
         parent::__construct($injector, $calledUri, $interceptors, $supportedMimeTypes);
-        $this->route = $route;
     }
 
-    /**
-     * checks whether switch to https is required
-     *
-     * @return  bool
-     */
     public function requiresHttps(): bool
     {
-        return (!$this->calledUri->isHttps() && $this->route->requiresHttps());
+        return !$this->calledUri->isHttps() && $this->route->requiresHttps();
     }
 
     /**
@@ -63,12 +41,8 @@ class ResolvingResource extends AbstractResource
      * post processors are called by the web app. A return value of false means
      * no post processor will be called, whereas any other or no return value
      * will result in post processors being called by the webapp.
-     *
-     * @param   \stubbles\webapp\Request   $request   current request
-     * @param   \stubbles\webapp\Response  $response  response to send
-     * @return  mixed
      */
-    public function resolve(Request $request, Response $response)
+    public function resolve(Request $request, Response $response): mixed
     {
         $uriPath = $this->calledUri->path($this->route->configuredPath());
         $target  = $this->route->target();
@@ -76,18 +50,33 @@ class ResolvingResource extends AbstractResource
             return $target($request, $response, $uriPath);
         }
 
-        if ($target instanceof Target) {
-            return $target->resolve($request, $response, $uriPath);
-        }
-
-        $targetInstance = $this->injector->getInstance($target);
-        if (!($targetInstance instanceof Target)) {
+        $targetInstance = $this->instanceOf($target);
+        if (null === $targetInstance) {
             return $response->internalServerError(
-                    'Configured target class ' . $target . ' for route ' . $uriPath
-                    . ' is not an instance of ' . Target::class
+                sprintf(
+                    'Configured target class %s for route %s is not an instance of %s',
+                    $target,
+                    $uriPath,
+                    Target::class
+                )
+                    
             );
         }
 
         return $targetInstance->resolve($request, $response, $uriPath);
+    }
+
+    private function instanceOf(string|Target $target): ?Target
+    {
+        if (!is_string($target)) {
+            return $target;
+        }
+
+        $targetInstance = $this->injector->getInstance($target);
+        if (!($targetInstance instanceof Target)) {
+            return null;
+        }
+
+        return $targetInstance;
     }
 }

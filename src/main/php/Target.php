@@ -17,10 +17,10 @@ interface Target
     /**
      * resolves the request and returns resource data
      *
-     * @param  \stubbles\webapp\Request   $request   current request
-     * @param  \stubbles\webapp\Response  $response  response to send
-     * @param  \stubbles\webapp\UriPath   $uriPath   information about called uri path
-     * @return  mixed
+     * @param  Request   $request   current request
+     * @param  Response  $response  response to send
+     * @param  UriPath   $uriPath   information about called uri path
+     * @return  mixed resource data to be rendered
      */
-    public function resolve(Request $request, Response $response, UriPath $uriPath);
+    public function resolve(Request $request, Response $response, UriPath $uriPath): mixed;
 }

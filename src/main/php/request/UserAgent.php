@@ -15,38 +15,21 @@ namespace stubbles\webapp\request;
  */
 class UserAgent
 {
-    /**
-     * name of user agent
-     *
-     * @var  string|null
-     */
-    private $name;
-    /**
-     * whether user agent is a bot or not
-     *
-     * @var  bool
-     */
-    private $isBot = null;
+    private ?bool $isBot = null;
     /**
      * list of known bot user agents
      *
      * @var  array<string,string>
      */
-    private $botSignatures = [
-            'google'       => '~Googlebot~',
-            'msnbot'       => '~msnbot~',
-            'bing'         => '~bingbot~',
-            'bing preview' => '~BingPreview~',
-            'slurp'        => '~Slurp~',
-            'pingdom'      => '~pingdom~',
-            'yandex'       => '~YandexBot~'
+    private array $botSignatures = [
+        'google'       => '~Googlebot~',
+        'msnbot'       => '~msnbot~',
+        'bing'         => '~bingbot~',
+        'bing preview' => '~BingPreview~',
+        'slurp'        => '~Slurp~',
+        'pingdom'      => '~pingdom~',
+        'yandex'       => '~YandexBot~'
     ];
-    /**
-     * whether user agent accepts cookies or not
-     *
-     * @var  bool
-     */
-    private $acceptsCookies;
 
     /**
      * constructor
@@ -55,10 +38,11 @@ class UserAgent
      * @param  bool                  $acceptsCookies  whether user agent accepts cookies or not
      * @param  array<string,string>  $botSignatures   optional  additional list of bot user agent signatures
      */
-    public function __construct(?string $name, bool $acceptsCookies, array $botSignatures = [])
-    {
-        $this->name           = $name;
-        $this->acceptsCookies = $acceptsCookies;
+    public function __construct(
+        private ?string $name,
+        private bool $acceptsCookies,
+        array $botSignatures = []
+    ) {
         $this->botSignatures  = array_merge($this->botSignatures, $botSignatures);
     }
 
@@ -67,7 +51,6 @@ class UserAgent
      *
      * @XmlAttribute(attributeName='name')
      * @api
-     * @return  string|null
      */
     public function name(): ?string
     {
@@ -79,7 +62,6 @@ class UserAgent
      *
      * @XmlAttribute(attributeName='isBot')
      * @api
-     * @return  bool
      */
     public function isBot(): bool
     {
@@ -105,7 +87,6 @@ class UserAgent
      * @XmlAttribute(attributeName='acceptsCookies')
      * @api
      * @since   2.0.0
-     * @return  bool
      */
     public function acceptsCookies(): bool
     {
@@ -113,10 +94,7 @@ class UserAgent
     }
 
     /**
-     * returns a string representation of the class
-     *
      * @XmlIgnore
-     * @return  string
      */
     public function __toString(): string
     {

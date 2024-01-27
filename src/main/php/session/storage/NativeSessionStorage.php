@@ -19,32 +19,15 @@ use stubbles\webapp\session\id\SessionId;
 class NativeSessionStorage implements SessionStorage, SessionId
 {
     /**
-     * name of session
-     *
-     * @var  string
-     */
-    private $sessionName;
-    /**
      * switch whether storage is already initialized or not
-     *
-     * @var  bool
      */
-    private $initialized = false;
+    private bool $initialized = false;
 
-    /**
-     * constructor
-     *
-     * @param  string  $sessionName  name of the session
-     */
-    public function __construct(string $sessionName)
+    public function __construct(private string $sessionName)
     {
-        $this->sessionName = $sessionName;
         session_name($this->sessionName);
     }
 
-    /**
-     * initialize storage
-     */
     private function init(): void
     {
         if ($this->initialized || session_status() === PHP_SESSION_ACTIVE) {
@@ -55,32 +38,17 @@ class NativeSessionStorage implements SessionStorage, SessionId
         $this->initialized = true;
     }
 
-    /**
-     * returns session name
-     *
-     * @return  string
-     */
     public function name(): string
     {
         return $this->sessionName;
     }
 
-    /**
-     * returns session id
-     *
-     * @return  string  the session id
-     */
     public function __toString(): string
     {
         $this->init();
         return session_id();
     }
 
-    /**
-     * regenerates the session id but leaves session data
-     *
-     * @return  \stubbles\webapp\session\id\SessionId
-     */
     public function regenerate(): SessionId
     {
         $this->init();
@@ -88,11 +56,6 @@ class NativeSessionStorage implements SessionStorage, SessionId
         return $this;
     }
 
-    /**
-     * invalidates current session
-     *
-     * @return  \stubbles\webapp\session\id\SessionId
-     */
     public function invalidate(): SessionId
     {
         if ($this->initialized && session_status() === PHP_SESSION_ACTIVE) {
@@ -104,8 +67,6 @@ class NativeSessionStorage implements SessionStorage, SessionId
 
     /**
      * removes all data from storage
-     *
-     * @return  \stubbles\webapp\session\storage\SessionStorage
      */
     public function clear(): SessionStorage
     {
@@ -115,9 +76,6 @@ class NativeSessionStorage implements SessionStorage, SessionId
 
     /**
      * checks whether a value associated with key exists
-     *
-     * @param   string  $key  key where value is stored under
-     * @return  bool
      */
     public function hasValue(string $key): bool
     {
@@ -127,11 +85,8 @@ class NativeSessionStorage implements SessionStorage, SessionId
 
     /**
      * returns a value associated with the key or the default value
-     *
-     * @param   string  $key  key where value is stored under
-     * @return  mixed
      */
-    public function value(string $key)
+    public function value(string $key): mixed
     {
         $this->init();
         return $_SESSION[$key] ?? null;
@@ -139,12 +94,8 @@ class NativeSessionStorage implements SessionStorage, SessionId
 
     /**
      * stores a value associated with the key
-     *
-     * @param   string  $key    key to store value under
-     * @param   mixed   $value  data to store
-     * @return  \stubbles\webapp\session\storage\SessionStorage
      */
-    public function putValue(string $key, $value): SessionStorage
+    public function putValue(string $key, mixed $value): SessionStorage
     {
         $this->init();
         $_SESSION[$key] = $value;
@@ -153,9 +104,6 @@ class NativeSessionStorage implements SessionStorage, SessionId
 
     /**
      * removes a value from the session
-     *
-     * @param   string  $key  key where value is stored under
-     * @return  \stubbles\webapp\session\storage\SessionStorage
      */
     public function removeValue(string $key): SessionStorage
     {

@@ -22,51 +22,19 @@ use stubbles\webapp\UriPath;
 class Redirect implements Target
 {
     /**
-     * @var  string|\stubbles\peer\http\HttpUri
-     */
-    private $target;
-    /**
-     * @var  int
-     */
-    private $statusCode;
-
-    /**
-     * constructor
-     *
      * If the given $target is a string it is used in different ways:
      * - if the string starts with http it is assumed to be a complete uri
      * - else it is assumed to be a path within the application
      *
-     * @param   string|\stubbles\peer\http\HttpUri  $target      path or uri to redirect to
-     * @param   int                                 $statusCode  status code for redirect
-     * @throws  \InvalidArgumentException
+     * @param  string|HttpUri  $target      path or uri to redirect to
+     * @param  int             $statusCode  status code for redirect
      */
-    public function __construct($target, int $statusCode)
-    {
-        if ($target instanceof HttpUri) {
-            $this->target = $target;
-        } elseif (is_string($target) && substr($target, 0, 4) === 'http') {
-            $this->target = HttpUri::fromString($target);
-        } elseif (is_string($target)) {
-            $this->target = $target;
-        } else {
-            throw new \InvalidArgumentException(
-                    'Given target must either be a string or an instance of stubbles\peer\http\HttpUri'
-            );
-        }
+    public function __construct(
+        private string|HttpUri $target,
+        private int $statusCode)
+    { }
 
-        $this->statusCode = $statusCode;
-    }
-
-    /**
-     * resolves the request and returns resource data
-     *
-     * @param   \stubbles\webapp\Request   $request   current request
-     * @param   \stubbles\webapp\Response  $response  response to send
-     * @param   \stubbles\webapp\UriPath   $uriPath   information about called uri path
-     * @return  null
-     */
-    public function resolve(Request $request, Response $response, UriPath $uriPath)
+    public function resolve(Request $request, Response $response, UriPath $uriPath): null
     {
         if ($this->target instanceof HttpUri) {
             $targetUri = $this->target;

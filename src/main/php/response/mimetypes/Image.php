@@ -21,36 +21,14 @@ use Throwable;
 class Image extends MimeType
 {
     /**
-     * @var  \stubbles\values\ResourceLoader
-     */
-    private $resourceLoader;
-    /**
-     * image to be displayed in case of errors
-     *
-     * @var  string
-     */
-    private $errorImgResource;
-
-    /**
-     * constructor
-     *
-     * @param  \stubbles\values\ResourceLoader  $resourceLoader
-     * @param  string                           $errorImgResource  optional  image to be displayed in case of errors
+     * @param  string  $errorImgResource  image to be displayed in case of errors
      * @Property{errorImgResource}('stubbles.img.error')
      */
     public function __construct(
-            ResourceLoader $resourceLoader,
-            string $errorImgResource = 'pixel.png'
-    ) {
-        $this->resourceLoader   = $resourceLoader;
-        $this->errorImgResource = $errorImgResource;
-    }
+        private ResourceLoader $resourceLoader,
+        private string $errorImgResource = 'pixel.png'
+    ) { }
 
-    /**
-     * returns default mime type name
-     *
-     * @return  string
-     */
     protected function defaultName(): string
     {
         return 'image/*';

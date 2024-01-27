@@ -19,67 +19,21 @@ namespace stubbles\webapp\response;
  */
 class Cookie
 {
-    /**
-     * name of the cookie
-     *
-     * @var  string
-     */
-    private $name     = '';
-    /**
-     * value of the cookie
-     *
-     * @var  string|null
-     */
-    private $value    = '';
-    /**
-     * timestamp when cookie expires
-     *
-     * @var  int
-     */
-    private $expires  = 0;
-    /**
-     * path for which the cookie should be available
-     *
-     * @var  string
-     */
-    private $path     = null;
-    /**
-     * domain where this cookie will be available
-     *
-     * @var  string
-     */
-    private $domain   = null;
-    /**
-     * switch whether cookie should only be used in secure connections
-     *
-     * @var  bool
-     */
-    private $secure   = false;
-    /**
-     * switch whether cookie should only be accessible through http
-     *
-     * @var  bool
-     */
-    private $httpOnly = true;
+    /** timestamp when cookie expires */
+    private int $expires = 0;
+    /** path for which the cookie should be available */
+    private ?string $path = null;
+    /** domain where this cookie will be available */
+    private ?string $domain = null;
+    /**switch whether cookie should only be used in secure connections */
+    private bool $secure = false;
+    /** switch whether cookie should only be accessible through http */
+    private bool $httpOnly = true;
 
-    /**
-     * constructor
-     *
-     * @param  string  $name   name of the cookie
-     * @param  string  $value  value of the cookie
-     */
-    public function __construct(string $name, string $value = null)
-    {
-        $this->name  = $name;
-        $this->value = $value;
-    }
+    public function __construct(private string $name, private ?string $value = null) { }
 
     /**
      * creates the cookie
-     *
-     * @param   string  $name   name of the cookie
-     * @param   string  $value  value of the cookie
-     * @return  \stubbles\webapp\response\Cookie
      */
     public static function create(string $name, string $value = null): self
     {
@@ -91,8 +45,7 @@ class Cookie
      *
      * Please note that $expires must be a timestamp in the future.
      *
-     * @param   int  $expires  timestamp in seconds since 1970
-     * @return  \stubbles\webapp\response\Cookie
+     * @param  int  $expires  timestamp in seconds since 1970
      */
     public function expiringAt(int $expires): self
     {
@@ -105,9 +58,7 @@ class Cookie
      *
      * The method will add the current timestamp to the given amount of seconds.
      *
-     * @param   int   $seconds
-     * @return  \stubbles\webapp\response\Cookie
-     * @since   1.5.0
+     * @since  1.5.0
      */
     public function expiringIn(int $seconds): self
     {
@@ -117,9 +68,6 @@ class Cookie
 
     /**
      * set the path for which the cookie should be available
-     *
-     * @param   string  $path
-     * @return  \stubbles\webapp\response\Cookie
      */
     public function forPath(string $path): self
     {
@@ -129,9 +77,6 @@ class Cookie
 
     /**
      * set the domain where this cookie will be available
-     *
-     * @param   string  $domain
-     * @return  \stubbles\webapp\response\Cookie
      */
     public function forDomain(string $domain): self
     {
@@ -141,8 +86,6 @@ class Cookie
 
     /**
      * set cookie only on secure connections
-     *
-     * @return  Cookie
      */
     public function restrictToSsl(): self
     {
@@ -152,8 +95,6 @@ class Cookie
 
     /**
      * disable setting the cookie as http only
-     *
-     * @return  \stubbles\webapp\response\Cookie
      */
     public function disableHttpOnly(): self
     {
@@ -163,8 +104,6 @@ class Cookie
 
     /**
      * returns name of cookie
-     *
-     * @return  string
      */
     public function name(): string
     {
@@ -173,8 +112,6 @@ class Cookie
 
     /**
      * returns value of cookie
-     *
-     * @return  string|null
      */
     public function value(): ?string
     {
@@ -183,8 +120,6 @@ class Cookie
 
     /**
      * returns expiration timestamp of cookie
-     *
-     * @return  int
      */
     public function expiration(): int
     {
@@ -193,8 +128,6 @@ class Cookie
 
     /**
      * returns path of cookie
-     *
-     * @return  string|null
      */
     public function path(): ?string
     {
@@ -203,8 +136,6 @@ class Cookie
 
     /**
      * returns domain of cookie
-     *
-     * @return  string|null
      */
     public function domain(): ?string
     {
@@ -213,8 +144,6 @@ class Cookie
 
     /**
      * checks whether cookie should only be sst on secure connections
-     *
-     * @return  bool
      */
     public function isRestrictedToSsl(): bool
     {
@@ -223,17 +152,12 @@ class Cookie
 
     /**
      * checks whether cookie should only be accessible through http
-     *
-     * @return  bool
      */
     public function isHttpOnly(): bool
     {
         return $this->httpOnly;
     }
 
-    /**
-     * sends the cookie
-     */
     public function send(): void
     {
         setcookie(

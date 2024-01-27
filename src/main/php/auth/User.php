@@ -21,37 +21,26 @@ interface User
 
     /**
      * name of the user, should be unique
-     *
-     * @return  string
      */
     public function name(): string;
 
     /**
      * first name of the user
-     *
-     * @return  string
      */
     public function firstName(): string;
 
     /**
      * last name of the user
-     *
-     * @return  string
      */
     public function lastName(): string;
 
     /**
      * mail address of the user
-     *
-     * @return  string
      */
     public function mailAddress(): string;
 
     /**
      * sets token for the user
-     *
-     * @param   \stubbles\webapp\auth\Token  $token
-     * @return  \stubbles\webapp\auth\User
      */
     public function setToken(Token $token): self;
 
@@ -60,16 +49,11 @@ interface User
      *
      * The token is already stored in the user afterwards, any further request
      * to token() will yield the same token.
-     *
-     * @param  string  $tokenSalt
-     * @return  \stubbles\webapp\auth\Token
      */
     public function createToken(string $tokenSalt): Token;
 
     /**
      * returns token for the user
-     *
-     * @return  \stubbles\webapp\auth\Token|null
      */
     public function token(): ?Token;
 }

@@ -21,73 +21,51 @@ use stubbles\webapp\auth\token\TokenStore;
 class Auth implements BindingModule
 {
     /**
-     * class name of authentication provider to use
+     * login provider to use if authentication provider has no own means of login
      *
      * @var  class-string<AuthenticationProvider>
      */
-    private $authenticationProvider;
+    private ?string $loginProvider = null;
     /**
-     * login provider to use of authentication provider has no own means of login
-     *
-     * @var  class-string<AuthenticationProvider>
-     */
-    private $loginProvider;
-    /**
-     * class which stores tokens
-     *
      * @var  class-string<TokenStore>
      */
-    private $tokenStore;
-    /**
-     * class name of authorization provider to use
-     *
-     * @var  class-string<AuthorizationProvider>|null
-     */
-    private $authorizationProvider;
-    /**
-     * switch whether to enable session caching or not
-     *
-     * @var  bool
-     */
-    private $enableSessionCaching = false;
+    private ?string $tokenStore = null;
+    private bool $enableSessionCaching = false;
 
     /**
      * constructor
      *
      * @param  class-string<AuthenticationProvider>  $authenticationProvider
-     * @param  class-string<AuthorizationProvider>   $authorizationProvider   optional
+     * @param  class-string<AuthorizationProvider>   $authorizationProvider
      */
-    public function __construct(string $authenticationProvider, string $authorizationProvider = null)
-    {
-        $this->authenticationProvider = $authenticationProvider;
-        $this->authorizationProvider  = $authorizationProvider;
-    }
+    public function __construct(
+        private string $authenticationProvider,
+        private ?string $authorizationProvider = null
+    ) { }
 
     /**
      * factory method
      *
      * @param   class-string<AuthenticationProvider>  $authenticationProvider
-     * @param   class-string<AuthorizationProvider>   $authorizationProvider   optional
-     * @return  self
+     * @param   class-string<AuthorizationProvider>   $authorizationProvider
      */
     public static function with(
-            string $authenticationProvider,
-            string $authorizationProvider = null
+        string $authenticationProvider,
+        string $authorizationProvider = null
     ): self {
         return new self($authenticationProvider, $authorizationProvider);
     }
 
     /**
-     *
      * @param   class-string<TokenStore>              $tokenStore             class which stores tokens
-     * @param   class-string<AuthenticationProvider>  $loginProvider          login provider to use because token authenticator has no own means of a login
-     * @param   class-string<AuthorizationProvider>   $authorizationProvider  optional
+     * @param   class-string<AuthenticationProvider>  $loginProvider          login provider as token authenticator has no login means
+     * @param   class-string<AuthorizationProvider>   $authorizationProvider 
      * @return  self
      */
     public static function usingTokens(
-            string $tokenStore,
-            string $loginProvider,
-            string $authorizationProvider = null
+        string $tokenStore,
+        string $loginProvider,
+        string $authorizationProvider = null
     ): self {
         $self = new self(TokenAuthenticator::class, $authorizationProvider);
         $self->loginProvider = $loginProvider;
@@ -97,8 +75,6 @@ class Auth implements BindingModule
 
     /**
      * enables session caching of authentication and authorization information
-     *
-     * @return  self
      */
     public function enableSessionCaching(): self
     {
@@ -106,42 +82,51 @@ class Auth implements BindingModule
         return $this;
     }
 
-    /**
-     * configure the binder
-     *
-     * @param  \stubbles\ioc\Binder  $binder
-     * @param  string                $projectPath  optional  project base path
-     */
     public function configure(Binder $binder, string $projectPath = null): void
     {
         if ($this->enableSessionCaching) {
-            $binder->bind(AuthenticationProvider::class)
-                   ->to(CachingAuthenticationProvider::class);
-            $binder->bind(AuthenticationProvider::class)
-               ->named('original')
-               ->to($this->authenticationProvider);
-            if (null !== $this->authorizationProvider) {
-                $binder->bind(AuthorizationProvider::class)
-                   ->to(CachingAuthorizationProvider::class);
-                $binder->bind(AuthorizationProvider::class)
-                       ->named('original')
-                       ->to($this->authorizationProvider);
-            }
+            $this->configureWithSessionCaching($binder);
         } else {
-            $binder->bind(AuthenticationProvider::class)
-               ->to($this->authenticationProvider);
-            if (null !== $this->authorizationProvider) {
-                $binder->bind(AuthorizationProvider::class)
-                       ->to($this->authorizationProvider);
-            }
+            $this->configureWithoutSessionCaching($binder);
         }
 
         if (null !== $this->tokenStore) {
-            $binder->bind(AuthenticationProvider::class)
-                   ->named('stubbles.webapp.auth.token.loginProvider')
-                   ->to($this->loginProvider);
-            $binder->bind(TokenStore::class)
-                   ->to($this->tokenStore);
+            $this->configureTokenStore($binder);
         }
+    }
+
+    private function configureWithSessionCaching(Binder $binder): void
+    {
+        $binder->bind(AuthenticationProvider::class)
+            ->to(CachingAuthenticationProvider::class);
+        $binder->bind(AuthenticationProvider::class)
+            ->named('original')
+            ->to($this->authenticationProvider);
+        if (null !== $this->authorizationProvider) {
+            $binder->bind(AuthorizationProvider::class)
+                ->to(CachingAuthorizationProvider::class);
+            $binder->bind(AuthorizationProvider::class)
+                ->named('original')
+                ->to($this->authorizationProvider);
+        }
+    }
+
+    private function configureWithoutSessionCaching(Binder $binder): void
+    {
+        $binder->bind(AuthenticationProvider::class)
+            ->to($this->authenticationProvider);
+        if (null !== $this->authorizationProvider) {
+            $binder->bind(AuthorizationProvider::class)
+                ->to($this->authorizationProvider);
+        }
+    }
+
+    private function configureTokenStore(Binder $binder): void
+    {
+        $binder->bind(AuthenticationProvider::class)
+            ->named('stubbles.webapp.auth.token.loginProvider')
+            ->to($this->loginProvider);
+        $binder->bind(TokenStore::class)
+            ->to($this->tokenStore);
     }
 }

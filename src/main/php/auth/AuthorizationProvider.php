@@ -23,9 +23,7 @@ interface AuthorizationProvider
      * about an error it can not resolve it should throw an
      * stubbles\webapp\auth\AuthProviderException.
      *
-     * @param   \stubbles\webapp\auth\User  $user
-     * @return  \stubbles\webapp\auth\Roles|null
-     * @throws  \stubbles\webapp\auth\AuthProviderException
+     * @throws  AuthProviderException
      */
     public function roles(User $user): ?Roles;
 }

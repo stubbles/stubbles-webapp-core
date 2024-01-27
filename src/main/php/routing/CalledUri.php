@@ -7,6 +7,8 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 namespace stubbles\webapp\routing;
+
+use InvalidArgumentException;
 use stubbles\peer\http\HttpUri;
 use stubbles\webapp\UriPath;
 /**
@@ -16,46 +18,30 @@ use stubbles\webapp\UriPath;
  */
 class CalledUri
 {
-    /**
-     * current uri
-     *
-     * @var  \stubbles\peer\http\HttpUri
-     */
-    private $uri;
-    /**
-     * current request method
-     *
-     * @var  string
-     */
-    private $method;
+    private HttpUri $uri;
 
     /**
-     * constructor
-     *
-     * @param   string|\stubbles\peer\http\HttpUri  $requestUri
-     * @param   string                              $requestMethod
-     * @throws  \InvalidArgumentException
+     * @throws  InvalidArgumentException
      */
-    public function __construct($requestUri, string $requestMethod)
-    {
-        if (empty($requestMethod)) {
-            throw new \InvalidArgumentException('Request method can not be empty');
+    public function __construct(
+        string|HttpUri $requestUri,
+        private string $method
+    ) {
+        if (empty($method)) {
+            throw new InvalidArgumentException('Request method can not be empty');
         }
 
-        $this->uri    = HttpUri::castFrom($requestUri, 'requestUri');
-        $this->method = $requestMethod;
+        $this->uri = HttpUri::castFrom($requestUri, 'requestUri');
     }
 
     /**
      * casts given values to an instance of UriRequest
      *
-     * @param   string|\stubbles\webapp\routing\CalledUri|\stubbles\peer\http\HttpUri  $requestUri
-     * @param   string                                                                 $requestMethod
-     * @return  \stubbles\webapp\routing\CalledUri
-     * @since   4.0.0
+     * @since  4.0.0
      */
-    public static function castFrom($requestUri, string $requestMethod = null): self
-    {
+    public static function castFrom(
+        string|self|HttpUri $requestUri, string $requestMethod = null
+    ): self {
         if ($requestUri instanceof self) {
             return $requestUri;
         }
@@ -66,8 +52,7 @@ class CalledUri
     /**
      * returns called method
      *
-     * @return  string
-     * @since   4.0.0
+     * @since  4.0.0
      */
     public function method(): string
     {
@@ -76,11 +61,8 @@ class CalledUri
 
     /**
      * checks if request method equals given method
-     *
-     * @param   string  $method
-     * @return  bool
      */
-    public function methodEquals(string $method = null): bool
+    public function methodEquals(?string $method = null): bool
     {
         if (empty($method)) {
             return true;
@@ -91,11 +73,8 @@ class CalledUri
 
     /**
      * checks if given path is satisfied by request path
-     *
-     * @param   string  $expectedPath
-     * @return  bool
      */
-    public function satisfiesPath(string $expectedPath = null): bool
+    public function satisfiesPath(?string $expectedPath = null): bool
     {
         if (empty($expectedPath)) {
             return true;
@@ -111,12 +90,9 @@ class CalledUri
     /**
      * checks if given method and path is satisfied by request
      *
-     * @param   string  $method
-     * @param   string  $expectedPath
-     * @return  bool
-     * @since   3.4.0
+     * @since  3.4.0
      */
-    public function satisfies(string $method = null, string $expectedPath = null): bool
+    public function satisfies(?string $method = null, ?string $expectedPath = null): bool
     {
         return $this->methodEquals($method) && $this->satisfiesPath($expectedPath);
     }
@@ -124,9 +100,7 @@ class CalledUri
     /**
      * return path part of called uri
      *
-     * @param   string  $configuredPath
-     * @return  \stubbles\webapp\UriPath
-     * @since   4.0.0
+     * @since  4.0.0
      */
     public function path(string $configuredPath): UriPath
     {
@@ -136,8 +110,7 @@ class CalledUri
     /**
      * checks whether request was made using https
      *
-     * @return  bool
-     * @since   2.0.0
+     * @since  2.0.0
      */
     public function isHttps(): bool
     {
@@ -147,8 +120,7 @@ class CalledUri
     /**
      * transposes uri to http
      *
-     * @return  \stubbles\peer\http\HttpUri
-     * @since   2.0.0
+     * @since  2.0.0
      */
     public function toHttp(): HttpUri
     {
@@ -158,8 +130,7 @@ class CalledUri
     /**
      * transposes uri to https
      *
-     * @return  \stubbles\peer\http\HttpUri
-     * @since   2.0.0
+     * @since  2.0.0
      */
     public function toHttps(): HttpUri
     {
@@ -169,8 +140,7 @@ class CalledUri
     /**
      * returns string representation
      *
-     * @return  string
-     * @since   2.0.0
+     * @since  2.0.0
      */
     public function __toString(): string
     {

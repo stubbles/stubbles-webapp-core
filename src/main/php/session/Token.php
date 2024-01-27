@@ -21,34 +21,17 @@ class Token
      */
     const NEXT_TOKEN = '__stubbles_SessionNextToken';
     /**
-     * session
-     *
-     * @var  Session
-     */
-    private $session;
-    /**
      * the current token of the session, changes on every instantiation
-     *
-     * @var  string
      */
-    private $current;
+    private ?string $current = null;
 
     /**
-     * constructor
-     *
-     * @param  Session  $session
      * @Inject
      */
-    public function __construct(Session $session)
-    {
-        $this->session = $session;
-    }
+    public function __construct(private Session $session) { }
 
     /**
      * checks if given token equals current token
-     *
-     * @param   string  $token
-     * @return  bool
      */
     public function isValid(string $token): bool
     {
@@ -58,8 +41,6 @@ class Token
 
     /**
      * returns next token
-     *
-     * @return  string
      */
     public function next(): string
     {
@@ -67,9 +48,6 @@ class Token
         return $this->session->value(self::NEXT_TOKEN);
     }
 
-    /**
-     * initialize
-     */
     private function init(): void
     {
         if (null === $this->current) {

@@ -12,8 +12,7 @@ namespace stubbles\webapp {
     /**
      * returns class name for session based HTML file pass through processor
      *
-     * @return  string
-     * @since   4.0.0
+     * @since  4.0.0
      */
     function htmlPassThrough(): string
     {
@@ -23,8 +22,7 @@ namespace stubbles\webapp {
     /**
      * returns class name for session based HTML file pass through processor
      *
-     * @return  string
-     * @since   4.0.0
+     * @since  4.0.0
      */
     function sessionBasedHtmlPassThrough(): string
     {
@@ -45,10 +43,7 @@ namespace stubbles\webapp\session {
     /**
      * returns a callable which creates a session based on php's session implementation
      *
-     * @param   string    $sessionName   name of session to create
-     * @param   string    $fingerPrint   unique fingerprint for user agent
-     * @return  \stubbles\webapp\session\WebSession
-     * @since   4.0.0
+     * @since  4.0.0
      */
     function native(string $sessionName, string $fingerPrint): WebSession
     {
@@ -62,22 +57,20 @@ namespace stubbles\webapp\session {
      * The resulting session will create a new session id with each request. It
      * does not store any values between requests.
      *
-     * @return  \stubbles\webapp\session\WebSession
-     * @since   4.0.0
+     * @since  4.0.0
      */
     function noneDurable(): WebSession
     {
         return new WebSession(
-                new ArraySessionStorage(),
-                new NoneDurableSessionId(),
-                uniqid()
+            new ArraySessionStorage(),
+            new NoneDurableSessionId(),
+            uniqid()
         );
     }
 
     /**
      * creates a session which does nothing, not even storing any values
      *
-     * @return  \stubbles\webapp\session\NullSession
      * @since   5.0.0
      */
     function nullSession(): NullSession
@@ -86,21 +79,17 @@ namespace stubbles\webapp\session {
     }
 
     /**
-     * returns a callable which creates a session that is durable between requests but does not store any values
+     * creates a session that is durable between requests but does not store any values
      *
      * The resulting session will keep the session id between requests, but not
      * any value that is stored within the session.
      *
-     * @param   \stubbles\webapp\Request   $request
-     * @param   \stubbles\webapp\Response  $response
-     * @param   string                     $sessionCookieName  name of cookie to store session id in
-     * @return  \stubbles\webapp\session\NullSession
      * @since   4.0.0
      */
     function noneStoring(Request $request, Response $response, string $sessionCookieName): NullSession
     {
         return new NullSession(
-                new WebBoundSessionId($request, $response, $sessionCookieName)
+            new WebBoundSessionId($request, $response, $sessionCookieName)
         );
     }
 }

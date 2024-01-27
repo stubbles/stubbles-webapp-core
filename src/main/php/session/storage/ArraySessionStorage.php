@@ -15,12 +15,8 @@ use stubbles\webapp\session\Session;
  */
 class ArraySessionStorage implements SessionStorage
 {
-    /**
-     * the data
-     *
-     * @var  array<string,mixed>
-     */
-    private $data;
+    /** @var  array<string,mixed> */
+    private array $data;
 
     /**
      * constructor
@@ -32,8 +28,6 @@ class ArraySessionStorage implements SessionStorage
 
     /**
      * removes all data from storage
-     *
-     * @return  \stubbles\webapp\session\storage\SessionStorage
      */
     public function clear(): SessionStorage
     {
@@ -43,9 +37,6 @@ class ArraySessionStorage implements SessionStorage
 
     /**
      * checks whether a value associated with key exists
-     *
-     * @param   string  $key  key where value is stored under
-     * @return  bool
      */
     public function hasValue(string $key): bool
     {
@@ -54,23 +45,16 @@ class ArraySessionStorage implements SessionStorage
 
     /**
      * returns a value associated with the key or the default value
-     *
-     * @param   string  $key  key where value is stored under
-     * @return  mixed
      */
-    public function value(string $key)
+    public function value(string $key): mixed
     {
         return $this->data[$key] ?? null;
     }
 
     /**
      * stores a value associated with the key
-     *
-     * @param   string  $key    key to store value under
-     * @param   mixed   $value  data to store
-     * @return  \stubbles\webapp\session\storage\SessionStorage
      */
-    public function putValue(string $key, $value): SessionStorage
+    public function putValue(string $key, mixed $value): SessionStorage
     {
         $this->data[$key] = $value;
         return $this;
@@ -78,9 +62,6 @@ class ArraySessionStorage implements SessionStorage
 
     /**
      * removes a value from the session
-     *
-     * @param   string  $key  key where value is stored under
-     * @return  \stubbles\webapp\session\storage\SessionStorage
      */
     public function removeValue(string $key): SessionStorage
     {

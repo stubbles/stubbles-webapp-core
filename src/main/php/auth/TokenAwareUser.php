@@ -14,19 +14,8 @@ namespace stubbles\webapp\auth;
  */
 abstract class TokenAwareUser implements User
 {
-    /**
-     * the token
-     *
-     * @var  \stubbles\webapp\auth\Token
-     */
-    private $token;
+    private ?Token $token = null;
 
-    /**
-     * sets token for the user
-     *
-     * @param   \stubbles\webapp\auth\Token  $token
-     * @return  \stubbles\webapp\auth\User
-     */
     public function setToken(Token $token): User
     {
         $this->token = $token;
@@ -38,9 +27,6 @@ abstract class TokenAwareUser implements User
      *
      * The token is already stored in the user afterwards, any further request
      * to token() will yield the same token.
-     *
-     * @param   string  $tokenSalt
-     * @return  \stubbles\webapp\auth\Token
      */
     public function createToken(string $tokenSalt): Token
     {
@@ -49,11 +35,6 @@ abstract class TokenAwareUser implements User
         return $token;
     }
 
-    /**
-     * returns token for the user
-     *
-     * @return  \stubbles\webapp\auth\Token|null
-     */
     public function token(): ?Token
     {
         return $this->token;

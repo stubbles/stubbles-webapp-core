@@ -24,60 +24,20 @@ class WebBoundSessionId implements SessionId
      * @var  string
      */
     const SESSION_ID_REGEX = '/^([a-zA-Z0-9]{32})$/D';
-    /**
-     * request instance
-     *
-     * @var  \stubbles\webapp\Request
-     */
-    private $request;
-    /**
-     * response instance
-     *
-     * @var  \stubbles\webapp\Response
-     */
-    private $response;
-    /**
-     * name of session
-     *
-     * @var  string
-     */
-    private $sessionName;
-    /**
-     * actual id
-     *
-     * @var  string|null
-     */
-    private $id;
+    /** actual id */
+    private ?string $id = null;
 
-    /**
-     * constructor
-     *
-     * @param  \stubbles\webapp\Request   $request
-     * @param  \stubbles\webapp\Response  $response
-     * @param  string                     $sessionName
-     */
-    public function __construct(Request $request, Response $response, string $sessionName)
-    {
-        $this->request     = $request;
-        $this->response    = $response;
-        $this->sessionName = $sessionName;
-    }
+    public function __construct(
+        private Request $request,
+        private Response $response,
+        private string $sessionName
+    ) { }
 
-    /**
-     * returns session name
-     *
-     * @return  string
-     */
     public function name(): string
     {
         return $this->sessionName;
     }
 
-    /**
-     * reads session id
-     *
-     * @return  string
-     */
     public function __toString(): string
     {
         if (null === $this->id) {
@@ -90,51 +50,33 @@ class WebBoundSessionId implements SessionId
         return $this->id;
     }
 
-    /**
-     * reads session id
-     *
-     * @return  string|null
-     */
     private function read(): ?string
     {
         if ($this->request->hasParam($this->sessionName)) {
-            return $this->request->readParam($this->sessionName)->ifMatches(self::SESSION_ID_REGEX);
+            return $this->request->readParam($this->sessionName)
+                ->ifMatches(self::SESSION_ID_REGEX);
         } elseif ($this->request->hasCookie($this->sessionName)) {
-            return $this->request->readCookie($this->sessionName)->ifMatches(self::SESSION_ID_REGEX);
+            return $this->request->readCookie($this->sessionName)
+                ->ifMatches(self::SESSION_ID_REGEX);
         }
 
         return null;
     }
 
-    /**
-     * creates session id
-     *
-     * @return  string
-     */
     private function create(): string
     {
         return md5(uniqid((string) rand(), true));
     }
 
-    /**
-     * stores session id for given session name
-     *
-     * @return  \stubbles\webapp\session\id\SessionId
-     */
     public function regenerate(): SessionId
     {
         $this->id = $this->create();
         $this->response->addCookie(
-                Cookie::create($this->sessionName, $this->id)->forPath('/')
+            Cookie::create($this->sessionName, $this->id)->forPath('/')
         );
         return $this;
     }
 
-    /**
-     * invalidates session id
-     *
-     * @return  \stubbles\webapp\session\id\SessionId
-     */
     public function invalidate(): SessionId
     {
         $this->response->removeCookie($this->sessionName);

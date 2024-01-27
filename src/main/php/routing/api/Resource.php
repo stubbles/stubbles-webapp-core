@@ -18,69 +18,32 @@ use stubbles\webapp\routing\RoutingAnnotations;
  */
 class Resource implements \JsonSerializable
 {
-    /**
-     * @var  string|null
-     */
-    private $name;
-    /**
-     * list of allowed request methods for this resource
-     *
-     * @var  string[]
-     */
-    private $requestMethods;
-    /**
-     * @var  \stubbles\webapp\routing\api\Links
-     */
-    private $links;
-    /**
-     * list of mime types supported by this resource
-     *
-     * @var  string[]
-     */
-    private $mimeTypes;
-    /**
-     * list of annotations on resource
-     *
-     * @var  \stubbles\webapp\routing\RoutingAnnotations
-     */
-    private $annotations;
-    /**
-     * authentication and authorization constraints of resource
-     *
-     * @var  \stubbles\webapp\auth\AuthConstraint
-     */
-    private $authConstraint;
+    private Links $links;
 
     /**
      * constructor
      *
-     * @param  string|null                                  $name            name of resource
-     * @param  string[]                                     $requestMethods  list of possible request methods
-     * @param  \stubbles\peer\http\HttpUri                  $selfUri         uri under which resource is available
-     * @param  string[]                                     $mimeTypes       list of supported mime types
-     * @param  \stubbles\webapp\routing\RoutingAnnotations  $annotations     list of annotations on resource
-     * @param  \stubbles\webapp\auth\AuthConstraint         $authConstraint  authentication and authorization constraints of resource
+     * @param  string|null         $name            name of resource
+     * @param  string[]            $requestMethods  list of possible request methods
+     * @param  HttpUri             $selfUri         uri under which resource is available
+     * @param  string[]            $mimeTypes       list of supported mime types
+     * @param  RoutingAnnotations  $annotations     list of annotations on resource
+     * @param  AuthConstraint      $authConstraint  authentication and authorization constraints of resource
      */
     public function __construct(
-            $name,
-            array $requestMethods,
-            HttpUri $selfUri,
-            array $mimeTypes,
-            RoutingAnnotations $annotations,
-            AuthConstraint $authConstraint)
+        private ?string $name,
+        private array $requestMethods,
+        HttpUri $selfUri,
+        private array $mimeTypes,
+        private RoutingAnnotations $annotations,
+        private AuthConstraint $authConstraint)
     {
-        $this->name           = $name;
-        $this->requestMethods = $requestMethods;
-        $this->links          = new Links('self', $selfUri);
-        $this->mimeTypes      = $mimeTypes;
-        $this->annotations    = $annotations;
-        $this->authConstraint = $authConstraint;
+        $this->links = new Links('self', $selfUri);
     }
 
     /**
      * returns name of resource
      *
-     * @return  string|null
      * @XmlAttribute(attributeName='name')
      */
     public function name(): ?string
@@ -101,7 +64,6 @@ class Resource implements \JsonSerializable
     /**
      * checks whether resource has a description
      *
-     * @return  bool
      * @XmlIgnore
      */
     public function hasDescription(): bool
@@ -112,7 +74,6 @@ class Resource implements \JsonSerializable
     /**
      * returns description of resource
      *
-     * @return  string|null
      * @XmlTag(tagName='description')
      */
     public function description(): ?string
@@ -120,14 +81,7 @@ class Resource implements \JsonSerializable
         return $this->annotations->description();
     }
 
-    /**
-     * adds a link for this resource
-     *
-     * @param   string                              $rel  relation of this link to the resource
-     * @param   string|\stubbles\peer\http\HttpUri  $uri  actual uri
-     * @return  \stubbles\webapp\routing\api\Link
-     */
-    public function addLink(string $rel, $uri): Link
+    public function addLink(string $rel, string|HttpUri $uri): Link
     {
         return $this->links->add($rel, HttpUri::castFrom($uri));
     }
@@ -135,7 +89,6 @@ class Resource implements \JsonSerializable
     /**
      * returns uri path where resource is available
      *
-     * @return  \stubbles\webapp\routing\api\Links
      * @XmlTag(tagName='links')
      */
     public function links(): Links
@@ -146,7 +99,6 @@ class Resource implements \JsonSerializable
     /**
      * checks if any mime types are defined for this resource
      *
-     * @return  bool
      * @XmlIgnore
      */
     public function hasMimeTypes(): bool
@@ -168,7 +120,6 @@ class Resource implements \JsonSerializable
     /**
      * checks if information about status codes is provided
      *
-     * @return  bool
      * @XmlIgnore
      */
     public function providesStatusCodes(): bool
@@ -179,7 +130,7 @@ class Resource implements \JsonSerializable
     /**
      * returns list of possible response status codes
      *
-     * @return  \stubbles\webapp\routing\api\Status[]
+     * @return  Status[]
      * @XmlTag(tagName='responses')
      */
     public function statusCodes(): array
@@ -190,7 +141,6 @@ class Resource implements \JsonSerializable
     /**
      * checks if information about response headers is provided
      *
-     * @return  bool
      * @XmlIgnore
      */
     public function hasHeaders(): bool
@@ -201,7 +151,7 @@ class Resource implements \JsonSerializable
     /**
      * returns list of possible response headers
      *
-     * @return  \stubbles\webapp\routing\api\Header[]
+     * @return  Header[]
      * @XmlTag(tagName='headers')
      */
     public function headers(): array
@@ -212,7 +162,6 @@ class Resource implements \JsonSerializable
     /**
      * checks if information about parameters is provided
      *
-     * @return  bool
      * @XmlIgnore
      */
     public function hasParameters(): bool
@@ -223,7 +172,7 @@ class Resource implements \JsonSerializable
     /**
      * returns list of parameters that can be used for on this resource
      *
-     * @return  \stubbles\webapp\routing\api\Parameter[]
+     * @return  Parameter[]
      * @XmlTag(tagName='parameters')
      */
     public function parameters(): array
@@ -234,7 +183,6 @@ class Resource implements \JsonSerializable
     /**
      * returns auth constraint of resource
      *
-     * @return  \stubbles\webapp\auth\AuthConstraint
      * @XmlTag(tagName='auth')
      */
     public function authConstraint(): AuthConstraint
@@ -251,15 +199,15 @@ class Resource implements \JsonSerializable
     public function jsonSerialize(): array
     {
         return [
-                'name'        => $this->name,
-                'methods'     => $this->requestMethods,
-                'description' => $this->annotations->description(),
-                'produces'    => $this->mimeTypes,
-                'responses'   => $this->annotations->statusCodes(),
-                'headers'     => $this->annotations->headers(),
-                'parameters'  => $this->annotations->parameters(),
-                'auth'        => $this->authConstraint,
-                '_links'      => $this->links
+            'name'        => $this->name,
+            'methods'     => $this->requestMethods,
+            'description' => $this->annotations->description(),
+            'produces'    => $this->mimeTypes,
+            'responses'   => $this->annotations->statusCodes(),
+            'headers'     => $this->annotations->headers(),
+            'parameters'  => $this->annotations->parameters(),
+            'auth'        => $this->authConstraint,
+            '_links'      => $this->links
         ];
     }
 }

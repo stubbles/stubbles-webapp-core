@@ -16,51 +16,27 @@ use stubbles\input\ValueReader;
 class UriPath
 {
     /**
-     * path configured in routing
-     *
-     * @var  string
-     */
-    private $configuredPath;
-    /**
-     * complete called path from request
-     *
-     * @var  string
-     */
-    private $calledPath;
-    /**
      * map of path arguments
      *
      * @var  string[]
      */
-    private $arguments;
+    private ?array $arguments = null;
 
     /**
      * creates a pattern for given path
-     *
-     * @param   string  $path
-     * @return  string
      */
     public static function pattern(string $path): ?string
     {
-        return \preg_replace('/[{][^}]*[}]/', '([^\/]+)', \str_replace('/', '\/', $path));
+        return preg_replace('/[{][^}]*[}]/', '([^\/]+)', \str_replace('/', '\/', $path));
     }
 
-    /**
-     * constructor
-     *
-     * @param  string  $configuredPath  path configured in routing
-     * @param  string  $calledPath      complete called path from request
-     */
-    public function __construct(string $configuredPath, string $calledPath)
-    {
-        $this->configuredPath = $configuredPath;
-        $this->calledPath     = $calledPath;
-    }
+    public function __construct(
+        private string $configuredPath,
+        private string $calledPath
+    ) { }
 
     /**
      * returns matched path from route configuration
-     *
-     * @return  string
      */
     public function configured(): string
     {
@@ -70,8 +46,7 @@ class UriPath
     /**
      * returns actual path that was called
      *
-     * @return  string
-     * @since   4.0.0
+     * @since  4.0.0
      */
     public function actual(): string
     {
@@ -80,8 +55,6 @@ class UriPath
 
     /**
      * returns actual path that was called
-     *
-     * @return  string
      */
     public function __toString(): string
     {
@@ -90,9 +63,6 @@ class UriPath
 
     /**
      * checks if path contains argument with given name
-     *
-     * @param   string  $name
-     * @return  bool
      */
     public function hasArgument(string $name): bool
     {
@@ -103,8 +73,6 @@ class UriPath
     /**
      * returns argument with given name or default if not set
      *
-     * @param   string  $name
-     * @return  \stubbles\input\ValueReader
      * @since   3.3.0
      */
     public function readArgument(string $name): ValueReader
@@ -142,9 +110,6 @@ class UriPath
 
     /**
      * returns remaining path that was not matched by original path
-     *
-     * @param   string  $default
-     * @return  string
      */
     public function remaining(string $default = ''): string
     {

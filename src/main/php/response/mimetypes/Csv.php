@@ -7,6 +7,8 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 namespace stubbles\webapp\response\mimetypes;
+
+use RuntimeException;
 use stubbles\sequence\Sequence;
 use stubbles\streams\OutputStream;
 use stubbles\webapp\response\Error;
@@ -18,24 +20,13 @@ use function stubbles\values\typeOf;
  */
 class Csv extends MimeType
 {
-    /**
-     * delimiter to be used for csv
-     *
-     * @var  string
-     */
-    private $delimiter = ',';
-    /**
-     * character to enclose single fields with in csv
-     *
-     * @var  string
-     */
-    private $enclosure = '"';
+    /** delimiter to be used for csv */
+    private string $delimiter = ',';
+    /** character to enclose single fields with in csv */
+    private string $enclosure = '"';
 
     /**
      * allows to change the delimiter character
-     *
-     * @param   string  $delimiter
-     * @return  \stubbles\webapp\response\mimetypes\Csv
      */
     public function changeDelimiterTo(string $delimiter): self
     {
@@ -45,9 +36,6 @@ class Csv extends MimeType
 
     /**
      * allows to change the enclosure character
-     *
-     * @param   string  $enclosure
-     * @return  \stubbles\webapp\response\mimetypes\Csv
      */
     public function changeEnclosureTo(string $enclosure): self
     {
@@ -55,11 +43,6 @@ class Csv extends MimeType
         return $this;
     }
 
-    /**
-     * returns default mime type name
-     *
-     * @return  string
-     */
     protected function defaultName(): string
     {
         return 'text/csv';
@@ -67,13 +50,8 @@ class Csv extends MimeType
 
     /**
      * serializes resource to output stream
-     *
-     * @template T of OutputStream
-     * @param   mixed  $resource
-     * @param   T      $out
-     * @return  T
      */
-    public function serialize($resource, OutputStream $out): OutputStream
+    public function serialize(mixed $resource, OutputStream $out): OutputStream
     {
         if (is_scalar($resource) || $resource instanceof Error) {
             $out->writeLine((string) $resource);
@@ -95,15 +73,13 @@ class Csv extends MimeType
     /**
      * serializes iterable to csv
      *
-     * @template T of OutputStream
      * @param  iterable<mixed>  $resource
-     * @param  T                $out
      */
-    private function serializeIterable($resource, OutputStream $out): void
+    private function serializeIterable(iterable $resource, OutputStream $out): void
     {
         $memory = fopen('php://memory', 'wb');
         if (false === $memory) {
-            throw new \RuntimeException('Could not open memory');
+            throw new RuntimeException('Could not open memory');
         }
 
         if (is_array($resource) && is_scalar(current($resource))) {
@@ -130,7 +106,6 @@ class Csv extends MimeType
     /**
      * @param   mixed[]   $elements
      * @param   resource  $memory
-     * @return  string
      */
     private function toCsvLine(array $elements, $memory): string
     {
@@ -140,7 +115,7 @@ class Csv extends MimeType
         rewind($memory);
         $result = stream_get_contents($memory);
         if (false === $result) {
-            throw new \RuntimeException('Could not read serialized csv line from memory');
+            throw new RuntimeException('Could not read serialized csv line from memory');
         }
 
         return $result;

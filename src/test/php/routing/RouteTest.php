@@ -33,25 +33,6 @@ use function bovigo\assert\{
 class RouteTest extends TestCase
 {
     /**
-     * @test
-     */
-    public function constructRouteWithInvalidCallbackThrowsIllegalArgumentException(): void
-    {
-        expect(function() { new Route('/hello', 500, 'GET'); })
-                ->throws(\InvalidArgumentException::class);
-    }
-
-    /**
-     * @test
-     * @since  4.0.0
-     */
-    public function constructRouteWithInvalidRequestMethodThrowsIllegalArgumentException(): void
-    {
-        expect(function() { new Route('/hello', function() {}, 500); })
-                ->throws(\InvalidArgumentException::class);
-    }
-
-    /**
      * @param   string|string[]|null  $method
      * @return  Route
      */
@@ -200,15 +181,6 @@ class RouteTest extends TestCase
     /**
      * @test
      */
-    public function addInvalidPreInterceptorThrowsIllegalArgumentException(): void
-    {
-        expect(function() { $this->createRoute()->preIntercept(303); })
-                ->throws(\InvalidArgumentException::class);
-    }
-
-    /**
-     * @test
-     */
     public function hasGivenListOfPreInterceptors(): void
     {
         $preInterceptorClosure  = function() {};
@@ -236,15 +208,6 @@ class RouteTest extends TestCase
     public function hasNoPostInterceptorsByDefault(): void
     {
         assertEmptyArray($this->createRoute()->postInterceptors());
-    }
-
-    /**
-     * @test
-     */
-    public function addInvalidPostInterceptorThrowsIllegalArgumentException(): void
-    {
-        expect(function() { $this->createRoute()->postIntercept(303); })
-                ->throws(\InvalidArgumentException::class);
     }
 
     /**

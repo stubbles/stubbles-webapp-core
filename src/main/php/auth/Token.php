@@ -14,66 +14,35 @@ namespace stubbles\webapp\auth;
  */
 class Token
 {
-    /**
-     * actual token value
-     *
-     * @var  string|null
-     */
-    private $value;
-
-    /**
-     * constructor
-     *
-     * @param  string  $value
-     */
-    public function __construct(string $value = null)
-    {
-        $this->value = $value;
-    }
+    public function __construct(private ?string $value = null) { }
 
     /**
      * creates token for given user
      *
-     * @param   \stubbles\webapp\auth\User  $user  user to create token for
-     * @param   string                      $salt  salt to use for token creation
-     * @return  \stubbles\webapp\auth\Token
+     * @param  User    $user  user to create token for
+     * @param  string  $salt  salt to use for token creation
      */
     public static function create(User $user, string $salt): self
     {
         return new self(md5($salt . serialize([
-                $user->name(),
-                $user->firstName(),
-                $user->lastName(),
-                $user->mailAddress(),
-                self::createRandomContent()
+            $user->name(),
+            $user->firstName(),
+            $user->lastName(),
+            $user->mailAddress(),
+            self::createRandomContent()
         ])));
     }
 
-    /**
-     * creates some random token content
-     *
-     * @return  string
-     */
     private static function createRandomContent(): string
     {
         return uniqid('', true);
     }
 
-    /**
-     * check if token is empty
-     *
-     * @return  bool
-     */
     public function isEmpty(): bool
     {
         return null == $this->value;
     }
 
-    /**
-     * returns string value
-     *
-     * @return  string
-     */
     public function __toString(): string
     {
         return (string) $this->value;

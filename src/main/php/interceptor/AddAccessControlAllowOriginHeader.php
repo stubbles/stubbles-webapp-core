@@ -31,20 +31,13 @@ use stubbles\webapp\Response;
  */
 class AddAccessControlAllowOriginHeader implements PostInterceptor
 {
-    /**
-     * list of allowed origin hosts
-     *
-     * @var  string[]
-     */
-    private $allowedOriginHosts;
+    private array $allowedOriginHosts;
 
     /**
-     * constructor
-     *
-     * @param   string|string[]  $allowedOriginHosts
+     * @param  string|string[]  $allowedOriginHosts
      * @Property('stubbles.webapp.origin.hosts')
      */
-    public function __construct($allowedOriginHosts)
+    public function __construct(string|array $allowedOriginHosts)
     {
         if (is_string($allowedOriginHosts)) {
             $this->allowedOriginHosts = explode('|', $allowedOriginHosts);
@@ -53,13 +46,6 @@ class AddAccessControlAllowOriginHeader implements PostInterceptor
         }
     }
 
-    /**
-     * does the postprocessing stuff
-     *
-     * @param   \stubbles\webapp\Request   $request   current request
-     * @param   \stubbles\webapp\Response  $response  response to send
-     * @return  bool
-     */
     public function postProcess(Request $request, Response $response): bool
     {
         if (empty($this->allowedOriginHosts) || !$request->hasHeader('HTTP_ORIGIN')) {

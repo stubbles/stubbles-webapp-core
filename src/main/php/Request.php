@@ -32,16 +32,13 @@ interface Request extends \stubbles\input\Request
      * letters, digits, or the characters +, /, =, and -. Invalid or missing ids
      * will be ignored and replaced with generated ones.
      *
-     * @return  string
-     * @since   4.2.0
-     * @see     https://devcenter.heroku.com/articles/http-request-id
+     * @since  4.2.0
+     * @see    https://devcenter.heroku.com/articles/http-request-id
      */
     public function id(): string;
 
     /**
      * checks whether request was made using ssl
-     *
-     * @return  bool
      */
     public function isSsl(): bool;
 
@@ -53,8 +50,7 @@ interface Request extends \stubbles\input\Request
      * version according to http://tools.ietf.org/html/rfc7230#section-2.6 the
      * return value will be null.
      *
-     * @return  \stubbles\peer\http\HttpVersion
-     * @since   2.0.2
+     * @since  2.0.2
      */
     public function protocolVersion(): ?HttpVersion;
 
@@ -75,8 +71,7 @@ interface Request extends \stubbles\input\Request
      * Also, the return value might not neccessarily be an existing IP address
      * nor the real IP address of the client, as it may be spoofed.
      *
-     * @return  \stubbles\peer\IpAddress
-     * @since   3.0.0
+     * @since  3.0.0
      */
     public function originatingIpAddress(): ?IpAddress;
 
@@ -90,9 +85,8 @@ interface Request extends \stubbles\input\Request
      * signatures can be passed, they must contain a regular expression which
      * matches the user agent of a bot.
      *
-     * @param   string[]  $botSignatures  optional  additional list of bot user agent signatures
-     * @return  \stubbles\webapp\request\UserAgent
-     * @since   4.1.0
+     * @param  string[]  $botSignatures  additional list of bot user agent signatures
+     * @since  4.1.0
      */
     public function userAgent(array $botSignatures = []): UserAgent;
 
@@ -102,16 +96,13 @@ interface Request extends \stubbles\input\Request
      * In case the composed uri for this request does not denote a valid HTTP
      * uri a RuntimeException is thrown. If you came this far but the request
      * is for an invalid HTTP uri something is completely wrong.
-     *
-     * @return  \stubbles\peer\http\HttpUri
      */
     public function uri(): HttpUri;
 
     /**
      * Provides access to file uploads done with this request.
      *
-     * @return  Uploads
-     * @since   8.1.0
+     * @since  8.1.0
      */
     public function uploads(): Uploads;
 
@@ -126,9 +117,7 @@ interface Request extends \stubbles\input\Request
     /**
      * checks whether a request header is set
      *
-     * @param   string  $headerName
-     * @return  bool
-     * @since   1.3.0
+     * @since  1.3.0
      */
     public function hasHeader(string $headerName): bool;
 
@@ -140,26 +129,21 @@ interface Request extends \stubbles\input\Request
      * The method will try to use the header REDIRECT_$headerName first, but
      * falls back to $headerName when REDIRECT_$headerName  is not present.
      *
-     * @param   string  $headerName
-     * @return  bool
-     * @since   3.1.1
+     * @since  3.1.1
      */
     public function hasRedirectHeader(string $headerName): bool;
 
     /**
      * returns error collection for request headers
      *
-     * @return  \stubbles\input\errors\ParamErrors
-     * @since   1.3.0
+     * @since  1.3.0
      */
     public function headerErrors(): ParamErrors;
 
     /**
      * checks whether a request value from headers is valid or not
      *
-     * @param   string  $headerName  name of header
-     * @return  \stubbles\input\ValueValidator
-     * @since   1.3.0
+     * @since  1.3.0
      */
     public function validateHeader(string $headerName): ValueValidator;
 
@@ -171,18 +155,14 @@ interface Request extends \stubbles\input\Request
      * The method will try to use the header REDIRECT_$headerName first, but
      * falls back to $headerName when REDIRECT_$headerName  is not present.
      *
-     * @param   string  $headerName  name of header
-     * @return  \stubbles\input\ValueValidator
-     * @since   3.1.0
+     * @since  3.1.0
      */
     public function validateRedirectHeader(string $headerName): ValueValidator;
 
     /**
      * returns request value from headers for filtering or validation
      *
-     * @param   string  $headerName  name of header
-     * @return  \stubbles\input\ValueReader
-     * @since   1.3.0
+     * @since  1.3.0
      */
     public function readHeader(string $headerName): ValueReader;
 
@@ -194,9 +174,7 @@ interface Request extends \stubbles\input\Request
      * The method will try to use the header REDIRECT_$headerName first, but
      * falls back to $headerName when REDIRECT_$headerName  is not present.
      *
-     * @param   string  $headerName  name of header
-     * @return  \stubbles\input\ValueReader
-     * @since   3.1.0
+     * @since  3.1.0
      */
     public function readRedirectHeader(string $headerName): ValueReader;
 
@@ -211,35 +189,28 @@ interface Request extends \stubbles\input\Request
     /**
      * checks whether a request cookie is set
      *
-     * @param   string  $cookieName
-     * @return  bool
-     * @since   1.3.0
+     * @since  1.3.0
      */
     public function hasCookie(string $cookieName): bool;
 
     /**
      * returns error collection for request cookies
      *
-     * @return  \stubbles\input\errors\ParamErrors
-     * @since   1.3.0
+     * @since  1.3.0
      */
     public function cookieErrors(): ParamErrors;
 
     /**
      * checks whether a request value from cookie is valid or not
      *
-     * @param   string  $cookieName  name of cookie
-     * @return  \stubbles\input\ValueValidator
-     * @since   1.3.0
+     * @since  1.3.0
      */
     public function validateCookie(string $cookieName): ValueValidator;
 
     /**
      * returns request value from cookies for filtering or validation
      *
-     * @param   string  $cookieName  name of cookie
-     * @return  \stubbles\input\ValueReader
-     * @since   1.3.0
+     * @since  1.3.0
      */
     public function readCookie(string $cookieName): ValueReader;
 
@@ -249,8 +220,7 @@ interface Request extends \stubbles\input\Request
      * It returns the data raw and unsanitized, any filtering and validating
      * must be done by the caller.
      *
-     * @since   6.0.0
-     * @return  \stubbles\streams\InputStream
+     * @since  6.0.0
      */
     public function body(): InputStream;
 
@@ -258,50 +228,42 @@ interface Request extends \stubbles\input\Request
      * attaches session to request
      *
      * @internal
-     * @param   \stubbles\webapp\session\Session  $session
-     * @return  \stubbles\webapp\session\Session
-     * @since   6.0.0
+     * @since  6.0.0
      */
     public function attachSession(Session $session): Session;
 
     /**
      * checks if a session is attached to the request
      *
-     * @return  bool
-     * @since   6.0.0
+     * @since  6.0.0
      */
     public function hasSessionAttached(): bool;
 
     /**
      * returns attached session
      *
-     * @return  \stubbles\webapp\session\Session
-     * @since   6.0.0
+     * @since  6.0.0
      */
     public function attachedSession(): ?Session;
 
     /**
      * associates identity with this request
      *
-     * @param   \stubbles\webapp\auth\Identity  $identity
-     * @return  \stubbles\webapp\Request
-     * @since   6.0.0
+     * @since  6.0.0
      */
     public function associate(Identity $identity): self;
 
     /**
      * checks whether request was issued by a confirmed identity
      *
-     * @return  bool
-     * @since   6.0.0
+     * @since  6.0.0
      */
     public function hasAssociatedIdentity(): bool;
 
     /**
      * returns the identity associated with this request
      *
-     * @return  \stubbles\webapp\auth\Identity
-     * @since   6.0.0
+     * @since  6.0.0
      */
     public function identity(): ?Identity;
 }

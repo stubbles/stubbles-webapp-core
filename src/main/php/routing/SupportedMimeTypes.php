@@ -23,62 +23,55 @@ use stubbles\webapp\response\mimetypes\{
  */
 class SupportedMimeTypes
 {
-    /**
-     * list of supported mime types
-     *
-     * @var  string[]
-     */
-    private $mimeTypes;
-    /**
-     * whether content negotation is disabled or not
-     *
-     * @var  bool
-     */
-    private $disableContentNegotation = false;
+    private bool $disableContentNegotation = false;
     /**
      * map of mime types classes
      *
-     * @var  array<string,class-string<\stubbles\webapp\response\mimetypes\MimeType>>
+     * @var  array<string,class-string<MimeType>>
      */
-    private static $supported = [
-            'application/json' => Json::class,
-            'text/json'        => Json::class,
-            'text/plain'       => TextPlain::class,
-            'text/html'        => PassThrough::class,
-            'text/csv'         => Csv::class
+    private static array $supported = [
+        'application/json' => Json::class,
+        'text/json'        => Json::class,
+        'text/plain'       => TextPlain::class,
+        'text/html'        => PassThrough::class,
+        'text/csv'         => Csv::class
     ];
     /**
      * map of xml mime type classes
      *
-     * @var  array<string,class-string<\stubbles\webapp\response\mimetypes\MimeType>>
+     * @var  array<string,class-string<MimeType>>
      */
-    private static $xml = [
-            'text/xml'            => Xml::class,
-            'application/xml'     => Xml::class,
-            'application/rss+xml' => Xml::class
+    private static array $xml = [
+        'text/xml'            => Xml::class,
+        'application/xml'     => Xml::class,
+        'application/rss+xml' => Xml::class
     ];
     /**
      * map of image mime type classes
      *
-     * @var  array<string,class-string<\stubbles\webapp\response\mimetypes\MimeType>>
+     * @var  array<string,class-string<MimeType>>
      */
-    private static $image = ['image/png' => Image::class, 'image/jpeg' => Image::class];
+    private static array $image = [
+        'image/png' => Image::class,
+        'image/jpeg' => Image::class
+    ];
     /**
      * map of available mime types classes
      *
-     * @var  array<string,class-string<\stubbles\webapp\response\mimetypes\MimeType>>
+     * @var  array<string,class-string<MimeType>>
      */
     private $mimeTypeClasses = [];
 
     /**
      * constructor
      *
-     * @param  string[]                                                                  $mimeTypes
-     * @param  array<string,class-string<\stubbles\webapp\response\mimetypes\MimeType>>  $mimeTypeClasses
+     * @param  string[]                              $mimeTypes
+     * @param  array<string,class-string<MimeType>>  $mimeTypeClasses
      */
-    public function __construct(array $mimeTypes, array $mimeTypeClasses = [])
-    {
-        $this->mimeTypes       = $mimeTypes;
+    public function __construct(
+        private array $mimeTypes,
+        array $mimeTypeClasses = []
+    ) {
         $this->mimeTypeClasses = array_merge(self::$supported, $mimeTypeClasses);
         if (class_exists('stubbles\xml\serializer\XmlSerializerFacade')) {
             $this->mimeTypeClasses = array_merge(self::$xml, $this->mimeTypeClasses);
@@ -91,8 +84,6 @@ class SupportedMimeTypes
 
     /**
      * creates instance which denotes that content negotation is disabled
-     *
-     * @return  \stubbles\webapp\routing\SupportedMimeTypes
      */
     public static function createWithDisabledContentNegotation(): self
     {
@@ -103,8 +94,6 @@ class SupportedMimeTypes
 
     /**
      * checks whether content negotation is disabled
-     *
-     * @return  bool
      */
     public function isContentNegotationDisabled(): bool
     {
@@ -113,9 +102,6 @@ class SupportedMimeTypes
 
     /**
      * finds best matching mime type based on accept header
-     *
-     * @param   \stubbles\peer\http\AcceptHeader  $acceptedMimeTypes
-     * @return  string|null
      */
     public function findMatch(AcceptHeader $acceptedMimeTypes): ?string
     {
@@ -134,19 +120,19 @@ class SupportedMimeTypes
     /**
      * sets a default mime type class for given mime type
      *
-     * @param  string                                                      $mimeType
-     * @param  class-string<\stubbles\webapp\response\mimetypes\MimeType>  $mimeTypeClass
+     * @param  class-string<MimeType>  $mimeTypeClass
      * @since  5.1.1
      */
-    public static function setDefaultMimeTypeClass(string $mimeType, $mimeTypeClass): void
-    {
+    public static function setDefaultMimeTypeClass(
+        string $mimeType, 
+        string $mimeTypeClass
+    ): void {
         self::$supported[$mimeType] = $mimeTypeClass;
     }
 
     /**
      * removes default mime type class for given mime type
      *
-     * @param  string  $mimeType
      * @since  5.1.1
      */
     public static function removeDefaultMimeTypeClass(string $mimeType): void
@@ -159,9 +145,7 @@ class SupportedMimeTypes
     /**
      * checks if a default class is known for the given mime type
      *
-     * @param   string  $mimeType
-     * @return  bool
-     * @since   5.0.0
+     * @since  5.0.0
      */
     public static function provideDefaultClassFor(string $mimeType): bool
     {
@@ -169,23 +153,21 @@ class SupportedMimeTypes
             return true;
         }
 
-        if (class_exists('stubbles\xml\serializer\XmlSerializerFacade') && in_array($mimeType, array_keys(self::$xml))) {
+        if (
+            class_exists('stubbles\xml\serializer\XmlSerializerFacade')
+            && in_array($mimeType, array_keys(self::$xml))
+        ) {
             return true;
         }
 
-        if (class_exists('stubbles\img\Image') && in_array($mimeType, array_keys(self::$image))) {
-            return true;
-        }
-
-        return false;
+        return class_exists('stubbles\img\Image')
+            && in_array($mimeType, array_keys(self::$image));
     }
 
     /**
      * checks if a special class was defined for given mime type
      *
-     * @param   string  $mimeType
-     * @return  bool
-     * @since   3.2.0
+     * @since  3.2.0
      */
     public function provideClass(string $mimeType): bool
     {
@@ -195,8 +177,7 @@ class SupportedMimeTypes
     /**
      * returns special class which was defined for given mime type or null if none defined
      *
-     * @param   string  $mimeType
-     * @return  class-string<\stubbles\webapp\response\mimetypes\MimeType>|null
+     * @return  class-string<MimeType>|null
      * @since   3.2.0
      */
     public function classFor(string $mimeType): ?string

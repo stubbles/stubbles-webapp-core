@@ -10,6 +10,7 @@ namespace stubbles\webapp\htmlpassthrough;
 use stubbles\webapp\Target;
 use stubbles\webapp\Request;
 use stubbles\webapp\Response;
+use stubbles\webapp\response\Error;
 use stubbles\webapp\UriPath;
 /**
  * Processor to pass through hole HTML pages.
@@ -18,12 +19,7 @@ use stubbles\webapp\UriPath;
  */
 class HtmlFilePassThrough implements Target
 {
-    /**
-     * path to html files
-     *
-     * @var  string
-     */
-    private $routePath;
+    private string $routePath;
 
     /**
      * constructor
@@ -36,16 +32,11 @@ class HtmlFilePassThrough implements Target
         $this->routePath = $routePath . DIRECTORY_SEPARATOR;
     }
 
-    /**
-     * processes the request
-     *
-     * @param   \stubbles\webapp\Request   $request   current request
-     * @param   \stubbles\webapp\Response  $response  response to send
-     * @param   \stubbles\webapp\UriPath   $uriPath   information about called uri path
-     * @return  string|\stubbles\webapp\response\Error
-     */
-    public function resolve(Request $request, Response $response, UriPath $uriPath)
-    {
+    public function resolve(
+        Request $request,
+        Response $response,
+        UriPath $uriPath
+    ): string|Error {
         $routeName = $uriPath->remaining('index.html');
         if (!file_exists($this->routePath . $routeName)) {
             return $response->notFound();
@@ -53,31 +44,27 @@ class HtmlFilePassThrough implements Target
 
         $fileContents = @file_get_contents($this->routePath . $routeName);
         if (false === $fileContents) {
-            return $response->internalServerError('Could not read contents of ' . $routeName);
+            return $response->internalServerError(
+                'Could not read contents of ' . $routeName
+            );
         }
 
         return $this->modifyContent(
-                $request,
-                $response,
-                $fileContents,
-                $routeName
+            $request,
+            $response,
+            $fileContents,
+            $routeName
         );
     }
 
     /**
      * hook to modify the content before passing it to the response
-     *
-     * @param   \stubbles\webapp\Request   $request   current request
-     * @param   \stubbles\webapp\Response  $response  response to send
-     * @param   string                     $content    actual content for response
-     * @param   string                     $routeName  name of the route
-     * @return  string
      */
     protected function modifyContent(
-            Request $request,
-            Response $response,
-            string $content,
-            string $routeName
+        Request $request,
+        Response $response,
+        string $content,
+        string $routeName
     ): string {
         return $content;
     }

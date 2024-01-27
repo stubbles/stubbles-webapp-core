@@ -9,6 +9,8 @@ declare(strict_types=1);
 namespace stubbles\webapp\routing;
 use stubbles\webapp\Request;
 use stubbles\webapp\Response;
+use stubbles\webapp\response\Error;
+
 /**
  * Represents a missing resource.
  *
@@ -16,24 +18,12 @@ use stubbles\webapp\Response;
  */
 class NotFound extends AbstractResource
 {
-    /**
-     * checks whether switch to https is required
-     *
-     * @return  bool
-     */
     public function requiresHttps(): bool
     {
         return false;
     }
 
-    /**
-     * creates processor instance
-     *
-     * @param   \stubbles\webapp\Request   $request   current request
-     * @param   \stubbles\webapp\Response  $response  response to send
-     * @return  \stubbles\webapp\response\Error
-     */
-    public function resolve(Request $request, Response $response)
+    public function resolve(Request $request, Response $response): Error
     {
         return $response->notFound();
     }

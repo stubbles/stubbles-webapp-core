@@ -22,51 +22,38 @@ interface Session extends \stubbles\ioc\binding\Session
      *
      * Typically, a session is new on the first request of a user,
      * afterwards it should never be new.
-     *
-     * @return  bool  true if session has been started, else false
      */
     public function isNew(): bool;
 
     /**
      * returns session id
-     *
-     * @return  string  the session id
      */
     public function id(): string;
 
     /**
      * regenerates the session id but leaves session data
-     *
-     * @return  Session
      */
     public function regenerateId(): self;
 
     /**
      * returns the name of the session
-     *
-     * @return  string
      */
     public function name(): string;
 
     /**
      * checks if this session is valid
-     *
-     * @return  bool
      */
     public function isValid(): bool;
 
     /**
      * invalidates current session and creates a new one
-     *
-     * @return  Session
      */
     public function invalidate(): self;
 
     /**
-     * removes a value from the session
+     * removes a value stored under given key from the session
      *
-     * @param   string  $name  key where value is stored under
-     * @return  bool    true if value existed and was removed, else false
+     * Returns true when value existed, false otherwise.
      */
     public function removeValue(string $name): bool;
 

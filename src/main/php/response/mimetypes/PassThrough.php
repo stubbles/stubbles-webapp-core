@@ -15,11 +15,6 @@ use stubbles\streams\OutputStream;
  */
 class PassThrough extends MimeType
 {
-    /**
-     * returns default mime type name
-     *
-     * @return  string
-     */
     protected function defaultName(): string
     {
         return 'text/html';

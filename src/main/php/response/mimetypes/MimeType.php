@@ -15,23 +15,15 @@ use stubbles\streams\OutputStream;
  */
 abstract class MimeType
 {
-    /**
-     * @var  string
-     */
-    private $name = null;
+    private ?string $name = null;
 
     /**
      * returns default mime type name
-     *
-     * @return  string
      */
-    protected abstract function defaultName(): string;
+    abstract protected function defaultName(): string;
 
     /**
      * specialises to specific mime type
-     *
-     * @param   string  $mimeType
-     * @return  \stubbles\webapp\response\mimetypes\MimeType
      */
     public function specialise(string $mimeType): self
     {
@@ -51,8 +43,6 @@ abstract class MimeType
 
     /**
      * returns string representation of mime type
-     *
-     * @return  string
      */
     public function __toString(): string
     {

@@ -19,36 +19,15 @@ use stubbles\webapp\session\Session;
 class CachingAuthorizationProvider implements AuthorizationProvider
 {
     /**
-     * session where user and roles are stored
-     *
-     * @var  \stubbles\webapp\session\Session
-     */
-    private $session;
-    /**
-     * provider which delivers authorization
-     *
-     * @var  \stubbles\webapp\auth\AuthorizationProvider
-     */
-    private $authorizationProvider;
-
-    /**
-     * constructor
-     *
-     * @param  \stubbles\webapp\session\Session             $session
-     * @param  \stubbles\webapp\auth\AuthorizationProvider  $authorizationProvider
      * @Named{authorizationProvider}('original')
      */
-    public function __construct(Session $session, AuthorizationProvider $authorizationProvider)
-    {
-        $this->session               = $session;
-        $this->authorizationProvider = $authorizationProvider;
-    }
+    public function __construct(
+        private Session $session,
+        private AuthorizationProvider $authorizationProvider
+    ) { }
 
     /**
      * returns the roles available for this request and user
-     *
-     * @param   \stubbles\webapp\auth\User  $user
-     * @return  \stubbles\webapp\auth\Roles|null
      */
     public function roles(User $user): ?Roles
     {

@@ -10,35 +10,16 @@ namespace stubbles\webapp\auth;
 /**
  * Represents an authenticated and authorized identity which issued the request.
  *
+ * An identity combines the user and the roles of this user.
+ *
  * @since  6.0.0
  */
 class Identity
 {
-    /**
-     * @var  \stubbles\webapp\auth\User
-     */
-    private $user;
-    /**
-     * @var  \stubbles\webapp\auth\Roles
-     */
-    private $roles;
-
-    /**
-     * constructor
-     *
-     * @param  \stubbles\webapp\auth\User   $user   user who is associated with the identity
-     * @param  \stubbles\webapp\auth\Roles  $roles  list of roles the identity has
-     */
-    public function __construct(User $user, Roles $roles)
-    {
-        $this->user  = $user;
-        $this->roles = $roles;
-    }
+    public function __construct(private User $user, private Roles $roles) { }
 
     /**
      * returns user who is associated with the identity
-     *
-     * @return  \stubbles\webapp\auth\User
      */
     public function user(): User
     {
@@ -47,9 +28,6 @@ class Identity
 
     /**
      * checks if the identity has the given role
-     *
-     * @param   string  $roleName
-     * @return  bool
      */
     public function hasRole(string $roleName): bool
     {
@@ -58,8 +36,6 @@ class Identity
 
     /**
      * returns roles of the identity
-     *
-     * @return  \stubbles\webapp\auth\Roles
      */
     public function roles(): Roles
     {

@@ -26,40 +26,16 @@ use stubbles\webapp\{
 class Index implements Target
 {
     /**
-     * @var  \stubbles\webapp\routing\Routes
+     * @param  string[]  $globalMimeTypes  list of globally supported mime types
      */
-    private $routes;
-    /**
-     * @var  string[]
-     */
-    private $globalMimeTypes;
+    public function __construct(private Routes $routes, private array $globalMimeTypes) { }
 
-    /**
-     * constructor
-     *
-     * @param  \stubbles\webapp\routing\Routes  $routes           list of available routes
-     * @param  string[]                         $globalMimeTypes  list of globally supported mime types
-     */
-    public function __construct(Routes $routes, array $globalMimeTypes)
-    {
-        $this->routes          = $routes;
-        $this->globalMimeTypes = $globalMimeTypes;
-    }
-
-    /**
-     * resolves the request and returns resource data
-     *
-     * @param   \stubbles\webapp\Request   $request   current request
-     * @param   \stubbles\webapp\Response  $response  response to send
-     * @param   \stubbles\webapp\UriPath   $uriPath   information about called uri path
-     * @return  \stubbles\webapp\routing\api\Resources
-     */
     public function resolve(Request $request, Response $response, UriPath $uriPath): Resources
     {
         $uri = $request->uri();
         $resources = new Resources();
         foreach ($this->routes as $route) {
-            /* @var $route \stubbles\webapp\routing\Route */
+            /** @var \stubbles\webapp\routing\Route $route */
             if (!$route->shouldBeIgnoredInApiIndex()) {
                 $resources->add($route->asResource($uri, $this->globalMimeTypes));
             }

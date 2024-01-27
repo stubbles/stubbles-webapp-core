@@ -16,30 +16,14 @@ namespace stubbles\webapp\routing\api;
 class Status implements \JsonSerializable
 {
     /**
-     * @var  int
-     */
-    private $code;
-    /**
-     * @var  string
-     */
-    private $description;
-
-    /**
-     * constructor
-     *
      * @param  int     $code         actual status code
      * @param  string  $description  description of status code
      */
-    public function __construct(int $code, string $description)
-    {
-        $this->code        = $code;
-        $this->description = $description;
-    }
+    public function __construct(private int $code, private string $description) { }
 
     /**
      * returns actual status code value
      *
-     * @return  int
      * @XmlAttribute(attributeName='code')
      */
     public function code(): int
@@ -50,7 +34,6 @@ class Status implements \JsonSerializable
     /**
      * returns description of status code
      *
-     * @return  string
      * @XmlFragment(tagName='description')
      */
     public function description(): string
@@ -68,5 +51,4 @@ class Status implements \JsonSerializable
     {
         return ['code' => $this->code, 'description' => $this->description];
     }
-
 }

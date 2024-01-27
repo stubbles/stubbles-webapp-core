@@ -7,6 +7,8 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 namespace stubbles\webapp\routing;
+
+use LogicException;
 use stubbles\peer\http\Http;
 /**
  * Contains list of routes matching the requested path.
@@ -16,38 +18,18 @@ use stubbles\peer\http\Http;
 class MatchingRoutes
 {
     /**
-     * list of path matching routes
-     *
-     * @var  \stubbles\webapp\routing\Route[]
+     * @param  Route[]   $routes
+     * @param  string[]  $allowedMethods
      */
-    private $routes;
-    /**
-     * list of allowed request methods over all matching routes
-     *
-     * @var  string[]
-     */
-    private $allowedMethods;
-
-    /**
-     * constructor
-     *
-     * @param  \stubbles\webapp\routing\Route[]  $routes
-     * @param  string[]                          $allowedMethods
-     */
-    public function __construct(array $routes, array $allowedMethods)
+    public function __construct(
+        private array $routes,
+        private array $allowedMethods)
     {
-        $this->routes         = $routes;
-        $this->allowedMethods = $allowedMethods;
         if (in_array(Http::GET, $allowedMethods) && !in_array(Http::HEAD, $allowedMethods)) {
             $this->allowedMethods[] = Http::HEAD;
         }
     }
 
-    /**
-     * returns the first route
-     *
-     * @return  bool
-     */
     public function hasExactMatch(): bool
     {
         return isset($this->routes['exact']);
@@ -56,8 +38,7 @@ class MatchingRoutes
     /**
      * returns the first route
      *
-     * @return  \stubbles\webapp\routing\Route
-     * @throws  \LogicException
+     * @throws  LogicException
      */
     public function exactMatch(): Route
     {
@@ -65,13 +46,13 @@ class MatchingRoutes
             return $this->routes['exact'];
         }
 
-        throw new \LogicException('No exact route available, check with hasExactMatch() before');
+        throw new LogicException(
+            'No exact route available, check with hasExactMatch() before'
+        );
     }
 
     /**
      * checks if any matching route exists
-     *
-     * @return  bool
      */
     public function exist(): bool
     {

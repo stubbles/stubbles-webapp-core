@@ -7,6 +7,9 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 namespace stubbles\webapp\response;
+
+use Exception;
+use JsonSerializable;
 use stubbles\input\errors\ParamErrors;
 use stubbles\input\errors\messages\ParamErrorMessages;
 use stubbles\sequence\Sequence;
@@ -16,34 +19,14 @@ use stubbles\sequence\Sequence;
  * @XmlTag(tagName='error')
  * @since  6.0.0
  */
-class Error implements \JsonSerializable
+class Error implements JsonSerializable
 {
-    /**
-     * @var  string
-     */
-    private $type;
-    /**
-     * @var  string
-     */
-    private $message;
-
-    /**
-     * constructor
-     *
-     * @param  mixed   $message  error message
-     * @param  string  $type     error type     optional
-     */
-    public function __construct($message, string $type = 'Error')
-    {
-        $this->message = $message;
-        $this->type    = $type;
-    }
+    public function __construct(private mixed $message, private string $type = 'Error') { }
 
     /**
      * creates error when access to resource is unauthorized
      *
-     * @since   8.0.0
-     * @return  \stubbles\webapp\response\Error
+     * @since  8.0.0
      */
     public static function unauthorized(): self
     {
@@ -55,8 +38,6 @@ class Error implements \JsonSerializable
 
     /**
      * creates error when access to resource is forbidden
-     *
-     * @return  \stubbles\webapp\response\Error
      */
     public static function forbidden(): self
     {
@@ -68,8 +49,6 @@ class Error implements \JsonSerializable
 
     /**
      * creates error when access to resource is not found
-     *
-     * @return  \stubbles\webapp\response\Error
      */
     public static function notFound(): self
     {
@@ -81,49 +60,73 @@ class Error implements \JsonSerializable
      *
      * @param   string    $requestMethod   actual request method
      * @param   string[]  $allowedMethods  list of allowed request methods
-     * @return  \stubbles\webapp\response\Error
      */
-    public static function methodNotAllowed(string $requestMethod, array $allowedMethods): self
-    {
+    public static function methodNotAllowed(
+        string $requestMethod,
+        array $allowedMethods
+    ): self {
         return new self(
-                'The given request method '
-                . strtoupper($requestMethod)
-                . ' is not valid. Please use one of '
-                . join(', ', $allowedMethods) . '.',
-                'Method Not Allowed'
+            sprintf(
+                'The given request method %s is not valid. Please use one of %s.',
+                strtoupper($requestMethod),
+                join(', ', $allowedMethods)
+            ),
+            'Method Not Allowed',
         );
     }
 
     /**
      * creates error when an internal server error occurs
-     *
-     * @param   string|\Exception  $error
-     * @return  \stubbles\webapp\response\Error
      */
-    public static function internalServerError($error): self
+    public static function internalServerError(string|Exception $error): self
     {
         return new self(
-                $error instanceof \Exception ? $error->getMessage() : $error,
-                'Internal Server Error'
+            $error instanceof Exception ? $error->getMessage() : $error,
+            'Internal Server Error'
         );
     }
 
     /**
      * creates error when http version used in request is not supported
-     *
-     * @return  \stubbles\webapp\response\Error
      */
     public static function httpVersionNotSupported(): self
     {
         return new self(
-                'Unsupported HTTP protocol version, expected HTTP/1.0 or HTTP/1.1.'
+            'Unsupported HTTP protocol version, expected HTTP/1.0 or HTTP/1.1.'
+        );
+    }
+
+    /**
+     * creates error with given list of param errors
+     *
+     * @since  6.2.0
+     */
+    public static function inParams(
+        ParamErrors $errors,
+        ParamErrorMessages $errorMessages
+    ): self {
+        return new self(
+            Sequence::of($errors)->map(
+                function(array $errors, string $paramName) use ($errorMessages): array
+                {
+                    $resolved = ['field' => $paramName, 'errors' => []];
+                    foreach ($errors as $id => $error) {
+                        $resolved['errors'][] = [
+                            'id'      => $id,
+                            'details' => $error->details(),
+                            'message' => $errorMessages->messageFor($error)->message()
+                        ];
+                    }
+
+                    return $resolved;
+                }
+            )
         );
     }
 
     /**
      * returns error type
      *
-     * @return  string
      * @XmlAttribute(attributeName='type')
      */
     public function type(): string
@@ -134,45 +137,15 @@ class Error implements \JsonSerializable
     /**
      * returns actual error message
      *
-     * @return  string
      * @XmlFragment
      */
-    public function message(): string
+    public function message(): mixed
     {
         return $this->message;
     }
 
     /**
-     * creates error with given list of param errors
-     *
-     * @param   \stubbles\input\errors\ParamErrors                  $errors
-     * @param   \stubbles\input\errors\messages\ParamErrorMessages  $errorMessages
-     * @return  self
-     * @since   6.2.0
-     */
-    public static function inParams(ParamErrors $errors, ParamErrorMessages $errorMessages): self
-    {
-        return new self(Sequence::of($errors)->map(
-                function(array $errors, $paramName) use ($errorMessages): array
-                {
-                    $resolved = ['field' => $paramName, 'errors' => []];
-                    foreach ($errors as $id => $error) {
-                        $resolved['errors'][] = [
-                                'id'      => $id,
-                                'details' => $error->details(),
-                                'message' => $errorMessages->messageFor($error)->message()
-                        ];
-                    }
-
-                    return $resolved;
-                }
-        ));
-    }
-
-    /**
      * returns string representation
-     *
-     * @return  string
      * @XmlIgnore
      */
     public function __toString(): string

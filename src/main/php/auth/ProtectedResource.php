@@ -21,55 +21,19 @@ use stubbles\webapp\routing\UriResource;
 class ProtectedResource implements UriResource
 {
     /**
-     * route configuration
-     *
-     * @var  \stubbles\webapp\auth\AuthConstraint
-     */
-    private $authConstraint;
-    /**
-     * actual resource which requires auth
-     *
-     * @var  \stubbles\webapp\routing\UriResource
-     */
-    private $actualResource;
-    /**
-     * provider which delivers authentication
-     *
-     * @var  \stubbles\ioc\Injector
-     */
-    private $injector;
-    /**
      * switch whether access to route is authorized
-     *
-     * @var  bool
      */
-    private $authorized  = false;
-    /**
-     * @var  \stubbles\webapp\response\Error
-     */
-    private $error;
+    private bool $authorized  = false;
+    private ?Error $error = null;
 
-    /**
-     * constructor
-     *
-     * @param  \stubbles\webapp\auth\AuthConstraint  $authConstraint
-     * @param  \stubbles\webapp\routing\UriResource  $actualResource
-     * @param  \stubbles\ioc\Injector                $injector
-     */
     public function __construct(
-            AuthConstraint $authConstraint,
-            UriResource $actualResource,
-            Injector $injector)
-    {
-        $this->authConstraint = $authConstraint;
-        $this->actualResource = $actualResource;
-        $this->injector       = $injector;
-    }
+        private AuthConstraint $authConstraint,
+        private UriResource $actualResource,
+        private Injector $injector
+    ) { }
 
     /**
      * checks whether switch to https is required
-     *
-     * @return  bool
      */
     public function requiresHttps(): bool
     {
@@ -78,8 +42,6 @@ class ProtectedResource implements UriResource
 
     /**
      * returns https uri of current route
-     *
-     * @return  \stubbles\peer\http\HttpUri
      */
     public function httpsUri(): HttpUri
     {
@@ -89,9 +51,6 @@ class ProtectedResource implements UriResource
     /**
      * negotiates proper mime type for given request
      *
-     * @param   \stubbles\webapp\Request   $request
-     * @param   \stubbles\webapp\Response  $response  response to send
-     * @return  bool
      * @since   6.0.0
      */
     public function negotiateMimeType(Request $request, Response $response): bool
@@ -114,10 +73,6 @@ class ProtectedResource implements UriResource
      *
      * Pre interceptors for actual resource are only applied when request is
      * authorized.
-     *
-     * @param   \stubbles\webapp\Request   $request   current request
-     * @param   \stubbles\webapp\Response  $response  response to send
-     * @return  bool
      */
     public function applyPreInterceptors(Request $request, Response $response): bool
     {
@@ -128,13 +83,6 @@ class ProtectedResource implements UriResource
         return true;
     }
 
-    /**
-     * checks if request is authorized
-     *
-     * @param   \stubbles\webapp\Request   $request   current request
-     * @param   \stubbles\webapp\Response  $response  response to send
-     * @return  bool
-     */
     private function isAuthorized(Request $request, Response $response): bool
     {
         $this->authorized = false;
@@ -155,22 +103,15 @@ class ProtectedResource implements UriResource
         return $this->authorized;
     }
 
-    /**
-     * checks whether request is authenticated
-     *
-     * @param   \stubbles\webapp\Request   $request   current request
-     * @param   \stubbles\webapp\Response  $response  response to send
-     * @return  \stubbles\webapp\auth\User|null
-     */
     private function authenticate(Request $request, Response $response): ?User
     {
         /** @var  AuthenticationProvider  $authenticationProvider */
         $authenticationProvider = $this->injector->getInstance(AuthenticationProvider::class);
         try {
             $user = $authenticationProvider->authenticate($request);
-            if (null == $user && $this->authConstraint->redirectToLogin()) {
+            if (null === $user && $this->authConstraint->redirectToLogin()) {
                 $response->redirect($authenticationProvider->loginUri($request));
-            } elseif (null == $user) {
+            } elseif (null ===   $user) {
                 $this->error = $response->unauthorized($authenticationProvider->challengesFor($request));
             }
 
@@ -181,13 +122,6 @@ class ProtectedResource implements UriResource
         }
     }
 
-    /**
-     * checks whether expected role is given
-     *
-     * @param   \stubbles\webapp\Response   $response  response to send
-     * @param   \stubbles\webapp\auth\User  $user
-     * @return  \stubbles\webapp\auth\Roles|null
-     */
     private function roles(Response $response, User $user): ?Roles
     {
         try {
@@ -202,12 +136,11 @@ class ProtectedResource implements UriResource
 
     /**
      * sets proper response status code depending on exception
-     *
-     * @param  \stubbles\webapp\auth\AuthProviderException  $ahe
-     * @param  \stubbles\webapp\Response                    $response
      */
-    private function handleAuthProviderException(AuthProviderException $ahe, Response $response): void
-    {
+    private function handleAuthProviderException(
+        AuthProviderException $ahe,
+        Response $response
+    ): void {
         if ($ahe->isInternal()) {
             $this->error = $response->internalServerError($ahe);
         } else {
@@ -220,12 +153,8 @@ class ProtectedResource implements UriResource
      * creates processor instance
      *
      * Resolving of actual resource is only done when request is authorized.
-     *
-     * @param   \stubbles\webapp\Request   $request   current request
-     * @param   \stubbles\webapp\Response  $response  response to send
-     * @return  mixed
      */
-    public function resolve(Request $request, Response $response)
+    public function resolve(Request $request, Response $response): mixed
     {
         if ($this->authorized) {
             return $this->actualResource->resolve($request, $response);
@@ -239,10 +168,6 @@ class ProtectedResource implements UriResource
      *
      * Post interceptors of actual resource are applied independent of whether
      * request was authorized or not.
-     *
-     * @param   \stubbles\webapp\Request   $request   current request
-     * @param   \stubbles\webapp\Response  $response  response to send
-     * @return  bool
      */
     public function applyPostInterceptors(Request $request, Response $response): bool
     {

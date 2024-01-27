@@ -70,7 +70,7 @@ class AddAccessControlAllowOriginHeaderTest extends TestCase
      */
     public static function emptyConfigs(): array
     {
-        return [[null], [''], [[]]];
+        return [[''], [[]]];
     }
 
     /**

@@ -8,6 +8,8 @@ declare(strict_types=1);
  */
 namespace stubbles\webapp\response\mimetypes;
 use bovigo\callmap\NewInstance;
+use PHPUnit\Framework\Attributes\RequiresPhpExtension;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use stubbles\img\Image as ImageSource;
 use stubbles\img\driver\DummyDriver;
@@ -103,9 +105,8 @@ class ImageTest extends TestCase
         assertEmptyString($out->buffer());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
+    #[RequiresPhpExtension('gd')]
     public function usesErrorImgResourceWhenResourceIsError(): void
     {
         $handle = imagecreatefrompng(dirname(__DIR__) . '/../../resources/' . 'empty.png');
@@ -122,9 +123,8 @@ class ImageTest extends TestCase
         verify($this->resourceLoader, 'loadWith')->received('error.png');
     }
 
-    /**
-     * @test
-     */
+    #[Test]
+    #[RequiresPhpExtension('gd')]
     public function displaysImageLoadedFromFilename(): void
     {
         $handle = imagecreatefrompng(dirname(__DIR__) . '/../../resources/' . 'empty.png');
@@ -141,9 +141,8 @@ class ImageTest extends TestCase
         verify($this->resourceLoader, 'loadWith')->received('pixel.png');
     }
 
-    /**
-     * @test
-     */
+    #[Test]
+    #[RequiresPhpExtension('gd')]
     public function displaysImagePassedAsResource(): void
     {
         $handle = imagecreatefrompng(dirname(__DIR__) . '/../../resources/' . 'empty.png');

@@ -2,7 +2,10 @@
 
 ## 10.0.0 (2024)
 
+### BC breaks
+
 * Raised minimum required PHP version to 8.2
+* Constructor of `stubbles\webapp\interceptor\AddAccessControlAllowOriginHeader` does not accept `null` any more as argument for the list of allowed hosts
 
 ## 9.1.0 (2019-12-25)
 
