@@ -114,16 +114,16 @@
         },
         {
             "name": "stubbles/peer",
-            "version": "v10.0.0",
+            "version": "v10.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/stubbles/stubbles-peer.git",
-                "reference": "0bd73c079c5c978a01830868bdf0b634de18230f"
+                "reference": "1186a24a97fc2a577c0b93e75cc0a10f035b5b39"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/stubbles/stubbles-peer/zipball/0bd73c079c5c978a01830868bdf0b634de18230f",
-                "reference": "0bd73c079c5c978a01830868bdf0b634de18230f",
+                "url": "https://api.github.com/repos/stubbles/stubbles-peer/zipball/1186a24a97fc2a577c0b93e75cc0a10f035b5b39",
+                "reference": "1186a24a97fc2a577c0b93e75cc0a10f035b5b39",
                 "shasum": ""
             },
             "require": {
@@ -163,9 +163,9 @@
             "homepage": "http://stubbles.net/",
             "support": {
                 "issues": "https://github.com/stubbles/stubbles-peer/issues",
-                "source": "https://github.com/stubbles/stubbles-peer/tree/v10.0.0"
+                "source": "https://github.com/stubbles/stubbles-peer/tree/v10.0.1"
             },
-            "time": "2023-12-26T16:02:16+00:00"
+            "time": "2024-01-26T18:10:19+00:00"
         },
         {
             "name": "stubbles/reflect",
