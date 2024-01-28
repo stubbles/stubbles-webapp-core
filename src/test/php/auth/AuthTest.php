@@ -11,7 +11,6 @@ use bovigo\callmap\NewInstance;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
-use stubbles\Environment;
 use stubbles\ioc\Binder;
 use stubbles\values\Properties;
 use stubbles\webapp\auth\session\CachingAuthenticationProvider;
@@ -22,7 +21,6 @@ use stubbles\webapp\session\Session;
 
 use function bovigo\assert\assertThat;
 use function bovigo\assert\assertFalse;
-use function bovigo\assert\predicate\equals;
 use function bovigo\assert\predicate\isInstanceOf;
 /**
  * Tests for stubbles\webapp\auth\Auth.
