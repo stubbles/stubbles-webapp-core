@@ -8,33 +8,24 @@ declare(strict_types=1);
  */
 namespace stubbles\webapp\auth;
 use bovigo\callmap\NewInstance;
+use LogicException;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
-use stubbles\ioc\Injector;
-use stubbles\peer\http\HttpUri;
-use stubbles\webapp\{Request, Response};
-use stubbles\webapp\auth\AuthenticationProvider;
-use stubbles\webapp\request\WebRequest;
-use stubbles\webapp\response\Error;
 use stubbles\webapp\routing\{RoutingAnnotations, UriResource};
 
 use function bovigo\assert\{
-    assertThat,
-    assertNull,
-    assertTrue,
     expect,
-    predicate\equals,
-    predicate\isSameAs
 };
 /**
  * Test for specific situation which shouldn't occur but must be taken care of in code.
  *
  * @since  8.0.0
  */
+#[Group('auth')]
 class AuthConstraintTest extends TestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function emptyRequiredRolesAnnotationThrowsLogicException(): void
     {
         $authConstraint = new AuthConstraint(NewInstance::of(
@@ -45,7 +36,7 @@ class AuthConstraintTest extends TestCase
         expect(function() use($authConstraint) {
           $authConstraint->satisfiedByRoles(new Roles(['admin']));
         })
-            ->throws(\LogicException::class)
+            ->throws(LogicException::class)
             ->withMessage('Route says it requires a role but doesn\'t specify which.');
     }
 }

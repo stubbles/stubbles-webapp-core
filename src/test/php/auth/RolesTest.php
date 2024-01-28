@@ -7,6 +7,9 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 namespace stubbles\webapp\auth;
+
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 use function bovigo\assert\{
@@ -21,47 +24,37 @@ use function bovigo\assert\{
  * Tests for stubbles\webapp\auth\Roles.
  *
  * @since  5.0.0
- * @group  auth
  */
+#[Group('auth')]
 class RolesTest extends TestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function noneYieldsNoRoles(): void
     {
         assertEmpty(Roles::none());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function hasAmountOfInitialRoles(): void
     {
         assertThat(new Roles(['admin']), isOfSize(1));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function doesNotContainNonAddedRole(): void
     {
         $roles = new Roles(['admin']);
         assertFalse($roles->contain('superadmin'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function containsAddedRole(): void
     {
         $roles = new Roles(['admin']);
         assertTrue($roles->contain('admin'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function rolesCanBeIterated(): void
     {
         $expected = ['admin', 'superadmin'];

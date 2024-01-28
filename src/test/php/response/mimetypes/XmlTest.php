@@ -7,7 +7,11 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 namespace stubbles\webapp\response\mimetypes;
+
+use bovigo\callmap\ClassProxy;
 use bovigo\callmap\NewInstance;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use stubbles\streams\memory\MemoryOutputStream;
 use stubbles\xml\serializer\XmlSerializerFacade;
@@ -17,20 +21,14 @@ use function bovigo\assert\predicate\equals;
 /**
  * Tests for stubbles\webapp\response\mimetypes\Xml.
  *
- * @group  response
- * @group  mimetypes
  * @since  6.0.0
  */
+#[Group('response')]
+#[Group('mimetypes')]
 class XmlTest extends TestCase
 {
-    /**
-     * @var  \stubbles\webapp\response\mimetypes\Xml
-     */
-    private $xml;
-    /**
-     * @var  XmlSerializerFacade&\bovigo\callmap\ClassProxy
-     */
-    private $xmlSerializerFacade;
+    private Xml $xml;
+    private XmlSerializerFacade&ClassProxy $xmlSerializerFacade;
 
     protected function setUp(): void
     {
@@ -38,37 +36,31 @@ class XmlTest extends TestCase
         $this->xml = new Xml($this->xmlSerializerFacade);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function defaultMimeType(): void
     {
         assertThat((string) $this->xml, equals('application/xml'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function mimeTypeCanBeSpecialised(): void
     {
         assertThat(
-                (string) $this->xml->specialise('text/xml'),
-                equals('text/xml')
+            (string) $this->xml->specialise('text/xml'),
+            equals('text/xml')
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function serializesResourceToXml(): void
     {
         $this->xmlSerializerFacade->returns(['serializeToXml' => '<xml/>']);
         assertThat(
-                $this->xml->serialize(
-                        'value',
-                        new MemoryOutputStream()
-                )->buffer(),
-                equals('<xml/>')
+            $this->xml->serialize(
+                    'value',
+                    new MemoryOutputStream()
+            )->buffer(),
+            equals('<xml/>')
         );
     }
 }

@@ -37,6 +37,8 @@ class Status
      *
      * If reason phrase is null it will use the default reason phrase for given
      * status code.
+     *
+     * @throws  InvalidArgumentException when no reason phrase supplied and code is unknown
      */
     public function setCode(int $code, string $reasonPhrase = null): self
     {

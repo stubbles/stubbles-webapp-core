@@ -12,6 +12,7 @@ use RuntimeException;
 use stubbles\sequence\Sequence;
 use stubbles\streams\OutputStream;
 use stubbles\webapp\response\Error;
+use Traversable;
 
 use function stubbles\sequence\castToArray;
 use function stubbles\values\typeOf;
@@ -55,7 +56,7 @@ class Csv extends MimeType
     {
         if (is_scalar($resource) || $resource instanceof Error) {
             $out->writeLine((string) $resource);
-        } elseif (is_array($resource) || $resource instanceof \Traversable) {
+        } elseif (is_array($resource) || $resource instanceof Traversable) {
             $this->serializeIterable($resource, $out);
         } elseif (is_object($resource)) {
             $this->serializeIterable(castToArray($resource), $out);

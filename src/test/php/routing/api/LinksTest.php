@@ -7,6 +7,10 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 namespace stubbles\webapp\routing\api;
+
+use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use stubbles\peer\http\HttpUri;
 
@@ -22,9 +26,9 @@ use function bovigo\assert\{
  * Test for stubbles\webapp\routing\api\Links.
  *
  * @since  6.1.0
- * @group  routing
- * @group  routing_api
  */
+#[Group('routing')]
+#[Group('routing_api')]
 class LinksTest extends TestCase
 {
     private function createPrefilled(): Links
@@ -32,34 +36,26 @@ class LinksTest extends TestCase
         return new Links('self', HttpUri::fromString('http://example.com/foo'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function hasNoLinksByDefault(): void
     {
         assertEmpty(new Links());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function hasLinkWhenInitiallyProvided(): void
     {
         assertThat($this->createPrefilled(), isOfSize(1));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function canNotCreatePrefilledWithoutUri(): void
     {
-        expect(function() { new Links('self'); })
-                ->throws(\InvalidArgumentException::class);
+        expect(fn() => new Links('self'))
+            ->throws(InvalidArgumentException::class);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function canAddNewLink(): void
     {
         $links = new Links();
@@ -67,74 +63,66 @@ class LinksTest extends TestCase
         assertThat($links, isOfSize(1));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function relWithoutLinks(): void
     {
         assertEmptyArray((new Links())->with('self'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function relWithOneLink(): void
     {
         $links = new Links();
         $links->add(
-                'self',
-                HttpUri::fromString('http://example.com/foo')
+            'self',
+            HttpUri::fromString('http://example.com/foo')
         );
         assertThat(
-                $links->with('self'),
-                equals([new Link('self', HttpUri::fromString('http://example.com/foo'))])
+            $links->with('self'),
+            equals([new Link('self', HttpUri::fromString('http://example.com/foo'))])
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function relWithSeveralLinks(): void
     {
         $links = new Links();
         $links->add(
-                'other',
-                HttpUri::fromString('http://example.com/foo')
+            'other',
+            HttpUri::fromString('http://example.com/foo')
         );
         $links->add(
-                'other',
-                HttpUri::fromString('http://example.com/bar')
+            'other',
+            HttpUri::fromString('http://example.com/bar')
         );
         assertThat(
-                $links->with('other'),
-                equals([
-                        new Link('other', HttpUri::fromString('http://example.com/foo')),
-                        new Link('other', HttpUri::fromString('http://example.com/bar'))
-                ])
+            $links->with('other'),
+            equals([
+                new Link('other', HttpUri::fromString('http://example.com/foo')),
+                new Link('other', HttpUri::fromString('http://example.com/bar'))
+            ])
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function canBeSerializedToJson(): void
     {
         $links = $this->createPrefilled();
         $links->add(
-                'items',
-                HttpUri::fromString('http://example.com/item1')
+            'items',
+            HttpUri::fromString('http://example.com/item1')
         );
         $links->add(
-                'items',
-                HttpUri::fromString('http://example.com/item2')
+            'items',
+            HttpUri::fromString('http://example.com/item2')
         );
         $links->add(
-                'items',
-                HttpUri::fromString('http://example.com/item3')
+            'items',
+            HttpUri::fromString('http://example.com/item3')
         );
         assertThat(
-                json_encode($links),
-                equals('{"self":{"href":"http:\/\/example.com\/foo"},"items":[{"href":"http:\/\/example.com\/item1"},{"href":"http:\/\/example.com\/item2"},{"href":"http:\/\/example.com\/item3"}]}')
+            json_encode($links),
+            equals('{"self":{"href":"http:\/\/example.com\/foo"},"items":[{"href":"http:\/\/example.com\/item1"},{"href":"http:\/\/example.com\/item2"},{"href":"http:\/\/example.com\/item3"}]}')
         );
     }
 }

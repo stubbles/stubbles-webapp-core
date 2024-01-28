@@ -7,7 +7,14 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 namespace stubbles\webapp\auth\token;
+
+use bovigo\callmap\ClassProxy;
 use bovigo\callmap\NewInstance;
+use Exception;
+use Generator;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use stubbles\input\ValueReader;
 use stubbles\webapp\Request;
@@ -34,70 +41,54 @@ use function stubbles\reflect\annotationsOfConstructorParameter;
 /**
  * Test for stubbles\webapp\auth\token\TokenAuthenticator.
  *
- * @group  auth
- * @group  auth_token
  * @since  2.1.0
  */
+#[Group('auth')]
+#[Group('auth_token')]
 class TokenAuthenticatorTest extends TestCase
 {
-    /**
-     * @var  \stubbles\webapp\auth\token\TokenAuthenticator
-     */
-    private $tokenAuthenticator;
-    /**
-     * @var  TokenStore&\bovigo\callmap\ClassProxy
-     */
-    private $tokenStore;
-    /**
-     * @var  AuthenticationProvider&\bovigo\callmap\ClassProxy
-     */
-    private $loginProvider;
-    /**
-     * @var  Request&\bovigo\callmap\ClassProxy
-     */
-    private $request;
+    private TokenAuthenticator $tokenAuthenticator;
+    private TokenStore&ClassProxy $tokenStore;
+    private AuthenticationProvider&ClassProxy $loginProvider;
+    private Request&ClassProxy $request;
 
     protected function setUp(): void
     {
-        $this->tokenStore     = NewInstance::of(TokenStore::class);
-        $this->loginProvider  = NewInstance::of(AuthenticationProvider::class);
+        $this->tokenStore = NewInstance::of(TokenStore::class);
+        $this->loginProvider = NewInstance::of(AuthenticationProvider::class);
         $this->tokenAuthenticator = new TokenAuthenticator(
-                $this->tokenStore,
-                'some salt',
-                $this->loginProvider
+            $this->tokenStore,
+            'some salt',
+            $this->loginProvider
         );
         $this->request = NewInstance::of(Request::class);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function annotationsPresentOnConstructor(): void
     {
         $tokenSaltParamAnnotations = annotationsOfConstructorParameter(
-                'tokenSalt',
-                $this->tokenAuthenticator
+            'tokenSalt',
+            $this->tokenAuthenticator
         );
         assertTrue($tokenSaltParamAnnotations->contain('Property'));
         assertThat(
-                $tokenSaltParamAnnotations->firstNamed('Property')->getName(),
-                equals('stubbles.webapp.auth.token.salt')
+            $tokenSaltParamAnnotations->firstNamed('Property')->getName(),
+            equals('stubbles.webapp.auth.token.salt')
         );
 
         $loginProviderParamAnnotations = annotationsOfConstructorParameter(
-                'loginProvider',
-                $this->tokenAuthenticator
+            'loginProvider',
+            $this->tokenAuthenticator
         );
         assertTrue($loginProviderParamAnnotations->contain('Named'));
         assertThat(
-                $loginProviderParamAnnotations->firstNamed('Named')->getName(),
-                equals('stubbles.webapp.auth.token.loginProvider')
+            $loginProviderParamAnnotations->firstNamed('Named')->getName(),
+            equals('stubbles.webapp.auth.token.loginProvider')
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function delegatesAuthenticationToLoginProviderIfNoTokenInRequest(): void
     {
         $this->request->returns(['hasRedirectHeader' => false]);
@@ -105,52 +96,43 @@ class TokenAuthenticatorTest extends TestCase
         verify($this->loginProvider, 'authenticate')->wasCalledOnce();
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function delegatesAuthenticationToLoginProviderIfAuthorizationHeaderIsSetButEmpty(): void
     {
         $this->request->returns([
-                'hasRedirectHeader'  => true,
-                'readRedirectHeader' => ValueReader::forValue('')
+            'hasRedirectHeader'  => true,
+            'readRedirectHeader' => ValueReader::forValue('')
         ]);
         assertNull($this->tokenAuthenticator->authenticate($this->request));
         verify($this->loginProvider, 'authenticate')->wasCalledOnce();
     }
 
-    /**
-     * @return  TokenAwareUser&\bovigo\callmap\ClassProxy
-     */
-    private function createTokenAwareUser(): TokenAwareUser
+    private function createTokenAwareUser(): TokenAwareUser&ClassProxy
     {
         return NewInstance::of(TokenAwareUser::class)->returns([
-                'name'        => 'Heinz Mustermann',
-                'firstName'   => 'Heinz',
-                'lastName'    => 'Mustermann',
-                'mailAddress' => 'mm@example.com'
+            'name'        => 'Heinz Mustermann',
+            'firstName'   => 'Heinz',
+            'lastName'    => 'Mustermann',
+            'mailAddress' => 'mm@example.com'
         ]);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function throwsInternalAuthProviderExceptionWhenTokenStoreThrowsExceptionWhileStoringToken(): void
     {
         $user = $this->createTokenAwareUser();
         $this->request->returns(['hasRedirectHeader' => false]);
         $this->loginProvider->returns(['authenticate' => $user]);
-        $this->tokenStore->returns(['store' => throws(new \Exception('failure'))]);
+        $this->tokenStore->returns(['store' => throws(new Exception('failure'))]);
 
         expect(function() {
-                $this->tokenAuthenticator->authenticate($this->request);
+            $this->tokenAuthenticator->authenticate($this->request);
         })
-                ->throws(InternalAuthProviderException::class)
-                ->withMessage('Error while trying to store new token for user: failure');
+            ->throws(InternalAuthProviderException::class)
+            ->withMessage('Error while trying to store new token for user: failure');
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function createsAndStoresTokenFromUserReturnedByLoginProvider(): void
     {
         $token = new Token('value');
@@ -159,139 +141,119 @@ class TokenAuthenticatorTest extends TestCase
         $this->request->returns(['hasRedirectHeader' => false]);
         $this->loginProvider->returns(['authenticate' => $user]);
         assertThat(
-                $this->tokenAuthenticator->authenticate($this->request),
-                isSameAs($user)
+            $this->tokenAuthenticator->authenticate($this->request),
+            isSameAs($user)
         );
         verify($this->tokenStore, 'store')
-                ->received($this->request, $token, $user);
+            ->received($this->request, $token, $user);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function userReturnedByLoginProviderHasToken(): void
     {
         $user  = $this->createTokenAwareUser();
         $this->request->returns(['hasRedirectHeader' => false]);
         $this->loginProvider->returns(['authenticate' => $user]);
-        /** @var  \stubbles\webapp\auth\User  $loggedInUser */
         $loggedInUser = $this->tokenAuthenticator->authenticate($this->request);
         assertNotNull($loggedInUser->token());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function throwsInternalAuthProviderExceptionWhenTokenStoreThrowsExceptionWhileFindingUser(): void
     {
         $this->request->returns([
-                'hasRedirectHeader'  => true,
-                'readRedirectHeader' => ValueReader::forValue('someToken')
+            'hasRedirectHeader'  => true,
+            'readRedirectHeader' => ValueReader::forValue('someToken')
         ]);
         $this->tokenStore->returns(
-                ['findUserByToken' => throws(new \Exception('failure'))]
+            ['findUserByToken' => throws(new Exception('failure'))]
         );
         expect(function() {
-                $this->tokenAuthenticator->authenticate($this->request);
+            $this->tokenAuthenticator->authenticate($this->request);
         })
-                ->throws(InternalAuthProviderException::class)
-                ->withMessage('Error while trying to find user by token: failure');
+            ->throws(InternalAuthProviderException::class)
+            ->withMessage('Error while trying to find user by token: failure');
     }
 
-    /**
-     * @return  array<string[]>
-     */
-    public static function validTokens(): array
+    public static function validTokens(): Generator
     {
-        return [['Bearer 123456789012345678901234567890ab', '123456789012345678901234567890ab'],
-                ['someOtherToken', 'someOtherToken']
-        ];
+        yield ['Bearer 123456789012345678901234567890ab', '123456789012345678901234567890ab'];
+        yield ['someOtherToken', 'someOtherToken'];
     }
 
-    /**
-     * @test
-     * @dataProvider  validTokens
-     */
+    #[Test]
+    #[DataProvider('validTokens')]
     public function returnsUserWhenAuthorizationHeaderContainsValidToken(
-            string $headerValue,
-            string $tokenValue
+        string $headerValue,
+        string $tokenValue
     ): void {
         $this->request->returns([
-                'hasRedirectHeader'  => true,
-                'readRedirectHeader' => ValueReader::forValue($headerValue)
+            'hasRedirectHeader'  => true,
+            'readRedirectHeader' => ValueReader::forValue($headerValue)
         ]);
         $user = $this->createTokenAwareUser();
         $this->tokenStore->returns(['findUserByToken' => $user]);
         assertThat(
-                $this->tokenAuthenticator->authenticate($this->request),
-                isSameAs($user)
+            $this->tokenAuthenticator->authenticate($this->request),
+            isSameAs($user)
         );
         verify($this->tokenStore, 'findUserByToken')
-                ->received($this->request, new Token($tokenValue));
+            ->received($this->request, new Token($tokenValue));
     }
 
-    /**
-     * @test
-     * @dataProvider  validTokens
-     */
+    #[Test]
+    #[DataProvider('validTokens')]
     public function returnedUserFromValidTokenHasToken(
-            string $headerValue,
-            string $tokenValue
+        string $headerValue,
+        string $tokenValue
     ): void {
         $this->request->returns([
-                'hasRedirectHeader'  => true,
-                'readRedirectHeader' => ValueReader::forValue($headerValue)
+            'hasRedirectHeader'  => true,
+            'readRedirectHeader' => ValueReader::forValue($headerValue)
         ]);
         $user  = $this->createTokenAwareUser();
         $token = new Token($tokenValue);
         $this->tokenStore->returns(['findUserByToken' => $user]);
-        /** @var  \stubbles\webapp\auth\User  $loggedInUser */
         $loggedInUser = $this->tokenAuthenticator->authenticate($this->request);
         assertThat($loggedInUser->token(), equals($token));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function delegatesAuthenticationToLoginProviderIfTokenFromAuthorizationHeaderDoesNotYieldUser(): void
     {
         $this->request->returns([
-                'hasRedirectHeader'  => true,
-                'readRedirectHeader' => ValueReader::forValue('someOtherToken')
+            'hasRedirectHeader'  => true,
+            'readRedirectHeader' => ValueReader::forValue('someOtherToken')
         ]);
         assertNull($this->tokenAuthenticator->authenticate($this->request));
         verify($this->tokenStore, 'findUserByToken')
-                ->received($this->request, new Token('someOtherToken'));
+            ->received($this->request, new Token('someOtherToken'));
         verify($this->loginProvider, 'authenticate')->wasCalledOnce();
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function createAndStoresNewTokenIfTokenFromAuthorizationHeaderDoesNotYieldUser(): void
     {
         $this->request->returns([
-                'hasRedirectHeader'  => true,
-                'readRedirectHeader' => ValueReader::forValue('someOtherToken')
+            'hasRedirectHeader'  => true,
+            'readRedirectHeader' => ValueReader::forValue('someOtherToken')
         ]);
         $user  = $this->createTokenAwareUser();
         $this->loginProvider->returns(['authenticate' => $user]);
         assertThat(
-                $this->tokenAuthenticator->authenticate($this->request),
-                isSameAs($user)
+            $this->tokenAuthenticator->authenticate($this->request),
+            isSameAs($user)
         );
         verify($this->tokenStore, 'findUserByToken')
-                ->received($this->request, new Token('someOtherToken'));
+            ->received($this->request, new Token('someOtherToken'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function userReturnedAfterTokenRecreationHasTokenIfTokenFromAuthorizationHeaderDoesNotYieldUser(): void
     {
         $this->request->returns([
-                'hasRedirectHeader'  => true,
-                'readRedirectHeader' => ValueReader::forValue('someOtherToken')
+            'hasRedirectHeader'  => true,
+            'readRedirectHeader' => ValueReader::forValue('someOtherToken')
         ]);
         $user = $this->createTokenAwareUser();
         $this->loginProvider->returns(['authenticate' => $user]);
@@ -299,17 +261,15 @@ class TokenAuthenticatorTest extends TestCase
         $loggedInUser = $this->tokenAuthenticator->authenticate($this->request);
         assertNotNull($loggedInUser->token());
         verify($this->tokenStore, 'findUserByToken')
-                ->received($this->request, new Token('someOtherToken'));
+            ->received($this->request, new Token('someOtherToken'));
     }
 
-    /**
-     * @test
-     */
-    public function userReturnedAfterTokenRecreationHasDifferentTokenIfTokenFromAuthorizationHeaderDoesNotYieldUser(): void
+    #[Test]
+    public function userReturnedAfterTokenRecreationHasDifferentTokenIfTokenFromHeaderDoesNotYieldUser(): void
     {
         $this->request->returns([
-                'hasRedirectHeader'  => true,
-                'readRedirectHeader' => ValueReader::forValue('someOtherToken')
+            'hasRedirectHeader'  => true,
+            'readRedirectHeader' => ValueReader::forValue('someOtherToken')
         ]);
         $user = $this->createTokenAwareUser();
         $this->loginProvider->returns(['authenticate' => $user]);

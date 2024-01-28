@@ -7,6 +7,10 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 namespace stubbles\webapp\routing;
+
+use Generator;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use stubbles\peer\http\AcceptHeader;
 
@@ -26,199 +30,176 @@ use function bovigo\assert\{
  */
 class SupportedMimeTypesTest extends TestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function contentNegotiationIsDisabledWhenFactoryMethodUsed(): void
     {
         assertTrue(
-                SupportedMimeTypes::createWithDisabledContentNegotation()
-                        ->isContentNegotationDisabled()
+            SupportedMimeTypes::createWithDisabledContentNegotation()
+                ->isContentNegotationDisabled()
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function matchForDisabledContentNegotationIsAlwaysTextHtml(): void
     {
         assertThat(
-                SupportedMimeTypes::createWithDisabledContentNegotation()
-                        ->findMatch(new AcceptHeader()),
-                equals('text/html')
+            SupportedMimeTypes::createWithDisabledContentNegotation()
+                ->findMatch(new AcceptHeader()),
+            equals('text/html')
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function listOfSupportedMimeTypedWithDisabledContentNegotationIsEmpty(): void
     {
         assertEmptyArray(
-                SupportedMimeTypes::createWithDisabledContentNegotation()
-                        ->asArray()
+            SupportedMimeTypes::createWithDisabledContentNegotation()->asArray()
         );
     }
 
     private function createInstance(): SupportedMimeTypes
     {
         return new SupportedMimeTypes(
-                ['application/xml', 'application/json', 'application/foo'],
-                ['application/xml' => 'stubbles\webapp\response\mimetypes\Xml']
+            ['application/xml', 'application/json', 'application/foo'],
+            ['application/xml' => 'stubbles\webapp\response\mimetypes\Xml']
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function contentNegotationIsEnabledWhenCreatedWithListOfMimeTypes(): void
     {
         assertFalse($this->createInstance()->isContentNegotationDisabled());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function returnsFirstMimeTypeFromGivenListWhenAcceptHeaderIsEmpty(): void
     {
-
         assertThat(
-                $this->createInstance()->findMatch(new AcceptHeader()),
-                equals('application/xml')
+            $this->createInstance()->findMatch(new AcceptHeader()),
+            equals('application/xml')
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function returnsMimeTypeWithGreatesPriorityAccordingToAcceptHeader(): void
     {
         assertThat(
-                $this->createInstance()->findMatch(
-                        AcceptHeader::parse('text/*;q=0.3, text/html;q=0.7, application/json;q=0.4, */*;q=0.5')
-                ),
-                equals('application/json')
+            $this->createInstance()->findMatch(
+                AcceptHeader::parse(
+                    'text/*;q=0.3, text/html;q=0.7, application/json;q=0.4, */*;q=0.5'
+                )
+            ),
+            equals('application/json')
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function returnsNoMimeTypeWhenNoMatchWithAcceptHeaderFound(): void
     {
         assertNull(
-                $this->createInstance()->findMatch(
-                        AcceptHeader::parse('text/*;q=0.3, text/html;q=0.7')
-                )
+            $this->createInstance()->findMatch(
+                AcceptHeader::parse('text/*;q=0.3, text/html;q=0.7')
+            )
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function listOfSupportedMimeTypedContainsListFromCreation(): void
     {
         assertThat(
-                $this->createInstance()->asArray(),
-                equals(['application/xml', 'application/json', 'application/foo'])
+            $this->createInstance()->asArray(),
+            equals(['application/xml', 'application/json', 'application/foo'])
         );
     }
 
-    /**
-     * @return  array<string[]>
-     */
-    public static function predefinedMimeTypes(): array
+    public static function providePredefinedMimeTypes(): Generator
     {
-        return [
-            ['application/json'],
-            ['text/json'],
-            ['text/plain'],
-            ['text/xml'],
-            ['application/xml'],
-            ['application/rss+xml']
-        ];
+        yield ['application/json'];
+        yield ['text/json'];
+        yield ['text/plain'];
+        yield ['text/xml'];
+        yield ['application/xml'];
+        yield ['application/rss+xml'];
     }
 
     /**
-     * @test
-     * @dataProvider  predefinedMimeTypes
      * @since  5.0.0
      */
+    #[Test]
+    #[DataProvider('providePredefinedMimeTypes')]
     public function hasClassForAllPredefinedMimeTypes(string $mimeType): void
     {
         assertTrue($this->createInstance()->provideClass($mimeType));
     }
 
     /**
-     * @test
      * @since  3.2.0
      */
+    #[Test]
     public function hasNoClassWhenNotDefinedForMimeType(): void
     {
         assertFalse($this->createInstance()->provideClass('application/foo'));
     }
 
     /**
-     * @test
      * @since  3.2.0
      */
+    #[Test]
     public function hasNoClassForUnknownMimeType(): void
     {
         assertFalse($this->createInstance()->provideClass('application/bar'));
     }
 
     /**
-     * @test
      * @since  3.2.0
      */
+    #[Test]
     public function classIsNullWhenNotDefinedForMimeType(): void
     {
         assertNull($this->createInstance()->classFor('application/foo'));
     }
 
     /**
-     * @test
      * @since  3.2.0
      */
+    #[Test]
     public function classIsNullForUnknownMimeType(): void
     {
         assertNull($this->createInstance()->classFor('application/bar'));
     }
 
     /**
-     * @test
      * @since  3.2.0
      */
+    #[Test]
     public function hasClassWhenDefinedForMimeType(): void
     {
         assertTrue($this->createInstance()->provideClass('application/xml'));
     }
 
     /**
-     * @test
      * @since  3.2.0
      */
+    #[Test]
     public function defaultClassCanBeOverriden(): void
     {
         assertThat(
-                $this->createInstance()->classFor('application/xml'),
-                equals('stubbles\webapp\response\mimetypes\Xml')
+            $this->createInstance()->classFor('application/xml'),
+            equals('stubbles\webapp\response\mimetypes\Xml')
         );
     }
 
-    /**
-     * @return  array<string[]>
-     */
-    public static function imageMimetypes(): array
+    public static function provideImageMimetypes(): Generator
     {
-        return [['image/png'], ['image/jpeg']];
+        yield ['image/png'];
+        yield ['image/jpeg'];
     }
 
     /**
-     * @test
-     * @dataProvider  imageMimetypes
      * @since  8.1.0
      */
+    #[Test]
+    #[DataProvider('provideImageMimetypes')]
     public function supportsImageMimeTypesWhenStubblesImagePresent(string $imageMimetype): void
     {
         assertTrue($this->createInstance()->provideClass($imageMimetype));

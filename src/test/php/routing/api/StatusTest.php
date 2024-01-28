@@ -7,6 +7,9 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 namespace stubbles\webapp\routing\api;
+
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use stubbles\ioc\Binder;
 use stubbles\xml\serializer\XmlSerializerFacade;
@@ -17,59 +20,50 @@ use function bovigo\assert\predicate\equals;
  * Test for stubbles\webapp\routing\api\Status.
  *
  * @since  6.1.0
- * @group  routing
- * @group  routing_api
  */
+#[Group('routing')]
+#[Group('routing_api')]
 class StatusTest extends TestCase
 {
-    /**
-     * @var  \stubbles\webapp\routing\api\Status
-     */
-    private $status;
+    private Status $status;
 
     protected function setUp(): void
     {
         $this->status = new Status(200, 'Default <b>response</b> code');
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function returnsProvidedStatusCode(): void
     {
         assertThat($this->status->code(), equals(200));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function returnsProvidedDescription(): void
     {
         assertThat($this->status->description(), equals('Default <b>response</b> code'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function canBeSerializedToJson(): void
     {
         assertThat(
-                json_encode($this->status),
-                equals('{"code":200,"description":"Default <b>response<\/b> code"}')
+            json_encode($this->status),
+            equals('{"code":200,"description":"Default <b>response<\/b> code"}')
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function canBeSerializedToXml(): void
     {
         /**  @var  XmlSerializerFacade  $xmlSerializer */
         $xmlSerializer = (new Binder())->getInjector()->getInstance(XmlSerializerFacade::class);
         assertThat(
-          $xmlSerializer->serializeToXml($this->status),
-                equals('<?xml version="1.0" encoding="UTF-8"?>
-<status code="200"><description>Default <b>response</b> code</description></status>')
+            $xmlSerializer->serializeToXml($this->status),
+            equals(
+                '<?xml version="1.0" encoding="UTF-8"?>
+<status code="200"><description>Default <b>response</b> code</description></status>'
+            )
         );
     }
 }

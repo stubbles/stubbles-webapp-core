@@ -7,7 +7,14 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 namespace stubbles\webapp\routing;
+
+use bovigo\callmap\ClassProxy;
 use bovigo\callmap\NewInstance;
+use Generator;
+use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use stubbles\peer\http\HttpUri;
 
@@ -23,18 +30,12 @@ use function bovigo\assert\{
  * Tests for stubbles\webapp\routing\CalledUri.
  *
  * @since  1.7.0
- * @group  routing
  */
+#[Group('routing')]
 class CalledUriTest extends TestCase
 {
-    /**
-     * @var  \stubbles\webapp\routing\CalledUri
-     */
-    private $calledUri;
-    /**
-     * @var  HttpUri&\bovigo\callmap\ClassProxy
-     */
-    private $httpUri;
+    private CalledUri $calledUri;
+    private HttpUri&ClassProxy $httpUri;
 
     protected function setUp(): void
     {
@@ -44,75 +45,75 @@ class CalledUriTest extends TestCase
 
     /**
      * @since  4.0.0
-     * @test
      */
+    #[Test]
     public function createInstanceWithEmptyRequestMethodThrowsIllegalArgumentException(): void
     {
-        expect(function() { new CalledUri($this->httpUri, ''); })
-                ->throws(\InvalidArgumentException::class);
+        expect(fn() => new CalledUri($this->httpUri, ''))
+            ->throws(InvalidArgumentException::class);
     }
 
     /**
-     * @test
      * @since  4.0.0
      */
+    #[Test]
     public function castFromOtherInstanceReturnsInstance(): void
     {
         assertThat(
-                CalledUri::castFrom($this->calledUri, null),
-                isSameAs($this->calledUri)
+            CalledUri::castFrom($this->calledUri, null),
+            isSameAs($this->calledUri)
         );
     }
 
     /**
-     * @test
      * @since  4.0.0
      */
+    #[Test]
     public function castFromHttpUriInstanceReturnsInstance(): void
     {
         assertThat(
-                CalledUri::castFrom($this->httpUri, 'GET'),
-                equals($this->calledUri)
+            CalledUri::castFrom($this->httpUri, 'GET'),
+            equals($this->calledUri)
         );
     }
 
     /**
-     * @test
      * @since  4.0.0
      */
+    #[Test]
     public function castFromHttpUriInstanceWithoutRequestMethodThrowsIllegalArgumentException(): void
     {
         expect(function() { CalledUri::castFrom($this->httpUri, ''); })
-                ->throws(\InvalidArgumentException::class);
+            ->throws(InvalidArgumentException::class);
     }
 
     /**
-     * @test
      * @since  4.0.0
      */
+    #[Test]
     public function castFromHttpUriStringReturnsInstance(): void
     {
 
         assertThat(
-                CalledUri::castFrom('http://example.net/', 'GET'),
-                equals(new CalledUri('http://example.net/', 'GET'))
+            CalledUri::castFrom('http://example.net/', 'GET'),
+            equals(new CalledUri('http://example.net/', 'GET'))
         );
     }
 
     /**
-     * @test
      * @since  4.0.0
      */
+    #[Test]
     public function castFromHttpUriStringWithoutRequestMethodThrowsIllegalArgumentException(): void
     {
         expect(function()  { CalledUri::castFrom('http://example.net/', ''); })
-                ->throws(\InvalidArgumentException::class);
+            ->throws(\InvalidArgumentException::class);
     }
 
     /**
      * @since  2.0.0
-     * @test
      */
+    #[Test]
     public function methodAlwaysEqualsNullMethod(): void
     {
         assertTrue($this->calledUri->methodEquals(null));
@@ -120,8 +121,8 @@ class CalledUriTest extends TestCase
 
     /**
      * @since  2.0.0
-     * @test
      */
+    #[Test]
     public function methodAlwaysEqualsEmptyMethod(): void
     {
         assertTrue($this->calledUri->methodEquals(''));
@@ -129,8 +130,8 @@ class CalledUriTest extends TestCase
 
     /**
      * @since  2.0.0
-     * @test
      */
+    #[Test]
     public function methodEqualsGivenMethod(): void
     {
         assertTrue($this->calledUri->methodEquals('GET'));
@@ -138,56 +139,45 @@ class CalledUriTest extends TestCase
 
     /**
      * @since  2.0.0
-     * @test
      */
+    #[Test]
     public function methodDoesNotEqualsGivenMethod(): void
     {
         assertFalse($this->calledUri->methodEquals('POST'));
     }
 
-    /**
-     * @return  array<mixed[]>
-     */
-    public static function provideSatisfiedPathPattern(): array
+    public static function provideSatisfiedPathPattern(): Generator
     {
-        return [
-            ['/hello/mikey', '/hello/{name}$'],
-            ['/hello/mikey/foo', '/hello/{name}'],
-            ['/hello', '/hello'],
-            ['/hello/world303', '/hello/[a-z0-9]+'],
-            ['/', '/'],
-            ['/hello', ''],
-            ['/hello', null]
-        ];
+        yield ['/hello/mikey', '/hello/{name}$'];
+        yield ['/hello/mikey/foo', '/hello/{name}'];
+        yield ['/hello', '/hello'];
+        yield ['/hello/world303', '/hello/[a-z0-9]+'];
+        yield ['/', '/'];
+        yield ['/hello', ''];
+        yield ['/hello', null];
     }
 
-    /**
-     * @test
-     * @dataProvider  provideSatisfiedPathPattern
-     */
-    public function returnsTrueForSatisfiedPathPattern(string $path, string $pathPattern = null): void
-    {
+    #[Test]
+    #[DataProvider('provideSatisfiedPathPattern')]
+    public function returnsTrueForSatisfiedPathPattern(
+        string $path,
+        ?string $pathPattern = null
+    ): void {
         $this->httpUri->returns(['path' => $path]);
         assertTrue($this->calledUri->satisfiesPath($pathPattern));
     }
 
-    /**
-     * @return  array<string[]>
-     */
-    public static function provideNonSatisfiedPathPattern(): array
+    public static function provideNonSatisfiedPathPattern(): Generator
     {
-        return [['/rss/articles', '/hello/{name}'],
-                ['/hello/mikey', '/hello$'],
-                ['/hello/', '/hello/{name}$'],
-                ['/hello/mikey', '/$'],
-                ['/hello/mikey', '$']
-        ];
+        yield ['/rss/articles', '/hello/{name}'];
+        yield ['/hello/mikey', '/hello$'];
+        yield ['/hello/', '/hello/{name}$'];
+        yield ['/hello/mikey', '/$'];
+        yield ['/hello/mikey', '$'];
     }
 
-    /**
-     * @test
-     * @dataProvider  provideNonSatisfiedPathPattern
-     */
+    #[Test]
+    #[DataProvider('provideNonSatisfiedPathPattern')]
     public function returnsFalseForNonSatisfiedCondition(string $path, string $pathPattern): void
     {
         $this->httpUri->returns(['path' => $path]);
@@ -196,8 +186,8 @@ class CalledUriTest extends TestCase
 
     /**
      * @since  2.0.0
-     * @test
      */
+    #[Test]
     public function isHttpsWhenRequestUriHasHttps(): void
     {
         $this->httpUri->returns(['isHttps' => true]);
@@ -206,8 +196,8 @@ class CalledUriTest extends TestCase
 
     /**
      * @since  2.0.0
-     * @test
      */
+    #[Test]
     public function toHttpReturnsTransformedUri(): void
     {
         $httpUri = NewInstance::stub(HttpUri::class);
@@ -217,8 +207,8 @@ class CalledUriTest extends TestCase
 
     /**
      * @since  2.0.0
-     * @test
      */
+    #[Test]
     public function toHttpsReturnsTransformedUri(): void
     {
         $httpUri = NewInstance::stub(HttpUri::class);
@@ -228,8 +218,8 @@ class CalledUriTest extends TestCase
 
     /**
      * @since  2.0.0
-     * @test
      */
+    #[Test]
     public function returnsStringRepresentationOfUri(): void
     {
         $this->httpUri->returns(['__toString' => 'http://example.net/foo/bar']);

@@ -7,7 +7,11 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 namespace stubbles\webapp;
+
+use bovigo\callmap\ClassProxy;
 use bovigo\callmap\NewInstance;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use stubbles\ExceptionLogger;
 use stubbles\ioc\{Binder, Injector};
@@ -26,28 +30,13 @@ use function bovigo\callmap\{throws, verify};
  * Tests for stubbles\webapp\WebApp.
  *
  * @since  1.7.0
- * @group  core_webapp
  */
+#[Group('core')]
 class WebAppTest extends TestCase
 {
-    /**
-     * instance to test
-     *
-     * @var  WebApp
-     */
-    private $webApp;
-    /**
-     * mocked injector
-     *
-     * @var  Injector&\bovigo\callmap\ClassProxy
-     */
-    private $injector;
-    /**
-     * partially mocked routing
-     *
-     * @var  Routing&\bovigo\callmap\ClassProxy
-     */
-    private $routing;
+    private WebApp $webApp;
+    private Injector&ClassProxy $injector;
+    private Routing&ClassProxy $routing;
 
     protected function setUp(): void
     {
@@ -60,11 +49,12 @@ class WebAppTest extends TestCase
              */
             public static function __bindings(): array
             {
-                return [function(Binder $binder)
-                        {
-                            $binder->bindConstant('stubbles.project.path')
-                                   ->to(self::projectPath());
-                        }
+                return [
+                    function(Binder $binder): void
+                    {
+                        $binder->bindConstant('stubbles.project.path')
+                            ->to(self::projectPath());
+                    }
                 ];
             }
 
@@ -83,10 +73,7 @@ class WebAppTest extends TestCase
         restore_error_handler();
     }
 
-    /**
-     * @return  UriResource&\bovigo\callmap\ClassProxy
-     */
-    private function createResource(): UriResource
+    private function createResource(): UriResource&ClassProxy
     {
         $resource = NewInstance::of(UriResource::class);
         $this->routing->returns(['findResource' => $resource]);
@@ -94,53 +81,49 @@ class WebAppTest extends TestCase
     }
 
     /**
-     * @param   array<string,mixed>  $callmap
-     * @return  UriResource&\bovigo\callmap\ClassProxy
+     * @param  array<string,mixed>  $callmap
      */
-    private function createNonHttpsResource(array $callmap = []): UriResource
+    private function createNonHttpsResource(array $callmap = []): UriResource&ClassProxy
     {
         $resource = $this->createResource();
         $resource->returns(array_merge(
-                ['requiresHttps'         => false,
-                 'negotiateMimeType'     => true,
-                 'applyPreInterceptors'  => true,
-                 'applyPostInterceptors' => true
-                ],
-                $callmap
+            [
+                'requiresHttps'         => false,
+                'negotiateMimeType'     => true,
+                'applyPreInterceptors'  => true,
+                'applyPostInterceptors' => true
+            ],
+            $callmap
         ));
         return $resource;
     }
 
-    /**
-     * @test
-      */
+    #[Test]
     public function respondsWithRedirectHttpsUriIfRequiresHttps(): void
     {
         $resource = $this->createResource();
         $resource->returns([
-                'requiresHttps' => true,
-                'httpsUri'      => HttpUri::fromString('https://example.net/admin')
+            'requiresHttps' => true,
+            'httpsUri'      => HttpUri::fromString('https://example.net/admin')
         ]);
         $response = $this->webApp->run();
         assertThat($response->statusCode(), equals(302));
         assertTrue(
-                $response->containsHeader(
-                        'Location',
-                        'https://example.net/admin'
-                )
+            $response->containsHeader(
+                'Location',
+                'https://example.net/admin'
+            )
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function doesNotExecuteInterceptorsAndResourceIfMimeTypeNegotiationFails(): void
     {
         $resource = NewInstance::of(UriResource::class);
         $this->routing->returns(['findResource' => $resource]);
         $resource->returns([
-                'requiresHttps'     => false,
-                'negotiateMimeType' => false
+            'requiresHttps'     => false,
+            'negotiateMimeType' => false
         ]);
         $this->webApp->run();
         assertTrue(verify($resource, 'applyPreInterceptors')->wasNeverCalled());
@@ -150,23 +133,20 @@ class WebAppTest extends TestCase
     }
 
     /**
-     * @test
      * @since  6.0.0
      */
+    #[Test]
     public function enablesSessionScopeWhenSessionIsAvailable(): void
     {
         $session = NewInstance::of(Session::class);
         $webApp  = new class($this->injector, $this->routing, $session) extends WebApp
         {
-            /**
-             * @var  Session
-             */
-            private $session;
-
-            public function __construct(Injector $injector, Routing $routing, Session $session)
-            {
+            public function __construct(
+                Injector $injector,
+                Routing $routing,
+                private Session $session
+            ) {
                 parent::__construct($injector, $routing);
-                $this->session = $session;
             }
 
             protected function createSession(Request $request, Response $response): ?Session
@@ -179,13 +159,13 @@ class WebAppTest extends TestCase
 
         $this->createNonHttpsResource();
         $webApp->run();
-        assertTrue(verify($this->injector, 'setSession')->received($session, Session::class));
+        verify($this->injector, 'setSession')->received($session, Session::class);
     }
 
     /**
-     * @test
      * @since  6.0.0
      */
+    #[Test]
     public function doesNotEnableSessionScopeWhenSessionNotAvailable(): void
     {
         $this->createNonHttpsResource();
@@ -193,9 +173,7 @@ class WebAppTest extends TestCase
         assertTrue(verify($this->injector, 'setSession')->wasNeverCalled());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function doesNotExecuteRouteAndPostInterceptorsIfPreInterceptorCancelsRequest(): void
     {
         $resource = $this->createNonHttpsResource(['applyPreInterceptors' => false]);
@@ -204,10 +182,7 @@ class WebAppTest extends TestCase
         assertTrue(verify($resource, 'applyPostInterceptors')->wasNeverCalled());
     }
 
-    /**
-     * @return  ExceptionLogger&\bovigo\callmap\ClassProxy
-     */
-    private function setUpExceptionLogger(): ExceptionLogger
+    private function setUpExceptionLogger(): ExceptionLogger&ClassProxy
     {
         $exceptionLogger = NewInstance::stub(ExceptionLogger::class);
         $this->injector->returns(['getInstance' => $exceptionLogger]);
@@ -215,9 +190,7 @@ class WebAppTest extends TestCase
 
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function sendsInternalServerErrorIfExceptionThrownFromPreInterceptors(): void
     {
         $exception = new \Exception('some error');
@@ -227,62 +200,56 @@ class WebAppTest extends TestCase
         $exceptionLogger = $this->setUpExceptionLogger();
         $response = $this->webApp->run();
         assertThat($response->statusCode(), equals(500));
-        assertTrue(verify($exceptionLogger, 'log')->received($exception));
-        assertTrue(verify($resource, 'resolve')->wasNeverCalled());
-        assertTrue(verify($resource, 'applyPostInterceptors')->wasNeverCalled());
+        verify($exceptionLogger, 'log')->received($exception);
+        verify($resource, 'resolve')->wasNeverCalled();
+        verify($resource, 'applyPostInterceptors')->wasNeverCalled();
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function sendsInternalServerErrorIfExceptionThrownFromRoute(): void
     {
         $exception = new \Exception('some error');
         $resource = $this->createNonHttpsResource([
-                'applyPreInterceptors' => true,
-                'resolve'              => throws($exception)
+            'applyPreInterceptors' => true,
+            'resolve'              => throws($exception)
         ]);
         $exceptionLogger = $this->setUpExceptionLogger();
         $response = $this->webApp->run();
         assertThat($response->statusCode(), equals(500));
-        assertTrue(verify($exceptionLogger, 'log')->received($exception));
-        assertTrue(verify($resource, 'applyPostInterceptors')->wasNeverCalled());
+        verify($exceptionLogger, 'log')->received($exception);
+        verify($resource, 'applyPostInterceptors')->wasNeverCalled();
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function sendsInternalServerErrorIfExceptionThrownFromPostInterceptors(): void
     {
         $exception = new \Exception('some error');
         $this->createNonHttpsResource([
-                'applyPreInterceptors'  => true,
-                'applyPostInterceptors' => throws($exception)
+            'applyPreInterceptors'  => true,
+            'applyPostInterceptors' => throws($exception)
 
         ]);
         $exceptionLogger = $this->setUpExceptionLogger();
         $response = $this->webApp->run();
         assertThat($response->statusCode(), equals(500));
-        assertTrue(verify($exceptionLogger, 'log')->received($exception));
+        verify($exceptionLogger, 'log')->received($exception);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function executesEverythingIfRequestNotCancelled(): void
     {
         $resource = $this->createNonHttpsResource([
-                'applyPreInterceptors' => true
+            'applyPreInterceptors' => true
         ]);
         $this->webApp->run();
-        assertTrue(verify($resource, 'resolve')->wasCalledOnce());
-        assertTrue(verify($resource, 'applyPostInterceptors')->wasCalledOnce());
+        verify($resource, 'resolve')->wasCalledOnce();
+        verify($resource, 'applyPostInterceptors')->wasCalledOnce();
     }
 
     /**
      * @since  4.0.0
-     * @test
      */
+    #[Test]
     public function createCreatesInstance(): void
     {
         $webAppClass = get_class($this->webApp);
@@ -290,10 +257,10 @@ class WebAppTest extends TestCase
     }
 
     /**
-     * @since  5.0.1
-     * @test
-     * @group  issue_70
+     * @since  5.0.1 
      */
+    #[Test]
+    #[Group('issue_70')]
     public function malformedUriInRequestLeadsToResponse400BadRequest(): void
     {
         $_SERVER['REQUEST_URI'] = '/hello';

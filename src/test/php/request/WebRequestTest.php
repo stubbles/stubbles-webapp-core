@@ -8,6 +8,11 @@ declare(strict_types=1);
  */
 namespace stubbles\webapp\request;
 use bovigo\callmap\NewInstance;
+use Generator;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 use stubbles\input\{ValueReader, ValueValidator, errors\ParamErrors};
 use stubbles\peer\{IpAddress, MalformedUri, http\Http, http\HttpVersion};
@@ -29,34 +34,30 @@ use function bovigo\assert\{
 };
 /**
  * Tests for stubbles\webapp\request\WebRequest.
- *
- * @group  request
  */
+#[Group('request')]
 class WebRequestTest extends TestCase
 {
-    /**
-     * @var  \stubbles\webapp\request\WebRequest
-     */
-    private $webRequest;
+    private WebRequest $webRequest;
     /**
      * backup of globals $_GET, $_POST, $_SERVER, $COOKIE
      *
      * @var  array<string,array<string,string>>
      */
-    private $globals;
+    private array $globals;
 
     protected function setUp(): void
     {
-        $this->globals        = ['GET'    => $_GET,
-                                 'POST'   => $_POST,
-                                 'SERVER' => $_SERVER,
-                                 'COOKIE' => $_COOKIE
-
-                                ];
+        $this->globals = [
+            'GET'    => $_GET,
+            'POST'   => $_POST,
+            'SERVER' => $_SERVER,
+            'COOKIE' => $_COOKIE
+        ];
         $this->webRequest = $this->createBaseWebRequest(
-                ['foo' => 'bar', 'roland' => 'TB-303'],
-                ['HTTP_ACCEPT' => 'text/html', 'REQUEST_METHOD' => 'post'],
-                ['chocolateChip' => 'Omnomnomnom', 'master' => 'servant']
+            ['foo' => 'bar', 'roland' => 'TB-303'],
+            ['HTTP_ACCEPT' => 'text/html', 'REQUEST_METHOD' => 'post'],
+            ['chocolateChip' => 'Omnomnomnom', 'master' => 'servant']
         );
     }
 
@@ -69,15 +70,14 @@ class WebRequestTest extends TestCase
     }
 
     /**
-     * @param   array<string,scalar|null>  $params
-     * @param   array<string,scalar|null>  $headers
-     * @param   array<string,scalar|null>  $cookies
-     * @return  WebRequest
+     * @param  array<string,scalar|null>  $params
+     * @param  array<string,scalar|null>  $headers
+     * @param  array<string,scalar|null>  $cookies
      */
     private function createBaseWebRequest(
-            array $params  = [],
-            array $headers = [],
-            array $cookies = []
+        array $params  = [],
+        array $headers = [],
+        array $cookies = []
     ): WebRequest {
         return new WebRequest($params, $headers, $cookies);
     }
@@ -90,192 +90,164 @@ class WebRequestTest extends TestCase
         $_COOKIE = ['chocolateChip'  => 'Omnomnomnom', 'master' => 'servant'];
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function usesGetParamsFromRawSourceWhenRequestMethodIsGET(): void
     {
         $this->fillGlobals(Http::GET);
         assertThat(
-                WebRequest::fromRawSource()->paramNames(),
-                equals(['foo', 'roland'])
+            WebRequest::fromRawSource()->paramNames(),
+            equals(['foo', 'roland'])
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function usesPostParamsFromRawSourceWhenRequestMethodIsPOST(): void
     {
         $this->fillGlobals(Http::POST);
         assertThat(
-                WebRequest::fromRawSource()->paramNames(),
-                equals(['baz', 'donald'])
+            WebRequest::fromRawSource()->paramNames(),
+            equals(['baz', 'donald'])
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function usesServerForHeaderFromRawSource(): void
     {
         $this->fillGlobals();
         assertThat(
-                WebRequest::fromRawSource()->headerNames(),
-                equals(['REQUEST_METHOD', 'HTTP_ACCEPT'])
+            WebRequest::fromRawSource()->headerNames(),
+            equals(['REQUEST_METHOD', 'HTTP_ACCEPT'])
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function usesCookieForCookieFromRawSource(): void
     {
         $this->fillGlobals();
         assertThat(
-                WebRequest::fromRawSource()->cookieNames(),
-                equals(['chocolateChip', 'master'])
+            WebRequest::fromRawSource()->cookieNames(),
+            equals(['chocolateChip', 'master'])
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function returnsRequestMethodInUpperCase(): void
     {
         assertThat($this->webRequest->method(), equals(Http::POST));
     }
 
     /**
-     * @return  array<string[]>
      * @since  9.1.0
      */
-    public static function allowedSupplantedRequestMethods(): array
-    {
-        return [[Http::PUT], [Http::DELETE]];
-    }
-
-    /**
-     * @test
-     * @group  supplanted_request_method
-     * @dataProvider  allowedSupplantedRequestMethods
-     * @since  9.1.0
-     */
+    #[Test]
+    #[Group('supplanted_request_method')]
+    #[TestWith([Http::PUT])]
+    #[TestWith([Http::DELETE])]
     public function returnsSupplantedRequestMethodWhenSetViaParam(string $requestMethod): void
     {
-        $request = $this->createBaseWebRequest(['_method' => $requestMethod], ['REQUEST_METHOD' => Http::POST]);
+        $request = $this->createBaseWebRequest(
+            ['_method' => $requestMethod],
+            ['REQUEST_METHOD' => Http::POST]
+        );
         assertThat($request->method(), equals($requestMethod));
     }
 
     /**
-     * @test
-     * @group  supplanted_request_method
      * @since  9.1.0
      */
+    #[Test]
+    #[Group('supplanted_request_method')]
     public function returnsOriginalRequestMethodOnInvalidSupplantedRequestMethod(): void
     {
-        $request = $this->createBaseWebRequest(['_method' => 'NOPE'], ['REQUEST_METHOD' => Http::POST]);
+        $request = $this->createBaseWebRequest(
+            ['_method' => 'NOPE'],
+            ['REQUEST_METHOD' => Http::POST]
+        );
         assertThat($request->method(), equals(Http::POST));
     }
 
     /**
-     * @return  array<string[]>
      * @since  9.1.0
      */
-    public static function requestMethods(): array
-    {
-        return [[Http::GET], [Http::HEAD], [Http::OPTIONS], [Http::DELETE]];
-    }
-
-    /**
-     * @test
-     * @group  supplanted_request_method
-     * @dataProvider  requestMethods
-     * @since  9.1.0
-     */
-    public function returnsOriginalRequestMethodOnAnyRequestMethodOtherThanPOST(string $requestMethod): void
-    {
-        $request = $this->createBaseWebRequest(['_method' => Http::PUT], ['REQUEST_METHOD' => $requestMethod]);
+    #[Test]
+    #[Group('supplanted_request_method')]
+    #[TestWith([Http::GET])]
+    #[TestWith([Http::HEAD])]
+    #[TestWith([Http::OPTIONS])]
+    #[TestWith([Http::DELETE])]
+    public function returnsOriginalRequestMethodOnAnyRequestMethodOtherThanPOST(
+        string $requestMethod
+    ): void {
+        $request = $this->createBaseWebRequest(
+            ['_method' => Http::PUT],
+            ['REQUEST_METHOD' => $requestMethod]
+        );
         assertThat($request->method(), equals($requestMethod));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function sslCheckReturnsTrueIfHttpsSet(): void
     {
         assertTrue(
-                $this->createBaseWebRequest([], ['HTTPS' => true])->isSsl()
+            $this->createBaseWebRequest([], ['HTTPS' => true])->isSsl()
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function sslCheckReturnsFalseIfHttpsNotSet(): void
     {
         assertFalse(
-                $this->createBaseWebRequest([], ['HTTPS' => null])->isSsl()
+            $this->createBaseWebRequest([], ['HTTPS' => null])->isSsl()
         );
     }
 
     /**
      * @since  2.0.2
-     * @test
      */
+    #[Test]
     public function reportsVersion1_0WhenNoServerProtocolSet(): void
     {
          assertThat(
-                $this->createBaseWebRequest([], [])->protocolVersion(),
-                equals(HttpVersion::HTTP_1_0)
+            $this->createBaseWebRequest([], [])->protocolVersion(),
+            equals(HttpVersion::HTTP_1_0)
         );
     }
 
     /**
      * @since  2.0.2
-     * @test
      */
+    #[Test]
     public function reportsNullWhenServerProtocolContainsInvalidVersion(): void
     {
          assertNull(
-                $this->createBaseWebRequest([], ['SERVER_PROTOCOL' => 'foo'])
-                        ->protocolVersion()
+            $this->createBaseWebRequest([], ['SERVER_PROTOCOL' => 'foo'])
+                ->protocolVersion()
         );
     }
 
     /**
-     * @return  array<string[]>
-     */
-    public static function protocolVersions(): array
-    {
-        return [
-            ['HTTP/0.9', '0.9'],
-            ['HTTP/1.0', '1.0'],
-            ['HTTP/1.1', '1.1'],
-            ['HTTP/1.2', '1.2'],
-            ['HTTP/1.12', '1.12'],
-            ['HTTP/2.0', '2.0'],
-        ];
-    }
-
-    /**
      * @since  3.0.0
-     * @test
-     * @dataProvider  protocolVersions
      */
+    #[Test]
+    #[TestWith(['HTTP/0.9'])]
+    #[TestWith([HttpVersion::HTTP_1_0])]
+    #[TestWith([HttpVersion::HTTP_1_1])]
+    #[TestWith(['HTTP/1.2'])]
+    #[TestWith(['HTTP/1.12'])]
+    #[TestWith(['HTTP/2.0'])]
     public function reportsParsedProtocolVersion(string $protocol): void
     {
          assertThat(
-                $this->createBaseWebRequest([], ['SERVER_PROTOCOL' => $protocol])
-                        ->protocolVersion(),
-                equals(HttpVersion::fromString($protocol))
+            $this->createBaseWebRequest([], ['SERVER_PROTOCOL' => $protocol])
+                ->protocolVersion(),
+            equals(HttpVersion::fromString($protocol))
         );
     }
 
     /**
      * @since  3.0.0
-     * @test
      */
+    #[Test]
     public function originatingIpAdressIsNullWhenAccordingHeadersNotPresent(): void
     {
         assertNull($this->createBaseWebRequest()->originatingIpAddress());
@@ -283,244 +255,235 @@ class WebRequestTest extends TestCase
 
     /**
      * @since  3.0.0
-     * @test
      */
+    #[Test]
     public function originatingIpAdressIsNullWhenRemoteAddressSyntacticallyInvalidAndNoForwardedForHeaderPresent(): void
     {
         assertNull(
-                $this->createBaseWebRequest([], ['REMOTE_ADDR' => 'foo'])
-                    ->originatingIpAddress()
+            $this->createBaseWebRequest([], ['REMOTE_ADDR' => 'foo'])
+                ->originatingIpAddress()
         );
     }
 
     /**
      * @since  3.0.0
-     * @test
      */
+    #[Test]
     public function originatingIpAdressIsNullWhenForwardedForHeaderSyntacticallyInvalid(): void
     {
         assertNull(
-                $this->createBaseWebRequest(
-                        [],
-                        ['REMOTE_ADDR'          => '127.0.0.1',
-                         'HTTP_X_FORWARDED_FOR' => 'foo'
-                        ]
-                       )
-                    ->originatingIpAddress()
+            $this->createBaseWebRequest(
+                [],
+                [
+                    'REMOTE_ADDR'          => '127.0.0.1',
+                    'HTTP_X_FORWARDED_FOR' => 'foo'
+                ]
+            )->originatingIpAddress()
         );
     }
 
     /**
      * @since  3.0.0
-     * @test
      */
+    #[Test]
     public function originatingIpAddressIsRemoteAddressWhenNoForwardedForHeaderPresent(): void
     {
         assertThat(
-                $this->createBaseWebRequest([], ['REMOTE_ADDR' => '127.0.0.1'])
-                    ->originatingIpAddress(),
-                equals('127.0.0.1')
+            $this->createBaseWebRequest([], ['REMOTE_ADDR' => '127.0.0.1'])
+                ->originatingIpAddress(),
+            equals('127.0.0.1')
         );
     }
 
     /**
      * @since  3.0.0
-     * @test
      */
+    #[Test]
     public function originatingIpAddressIsInstanceOfIpAddress(): void
     {
         assertThat(
-                $this->createBaseWebRequest([], ['REMOTE_ADDR' => '127.0.0.1'])
-                    ->originatingIpAddress(),
-                isInstanceOf(IpAddress::class)
+            $this->createBaseWebRequest([], ['REMOTE_ADDR' => '127.0.0.1'])
+                ->originatingIpAddress(),
+            isInstanceOf(IpAddress::class)
         );
     }
 
     /**
      * @since  3.0.0
-     * @test
      */
+    #[Test]
     public function originatingIpAddressIsForwardedAddressWhenForwardedForHeaderPresent(): void
     {
         assertThat(
-                $this->createBaseWebRequest(
-                        [],
-                        ['REMOTE_ADDR'          => '127.0.0.1',
-                         'HTTP_X_FORWARDED_FOR' => '172.19.120.122'
-                        ]
-                       )
-                    ->originatingIpAddress(),
-                equals('172.19.120.122')
+            $this->createBaseWebRequest(
+                [],
+                [
+                    'REMOTE_ADDR'          => '127.0.0.1',
+                    'HTTP_X_FORWARDED_FOR' => '172.19.120.123'
+                ]
+            )->originatingIpAddress(),
+            equals('172.19.120.123')
         );
     }
 
     /**
      * @since  3.0.0
-     * @test
      */
+    #[Test]
     public function originatingIpAddressIsFirstFromForwardedAddressesWhenForwardedForHeaderContainsList(): void
     {
         assertThat(
-                $this->createBaseWebRequest(
-                        [],
-                        ['REMOTE_ADDR'          => '127.0.0.1',
-                         'HTTP_X_FORWARDED_FOR' => '172.19.120.122, 168.30.48.124'
-                        ]
-                       )
-                    ->originatingIpAddress(),
-                equals('172.19.120.122')
+            $this->createBaseWebRequest(
+                [],
+                [
+                    'REMOTE_ADDR'          => '127.0.0.1',
+                    'HTTP_X_FORWARDED_FOR' => '172.19.120.122, 168.30.48.124'
+                ]
+            )->originatingIpAddress(),
+            equals('172.19.120.122')
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function uriThrowsMalformedUriExceptionOnInvalidRequestUri(): void
     {
         expect(function() { $this->createBaseWebRequest([], [])->uri(); })
-                ->throws(MalformedUri::class);
+            ->throws(MalformedUri::class);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function uriReturnsCompleteRequestUri(): void
     {
         assertThat(
-                $this->createBaseWebRequest(
-                        ['foo'         => 'bar'],
-                        ['HTTPS'       => null,
-                         'HTTP_HOST'   => 'stubbles.net',
-                         'SERVER_PORT' => '80',
-                         'REQUEST_URI' => '/index.php?foo=bar'
-                        ]
-                    )
-                    ->uri()
-                    ->asString(),
-                equals('http://stubbles.net:80/index.php?foo=bar')
+            $this->createBaseWebRequest(
+                ['foo'         => 'bar'],
+                [
+                    'HTTPS'       => null,
+                    'HTTP_HOST'   => 'stubbles.net',
+                    'SERVER_PORT' => '80',
+                    'REQUEST_URI' => '/index.php?foo=bar'
+                ]
+            )
+                ->uri()
+                ->asString(),
+            equals('http://stubbles.net:80/index.php?foo=bar')
         );
     }
 
     /**
-     * @test
      * @since  8.0.1
      */
+    #[Test]
     public function uriWithInvalidServerPortIgnoresPort(): void
     {
         assertThat(
-                $this->createBaseWebRequest(
-                        ['foo'         => 'bar'],
-                        ['HTTPS'       => null,
-                         'HTTP_HOST'   => 'stubbles.net',
-                         'SERVER_PORT' => 'abcd',
-                         'REQUEST_URI' => '/index.php?foo=bar'
-                        ]
-                    )
-                    ->uri()
-                    ->asString(),
-                equals('http://stubbles.net/index.php?foo=bar')
+            $this->createBaseWebRequest(
+                ['foo'         => 'bar'],
+                [
+                    'HTTPS'       => null,
+                    'HTTP_HOST'   => 'stubbles.net',
+                    'SERVER_PORT' => 'abcd',
+                    'REQUEST_URI' => '/index.php?foo=bar'
+                ]
+            )
+                ->uri()
+                ->asString(),
+            equals('http://stubbles.net/index.php?foo=bar')
         );
     }
 
     /**
-     * @test
      * @since  2.3.2
      */
+    #[Test]
     public function uriReturnsCompleteRequestUriWithoutDoublePortIfPortIsInHost(): void
     {
         assertThat(
-                $this->createBaseWebRequest(
-                        ['foo'         => 'bar'],
-                        ['HTTPS'       => null,
-                         'HTTP_HOST'   => 'localhost:8080',
-                         'SERVER_PORT' => '80',
-                         'REQUEST_URI' => '/index.php?foo=bar'
-                        ]
-                    )
-                    ->uri()
-                    ->asString(),
-                equals('http://localhost:8080/index.php?foo=bar')
+            $this->createBaseWebRequest(
+                ['foo'         => 'bar'],
+                [
+                    'HTTPS'       => null,
+                    'HTTP_HOST'   => 'localhost:8080',
+                    'SERVER_PORT' => '80',
+                    'REQUEST_URI' => '/index.php?foo=bar'
+                ]
+            )
+                ->uri()
+                ->asString(),
+            equals('http://localhost:8080/index.php?foo=bar')
         );
     }
 
     /**
-     * @test
      * @since  2.3.2
      */
+    #[Test]
     public function uriReturnsCompleteRequestUriWithNonDefaultPort(): void
     {
         assertThat(
-                $this->createBaseWebRequest(
-                        ['foo'         => 'bar'],
-                        ['HTTPS'       => null,
-                         'HTTP_HOST'   => 'example.net',
-                         'SERVER_PORT' => 8080,
-                         'REQUEST_URI' => '/index.php?foo=bar'
-                        ]
-                    )
-                    ->uri()
-                    ->asString(),
-                equals('http://example.net:8080/index.php?foo=bar')
+            $this->createBaseWebRequest(
+                ['foo'         => 'bar'],
+                [
+                    'HTTPS'       => null,
+                    'HTTP_HOST'   => 'example.net',
+                    'SERVER_PORT' => 8080,
+                    'REQUEST_URI' => '/index.php?foo=bar'
+                ]
+            )
+                ->uri()
+                ->asString(),
+            equals('http://example.net:8080/index.php?foo=bar')
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function uriReturnsCompleteRequestUriForHttps(): void
     {
         assertThat(
-                $this->createBaseWebRequest(
-                        ['foo'         => 'bar'],
-                        ['HTTPS'       => true,
-                         'HTTP_HOST'   => 'stubbles.net',
-                         'SERVER_PORT' => 443,
-                         'REQUEST_URI' => '/index.php?foo=bar'
-                        ]
-                    )
-                    ->uri()
-                    ->asString(),
-                equals('https://stubbles.net:443/index.php?foo=bar')
+            $this->createBaseWebRequest(
+                ['foo'         => 'bar'],
+                [
+                    'HTTPS'       => true,
+                    'HTTP_HOST'   => 'stubbles.net',
+                    'SERVER_PORT' => 443,
+                    'REQUEST_URI' => '/index.php?foo=bar'
+                ]
+            )
+                ->uri()
+                ->asString(),
+            equals('https://stubbles.net:443/index.php?foo=bar')
         );
     }
 
     /**
-     * @test
-     * @group  upload
      * @since  8.1.0
      */
+    #[Test]
+    #[Group('upload')]
     public function uploadsProvidesAccessToUploadedFiles(): void
     {
         assertThat($this->webRequest->uploads(), isInstanceOf(Uploads::class));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function returnsListOfParamNames(): void
     {
         assertThat($this->webRequest->paramNames(), equals(['foo', 'roland']));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function returnsFalseOnCheckForNonExistingParam(): void
     {
         assertFalse($this->webRequest->hasParam('baz'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function returnsTrueOnCheckForExistingParam(): void
     {
         assertTrue($this->webRequest->hasParam('foo'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function validateParamReturnsValueValidator(): void
     {
         assertThat(
@@ -529,81 +492,67 @@ class WebRequestTest extends TestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function validateParamReturnsValueValidatorForNonExistingParam(): void
     {
         assertThat(
-                $this->webRequest->validateParam('baz'),
-                isInstanceOf(ValueValidator::class)
+            $this->webRequest->validateParam('baz'),
+            isInstanceOf(ValueValidator::class)
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function readParamReturnsValueReader(): void
     {
         assertThat(
-                $this->webRequest->readParam('foo'),
-                isInstanceOf(ValueReader::class)
+            $this->webRequest->readParam('foo'),
+            isInstanceOf(ValueReader::class)
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function readParamReturnsValueReaderForNonExistingParam(): void
     {
         assertThat(
-                $this->webRequest->readParam('baz'),
-                isInstanceOf(ValueReader::class)
+            $this->webRequest->readParam('baz'),
+            isInstanceOf(ValueReader::class)
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function returnsListOfHeaderNames(): void
     {
         assertThat(
-                $this->webRequest->headerNames(),
-                equals(['HTTP_ACCEPT', 'REQUEST_METHOD'])
+            $this->webRequest->headerNames(),
+            equals(['HTTP_ACCEPT', 'REQUEST_METHOD'])
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function returnsHeaderErrors(): void
     {
         assertThat(
-                $this->webRequest->headerErrors(),
-                isInstanceOf(ParamErrors::class)
+            $this->webRequest->headerErrors(),
+            isInstanceOf(ParamErrors::class)
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function returnsFalseOnCheckForNonExistingHeader(): void
     {
         assertFalse($this->webRequest->hasHeader('baz'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function returnsTrueOnCheckForExistingHeader(): void
     {
         assertTrue($this->webRequest->hasHeader('HTTP_ACCEPT'));
     }
 
     /**
-     * @test
      * @since  3.1.1
      */
+    #[Test]
     public function returnsFalseOnCheckForRedirectHeaderWhenBothRedirectAndCurrentDoNotExist(): void
     {
         $webRequest = $this->createBaseWebRequest([], []);
@@ -611,447 +560,414 @@ class WebRequestTest extends TestCase
     }
 
     /**
-     * @test
      * @since  3.1.1
      */
+    #[Test]
     public function returnsTrueOnCheckForRedirectHeaderWhenRedirectDoesNotButCurrentDoesExist(): void
     {
         $webRequest = $this->createBaseWebRequest(
-                [],
-                ['HTTP_AUTHORIZATION'          => 'someCoolToken']
+            [],
+            ['HTTP_AUTHORIZATION' => 'someCoolToken']
         );
         assertTrue($webRequest->hasRedirectHeader('HTTP_AUTHORIZATION'));
     }
 
     /**
-     * @test
      * @since  3.1.1
      */
+    #[Test]
     public function returnsTrueOnCheckForRedirectHeaderWhenBothRedirectAndCurrentExist(): void
     {
         $webRequest = $this->createBaseWebRequest(
-                [],
-                ['HTTP_AUTHORIZATION'          => 'someCoolToken',
-                 'REDIRECT_HTTP_AUTHORIZATION' => 'realToken'
-                ]
+            [],
+            [
+                'HTTP_AUTHORIZATION'          => 'someCoolToken',
+                'REDIRECT_HTTP_AUTHORIZATION' => 'realToken'
+            ]
         );
         assertTrue($webRequest->hasRedirectHeader('HTTP_AUTHORIZATION'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function validateHeaderReturnsValueValidator(): void
     {
         assertThat(
-                $this->webRequest->validateHeader('HTTP_ACCEPT'),
-                isInstanceOf(ValueValidator::class)
+            $this->webRequest->validateHeader('HTTP_ACCEPT'),
+            isInstanceOf(ValueValidator::class)
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function validateHeaderReturnsValueValidatorForNonExistingParam(): void
     {
         assertThat(
-                $this->webRequest->validateHeader('baz'),
-                isInstanceOf(ValueValidator::class)
+            $this->webRequest->validateHeader('baz'),
+            isInstanceOf(ValueValidator::class)
         );
     }
 
     /**
-     * @test
      * @since  3.1.0
-     * @group  redirect_header
      */
+    #[Test]
+    #[Group('redirect_header')]
     public function validateRedirectHeaderReturnsValueValidatorForNonExistingHeader(): void
     {
         $webRequest = $this->createBaseWebRequest([], []);
         assertThat(
-                $webRequest->validateRedirectHeader('HTTP_AUTHORIZATION'),
-                isInstanceOf(ValueValidator::class)
+            $webRequest->validateRedirectHeader('HTTP_AUTHORIZATION'),
+            isInstanceOf(ValueValidator::class)
         );
     }
 
     /**
-     * @test
      * @since  3.1.0
-     * @group  redirect_header
      */
+    #[Test]
+    #[Group('redirect_header')]
     public function validateRedirectHeaderReturnsValueValidatorWithOriginalHeaderIfRedirectHeaderNotPresent(): void
     {
         $webRequest = $this->createBaseWebRequest([], ['HTTP_AUTHORIZATION' => 'someCoolToken']);
         assertTrue(
-                $webRequest->validateRedirectHeader('HTTP_AUTHORIZATION')
-                        ->isEqualTo('someCoolToken')
+            $webRequest->validateRedirectHeader('HTTP_AUTHORIZATION')->isEqualTo('someCoolToken')
         );
     }
 
     /**
-     * @test
      * @since  3.1.0
-     * @group  redirect_header
      */
+    #[Test]
+    #[Group('redirect_header')]
     public function validateRedirectHeaderReturnsValueValidatorWithRedirectHeaderIfRedirectHeaderPresent(): void
     {
         $webRequest = $this->createBaseWebRequest(
-                [],
-                ['HTTP_AUTHORIZATION'          => 'someCoolToken',
-                 'REDIRECT_HTTP_AUTHORIZATION' => 'realToken'
-                ]
+            [],
+            [
+                'HTTP_AUTHORIZATION'          => 'someCoolToken',
+                'REDIRECT_HTTP_AUTHORIZATION' => 'realToken'
+            ]
         );
         assertTrue(
-                $webRequest->validateRedirectHeader('HTTP_AUTHORIZATION')
-                        ->isEqualTo('realToken')
+            $webRequest->validateRedirectHeader('HTTP_AUTHORIZATION')->isEqualTo('realToken')
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function readHeaderReturnsValueReader(): void
     {
         assertThat(
-                $this->webRequest->readHeader('HTTP_ACCEPT'),
-                isInstanceOf(ValueReader::class)
+            $this->webRequest->readHeader('HTTP_ACCEPT'),
+            isInstanceOf(ValueReader::class)
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function readHeaderReturnsValueReaderForNonExistingParam(): void
     {
         assertThat(
-                $this->webRequest->readHeader('baz'),
-                isInstanceOf(ValueReader::class)
+            $this->webRequest->readHeader('baz'),
+            isInstanceOf(ValueReader::class)
         );
     }
 
     /**
-     * @test
      * @since  3.1.0
-     * @group  redirect_header
      */
+    #[Test]
+    #[Group('redirect_header')]
     public function readRedirectHeaderReturnsValueReaderForNonExistingHeader(): void
     {
         $webRequest = $this->createBaseWebRequest([], []);
         assertNull(
-                $webRequest->readRedirectHeader('HTTP_AUTHORIZATION')->unsecure()
+            $webRequest->readRedirectHeader('HTTP_AUTHORIZATION')->unsecure()
         );
     }
 
     /**
-     * @test
      * @since  3.1.0
-     * @group  redirect_header
      */
+    #[Test]
+    #[Group('redirect_header')]
     public function readRedirectHeaderReturnsValueReaderWithOriginalHeaderIfRedirectHeaderNotPresent(): void
     {
         $webRequest = $this->createBaseWebRequest([], ['HTTP_AUTHORIZATION' => 'someCoolToken']);
         assertThat(
-                $webRequest->readRedirectHeader('HTTP_AUTHORIZATION')->unsecure(),
-                equals('someCoolToken')
+            $webRequest->readRedirectHeader('HTTP_AUTHORIZATION')->unsecure(),
+            equals('someCoolToken')
         );
     }
 
     /**
-     * @test
      * @since  3.1.0
-     * @group  redirect_header
      */
+    #[Test]
+    #[Group('redirect_header')]
     public function readRedirectHeaderReturnsValueReaderWithRedirectHeaderIfRedirectHeaderPresent(): void
     {
         $webRequest = $this->createBaseWebRequest(
-                [],
-                ['HTTP_AUTHORIZATION'          => 'someCoolToken',
-                 'REDIRECT_HTTP_AUTHORIZATION' => 'realToken'
-                ]
+            [],
+            [
+                'HTTP_AUTHORIZATION'          => 'someCoolToken',
+                'REDIRECT_HTTP_AUTHORIZATION' => 'realToken'
+            ]
         );
         assertThat(
-                $webRequest->readRedirectHeader('HTTP_AUTHORIZATION')->unsecure(),
-                equals('realToken')
+            $webRequest->readRedirectHeader('HTTP_AUTHORIZATION')->unsecure(),
+            equals('realToken')
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function returnsListOfCookieNames(): void
     {
         assertThat($this->webRequest->cookieNames(), equals(['chocolateChip', 'master']));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function returnsCookieErrors(): void
     {
         assertThat(
-                $this->webRequest->cookieErrors(),
-                isInstanceOf(ParamErrors::class)
+            $this->webRequest->cookieErrors(),
+            isInstanceOf(ParamErrors::class)
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function returnsFalseOnCheckForNonExistingCookie(): void
     {
         assertFalse($this->webRequest->hasCookie('baz'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function returnsTrueOnCheckForExistingCookie(): void
     {
         assertTrue($this->webRequest->hasCookie('chocolateChip'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function validateCookieReturnsValueValidator(): void
     {
         assertThat(
-                $this->webRequest->validateCookie('chocolateChip'),
-                isInstanceOf(ValueValidator::class)
+            $this->webRequest->validateCookie('chocolateChip'),
+            isInstanceOf(ValueValidator::class)
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function validateCookieReturnsValueValidatorForNonExistingParam(): void
     {
         assertThat(
-                $this->webRequest->validateCookie('baz'),
-                isInstanceOf(ValueValidator::class)
+            $this->webRequest->validateCookie('baz'),
+            isInstanceOf(ValueValidator::class)
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function readCookieReturnsValueReader(): void
     {
         assertThat(
-                $this->webRequest->readCookie('chocolateChip'),
-                isInstanceOf(ValueReader::class)
+            $this->webRequest->readCookie('chocolateChip'),
+            isInstanceOf(ValueReader::class)
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function readCookieReturnsValueReaderForNonExistingParam(): void
     {
         assertThat(
-                $this->webRequest->readCookie('baz'),
-                isInstanceOf(ValueReader::class)
+            $this->webRequest->readCookie('baz'),
+            isInstanceOf(ValueReader::class)
         );
     }
 
     /**
      * @since  4.1.0
-     * @test
-     * @group  issue_65
      */
+    #[Test]
+    #[Group('issue_65')]
     public function returnsUserAgent(): void
     {
         assertThat(
-                $this->createBaseWebRequest(
-                        [],
-                        ['HTTP_USER_AGENT' => 'foo'],
-                        ['chocolateChip' => 'someValue']
-                )->userAgent(),
-                equals(new UserAgent('foo', true))
+            $this->createBaseWebRequest(
+                [],
+                ['HTTP_USER_AGENT' => 'foo'],
+                ['chocolateChip' => 'someValue']
+            )->userAgent(),
+            equals(new UserAgent('foo', true))
         );
     }
 
     /**
      * @since  4.1.0
-     * @test
-     * @group  issue_65
      */
+    #[Test]
+    #[Group('issue_65')]
     public function returnsUserAgentWhenHeaderNotPresent(): void
     {
         assertThat(
-                $this->createBaseWebRequest(
-                        [],
-                        [],
-                        ['chocolateChip' => 'someValue']
-                )->userAgent(),
-                equals(new UserAgent(null, true))
+            $this->createBaseWebRequest(
+                [],
+                [],
+                ['chocolateChip' => 'someValue']
+            )->userAgent(),
+            equals(new UserAgent(null, true))
         );
     }
 
     /**
      * @since  4.1.0
-     * @test
-     * @group  issue_65
      */
+    #[Test]
+    #[Group('issue_65')]
     public function userAgentDoesNotAcceptCookiesWhenNoCookiesInRequest(): void
     {
         assertFalse(
-                $this->createBaseWebRequest([], ['HTTP_USER_AGENT' => 'foo'], [])
-                     ->userAgent()
-                     ->acceptsCookies()
+            $this->createBaseWebRequest([], ['HTTP_USER_AGENT' => 'foo'], [])
+                ->userAgent()
+                ->acceptsCookies()
         );
     }
 
     /**
      * @since  4.1.0
-     * @test
-     * @group  issue_65
      */
+    #[Test]
+    #[Group('issue_65')]
     public function userAgentDoesNotRecognizeBotWithoutAdditionalSignature(): void
     {
         assertFalse(
-                $this->createBaseWebRequest([], ['HTTP_USER_AGENT' => 'foo'], [])
-                     ->userAgent()
-                     ->isBot()
+            $this->createBaseWebRequest([], ['HTTP_USER_AGENT' => 'foo'], [])
+                ->userAgent()
+                ->isBot()
         );
     }
 
     /**
      * @since  4.1.0
-     * @test
-     * @group  issue_65
      */
+    #[Test]
+    #[Group('issue_65')]
     public function userAgentRecognizedAsBotWithDefaultSignatures(): void
     {
         assertTrue(
-                $this->createBaseWebRequest([], ['HTTP_USER_AGENT' => 'Googlebot /v1.1'], [])
-                     ->userAgent()
-                     ->isBot()
+            $this->createBaseWebRequest([], ['HTTP_USER_AGENT' => 'Googlebot /v1.1'], [])
+                ->userAgent()
+                ->isBot()
         );
     }
 
     /**
      * @since  4.1.0
-     * @test
-     * @group  issue_65
      */
+    #[Test]
+    #[Group('issue_65')]
     public function userAgentRecognizedAsBotWithAdditionalSignature(): void
     {
         assertTrue(
-                $this->createBaseWebRequest([], ['HTTP_USER_AGENT' => 'foo'], [])
-                     ->userAgent(['foo' => '~foo~'])
-                     ->isBot()
+            $this->createBaseWebRequest([], ['HTTP_USER_AGENT' => 'foo'], [])
+                ->userAgent(['foo' => '~foo~'])
+                ->isBot()
         );
     }
 
     /**
-     * @test
-     * @group  request_id
      * @since  4.2.0
      */
+    #[Test]
+    #[Group('request_id')]
     public function generatesIdIfNoRequestIdHeaderPresent(): void
     {
         assertThat($this->createBaseWebRequest()->id(), isOfSize(25));
     }
 
     /**
-     * @test
-     * @group  request_id
      * @since  4.2.0
      */
+    #[Test]
+    #[Group('request_id')]
     public function generatedIdIsPersistentThroughoutRequest(): void
     {
         $request = $this->createBaseWebRequest();
         assertThat($request->id(), equals($request->id()));
     }
 
-    /**
-     * @return  array<mixed[]>
-     */
-    public static function invalidRequestIdValues(): array
+    public static function invalidRequestIdValues(): Generator
     {
-        return [
-            ['too-short'],
-            [str_pad('too-long', 201, '-')],
-            ['invalid character like space'],
-            ["valid-but-\n-linebreaks"]
-        ];
+        yield ['too-short'];
+        yield [str_pad('too-long', 201, '-')];
+        yield ['invalid character like space'];
+        yield ["valid-but-\n-linebreaks"];
     }
 
     /**
-     * @test
-     * @group  request_id
-     * @dataProvider  invalidRequestIdValues
      * @since  4.2.0
      */
+    #[Test]
+    #[Group('request_id')]
+    #[DataProvider('invalidRequestIdValues')]
     public function generatesIdIfRequestContainsInvalidValue(string $invalidValue): void
     {
         assertThat(
-                $this->createBaseWebRequest([], ['HTTP_X_REQUEST_ID' => $invalidValue])->id(),
-                isNotEqualTo($invalidValue)
+            $this->createBaseWebRequest([], ['HTTP_X_REQUEST_ID' => $invalidValue])->id(),
+            isNotEqualTo($invalidValue)
         );
     }
 
-    /**
-     * @return  array<mixed[]>
-     */
-    public static function validRequestIdValues(): array
+    public static function validRequestIdValues(): Generator
     {
-        return [
-            [str_pad('minimum-size', 20, '-')],
-            [str_pad('max-size', 200, '-')],
-            ['valid-characters-like+and/numbers=21903']
-        ];
+        yield [str_pad('minimum-size', 20, '-')];
+        yield [str_pad('max-size', 200, '-')];
+        yield ['valid-characters-like+and/numbers=21903'];
     }
 
     /**
-     * @test
-     * @group  request_id
-     * @dataProvider  validRequestIdValues
      * @since  4.2.0
      */
+    #[Test]
+    #[Group('request_id')]
+    #[DataProvider('validRequestIdValues')]
     public function returnsValidValueFromHeader(string $validValue): void
     {
         assertThat(
-                $this->createBaseWebRequest([], ['HTTP_X_REQUEST_ID' => $validValue])->id(),
-                equals($validValue)
+            $this->createBaseWebRequest([], ['HTTP_X_REQUEST_ID' => $validValue])->id(),
+            equals($validValue)
         );
     }
 
     /**
-     * @test
      * @since  6.0.0
      */
+    #[Test]
     public function bodyReturnsInputStream(): void
     {
         assertThat(
-                $this->createBaseWebRequest()->body(),
-                isInstanceOf(InputStream::class)
+            $this->createBaseWebRequest()->body(),
+            isInstanceOf(InputStream::class)
         );
     }
 
     /**
-     * @test
      * @since  6.0.0
      */
+    #[Test]
     public function hasNoSessionAttachedByDefault(): void
     {
         assertFalse($this->createBaseWebRequest()->hasSessionAttached());
     }
 
     /**
-     * @test
      * @since  6.0.0
      */
+    #[Test]
     public function defaultSessionIsNull(): void
     {
         assertNull($this->createBaseWebRequest()->attachedSession());
     }
 
     /**
-     * @test
      * @since  6.0.0
      */
+    #[Test]
     public function hasSessionWhenAttached(): void
     {
         $request = $this->createBaseWebRequest();
@@ -1061,63 +977,63 @@ class WebRequestTest extends TestCase
     }
 
     /**
-     * @test
      * @since  6.0.0
      */
+    #[Test]
     public function returnsAttachedSession(): void
     {
         $request = $this->createBaseWebRequest();
         $session = NewInstance::of(Session::class);
         assertThat(
-                $request->attachSession($session),
-                isSameAs($request->attachedSession())
+            $request->attachSession($session),
+            isSameAs($request->attachedSession())
         );
     }
 
     /**
-     * @test
      * @since  6.0.0
      */
+    #[Test]
     public function hasNoIdentityAssociatedByDefault(): void
     {
         assertFalse($this->createBaseWebRequest()->hasAssociatedIdentity());
     }
 
     /**
-     * @test
      * @since  6.0.0
      */
+    #[Test]
     public function defaultIdentityIsNull(): void
     {
         assertNull($this->createBaseWebRequest()->identity());
     }
 
     /**
-     * @test
      * @since  6.0.0
      */
+    #[Test]
     public function hasIdentityWhenAssociated(): void
     {
         $identity = new Identity(NewInstance::of(User::class), Roles::none());
         assertTrue(
-                $this->createBaseWebRequest()
-                        ->associate($identity)
-                        ->hasAssociatedIdentity()
+            $this->createBaseWebRequest()
+                ->associate($identity)
+                ->hasAssociatedIdentity()
         );
     }
 
     /**
-     * @test
      * @since  6.0.0
      */
+    #[Test]
     public function returnsAssociatedIdentity(): void
     {
         $identity = new Identity(NewInstance::of(User::class), Roles::none());
         assertThat(
-                $this->createBaseWebRequest()
-                        ->associate($identity)
-                        ->identity(),
-                isSameAs($identity)
+            $this->createBaseWebRequest()
+                ->associate($identity)
+                ->identity(),
+            isSameAs($identity)
         );
     }
 }

@@ -10,6 +10,9 @@ namespace stubbles\webapp\htmlpassthrough;
 use bovigo\callmap\NewInstance;
 use PHPUnit\Framework\TestCase;
 use org\bovigo\vfs\vfsStream;
+use org\bovigo\vfs\vfsStreamFile;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use stubbles\webapp\Request;
 use stubbles\webapp\Response;
 use stubbles\webapp\UriPath;
@@ -23,19 +26,13 @@ use function stubbles\reflect\annotationsOfConstructor;
 /**
  * Test for stubbles\webapp\htmlpassthrough\HtmlFilePassThrough.
  *
- * @group  htmlpassthrough
  * @since  4.0.0
  */
+#[Group('htmlpassthrough')]
 class HtmlFilePassThroughTest extends TestCase
 {
-    /**
-     * @var  \stubbles\webapp\htmlpassthrough\HtmlFilePassThrough
-     */
-    private $htmlFilePassThrough;
-    /**
-     * @var  \org\bovigo\vfs\vfsStreamFile
-     */
-    private $file;
+    private HtmlFilePassThrough $htmlFilePassThrough;
+    private vfsStreamFile $file;
 
     protected function setUp(): void
     {
@@ -46,93 +43,83 @@ class HtmlFilePassThroughTest extends TestCase
         $this->htmlFilePassThrough = new HtmlFilePassThrough(vfsStream::url('root'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function functionReturnsClassName(): void
     {
         assertThat(
-                \stubbles\webapp\htmlPassThrough(),
-                equals(get_class($this->htmlFilePassThrough))
+            \stubbles\webapp\htmlPassThrough(),
+            equals(HtmlFilePassThrough::class)
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function annotationsPresentOnConstructor(): void
     {
         $annotations = annotationsOfConstructor($this->htmlFilePassThrough);
         assertTrue($annotations->contain('Named'));
         assertThat(
-                $annotations->firstNamed('Named')->getName(),
-                equals('stubbles.pages.path')
+            $annotations->firstNamed('Named')->getName(),
+            equals('stubbles.pages.path')
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function requestForNonExistingFileWritesNotFoundResponse(): void
     {
         $error = Error::notFound();
         assertThat(
-                $this->htmlFilePassThrough->resolve(
-                        NewInstance::of(Request::class),
-                        NewInstance::of(Response::class)
-                                ->returns(['notFound' => $error]),
-                        new UriPath('/', '/doesNotExist.html')
-                ),
-                isSameAs($error)
+            $this->htmlFilePassThrough->resolve(
+                NewInstance::of(Request::class),
+                NewInstance::of(Response::class)
+                    ->returns(['notFound' => $error]),
+                new UriPath('/', '/doesNotExist.html')
+            ),
+            isSameAs($error)
         );
     }
 
     /**
-     * @test
      * @since  8.0.0
      */
+    #[Test]
     public function requestForNonReadableFileWritesInternalServerErrorResponse(): void
     {
         $this->file->chmod(0000);
         $error = Error::internalServerError('');
         assertThat(
-                $this->htmlFilePassThrough->resolve(
-                        NewInstance::of(Request::class),
-                        NewInstance::of(Response::class)
-                                ->returns(['internalServerError' => $error]),
-                        new UriPath('/', '/foo.html')
-                ),
-                isSameAs($error)
+            $this->htmlFilePassThrough->resolve(
+                NewInstance::of(Request::class),
+                NewInstance::of(Response::class)
+                    ->returns(['internalServerError' => $error]),
+                new UriPath('/', '/foo.html')
+            ),
+            isSameAs($error)
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function selectsAvailableRoute(): void
     {
         assertThat(
-                $this->htmlFilePassThrough->resolve(
-                        NewInstance::of(Request::class),
-                        NewInstance::of(Response::class),
-                        new UriPath('/', '/foo.html')
-                ),
-                equals('this is foo.html')
+            $this->htmlFilePassThrough->resolve(
+                NewInstance::of(Request::class),
+                NewInstance::of(Response::class),
+                new UriPath('/', '/foo.html')
+            ),
+            equals('this is foo.html')
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function fallsBackToIndexFileIfRequestForSlashOnly(): void
     {
         assertThat(
-                $this->htmlFilePassThrough->resolve(
-                        NewInstance::of(Request::class),
-                        NewInstance::of(Response::class),
-                        new UriPath('/', '/')
-                ),
-                equals('this is index.html')
+            $this->htmlFilePassThrough->resolve(
+                NewInstance::of(Request::class),
+                NewInstance::of(Response::class),
+                new UriPath('/', '/')
+            ),
+            equals('this is index.html')
         );
     }
 }

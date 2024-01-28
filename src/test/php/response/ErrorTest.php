@@ -8,6 +8,8 @@ declare(strict_types=1);
  */
 namespace stubbles\webapp\response;
 use bovigo\callmap\NewInstance;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 use stubbles\input\errors\ParamErrors;
@@ -20,14 +22,12 @@ use function bovigo\callmap\onConsecutiveCalls;
 /**
  * Tests for stubbles\webapp\response\Error.
  *
- * @group  response_1
  * @since  6.2.0
  */
+#[Group('response')]
 class ErrorTest extends TestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function canCreateInstanceFromListOfParamErrors(): void
     {
         $paramErrors = new ParamErrors();
@@ -35,14 +35,14 @@ class ErrorTest extends TestCase
         $paramErrors->append('foo', 'STRING_TOO_SHORT', ['baz' => 303]);
         $paramErrors->append('bar', 'STRING_TOO_LONG');
         $errorMessages = NewInstance::of(ParamErrorMessages::class)
-                ->returns(['messageFor' => onConsecutiveCalls(
-                        new LocalizedMessage('en_*', 'foo empty'),
-                        new LocalizedMessage('en_*', 'foo_too_short'),
-                        new LocalizedMessage('en_*', 'bar_too_long')
-                )]);
+            ->returns(['messageFor' => onConsecutiveCalls(
+                new LocalizedMessage('en_*', 'foo empty'),
+                new LocalizedMessage('en_*', 'foo_too_short'),
+                new LocalizedMessage('en_*', 'bar_too_long')
+            )]);
         assertThat(
-                json_encode(Error::inParams($paramErrors, $errorMessages)),
-                equals('{"error":{"foo":{"field":"foo","errors":[{"id":"FIELD_EMPTY","details":[],"message":"foo empty"},{"id":"STRING_TOO_SHORT","details":{"baz":303},"message":"foo_too_short"}]},"bar":{"field":"bar","errors":[{"id":"STRING_TOO_LONG","details":[],"message":"bar_too_long"}]}}}')
+            json_encode(Error::inParams($paramErrors, $errorMessages)),
+            equals('{"error":{"foo":{"field":"foo","errors":[{"id":"FIELD_EMPTY","details":[],"message":"foo empty"},{"id":"STRING_TOO_SHORT","details":{"baz":303},"message":"foo_too_short"}]},"bar":{"field":"bar","errors":[{"id":"STRING_TOO_LONG","details":[],"message":"bar_too_long"}]}}}')
         );
     }
 }

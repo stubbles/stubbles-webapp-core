@@ -7,6 +7,9 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 namespace stubbles\webapp\response;
+
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 use function bovigo\assert\{
@@ -19,130 +22,103 @@ use function bovigo\assert\{
 };
 /**
  * Tests for stubbles\webapp\response\Cookie.
- *
- * @group  response
  */
+#[Group('response')]
 class CookieTest extends TestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function returnsGivenName(): void
     {
         assertThat(Cookie::create('foo', 'bar')->name(), equals('foo'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function returnsGivenValue(): void
     {
         assertThat(Cookie::create('foo', 'bar')->value(), equals('bar'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function hasNoExpirationDateByDefault(): void
     {
         assertThat(Cookie::create('foo', 'bar')->expiration(), equals(0));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function hasNoPathByDefault(): void
     {
         assertNull(Cookie::create('foo', 'bar')->path());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function hasNoDomainByDefault(): void
     {
         assertNull(Cookie::create('foo', 'bar')->domain());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function isNotRestrictedToSslByDefault(): void
     {
         assertFalse(Cookie::create('foo', 'bar')->isRestrictedToSsl());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function isHttpOnlyByDefault(): void
     {
         assertTrue(Cookie::create('foo', 'bar')->isHttpOnly());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function expiresAtUsesGivenTimestamp(): void
     {
         $expires = time() + 100; // expire after 100 seconds
         assertThat(
-                Cookie::create('foo', 'bar')->expiringAt($expires)->expiration(),
-                equals($expires)
+            Cookie::create('foo', 'bar')->expiringAt($expires)->expiration(),
+            equals($expires)
         );
     }
 
-    /**
-     * @test
-     * @group  bug255
-     */
+    #[Test]
+    #[Group('bug255')]
     public function expiresInAddsCurrentTime(): void
     {
         assertThat(
-                Cookie::create('foo', 'bar')->expiringIn(100)->expiration(),
-                isGreaterThanOrEqualTo(time() + 100)
+            Cookie::create('foo', 'bar')->expiringIn(100)->expiration(),
+            isGreaterThanOrEqualTo(time() + 100)
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function usesGivenPath(): void
     {
         assertThat(
-                Cookie::create('foo', 'bar')->forPath('bar')->path(),
-                equals('bar')
+            Cookie::create('foo', 'bar')->forPath('bar')->path(),
+            equals('bar')
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function usesGivenDomain(): void
     {
         assertThat(
-                Cookie::create('foo', 'bar')->forDomain('.example.org')->domain(),
-                equals('.example.org')
+            Cookie::create('foo', 'bar')->forDomain('.example.org')->domain(),
+            equals('.example.org')
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function isRestrictedToSslIfEnabled(): void
     {
         assertTrue(
-                Cookie::create('foo', 'bar')->restrictToSsl()->isRestrictedToSsl()
-         );
+            Cookie::create('foo', 'bar')->restrictToSsl()->isRestrictedToSsl()
+        );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function httpOnlyCanBeDisabled(): void
     {
         assertFalse(
-                Cookie::create('foo', 'bar')->disableHttpOnly()->isHttpOnly()
-         );
+            Cookie::create('foo', 'bar')->disableHttpOnly()->isHttpOnly()
+        );
     }
 }

@@ -7,6 +7,11 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 namespace stubbles\webapp\request;
+
+use Generator;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 use function bovigo\assert\assertFalse;
@@ -18,90 +23,69 @@ use function stubbles\reflect\annotationsOf;
  * Test for stubbles\webapp\request\UserAgent.
  *
  * @since  1.2.0
- * @group  request
  */
+#[Group('request')]
 class UserAgentTest extends TestCase
 {
-    /**
-     * @var  \stubbles\webapp\request\UserAgent
-     */
-    private $userAgent;
+    private UserAgent $userAgent;
 
     protected function setUp(): void
     {
         $this->userAgent = new UserAgent('name', true);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function xmlAnnotationPresentClass(): void
     {
         assertTrue(annotationsOf($this->userAgent)->contain('XmlTag'));
     }
 
-    /**
-     * @return  array<string[]>
-     */
-    public static function getXmlRelatedMethodAnnotations(): array
+    public static function getXmlRelatedMethodAnnotations(): Generator
     {
-        return [['name', 'XmlAttribute'],
-                ['isBot', 'XmlAttribute'],
-                ['acceptsCookies', 'XmlAttribute'],
-                ['__toString', 'XmlIgnore']
-        ];
+        yield ['name', 'XmlAttribute'];
+        yield ['isBot', 'XmlAttribute'];
+        yield ['acceptsCookies', 'XmlAttribute'];
+        yield ['__toString', 'XmlIgnore'];
     }
 
-    /**
-     * @test
-     * @dataProvider  getXmlRelatedMethodAnnotations
-     */
+    #[Test]
+    #[DataProvider('getXmlRelatedMethodAnnotations')]
     public function xmlAnnotationsPresentOnMethods(string $method, string $annotation): void
     {
         assertTrue(
-                annotationsOf($this->userAgent, $method)->contain($annotation)
+            annotationsOf($this->userAgent, $method)->contain($annotation)
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function instanceReturnsGivenName(): void
     {
         assertThat($this->userAgent->name(), equals('name'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function castToStringReturnsName(): void
     {
         assertThat((string) $this->userAgent, equals('name'));
     }
 
-
-    /**
-     * @return  array<string[]>
-     */
-    public static function botsRecognizedByDefault(): array
+    public static function botsRecognizedByDefault(): Generator
     {
-        return [
-            ['Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'],
-            ['Mozilla/5.0 (iPhone; CPU iPhone OS 6_0 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/6.0 Mobile/10A5376e Safari/8536.25 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'],
-            ['Microsoft msnbot 3.2'],
-            ['Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)'],
-            ['Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/534+ (KHTML, like Gecko) BingPreview/1.0b'],
-            ['Mozilla/5.0 (compatible; Yahoo! Slurp; http://help.yahoo.com/help/us/ysearch/slurp)'],
-            ['Pingdom.com_bot_version_1.4_(http://www.pingdom.com/)'],
-            ['Mozilla/5.0 (compatible; YandexBot/3.0; +http://yandex.com/bots)']
-        ];
+        yield ['Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'];
+        yield ['Mozilla/5.0 (iPhone; CPU iPhone OS 6_0 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/6.0 Mobile/10A5376e Safari/8536.25 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'];
+        yield ['Microsoft msnbot 3.2'];
+        yield ['Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)'];
+        yield ['Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/534+ (KHTML, like Gecko) BingPreview/1.0b'];
+        yield ['Mozilla/5.0 (compatible; Yahoo! Slurp; http://help.yahoo.com/help/us/ysearch/slurp)'];
+        yield ['Pingdom.com_bot_version_1.4_(http://www.pingdom.com/)'];
+        yield ['Mozilla/5.0 (compatible; YandexBot/3.0; +http://yandex.com/bots)'];
     }
 
     /**
      * @since  4.1.0
-     * @test
-     * @dataProvider  botsRecognizedByDefault
      */
+    #[Test]
+    #[DataProvider('botsRecognizedByDefault')]
     public function recognizesSomeBotsByDefault(string $userAgentValue): void
     {
         $userAgent = new UserAgent($userAgentValue, true);
@@ -110,8 +94,8 @@ class UserAgentTest extends TestCase
 
     /**
      * @since  9.0.0
-     * @test
      */
+    #[Test]
     public function userAgentIsNoBotWhenUserAgentStringIsNull(): void
     {
         $userAgent = new UserAgent(null, true);
@@ -120,8 +104,8 @@ class UserAgentTest extends TestCase
 
     /**
      * @since  2.0.0
-     * @test
      */
+    #[Test]
     public function instanceReturnsGivenCookieAcceptanceSetting(): void
     {
         assertTrue($this->userAgent->acceptsCookies());

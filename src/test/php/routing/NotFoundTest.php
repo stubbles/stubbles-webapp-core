@@ -8,6 +8,8 @@ declare(strict_types=1);
  */
 namespace stubbles\webapp\routing;
 use bovigo\callmap\NewInstance;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use stubbles\ioc\Injector;
 use stubbles\peer\http\HttpVersion;
@@ -21,55 +23,46 @@ use function bovigo\assert\predicate\equals;
  * Tests for stubbles\webapp\routing\NotFound.
  *
  * @since  2.2.0
- * @group  routing
  */
+#[Group('routing')]
 class NotFoundTest extends TestCase
 {
-    /**
-     * @var  \stubbles\webapp\routing\NotFound
-     */
-    private $notFound;
+    private NotFound $notFound;
 
     protected function setUp(): void
     {
         $this->notFound = new NotFound(
-                NewInstance::stub(Injector::class),
-                new CalledUri('http://example.com/hello/world', 'GET'),
-                NewInstance::stub(Interceptors::class),
-                new SupportedMimeTypes([])
+            NewInstance::stub(Injector::class),
+            new CalledUri('http://example.com/hello/world', 'GET'),
+            NewInstance::stub(Interceptors::class),
+            new SupportedMimeTypes([])
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function doesNotRequireSwitchToHttps(): void
     {
         assertFalse($this->notFound->requiresHttps());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function returns404NotFoundError(): void
     {
         $request = NewInstance::of(Request::class)->returns([
-                'protocolVersion' => new HttpVersion(1, 1)
+            'protocolVersion' => new HttpVersion(1, 1)
         ]);
         $response = new WebResponse($request);
         assertThat(
-                $this->notFound->resolve($request, $response),
-                equals(Error::notFound())
+            $this->notFound->resolve($request, $response),
+            equals(Error::notFound())
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function sets404NotFoundStatusCode(): void
     {
         $request = NewInstance::of(Request::class)->returns([
-                'protocolVersion' => new HttpVersion(1, 1)
+            'protocolVersion' => new HttpVersion(1, 1)
         ]);
         $response = new WebResponse($request);
         $this->notFound->resolve($request, $response);

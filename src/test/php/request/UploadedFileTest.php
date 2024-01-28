@@ -9,6 +9,8 @@ declare(strict_types=1);
 namespace stubbles\webapp\request;
 use PHPUnit\Framework\TestCase;
 use org\bovigo\vfs\vfsStream;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use RuntimeException;
 
 use function bovigo\assert\{assertFalse, assertThat, assertTrue, expect};
@@ -17,41 +19,33 @@ use function bovigo\assert\predicate\equals;
  * Test for stubbles\webapp\request\UploadedFile.
  *
  * @since  8.1.0
- * @group  request
- * @group  upload
  */
+#[Group('request')]
+#[Group('upload')]
 class UploadedFileTest extends TestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function returnsGivenName(): void
     {
         $file = new UploadedFile('example.txt', '/tmp/foobarbaz', 303);
         assertThat($file->name(), equals('example.txt'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function returnsGivenSize(): void
     {
         $file = new UploadedFile('example.txt', '/tmp/foobarbaz', 303);
         assertThat($file->size(), equals(303));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function returnsActualMimetypeOfFile(): void
     {
         $file = new UploadedFile('example.php', __FILE__, 303);
         assertThat($file->mimetype(), equals('text/x-php'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function failureToDetectMimetypeThrowsMimetypeCheckFailed(): void
     {
         $file = new UploadedFile('example.php', '/tmp/foobarbaz', 303);
@@ -59,9 +53,7 @@ class UploadedFileTest extends TestCase
             ->throws(MimetypeCheckFailed::class);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function moveUploadedFileReturnsPathAfterMoveAndUsesGivenNameIfNotOverruled(): void
     {
         $file = new class('example.php', '/tmp/foobarbaz', 303) extends UploadedFile {
@@ -71,12 +63,10 @@ class UploadedFileTest extends TestCase
             }
         };
         $file->setMoveUploadedFileFunction(fn() => true);
-        assertThat($file->move('/target'), equals('/target' . \DIRECTORY_SEPARATOR . 'example.php'));
+        assertThat($file->move('/target'), equals('/target' . DIRECTORY_SEPARATOR . 'example.php'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function moveUploadedFileReturnsPathAfterMoveAndUsesOverruledName(): void
     {
         $file = new class('example.php', '/tmp/foobarbaz', 303) extends UploadedFile {
@@ -86,12 +76,10 @@ class UploadedFileTest extends TestCase
             }
         };
         $file->setMoveUploadedFileFunction(fn() => true);
-        assertThat($file->move('/target', 'other.php'), equals('/target' . \DIRECTORY_SEPARATOR . 'other.php'));
+        assertThat($file->move('/target', 'other.php'), equals('/target' . DIRECTORY_SEPARATOR . 'other.php'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function moveUploadedThrowsRuntimeExceptionWhenMoveFails(): void
     {
         $file = new class('example.php', '/tmp/foobarbaz', 303) extends UploadedFile {
@@ -100,15 +88,13 @@ class UploadedFileTest extends TestCase
                 $this->moveUploadedFile = $move_uploaded_file;
             }
         };
-        $file->setMoveUploadedFileFunction(function() { \trigger_error('some error', \E_USER_NOTICE); return false; });
+        $file->setMoveUploadedFileFunction(function() { trigger_error('some error', E_USER_NOTICE); return false; });
         expect(function() use ($file) { $file->move('/target'); })
             ->throws(RuntimeException::class)
             ->withMessage('Could not move uploaded file "example.php": some error');
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function removeRemovesTmpFile(): void
     {
         $root = vfsStream::setup();
@@ -118,15 +104,15 @@ class UploadedFileTest extends TestCase
         assertFalse($root->hasChild('foobarbaz'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function failureOnRemoveThrowsRuntimeException(): void
     {
-        $root = vfsStream::setup();
+        vfsStream::setup();
         $file = new UploadedFile('example.php', 'vfs://root/foobarbaz', 303);
         expect(function() use ($file) { $file->remove(); })
             ->throws(\RuntimeException::class)
-            ->withMessage('Could not remove uploaded file "example.php": unlink(vfs://root/foobarbaz): No such file or directory');
+            ->withMessage(
+                'Could not remove uploaded file "example.php": unlink(vfs://root/foobarbaz): No such file or directory'
+            );
     }
 }

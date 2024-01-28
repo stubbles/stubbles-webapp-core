@@ -8,6 +8,10 @@ declare(strict_types=1);
  */
 namespace stubbles\webapp\auth;
 use bovigo\callmap\NewInstance;
+use Generator;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 use function bovigo\assert\{
@@ -21,72 +25,56 @@ use function bovigo\assert\{
  * Test for stubbles\webapp\auth\Token.
  *
  * @since  5.0.0
- * @group  auth
  */
+#[Group('auth')]
 class TokenTest extends TestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function canCreateTokenFromUser(): void
     {
         assertThat(
-                Token::create(
-                        NewInstance::of(User::class)->returns([
-                                'name'        => 'Heinz Mustermann',
-                                'firstName'   => 'Heinz',
-                                'lastName'    => 'Mustermann',
-                                'mailAddress' => 'mm@example.com'
-                        ]),
-                        'some caramel salt'
-                ),
-                isInstanceOf(Token::class)
+            Token::create(
+                NewInstance::of(User::class)->returns([
+                    'name'        => 'Heinz Mustermann',
+                    'firstName'   => 'Heinz',
+                    'lastName'    => 'Mustermann',
+                    'mailAddress' => 'mm@example.com'
+                ]),
+                'some caramel salt'
+            ),
+            isInstanceOf(Token::class)
         );
     }
 
-    /**
-     * @return  mixed[]
-     */
-    public static function tokenValues(): array
+    public static function tokenValues(): Generator
     {
-        $tokenValues = self::emptyValues();
-        $tokenValues[] = ['someTokenValue'];
-        return $tokenValues;
+        yield from self::emptyValues();
+        yield ['someTokenValue'];
     }
 
-    /**
-     * @param  mixed  $tokenValue
-     * @test
-     * @dataProvider  tokenValues
-     */
-    public function tokenCanBeCastedToString($tokenValue): void
+    #[Test]
+    #[DataProvider('tokenValues')]
+    public function tokenCanBeCastedToString(?string $tokenValue): void
     {
         $token = new Token($tokenValue);
         assertThat((string) $token, equals($tokenValue));
     }
 
-    /**
-     * @return  array<mixed[]>
-     */
-    public static function emptyValues(): array
+    public static function emptyValues(): Generator
     {
-        return [[null], ['']];
+        yield [null];
+        yield [''];
     }
 
-    /**
-     * @param  mixed  $emptyValue
-     * @test
-     * @dataProvider  emptyValues
-     */
-    public function tokenIsEmptyWhenValueIsEmpty($emptyValue): void
+    #[Test]
+    #[DataProvider('emptyValues')]
+    public function tokenIsEmptyWhenValueIsEmpty(?string $emptyValue): void
     {
         $token = new Token($emptyValue);
         assertTrue($token->isEmpty());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function tokenIsNotEmptyWhenValueNotEmpty(): void
     {
         $token = new Token('someTokenValue');

@@ -7,6 +7,9 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 namespace stubbles\webapp\session\storage;
+
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use stubbles\webapp\session\Session;
 
@@ -24,133 +27,108 @@ use function bovigo\assert\{
  * Tests for stubbles\webapp\session\storage\ArraySessionStorage.
  *
  * @since  2.0.0
- * @group  session
- * @group  storage
  */
+#[Group('session')]
+#[Group('storage')]
 class ArraySessionStorageTest extends TestCase
 {
-    /**
-     * @var  \stubbles\webapp\session\storage\ArraySessionStorage
-     */
-    private $arraySessionStorage;
+    private ArraySessionStorage $arraySessionStorage;
 
     protected function setUp(): void
     {
         $this->arraySessionStorage = new ArraySessionStorage();
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function hasFingerprintByDefault(): void
     {
         assertTrue(
-                $this->arraySessionStorage->hasValue(Session::FINGERPRINT)
+            $this->arraySessionStorage->hasValue(Session::FINGERPRINT)
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function fingerprintIsEmptyByDefault(): void
     {
         assertEmptyString($this->arraySessionStorage->value(Session::FINGERPRINT));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function isEmptyAfterClear(): void
     {
         assertEmptyArray(
-                $this->arraySessionStorage->putValue('foo', 'bar')
-                        ->clear()
-                        ->valueKeys()
+            $this->arraySessionStorage->putValue('foo', 'bar')
+                ->clear()
+                ->valueKeys()
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function hasNoOtherValueByDefault(): void
     {
         assertFalse($this->arraySessionStorage->hasValue('foo'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function returnsNullForNonExistingValue(): void
     {
         assertNull($this->arraySessionStorage->value('foo'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function doesNothingWenRemovingNonExistingValue(): void
     {
         assertThat(
-                $this->arraySessionStorage->removeValue('foo'),
-                isSameAs($this->arraySessionStorage)
+            $this->arraySessionStorage->removeValue('foo'),
+            isSameAs($this->arraySessionStorage)
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function hasValueWhichWasSet(): void
     {
         assertTrue(
-                $this->arraySessionStorage->putValue('foo', 'bar')
-                        ->hasValue('foo')
+            $this->arraySessionStorage->putValue('foo', 'bar')
+                ->hasValue('foo')
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function returnsValueWhichWasSet(): void
     {
         assertThat(
-                $this->arraySessionStorage->putValue('foo', 'bar')
-                        ->value('foo'),
-                equals('bar')
+            $this->arraySessionStorage->putValue('foo', 'bar')
+                ->value('foo'),
+            equals('bar')
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function removesExistingValue(): void
     {
         assertFalse(
-                $this->arraySessionStorage->putValue('foo', 'bar')
-                        ->removeValue('foo')
-                        ->hasValue('foo')
+            $this->arraySessionStorage->putValue('foo', 'bar')
+                ->removeValue('foo')
+                ->hasValue('foo')
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function returnsDefaultValueKeysAfterCreation(): void
     {
         assertThat(
-                $this->arraySessionStorage->valueKeys(),
-                equals([Session::FINGERPRINT])
+            $this->arraySessionStorage->valueKeys(),
+            equals([Session::FINGERPRINT])
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function valueKeysIncludeKeysOfAddedValues(): void
     {
         assertThat(
-                $this->arraySessionStorage->putValue('foo', 'bar')
-                        ->valueKeys(),
-                equals([Session::FINGERPRINT, 'foo'])
+            $this->arraySessionStorage->putValue('foo', 'bar')
+                ->valueKeys(),
+            equals([Session::FINGERPRINT, 'foo'])
         );
     }
 }

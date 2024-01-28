@@ -7,8 +7,12 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 namespace stubbles\webapp\request;
+
+use Generator;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use org\bovigo\vfs\vfsStream;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use stubbles\input\errors\ParamError;
 
 use function bovigo\assert\{assertFalse, assertNull, assertThat, assertTrue, expect};
@@ -17,136 +21,107 @@ use function bovigo\assert\predicate\equals;
  * Test for stubbles\webapp\request\Uploads.
  *
  * @since  8.1.0
- * @group  request
- * @group  upload
  */
+#[Group('request')]
+#[Group('upload')]
 class UploadsTest extends TestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function containReturnsFalseIfNoUploadForGivenFieldPresent(): void
     {
         $uploads = new Uploads([]);
         assertFalse($uploads->contain('example'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function containReturnsTrueIfUploadsForGivenFieldPresent(): void
     {
         $uploads = new Uploads(['example' => []]);
         assertTrue($uploads->contain('example'));
     }
 
-    /**
-     * @return  array<string,mixed[]>
-     */
-    public static function _FILES(): array
+    public static function _FILES(): Generator
     {
-        return [
-            'no uploads' => [[], 0],
-            'single upload field' => [['example' => ['name' => 'foo.txt']], 1],
-            'multiple upload field with single upload' => [['example' => ['name' => ['foo.txt']]], 1],
-            'multiple upload field with multiple uploads' => [['example' => ['name' => ['foo.txt', 'bar.txt']]], 2],
-        ];
+        yield 'no uploads' => [[], 0];
+        yield 'single upload field' => [['example' => ['name' => 'foo.txt']], 1];
+        yield 'multiple upload field with single upload' => [['example' => ['name' => ['foo.txt']]], 1];
+        yield 'multiple upload field with multiple uploads' => [['example' => ['name' => ['foo.txt', 'bar.txt']]], 2];
     }
 
     /**
      * @param  array<string,array<string,scalar>>  $_files
-     * @param  int                                 $expected
-     * @test
-     * @dataProvider _FILES
      */
-    public function amountIs0IfNoUploadForGivenFieldPresent(array $_files, int $expected): void
+    #[Test]
+    #[DataProvider('_FILES')]
+    public function amountIsNumberOfUploadedFiles(array $_files, int $expected): void
     {
         $uploads = new Uploads($_files);
         assertThat($uploads->amount('example'), equals($expected));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function hasNoErrorWhenNoUploadForGivenFieldPresent(): void
     {
         $uploads = new Uploads([]);
         assertNull($uploads->errorFor('example'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function hasNoErrorWhenNoUploadForGivenFieldPresentForMultiple(): void
     {
         $uploads = new Uploads(['example' => ['name' => ['foo.txt'], 'error' => [\UPLOAD_ERR_OK]]]);
         assertNull($uploads->errorFor('example', 2));
     }
 
-    /**
-     * @return  array<int[]>
-     */
-    public static function noUserErrors(): array
+    public static function noUserErrors(): Generator
     {
-        return [[\UPLOAD_ERR_NO_TMP_DIR], [\UPLOAD_ERR_CANT_WRITE], [\UPLOAD_ERR_EXTENSION], [10]];
+        yield [UPLOAD_ERR_NO_TMP_DIR];
+        yield [UPLOAD_ERR_CANT_WRITE];
+        yield [UPLOAD_ERR_EXTENSION];
+        yield [10];
     }
 
-    /**
-     * @test
-     * @dataProvider  noUserErrors
-     */
+    #[Test]
+    #[DataProvider('noUserErrors')]
     public function hasNoErrorWhenNotUserError(int $noUserError): void
     {
-        $uploads = new Uploads(['example' => ['name' => ['foo.txt'], 'error' => [$noUserError]]]);
+        $uploads = new Uploads(['example' => ['name' => 'foo.txt', 'error' => [$noUserError]]]);
         assertNull($uploads->errorFor('example'));
     }
 
-    /**
-     * @test
-     * @dataProvider  noUserErrors
-     */
+    #[Test]
+    #[DataProvider('noUserErrors')]
     public function hasNoErrorWhenNotUserErrorMultiple(int $noUserError): void
     {
         $uploads = new Uploads(['example' => ['name' => ['foo.txt'], 'error' => [$noUserError]]]);
         assertNull($uploads->errorFor('example'));
     }
 
-    /**
-     * @return  array<mixed[]>
-     */
-    public static function userErrors(): array
+    public static function userErrors(): Generator
     {
-        return [
-            [\UPLOAD_ERR_INI_SIZE, new ParamError('UPLOAD_EXCEEDS_MAXSIZE_ALLOWED_BY_SERVER')],
-            [\UPLOAD_ERR_FORM_SIZE, new ParamError('UPLOAD_EXCEEDS_MAXSIZE_ALLOWED_BY_FORM')],
-            [\UPLOAD_ERR_PARTIAL, new ParamError('UPLOAD_NOT_COMPLETED')],
-            [\UPLOAD_ERR_NO_FILE, new ParamError('UPLOAD_MISSING')],
-        ];
+        yield [UPLOAD_ERR_INI_SIZE, new ParamError('UPLOAD_EXCEEDS_MAXSIZE_ALLOWED_BY_SERVER')];
+        yield [UPLOAD_ERR_FORM_SIZE, new ParamError('UPLOAD_EXCEEDS_MAXSIZE_ALLOWED_BY_FORM')];
+        yield [UPLOAD_ERR_PARTIAL, new ParamError('UPLOAD_NOT_COMPLETED')];
+        yield [UPLOAD_ERR_NO_FILE, new ParamError('UPLOAD_MISSING')];
     }
 
-    /**
-     * @test
-     * @dataProvider  userErrors
-     */
+    #[Test]
+    #[DataProvider('userErrors')]
     public function hasErrorWhenUserError(int $userError, ParamError $expected): void
     {
         $uploads = new Uploads(['example' => ['name' => ['foo.txt'], 'error' => [$userError]]]);
         assertThat($uploads->errorFor('example'), equals($expected));
     }
 
-    /**
-     * @test
-     * @dataProvider  userErrors
-     */
+    #[Test]
+    #[DataProvider('userErrors')]
     public function hasErrorWhenUserErrorMultiple(int $userError, ParamError $expected): void
     {
         $uploads = new Uploads(['example' => ['name' => 'foo.txt', 'error' => $userError]]);
         assertThat($uploads->errorFor('example'), equals($expected));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function selectWhenNoUploadForGivenFieldPresentThrowsNoSuchUpload(): void
     {
         $uploads = new Uploads([]);
@@ -155,9 +130,7 @@ class UploadsTest extends TestCase
             ->withMessage('No file uploaded under key "example"');
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function selectWhenNoUploadForGivenFieldAtGivenPositionPresentThrowsNoSuchUpload(): void
     {
         $uploads = new Uploads(['example' => ['name' => ['foo.txt']]]);
@@ -166,9 +139,7 @@ class UploadsTest extends TestCase
             ->withMessage('No file uploaded under key "example" at position 2');
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function selectForSingleUploadFieldWithoutErrorReturnsUploadedFile(): void
     {
         $uploads = new Uploads(['example' => [
@@ -183,9 +154,7 @@ class UploadsTest extends TestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function selectForSingleUploadFieldWithErrorThrowsUploadFailed(): void
     {
         $uploads = new Uploads(['example' => [
@@ -199,9 +168,7 @@ class UploadsTest extends TestCase
             ->withMessage('No file was uploaded');
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function selectForMultipleUploadFieldWithoutErrorReturnsUploadedFile(): void
     {
         $uploads = new Uploads(['example' => [
@@ -216,9 +183,7 @@ class UploadsTest extends TestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function selectForMultipleUploadFieldWithErrorThrowsUploadFailed(): void
     {
         $uploads = new Uploads(['example' => [

@@ -7,6 +7,9 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 namespace stubbles\webapp\session\storage;
+
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 use function bovigo\assert\{
@@ -24,20 +27,17 @@ use function bovigo\assert\{
  * Tests for stubbles\webapp\session\storage\NativeSessionStorage.
  *
  * @since  2.0.0
- * @group  session
- * @group  storage
  */
+#[Group('session')]
+#[Group('storage')]
 class NativeSessionStorageTest extends TestCase
 {
-    /**
-     * @var  \stubbles\webapp\session\storage\NativeSessionStorage
-     */
-    private $nativeSessionStorage;
+    private NativeSessionStorage $nativeSessionStorage;
 
     protected function setUp(): void
     {
-        if (\headers_sent()) {
-            $this->markTestSkipped();
+        if (headers_sent()) {
+            $this->markTestSkipped('Testing native session requires no previous output.');
         }
 
         $this->removeExistingSession();
@@ -58,25 +58,19 @@ class NativeSessionStorageTest extends TestCase
         $this->removeExistingSession();
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function returnsGivenSessionName(): void
     {
         assertThat($this->nativeSessionStorage->name(), equals('foo'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function returnsIdOfStartedSession(): void
     {
         assertNotEmpty((string) $this->nativeSessionStorage);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function invalidateCreatesNewSessionId(): void
     {
         // order is important, invalidate() changes session id
@@ -85,37 +79,29 @@ class NativeSessionStorageTest extends TestCase
         assertThat($invalidId, isNotEqualTo($validId));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function isEmptyAfterClear(): void
     {
         assertEmptyArray(
-                $this->nativeSessionStorage->putValue('foo', 'bar')
-                        ->clear()
-                        ->valueKeys()
+            $this->nativeSessionStorage->putValue('foo', 'bar')
+                ->clear()
+                ->valueKeys()
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function hasNoValueByDefault(): void
     {
         assertFalse($this->nativeSessionStorage->hasValue('foo'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function returnsNullForNonExistingValue(): void
     {
         assertNull($this->nativeSessionStorage->value('foo'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function doesNothingWenRemovingNonExistingValue(): void
     {
         assertThat(
@@ -124,58 +110,48 @@ class NativeSessionStorageTest extends TestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function hasValueWhichWasSet(): void
     {
         assertTrue(
-                $this->nativeSessionStorage->putValue('foo', 'bar')
-                        ->hasValue('foo')
+            $this->nativeSessionStorage->putValue('foo', 'bar')
+                ->hasValue('foo')
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function returnsValueWhichWasSet(): void
     {
         assertThat(
-                $this->nativeSessionStorage->putValue('foo', 'bar')
-                        ->value('foo'),
-                equals('bar')
+            $this->nativeSessionStorage->putValue('foo', 'bar')
+                ->value('foo'),
+            equals('bar')
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function removesExistingValue(): void
     {
         assertFalse(
-                $this->nativeSessionStorage->putValue('foo', 'bar')
-                        ->removeValue('foo')
-                        ->hasValue('foo')
+            $this->nativeSessionStorage->putValue('foo', 'bar')
+                ->removeValue('foo')
+                ->hasValue('foo')
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function hasNoValueKeysByDefault(): void
     {
         assertEmptyArray($this->nativeSessionStorage->valueKeys());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function valueKeysIncludeKeysOfAddedValues(): void
     {
         assertThat(
-                $this->nativeSessionStorage->putValue('foo', 'bar')
-                        ->valueKeys(),
-                equals(['foo'])
+            $this->nativeSessionStorage->putValue('foo', 'bar')
+                ->valueKeys(),
+            equals(['foo'])
         );
     }
 }

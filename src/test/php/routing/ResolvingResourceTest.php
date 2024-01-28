@@ -7,7 +7,12 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 namespace stubbles\webapp\routing;
+
+use bovigo\callmap\ClassProxy;
 use bovigo\callmap\NewInstance;
+use Exception;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use stubbles\ioc\Injector;
 use stubbles\webapp\{Request, Response, Target, UriPath};
@@ -25,22 +30,13 @@ use function bovigo\callmap\verify;
  * Tests for stubbles\webapp\routing\ResolvingResource.
  *
  * @since  2.0.0
- * @group  routing
  */
+#[Group('routing')]
 class ResolvingResourceTest extends TestCase
 {
-    /**
-     * @var  Request&\bovigo\callmap\ClassProxy
-     */
-    private $request;
-    /**
-     * @var  Response&\bovigo\callmap\ClassProxy
-     */
-    private $response;
-    /**
-     * @var  Injector&\bovigo\callmap\ClassProxy
-     */
-    private $injector;
+    private Request&ClassProxy $request;
+    private Response&ClassProxy $response;
+    private Injector&ClassProxy $injector;
 
     protected function setUp(): void
     {
@@ -50,21 +46,19 @@ class ResolvingResourceTest extends TestCase
     }
 
     private function createResolvingResource(
-            Route $route,
-            string $uri = 'http://example.com/hello/world'
+        Route $route,
+        string $uri = 'http://example.com/hello/world'
     ): ResolvingResource {
         return new ResolvingResource(
-                $this->injector,
-                new CalledUri($uri, 'GET'),
-                NewInstance::stub(Interceptors::class),
-                new SupportedMimeTypes([]),
-                $route
+            $this->injector,
+            new CalledUri($uri, 'GET'),
+            NewInstance::stub(Interceptors::class),
+            new SupportedMimeTypes([]),
+            $route
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function requiresSwitchToHttpsIfCalledUriIsNotHttpsButRouteRequiresHttps(): void
     {
         $route = new Route('/hello/{name}', function() {}, 'GET');
@@ -72,67 +66,59 @@ class ResolvingResourceTest extends TestCase
         assertTrue($processableRoute->requiresHttps());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function doesNotrequireSwitchToHttpsIfCalledUriIsNotHttpsAndRouteDoesNotRequireHttps(): void
     {
         assertFalse(
-                $this->createResolvingResourceWithTarget(function() {})
-                        ->requiresHttps()
+            $this->createResolvingResourceWithTarget(function() {})
+                ->requiresHttps()
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function doesNotrequireSwitchToHttpsIfCalledUriIsHttps(): void
     {
         $route = new Route('/hello/{name}', function() {}, 'GET');
         $processableRoute = $this->createResolvingResource(
-                $route->httpsOnly(),
-                'https://example.com/hello/world'
+            $route->httpsOnly(),
+            'https://example.com/hello/world'
         );
         assertFalse($processableRoute->requiresHttps());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function returnsHttpsUriFromCalledUri(): void
     {
         assertThat(
-                (string) $this->createResolvingResourceWithTarget(function() {})
-                        ->httpsUri(),
-                equals('https://example.com/hello/world')
+            (string) $this->createResolvingResourceWithTarget(function() {})
+                ->httpsUri(),
+            equals('https://example.com/hello/world')
         );
     }
 
     /**
      * @param   callable|Target|class-string<Target>  $target
-     * @return  ResolvingResource
      */
-    private function createResolvingResourceWithTarget($target): ResolvingResource
-    {
+    private function createResolvingResourceWithTarget(
+        string|callable|Target $target
+    ): ResolvingResource {
         return $this->createResolvingResource(
-                new Route('/hello/{name}', $target, 'GET')
+            new Route('/hello/{name}', $target, 'GET')
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function processCallsClosureGivenAsCallback(): void
     {
         assertThat(
-                $this->createResolvingResourceWithTarget(
-                        function(Request $request, Response $response, UriPath $uriPath)
-                        {
-                            $response->setStatusCode(418);
-                            return 'Hello world';
-                        }
-                )->resolve($this->request, $this->response),
-                equals('Hello world')
+            $this->createResolvingResourceWithTarget(
+                function(Request $request, Response $response, UriPath $uriPath)
+                {
+                    $response->setStatusCode(418);
+                    return 'Hello world';
+                }
+            )->resolve($this->request, $this->response),
+            equals('Hello world')
         );
         verify($this->response, 'setStatusCode')->received(418);
     }
@@ -146,15 +132,13 @@ class ResolvingResourceTest extends TestCase
         return 'Hello world';
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function processCallsGivenCallback(): void
     {
         assertThat(
-                $this->createResolvingResourceWithTarget([$this, 'theCallable'])
-                        ->resolve($this->request, $this->response),
-                equals('Hello world')
+            $this->createResolvingResourceWithTarget([$this, 'theCallable'])
+                ->resolve($this->request, $this->response),
+            equals('Hello world')
         );
         verify($this->response, 'setStatusCode')->received(418);
     }
@@ -162,61 +146,53 @@ class ResolvingResourceTest extends TestCase
     /**
      * helper method for the test
      *
-     * @param   \stubbles\webapp\Request   $request
-     * @param   \stubbles\webapp\Response  $response
-     * @throws  \Exception
+     * @throws  Exception
      */
     public function failingCallable(Request $request, Response $response, UriPath $uriPath): void
     {
-        throw new \Exception('some error occurred');
+        throw new Exception('some error occurred');
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function processCallsGivenProcessorInstance(): void
     {
         $target = NewInstance::of(Target::class);
         $target->returns(['resolve' => 'Hello world']);
         assertThat(
-                $this->createResolvingResourceWithTarget($target)
-                        ->resolve($this->request, $this->response),
-                equals('Hello world')
+            $this->createResolvingResourceWithTarget($target)
+                ->resolve($this->request, $this->response),
+            equals('Hello world')
         );
         verify($target, 'resolve')->received(
-                $this->request,
-                $this->response,
-                new UriPath('/hello/{name}', '/hello/world')
+            $this->request,
+            $this->response,
+            new UriPath('/hello/{name}', '/hello/world')
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function respondsWithInternalServerErrorIfTargetDoesNotImplementInterface(): void
     {
         $this->injector->returns(['getInstance' => new \stdClass()]);
         $error = new Error('error');
         $this->response->returns(['internalServerError' => $error]);
         assertThat(
-                $this->createResolvingResourceWithTarget('\stdClass')
-                        ->resolve($this->request, $this->response),
-                isSameAs($error)
+            $this->createResolvingResourceWithTarget('\stdClass')
+                ->resolve($this->request, $this->response),
+            isSameAs($error)
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function resolveCreatesAndCallsGivenTargetClass(): void
     {
         $target = NewInstance::of(Target::class);
         $target->returns(['resolve' => 'Hello world']);
         $this->injector->returns(['getInstance' => $target]);
         assertThat(
-                $this->createResolvingResourceWithTarget(get_class($target))
-                        ->resolve($this->request, $this->response),
-                equals('Hello world')
+            $this->createResolvingResourceWithTarget(get_class($target))
+                ->resolve($this->request, $this->response),
+            equals('Hello world')
         );
     }
 }

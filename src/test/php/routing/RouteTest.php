@@ -8,6 +8,10 @@ declare(strict_types=1);
  */
 namespace stubbles\webapp\routing;
 use bovigo\callmap\NewInstance;
+use Generator;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use stubbles\helper\routing\{AnnotatedProcessor, Baz, OtherAnnotatedProcessor, RoleAwareAnnotatedProcessor};
 use stubbles\peer\http\HttpUri;
@@ -33,26 +37,23 @@ use function bovigo\assert\{
 class RouteTest extends TestCase
 {
     /**
-     * @param   string|string[]|null  $method
-     * @return  Route
+     * @param  string|string[]|null  $method
      */
-    private function createRoute($method = 'GET'): Route
+    private function createRoute(string|array|null $method = 'GET'): Route
     {
         return new Route(
-                '/hello/{name}',
-                function(Request $request, Response $response, UriPath $uriPath)
-                {
-                    $response->setStatusCode(418)
-                            ->write('Hello ' . $uriPath->readArgument('name')->asString());
-                    return false;
-                },
-                $method
+            '/hello/{name}',
+            function(Request $request, Response $response, UriPath $uriPath)
+            {
+                $response->setStatusCode(418)
+                    ->write('Hello ' . $uriPath->readArgument('name')->asString());
+                return false;
+            },
+            $method
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function allowedRequestMethodsContainAllIfNoneGiven(): void
     {
         assertThat(
@@ -61,18 +62,16 @@ class RouteTest extends TestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function allowedRequestMethodsContainGivenSingleMethodOnly(): void
     {
         assertThat($this->createRoute()->allowedRequestMethods(), equals(['GET']));
     }
 
     /**
-     * @test
      * @since  4.0.0
      */
+    #[Test]
     public function allowedRequestMethodsContainGivenListOfMethodOnly(): void
     {
         assertThat(
@@ -81,9 +80,7 @@ class RouteTest extends TestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function doesNotMatchUriRequestIfRequestMethodsDiffer(): void
     {
         assertFalse(
@@ -93,94 +90,76 @@ class RouteTest extends TestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function doesNotMatchUriRequestIfRequestPathsDiffers(): void
     {
         assertFalse(
-                $this->createRoute()->matches(
-                        new CalledUri('http://example.com/other', 'GET')
-                )
+            $this->createRoute()->matches(
+                new CalledUri('http://example.com/other', 'GET')
+            )
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function matchesIfPathAndMethodAreOk(): void
     {
         assertTrue(
-                $this->createRoute()->matches(
-                        new CalledUri('http://example.com/hello/world', 'GET')
-                )
+            $this->createRoute()->matches(
+                new CalledUri('http://example.com/hello/world', 'GET')
+            )
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function doesNotMatchPathIfDiffers(): void
     {
         assertFalse(
-                $this->createRoute()->matchesPath(
-                        new CalledUri('http://example.com/other', 'GET')
-                )
+            $this->createRoute()->matchesPath(
+                new CalledUri('http://example.com/other', 'GET')
+            )
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function matchesPathIfPathOk(): void
     {
         assertTrue(
-                $this->createRoute()->matchesPath(
-                        new CalledUri('http://example.com/hello/world', 'GET')
-                )
+            $this->createRoute()->matchesPath(
+                new CalledUri('http://example.com/hello/world', 'GET')
+            )
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function matchesForHeadIfPathOkAndAllowedMethodIsGet(): void
     {
         assertTrue(
-                $this->createRoute()->matches(
-                        new CalledUri('http://example.com/hello/world', 'HEAD')
-                )
+            $this->createRoute()->matches(
+                new CalledUri('http://example.com/hello/world', 'HEAD')
+            )
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function returnsGivenPath(): void
     {
         assertThat($this->createRoute()->configuredPath(), equals('/hello/{name}'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function returnsGivenCallback(): void
     {
         $route = new Route('/hello/{name}', __CLASS__);
         assertThat($route->target(), equals(__CLASS__));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function hasNoPreInterceptorsByDefault(): void
     {
         assertEmptyArray($this->createRoute()->preInterceptors());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function hasGivenListOfPreInterceptors(): void
     {
         $preInterceptorClosure  = function() {};
@@ -188,31 +167,27 @@ class RouteTest extends TestCase
         $preInterceptor         = NewInstance::of(PreInterceptor::class);
         $preInterceptorFunction = 'array_map';
         assertThat(
-                $this->createRoute()->preIntercept($preInterceptorClass)
-                        ->preIntercept($preInterceptorClosure)
-                        ->preIntercept($preInterceptor)
-                        ->preIntercept($preInterceptorFunction)
-                        ->preInterceptors(),
-                equals([
-                        get_class($preInterceptor),
-                        $preInterceptorClosure,
-                        $preInterceptor,
-                        $preInterceptorFunction
-                ])
+            $this->createRoute()->preIntercept($preInterceptorClass)
+                ->preIntercept($preInterceptorClosure)
+                ->preIntercept($preInterceptor)
+                ->preIntercept($preInterceptorFunction)
+                ->preInterceptors(),
+            equals([
+                get_class($preInterceptor),
+                $preInterceptorClosure,
+                $preInterceptor,
+                $preInterceptorFunction
+            ])
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function hasNoPostInterceptorsByDefault(): void
     {
         assertEmptyArray($this->createRoute()->postInterceptors());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function hasGivenListOfPostInterceptors(): void
     {
         $postInterceptorClosure  = function() {};
@@ -220,40 +195,36 @@ class RouteTest extends TestCase
         $postInterceptor         = NewInstance::of(PostInterceptor::class);
         $postInterceptorFunction = 'array_map';
         assertThat(
-                $this->createRoute()->postIntercept($postInterceptorClass)
-                        ->postIntercept($postInterceptorClosure)
-                        ->postIntercept($postInterceptor)
-                        ->postIntercept($postInterceptorFunction)
-                        ->postInterceptors(),
-                equals([
-                        get_class($postInterceptor),
-                        $postInterceptorClosure,
-                        $postInterceptor,
-                        $postInterceptorFunction
-                ])
+            $this->createRoute()->postIntercept($postInterceptorClass)
+                ->postIntercept($postInterceptorClosure)
+                ->postIntercept($postInterceptor)
+                ->postIntercept($postInterceptorFunction)
+                ->postInterceptors(),
+            equals([
+                get_class($postInterceptor),
+                $postInterceptorClosure,
+                $postInterceptor,
+                $postInterceptorFunction
+            ])
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function doesNotRequireHttpsByDefault(): void
     {
         assertFalse($this->createRoute()->requiresHttps());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function requiresHttpsWhenWhenRestrictedToHttps(): void
     {
         assertTrue($this->createRoute()->httpsOnly()->requiresHttps());
     }
 
     /**
-     * @test
      * @since  3.1.0
      */
+    #[Test]
     public function requiresHttpsWhenCallbackInstanceAnnotatedWithRequiresHttps(): void
     {
         $route = new Route('/hello/{name}', new AnnotatedProcessor(), 'GET');
@@ -261,41 +232,41 @@ class RouteTest extends TestCase
     }
 
     /**
-     * @test
      * @since  3.1.0
      */
+    #[Test]
     public function requiresHttpsWhenCallbackClassAnnotatedWithRequiresHttps(): void
     {
         $route = new Route(
-                '/hello/{name}',
-                AnnotatedProcessor::class,
-                'GET'
+            '/hello/{name}',
+            AnnotatedProcessor::class,
+            'GET'
         );
         assertTrue($route->requiresHttps());
     }
 
     /**
-     * @test
      * @since  3.0.0
      */
+    #[Test]
     public function doesNotRequireAuthByDefault(): void
     {
         assertFalse($this->createRoute()->requiresAuth());
     }
 
     /**
-     * @test
      * @since  3.0.0
      */
+    #[Test]
     public function requiresAuthWhenLoginIsRequired(): void
     {
         assertTrue($this->createRoute()->withLoginOnly()->requiresAuth());
     }
 
     /**
-     * @test
      * @since  3.1.0
      */
+    #[Test]
     public function requiresAuthWhenCallbackInstanceAnnotatedWithRequiresLogin(): void
     {
         $route = new Route('/hello/{name}', new AnnotatedProcessor(), 'GET');
@@ -303,9 +274,9 @@ class RouteTest extends TestCase
     }
 
     /**
-     * @test
      * @since  3.1.0
      */
+    #[Test]
     public function requiresAuthWhenCallbackClassAnnotatedWithRequiresLogin(): void
     {
         $route = new Route('/hello/{name}',
@@ -316,18 +287,18 @@ class RouteTest extends TestCase
     }
 
     /**
-     * @test
      * @since  3.0.0
      */
+    #[Test]
     public function requiresAuthWhenRoleIsRequired(): void
     {
         assertTrue($this->createRoute()->withRoleOnly('admin')->requiresAuth());
     }
 
     /**
-     * @test
      * @since  3.1.0
      */
+    #[Test]
     public function requiresAuthWhenCallbackInstanceAnnotatedWithRequiresRole(): void
     {
         $route = new Route('/hello/{name}', new OtherAnnotatedProcessor(), 'GET');
@@ -335,459 +306,441 @@ class RouteTest extends TestCase
     }
 
     /**
-     * @test
      * @since  3.1.0
      */
+    #[Test]
     public function requiresAuthWhenCallbackClassAnnotatedWithRequiresRole(): void
     {
         $route = new Route(
-                '/hello/{name}',
-                OtherAnnotatedProcessor::class,
-                'GET'
+            '/hello/{name}',
+            OtherAnnotatedProcessor::class,
+            'GET'
         );
         assertTrue($route->requiresAuth());
     }
 
     /**
-     * @test
      * @since  5.0.0
-     * @group  role_aware
      */
+    #[Test]
+    #[Group('role_aware')]
     public function requiresAuthWhenCallbackInstanceAnnotatedWithRoleAware(): void
     {
         $route = new Route(
-                '/hello/{name}',
-                new RoleAwareAnnotatedProcessor(),
-                'GET'
+            '/hello/{name}',
+            new RoleAwareAnnotatedProcessor(),
+            'GET'
         );
         assertTrue($route->requiresAuth());
     }
 
     /**
-     * @test
      * @since  5.0.0
-     * @group  role_aware
      */
+    #[Test]
+    #[Group('role_aware')]
     public function requiresAuthWhenCallbackClassAnnotatedWithRoleAware(): void
     {
         $route = new Route(
-                '/hello/{name}',
-                RoleAwareAnnotatedProcessor::class,
-                'GET'
+            '/hello/{name}',
+            RoleAwareAnnotatedProcessor::class,
+            'GET'
         );
         assertTrue($route->requiresAuth());
     }
 
     /**
-     * @test
      * @since  3.0.0
      */
+    #[Test]
     public function requiresAuthWhenLoginAndRoleIsRequired(): void
     {
         assertTrue(
-                $this->createRoute()
-                        ->withLoginOnly()
-                        ->withRoleOnly('admin')
-                        ->requiresAuth()
+            $this->createRoute()
+                ->withLoginOnly()
+                ->withRoleOnly('admin')
+                ->requiresAuth()
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function doesNotRequireRolesByDefault(): void
     {
         assertFalse($this->createRoute()->authConstraint()->requiresRoles());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function requiresRolesWhenRoleIsSet(): void
     {
         assertTrue(
-                $this->createRoute()
-                        ->withRoleOnly('admin')
-                        ->authConstraint()
-                        ->requiresRoles()
+            $this->createRoute()
+                ->withRoleOnly('admin')
+                ->authConstraint()
+                ->requiresRoles()
         );
     }
 
     /**
-     * @test
      * @since  3.1.0
      */
+    #[Test]
     public function requiresRolesWhenCallbackInstanceAnnotatedWithRequiresRole(): void
     {
         $route = new Route(
-                '/hello/{name}',
-                new OtherAnnotatedProcessor(),
-                'GET'
+            '/hello/{name}',
+            new OtherAnnotatedProcessor(),
+            'GET'
         );
         assertTrue($route->authConstraint()->requiresRoles());
     }
 
     /**
-     * @test
      * @since  3.1.0
      */
+    #[Test]
     public function requiresRolesWhenCallbackClassAnnotatedWithRequiresRole(): void
     {
         $route = new Route(
-                '/hello/{name}',
-                OtherAnnotatedProcessor::class,
-                'GET'
+            '/hello/{name}',
+            OtherAnnotatedProcessor::class,
+            'GET'
         );
         assertTrue($route->authConstraint()->requiresRoles());
     }
 
     /**
-     * @test
      * @since  5.0.0
-     * @group  role_aware
      */
+    #[Test]
+    #[Group('role_aware')]
     public function requiresRolesWhenCallbackInstanceAnnotatedWithRoleAware(): void
     {
         $route = new Route(
-                '/hello/{name}',
-                new RoleAwareAnnotatedProcessor(),
-                'GET'
+            '/hello/{name}',
+            new RoleAwareAnnotatedProcessor(),
+            'GET'
         );
         assertTrue($route->authConstraint()->requiresRoles());
     }
 
     /**
-     * @test
      * @since  5.0.0
-     * @group  role_aware
      */
+    #[Test]
+    #[Group('role_aware')]
     public function requiresRolesWhenCallbackClassAnnotatedWithRoleAware(): void
     {
         $route = new Route(
-                '/hello/{name}',
-                RoleAwareAnnotatedProcessor::class,
-                'GET'
+            '/hello/{name}',
+            RoleAwareAnnotatedProcessor::class,
+            'GET'
         );
         assertTrue($route->authConstraint()->requiresRoles());
     }
 
     /**
-     * @test
      * @since  5.0.0
-     * @group  role_aware
      */
+    #[Test]
+    #[Group('role_aware')]
     public function isNotSatisfiedByRolesWhenRolesAreNull(): void
     {
         assertFalse($this->createRoute()->authConstraint()->satisfiedByRoles());
     }
 
     /**
-     * @test
      * @since  5.0.0
-     * @group  role_aware
      */
+    #[Test]
+    #[Group('role_aware')]
     public function isSatisfiedByRolesWhenRolesAwareWithCallbackClass(): void
     {
         $route = new Route(
-                '/hello/{name}',
-                RoleAwareAnnotatedProcessor::class,
-                'GET'
+            '/hello/{name}',
+            RoleAwareAnnotatedProcessor::class,
+            'GET'
         );
         assertFalse($route->authConstraint()->satisfiedByRoles());
     }
 
     /**
-     * @test
      * @since  5.0.0
-     * @group  role_aware
      */
+    #[Test]
+    #[Group('role_aware')]
     public function isSatisfiedByRolesWhenRolesAwareWithCallbackInstance(): void
     {
         $route = new Route(
-                '/hello/{name}',
-                new RoleAwareAnnotatedProcessor(),
-                'GET'
+            '/hello/{name}',
+            new RoleAwareAnnotatedProcessor(),
+            'GET'
         );
         assertTrue($route->authConstraint()->satisfiedByRoles(new Roles([])));
     }
 
     /**
-     * @test
      * @since  5.0.0
-     * @group  role_aware
      */
+    #[Test]
+    #[Group('role_aware')]
     public function isSatisfiedByRolesWhenRolesContainRequiredRoleFromAnnotatedCallbackInstance(): void
     {
         $route = new Route(
-                '/hello/{name}',
-                new OtherAnnotatedProcessor(),
-                'GET'
+            '/hello/{name}',
+            new OtherAnnotatedProcessor(),
+            'GET'
         );
         assertTrue($route->authConstraint()->satisfiedByRoles(new Roles(['admin', 'superadmin'])));
     }
 
     /**
-     * @test
      * @since  5.0.0
-     * @group  role_aware
      */
+    #[Test]
+    #[Group('role_aware')]
     public function isNotSatisfiedByRolesWhenRolesDoNotContainRequiredRoleFromAnnotatedCallbackInstance(): void
     {
         $route = new Route(
-                '/hello/{name}',
-                new OtherAnnotatedProcessor(),
-                'GET'
+            '/hello/{name}',
+            new OtherAnnotatedProcessor(),
+            'GET'
         );
         assertFalse($route->authConstraint()->satisfiedByRoles(new Roles(['user'])));
     }
 
     /**
-     * @test
      * @since  5.0.0
-     * @group  role_aware
      */
+    #[Test]
+    #[Group('role_aware')]
     public function isSatisfiedByRolesWhenRolesContainRequiredRoleFromAnnotatedCallbackClass(): void
     {
         $route = new Route(
-                '/hello/{name}',
-                OtherAnnotatedProcessor::class,
-                'GET'
+            '/hello/{name}',
+            OtherAnnotatedProcessor::class,
+            'GET'
         );
         assertTrue($route->authConstraint()->satisfiedByRoles(new Roles(['admin', 'superadmin'])));
     }
 
     /**
-     * @test
      * @since  5.0.0
-     * @group  role_aware
      */
+    #[Test]
+    #[Group('role_aware')]
     public function isNotSatisfiedByRolesWhenRolesDoNotContainRequiredRoleFromAnnotatedCallbackClass(): void
     {
         $route = new Route(
-                '/hello/{name}',
-                OtherAnnotatedProcessor::class,
-                'GET'
+            '/hello/{name}',
+            OtherAnnotatedProcessor::class,
+            'GET'
         );
         assertFalse($route->authConstraint()->satisfiedByRoles(new Roles(['user'])));
     }
 
     /**
-     * @test
      * @since  5.0.0
-     * @group  forbid_login
      */
+    #[Test]
+    #[Group('role_aware')]
     public function forbiddenWhenNotAlreadyLoggedInSetsInfoOnAuthConstraint(): void
     {
         $route = new Route(
-                '/hello/{name}',
-                OtherAnnotatedProcessor::class,
-                'GET'
+            '/hello/{name}',
+            OtherAnnotatedProcessor::class,
+            'GET'
         );
         assertFalse($route->sendChallengeWhenNotLoggedIn()->authConstraint()->redirectToLogin());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function supportNoMimeTypeByDefault(): void
     {
         assertEmptyArray($this->createRoute()->supportedMimeTypes()->asArray());
     }
 
     /**
-     * @test
      * @since  5.0.0
      */
+    #[Test]
     public function addMimeTypeWithoutClassWhenNoDefaultClassIsKnownThrowsInvalidArgumentException(): void
     {
         expect(function() {
-                $this->createRoute()->supportsMimeType('application/foo');
+            $this->createRoute()->supportsMimeType('application/foo');
         })->throws(\InvalidArgumentException::class);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function returnsListOfAddedSupportedMimeTypes(): void
     {
         assertThat(
-                $this->createRoute()
-                        ->supportsMimeType('application/json')
-                        ->supportsMimeType('application/xml')
-                        ->supportedMimeTypes()
-                        ->asArray(),
-                equals(['application/json', 'application/xml'])
+            $this->createRoute()
+                ->supportsMimeType('application/json')
+                ->supportsMimeType('application/xml')
+                ->supportedMimeTypes()
+                ->asArray(),
+            equals(['application/json', 'application/xml'])
         );
     }
 
     /**
-     * @test
      * @since  3.2.0
      */
+    #[Test]
     public function supportedMimeTypesContainSpecialClass(): void
     {
         assertTrue(
-                $this->createRoute()
-                        ->supportsMimeType('foo/bar', 'example\FooBar')
-                        ->supportedMimeTypes()
-                        ->provideClass('foo/bar')
+            $this->createRoute()
+                ->supportsMimeType('foo/bar', 'example\FooBar')
+                ->supportedMimeTypes()
+                ->provideClass('foo/bar')
         );
     }
 
     /**
-     * @test
      * @since  3.2.0
      */
+    #[Test]
     public function supportedMimeTypesReturnSpecialClass(): void
     {
         assertThat(
-                $this->createRoute()
-                        ->supportsMimeType('foo/bar', 'example\FooBar')
-                        ->supportedMimeTypes()
-                        ->classFor('foo/bar'),
-                equals('example\FooBar')
+            $this->createRoute()
+                ->supportsMimeType('foo/bar', 'example\FooBar')
+                ->supportedMimeTypes()
+                ->classFor('foo/bar'),
+            equals('example\FooBar')
         );
     }
 
     /**
-     * @test
      * @since  2.1.1
      */
+    #[Test]
     public function contentNegotationIsEnabledByDefault(): void
     {
         assertFalse(
-                $this->createRoute()
-                        ->supportedMimeTypes()
-                        ->isContentNegotationDisabled()
+            $this->createRoute()
+                ->supportedMimeTypes()
+                ->isContentNegotationDisabled()
         );
     }
 
     /**
-     * @test
      * @since  2.1.1
      */
+    #[Test]
     public function contentNegotationCanBeDisabled(): void
     {
         assertTrue(
-                $this->createRoute()
-                        ->disableContentNegotiation()
-                        ->supportedMimeTypes()
-                        ->isContentNegotationDisabled()
+            $this->createRoute()
+                ->disableContentNegotiation()
+                ->supportedMimeTypes()
+                ->isContentNegotationDisabled()
         );
     }
 
     /**
-     * @test
-     * @group  issue_63
      * @since  5.1.0
      */
+    #[Test]
+    #[Group('issue_63')]
     public function contentNegotationIsDisabledWhenProcessorAnnotated(): void
     {
         $route = new Route(
-                '/hello',
-                OtherAnnotatedProcessor::class,
-                'GET'
+            '/hello',
+            OtherAnnotatedProcessor::class,
+            'GET'
         );
         assertTrue($route->supportedMimeTypes()->isContentNegotationDisabled());
     }
 
     /**
-     * @test
-     * @group  issue_63
      * @since  5.1.0
      */
+    #[Test]
+    #[Group('issue_63')]
     public function listOfSupportedMimeTypesContainsAnnotatedMimeTypes(): void
     {
         $route = new Route(
-                '/hello',
-                AnnotatedProcessor::class,
-                'GET'
+            '/hello',
+            AnnotatedProcessor::class,
+            'GET'
         );
         assertThat(
-                $route->supportedMimeTypes()->asArray(),
-                equals(['text/plain', 'application/bar', 'application/baz'])
+            $route->supportedMimeTypes()->asArray(),
+            equals(['text/plain', 'application/bar', 'application/baz'])
         );
     }
 
-    /**
-     * @return  array<mixed[]>
-     */
-    public static function mimeTypeClasses(): array
+    public static function provideMimeTypeClasses(): Generator
     {
-        return [
-            ['example\\\Bar', 'application/bar'],
-            [Baz::class, 'application/baz']
-        ];
+        yield ['example\\\Bar', 'application/bar'];
+        yield [Baz::class, 'application/baz'];
     }
 
     /**
-     * @test
-     * @group  issue_63
-     * @dataProvider  mimeTypeClasses
      * @since  5.1.0
      */
+    #[Test]
+    #[Group('issue_63')]
+    #[DataProvider('provideMimeTypeClasses')]
     public function listOfSupportedMimeTypesContainsClassForAnnotatedMimeTypes(
-            string $expectedMimeTypeClass,
-            string $mimeType
+        string $expectedMimeTypeClass,
+        string $mimeType
     ): void {
         $route = new Route(
-                '/hello',
-                AnnotatedProcessor::class,
-                'GET'
+            '/hello',
+            AnnotatedProcessor::class,
+            'GET'
         );
         assertThat(
-                $route->supportedMimeTypes()->classFor($mimeType),
-                equals($expectedMimeTypeClass)
+            $route->supportedMimeTypes()->classFor($mimeType),
+            equals($expectedMimeTypeClass)
         );
     }
 
     /**
-     * @test
-     * @group  issue_63
      * @since  5.1.0
      */
+    #[Test]
+    #[Group('issue_63')]
     public function annotatedMimeTypeClassCanBeOverwritten(): void
     {
         $route = new Route(
-                '/hello',
-                AnnotatedProcessor::class,
-                'GET'
+            '/hello',
+            AnnotatedProcessor::class,
+            'GET'
         );
         assertThat(
-                $route->supportsMimeType('application/bar', 'example\OtherBar')
-                        ->supportedMimeTypes()
-                        ->classFor('application/bar'),
-                equals('example\OtherBar')
+            $route->supportsMimeType('application/bar', 'example\OtherBar')
+                ->supportedMimeTypes()
+                ->classFor('application/bar'),
+            equals('example\OtherBar')
         );
     }
 
-    /**
-     * @return  array<mixed[]>
-     */
-    public static function resources(): array
+    public static function provideResources(): Generator
     {
-        return [
-            [
-                AnnotatedProcessor::class,
-                'Orders',
-                ['text/plain', 'application/bar', 'application/baz'],
-            ],
-            [
-                new AnnotatedProcessor(),
-                'Orders',
-                ['text/plain', 'application/bar', 'application/baz'],
-            ],
-            [
-                OtherAnnotatedProcessor::class,
-                'OtherAnnotatedProcessor',
-                [],
-            ],
-            [
-                new OtherAnnotatedProcessor(), 'OtherAnnotatedProcessor', [],
-            ],
-            [
-                function() {}, null, []
-            ]
+        yield [
+            AnnotatedProcessor::class,
+            'Orders',
+            ['text/plain', 'application/bar', 'application/baz'],
+        ];
+        yield [
+            new AnnotatedProcessor(),
+            'Orders',
+            ['text/plain', 'application/bar', 'application/baz'],
+        ];
+        yield [
+            OtherAnnotatedProcessor::class,
+            'OtherAnnotatedProcessor',
+            [],
+        ];
+        yield [
+            new OtherAnnotatedProcessor(), 'OtherAnnotatedProcessor', [],
+        ];
+        yield [
+            function() {}, null, []
         ];
     }
 
@@ -795,237 +748,241 @@ class RouteTest extends TestCase
      * @param  class-string<Target>|Target|callable  $target
      * @param  string                                $name
      * @param  string[]                              $mimeTypes
-     * @test
      * @since  6.1.0
-     * @dataProvider  resources
      */
-    public function routeCanBeRepresentedAsResource($target, ?string $name, array $mimeTypes): void
-    {
+    #[Test]
+    #[Group('issue_63')]
+    #[DataProvider('provideResources')]
+    public function routeCanBeRepresentedAsResource(
+        string|callable|Target $target,
+        ?string $name,
+        array $mimeTypes
+    ): void {
         $route = new Route(
-                '/orders',
-                $target,
-                'GET'
+            '/orders',
+            $target,
+            'GET'
         );
         $annotations = new RoutingAnnotations($target);
         assertThat(
-                $route->asResource(HttpUri::fromString('https://example.com/')),
-                equals(new api\Resource(
-                        $name,
-                        ['GET'],
-                        HttpUri::fromString('https://example.com/orders'),
-                        $mimeTypes,
-                        $annotations,
-                        new AuthConstraint($annotations)
-                ))
+            $route->asResource(HttpUri::fromString('https://example.com/')),
+            equals(new api\Resource(
+                $name,
+                ['GET'],
+                HttpUri::fromString('https://example.com/orders'),
+                $mimeTypes,
+                $annotations,
+                new AuthConstraint($annotations)
+            ))
         );
     }
 
     /**
-     * @test
      * @since  6.1.0
      */
+    #[Test]
     public function normalizesPathForResource(): void
     {
         $route = new Route(
-                '/orders/?$',
-                AnnotatedProcessor::class,
-                'GET'
+            '/orders/?$',
+            AnnotatedProcessor::class,
+            'GET'
         );
         assertThat(
-                $route->asResource(HttpUri::fromString('http://example.com/'))
-                        ->links()->with('self')[0]->uri(),
-                equals('https://example.com/orders/')
+            $route->asResource(HttpUri::fromString('http://example.com/'))
+                ->links()->with('self')[0]->uri(),
+            equals('https://example.com/orders/')
         );
     }
 
     /**
-     * @test
      * @since  6.1.0
      */
+    #[Test]
     public function uriTransformedToHttpsWhenHttpsRequired(): void
     {
         $route = new Route(
-                '/orders/?$',
-                OtherAnnotatedProcessor::class,
-                'GET'
+            '/orders/?$',
+            OtherAnnotatedProcessor::class,
+            'GET'
         );
         $route->httpsOnly();
         assertThat(
-                $route->asResource(HttpUri::fromString('http://example.com/'))
-                        ->links()->with('self')[0]->uri(),
-                equals('https://example.com/orders/')
+            $route->asResource(HttpUri::fromString('http://example.com/'))
+                ->links()->with('self')[0]->uri(),
+            equals('https://example.com/orders/')
         );
     }
 
     /**
-     * @test
      * @since  6.1.0
      */
+    #[Test]
     public function uriNotTransformedToHttpsWhenHttpsNotRequired(): void
     {
         $route = new Route(
-                '/orders/?$',
-                OtherAnnotatedProcessor::class,
-                'GET'
+            '/orders/?$',
+            OtherAnnotatedProcessor::class,
+            'GET'
         );
         assertThat(
-                $route->asResource(HttpUri::fromString('http://example.com/'))
-                        ->links()->with('self')[0]->uri(),
-                equals('http://example.com/orders/')
+            $route->asResource(HttpUri::fromString('http://example.com/'))
+                ->links()->with('self')[0]->uri(),
+            equals('http://example.com/orders/')
         );
     }
 
     /**
-     * @test
      * @since  6.1.0
      */
+    #[Test]
     public function routeIsIncludedInApiIndexByDefault(): void
     {
         $route = new Route(
-                '/orders/?$',
-                function() {},
-                'GET'
+            '/orders/?$',
+            function() {},
+            'GET'
         );
         assertFalse($route->shouldBeIgnoredInApiIndex());
     }
 
     /**
-     * @test
      * @since  6.1.0
      */
+    #[Test]
     public function routeCanBeExcludedFromApiIndexViaSwitch(): void
     {
         $route = new Route(
-                '/orders/?$',
-                function() {},
-                'GET'
+            '/orders/?$',
+            function() {},
+            'GET'
         );
         assertTrue($route->excludeFromApiIndex()->shouldBeIgnoredInApiIndex());
     }
 
     /**
-     * @test
      * @since  6.1.0
      */
+    #[Test]
     public function routeCanBeExcludedFromApiIndexViaAnnotation(): void
     {
         $route = new Route(
-                '/orders/?$',
-                RoleAwareAnnotatedProcessor::class,
-                'GET'
+            '/orders/?$',
+            RoleAwareAnnotatedProcessor::class,
+            'GET'
         );
         assertTrue($route->shouldBeIgnoredInApiIndex());
     }
 
     /**
-     * @test
      * @since  6.1.0
      */
+    #[Test]
     public function resourceRepresentationContainsListOfSupportedMimeTypes(): void
     {
         $route = new Route(
-                '/orders/?$',
-                AnnotatedProcessor::class,
-                'GET'
+            '/orders/?$',
+            AnnotatedProcessor::class,
+            'GET'
         );
         $route->supportsMimeType('application/xml');
         assertThat(
-                $route->asResource(HttpUri::fromString('http://example.com/'))
-                        ->mimeTypes(),
-                equals([
-                        'text/plain',
-                        'application/bar',
-                        'application/baz',
-                        'application/xml'
-                ])
+            $route->asResource(HttpUri::fromString('http://example.com/'))
+                ->mimeTypes(),
+            equals([
+                'text/plain',
+                'application/bar',
+                'application/baz',
+                'application/xml'
+            ])
         );
     }
 
     /**
-     * @test
      * @since  6.2.1
      */
+    #[Test]
     public function resourceRepresentationContainsListOfSupportedMimeTypesIncludingGlobal(): void
     {
         $route = new Route(
-                '/orders/?$',
-                AnnotatedProcessor::class,
-                'GET'
+            '/orders/?$',
+            AnnotatedProcessor::class,
+            'GET'
         );
         $route->supportsMimeType('application/xml');
         assertThat(
-                $route->asResource(HttpUri::fromString('http://example.com/'), ['application/foo'])
-                        ->mimeTypes(),
-                equals([
-                        'text/plain',
-                        'application/bar',
-                        'application/baz',
-                        'application/xml',
-                        'application/foo'
-                ])
+            $route->asResource(HttpUri::fromString('http://example.com/'), ['application/foo'])
+                ->mimeTypes(),
+            equals([
+                'text/plain',
+                'application/bar',
+                'application/baz',
+                'application/xml',
+                'application/foo'
+            ])
         );
     }
 
     /**
-     * @test
      * @since  6.1.0
      */
+    #[Test]
     public function resourceRepresentationContainsListOfStatusCodes(): void
     {
         $route = new Route(
-                '/orders/?$',
-                AnnotatedProcessor::class,
-                'GET'
+            '/orders/?$',
+            AnnotatedProcessor::class,
+            'GET'
         );
         assertThat(
-                $route->asResource(HttpUri::fromString('http://example.com/'))
-                        ->statusCodes(),
-                equals([
-                        new Status(200, 'Default status code'),
-                        new Status(404, 'No orders found')
-                ])
+            $route->asResource(HttpUri::fromString('http://example.com/'))
+                ->statusCodes(),
+            equals([
+                new Status(200, 'Default status code'),
+                new Status(404, 'No orders found')
+            ])
         );
     }
 
     /**
-     * @test
      * @since  6.1.0
      */
+    #[Test]
     public function resourceRepresenationContainsListOfHeaders(): void
     {
         $route = new Route(
-                '/orders/?$',
-                AnnotatedProcessor::class,
-                'GET'
+            '/orders/?$',
+            AnnotatedProcessor::class,
+            'GET'
         );
         assertThat(
-                $route->asResource(HttpUri::fromString('http://example.com/'))
-                        ->headers(),
-                equals([
-                        new Header('Last-Modified', 'Some explanation'),
-                        new Header('X-Binford', 'More power!')
-                ])
+            $route->asResource(HttpUri::fromString('http://example.com/'))
+                ->headers(),
+            equals([
+                new Header('Last-Modified', 'Some explanation'),
+                new Header('X-Binford', 'More power!')
+            ])
         );
     }
 
     /**
-     * @test
      * @since  6.1.0
      */
+    #[Test]
     public function resourceRepresenationContainsListOfParameters(): void
     {
         $route = new Route(
-                '/orders/?$',
-                AnnotatedProcessor::class,
-                'GET'
+            '/orders/?$',
+            AnnotatedProcessor::class,
+            'GET'
         );
         assertThat(
-                $route->asResource(HttpUri::fromString('http://example.com/'))
-                        ->parameters(),
-                equals([
-                        (new Parameter('foo', 'Some path parameter', 'path'))->markRequired(),
-                        new Parameter('bar', 'A query parameter', 'query')
-                ])
+            $route->asResource(HttpUri::fromString('http://example.com/'))
+                ->parameters(),
+            equals([
+                (new Parameter('foo', 'Some path parameter', 'path'))->markRequired(),
+                new Parameter('bar', 'A query parameter', 'query')
+            ])
         );
     }
 }

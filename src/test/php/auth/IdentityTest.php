@@ -8,6 +8,8 @@ declare(strict_types=1);
  */
 namespace stubbles\webapp\auth;
 use bovigo\callmap\NewInstance;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 use function bovigo\assert\assertThat;
@@ -18,21 +20,19 @@ use function bovigo\assert\predicate\isSameAs;
  * Tests for stubbles\webapp\auth\Identity.
  *
  * @since  6.0.0
- * @group  auth
  */
+#[Group('auth')]
 class IdentityTest extends TestCase
 {
-    private function createIdentity(User $user = null): Identity
+    private function createIdentity(?User $user = null): Identity
     {
         return new Identity(
-                null === $user ? NewInstance::of(User::class) : $user,
-                new Roles(['admin'])
+            $user ?? NewInstance::of(User::class),
+            new Roles(['admin'])
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function isAssociatedWithGivenUser(): void
     {
         $user = NewInstance::of(User::class);
@@ -42,17 +42,13 @@ class IdentityTest extends TestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function identityHasRoleWhenGivenRolesContainRole(): void
     {
         assertTrue($this->createIdentity()->hasRole('admin'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function returnsGivenRoles(): void
     {
         assertThat($this->createIdentity()->roles(), equals(new Roles(['admin'])));

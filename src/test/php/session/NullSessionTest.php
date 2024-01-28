@@ -7,7 +7,11 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 namespace stubbles\webapp\session;
+
+use bovigo\callmap\ClassProxy;
 use bovigo\callmap\NewInstance;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use stubbles\webapp\session\id\SessionId;
 
@@ -22,18 +26,12 @@ use function bovigo\callmap\verify;
  * Tests for stubbles\webapp\session\NullSession.
  *
  * @since  2.0.0
- * @group  session
  */
+#[Group('session')]
 class NullSessionTest extends TestCase
 {
-    /**
-     * @var  \stubbles\webapp\session\NullSession
-     */
-    private $nullSession;
-    /**
-     * @var  SessionId&\bovigo\callmap\ClassProxy
-     */
-    private $sessionId;
+    private NullSession $nullSession;
+    private SessionId&ClassProxy $sessionId;
 
     protected function setUp(): void
     {
@@ -41,26 +39,20 @@ class NullSessionTest extends TestCase
         $this->nullSession = new NullSession($this->sessionId);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function isAlwaysNew(): void
     {
         assertTrue($this->nullSession->isNew());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function idIsSessionId(): void
     {
         $this->sessionId->returns(['__toString' => '303']);
         assertThat($this->nullSession->id(), equals('303'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function regenerateCreatesNewSessionId(): void
     {
         assertThat(
@@ -70,26 +62,20 @@ class NullSessionTest extends TestCase
         verify($this->sessionId, 'regenerate')->wasCalledOnce();
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function nameIsSessionIdName(): void
     {
         $this->sessionId->returns(['name' => 'foo']);
         assertThat($this->nullSession->name(), equals('foo'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function isAlwaysValid(): void
     {
         assertTrue($this->nullSession->isValid());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function invalidateInvalidatesSessionId(): void
     {
         assertThat(
@@ -99,50 +85,38 @@ class NullSessionTest extends TestCase
         verify($this->sessionId, 'invalidate')->wasCalledOnce();
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function hasNeverAnyValue(): void
     {
         assertFalse($this->nullSession->hasValue('foo'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function neverReturnsValue(): void
     {
         assertNull($this->nullSession->value('foo'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function alwaysReturnsDefaultValue(): void
     {
         assertThat($this->nullSession->value('foo', 'bar'), equals('bar'));
     }
 
-    /**
-     * @test
-     * @doesNotPerformAssertions
-     */
+    #[Test]
     public function putValueDoesNothing(): void
     {
         $this->nullSession->putValue('foo', 'bar');
+        assertNull($this->nullSession->value('foo'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function removeAlwaysTellsValueWasNotPresent(): void
     {
         assertFalse($this->nullSession->removeValue('foo'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function hasNoValueKeys(): void
     {
         assertEmptyArray($this->nullSession->valueKeys());

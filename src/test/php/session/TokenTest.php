@@ -7,7 +7,11 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 namespace stubbles\webapp\session;
+
+use bovigo\callmap\ClassProxy;
 use bovigo\callmap\NewInstance;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use stubbles\webapp\session\Session;
 
@@ -21,18 +25,12 @@ use function stubbles\reflect\{annotationsOf, annotationsOfConstructor};
  * Tests for stubbles\webapp\session\Token.
  *
  * @since  2.0.0
- * @group  session
  */
+#[Group('session')]
 class TokenTest extends TestCase
 {
-    /**
-     * @var  Token
-     */
-    private $token;
-    /**
-     * @var  Session&\bovigo\callmap\ClassProxy
-     */
-    private $session;
+    private Token $token;
+    private Session&ClassProxy $session;
 
     protected function setUp(): void
     {
@@ -40,43 +38,33 @@ class TokenTest extends TestCase
         $this->token   = new Token($this->session);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function annotationsPresentOnClass(): void
     {
         assertTrue(annotationsOf($this->token)->contain('Singleton'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function annotationsPresentOnConstructor(): void
     {
         assertTrue(annotationsOfConstructor($this->token)->contain('Inject'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function givenTokenIsNotValidWhenNotEqualToSessionToken(): void
     {
         $this->session->returns(['value' => 'aToken']);
         assertFalse($this->token->isValid('otherToken'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function givenTokenIsValidWhenEqualToSessionToken(): void
     {
         $this->session->returns(['value' => 'aToken']);
         assertTrue($this->token->isValid('aToken'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function storesNextTokenInSessionWhenTokenIsValidated(): void
     {
         $this->session->returns(['value' => 'aToken']);
@@ -84,20 +72,16 @@ class TokenTest extends TestCase
         assertTrue(verify($this->session, 'putValue')->wasCalledOnce());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function nextTokenTakenFromSession(): void
     {
         $this->session->returns(
-                ['value' => onConsecutiveCalls('aToken', 'nextToken')]
+            ['value' => onConsecutiveCalls('aToken', 'nextToken')]
         );
         assertThat($this->token->next(), equals('nextToken'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function nextStoresNextTokenInSession(): void
     {
         $this->session->returns(['value' => 'nextToken']);

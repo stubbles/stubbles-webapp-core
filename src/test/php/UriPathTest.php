@@ -7,6 +7,11 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 namespace stubbles\webapp;
+
+use Generator;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 use function bovigo\assert\assertThat;
@@ -18,69 +23,53 @@ use function bovigo\assert\predicate\equals;
  * Tests for stubbles\webapp\UriPath.
  *
  * @since  2.0.0
- * @group  core
  */
+#[Group('core')]
 class UriPathTest extends TestCase
 {
-    /**
-     * instance to test
-     *
-     * @var  UriPath
-     */
-    private $uriPath;
+    private UriPath $uriPath;
 
     protected function setUp(): void
     {
         $this->uriPath = new UriPath('/hello/{name}', '/hello/world/foo');
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function returnsGivenConfiguredPath(): void
     {
         assertThat($this->uriPath->configured(), equals('/hello/{name}'));
     }
 
     /**
-     * @test
      * @since  4.0.0
      */
+    #[Test]
     public function returnsGivenActualPath(): void
     {
         assertThat($this->uriPath->actual(), equals('/hello/world/foo'));
     }
 
     /**
-     * @test
      * @since  4.0.0
      */
+    #[Test]
     public function castingToStringReturnsActualPath(): void
     {
         assertThat((string) $this->uriPath, equals('/hello/world/foo'));
     }
 
-    /**
-     * @return  array<mixed[]>
-     */
-    public static function providePathArguments(): array
+    public static function providePathArguments(): Generator
     {
-        return [['/hello/mikey', '/hello/{name}', ['name' => 'mikey']],
-                ['/hello/303/mikey', '/hello/{id}/{name}', ['id' => '303', 'name' => 'mikey']]
-        ];
+        yield ['/hello/mikey', '/hello/{name}', ['name' => 'mikey']];
+        yield ['/hello/303/mikey', '/hello/{id}/{name}', ['id' => '303', 'name' => 'mikey']];
     }
 
-    /**
-     * @param  string                $calledPath
-     * @param  string                $configuredPath
-     * @param  array<string,string>  $expectedArguments
-     * @test
-     * @dataProvider  providePathArguments
-     */
+    #[Test]
+    #[DataProvider('providePathArguments')]
     public function returnsPathArguments(
-            string $calledPath,
-            string $configuredPath,
-            array $expectedArguments
+        string $calledPath,
+        string $configuredPath,
+        array $expectedArguments
     ): void {
         $uriPath = new UriPath($configuredPath, $calledPath);
         foreach ($expectedArguments as $name => $value) {
@@ -89,53 +78,41 @@ class UriPathTest extends TestCase
         }
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function doesNotHaveNonGivenArgument(): void
     {
         assertFalse($this->uriPath->hasArgument('id'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function returnsNullForNonGivenArgument(): void
     {
         assertNull($this->uriPath->readArgument('id')->unsecure());
     }
 
-    /**
-     * @return  array<mixed[]>
-     */
-    public static function provideRemainingPath(): array
+    public static function provideRemainingPath(): Generator
     {
-        return [['/hello/mikey', '/hello/{name}', null],
-                ['/hello/303/mikey', '/hello/{id}/{name}', ''],
-                ['/hello/303/mikey/foo', '/hello/{id}/{name}', '/foo'],
-                ['/hello', '/hello', ''],
-                ['/hello/world;name', '/hello/[a-z0-9]+;?', 'name'],
-                ['/hello/world', '/hello/?', 'world'],
-                ['/', '/', '']
-        ];
+        yield ['/hello/mikey', '/hello/{name}', null];
+        yield ['/hello/303/mikey', '/hello/{id}/{name}', ''];
+        yield ['/hello/303/mikey/foo', '/hello/{id}/{name}', '/foo'];
+        yield ['/hello', '/hello', ''];
+        yield ['/hello/world;name', '/hello/[a-z0-9]+;?', 'name'];
+        yield ['/hello/world', '/hello/?', 'world'];
+        yield ['/', '/', ''];
     }
 
-    /**
-     * @test
-     * @dataProvider  provideRemainingPath
-     */
+    #[Test]
+    #[DataProvider('provideRemainingPath')]
     public function returnsRemainingPath(
-            string $calledPath,
-            string $configuredPath,
-            ?string $expected
+        string $calledPath,
+        string $configuredPath,
+        ?string $expected
     ): void {
         $uriPath = new UriPath($configuredPath, $calledPath);
         assertThat($uriPath->remaining(), equals($expected));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function returnsDefaultIfRemainingPathIsNull(): void
     {
         $this->uriPath = new UriPath('/hello/{name}', '/hello/world');

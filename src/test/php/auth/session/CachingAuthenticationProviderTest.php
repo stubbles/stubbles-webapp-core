@@ -7,7 +7,11 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 namespace stubbles\webapp\auth\session;
+
+use bovigo\callmap\ClassProxy;
 use bovigo\callmap\NewInstance;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use stubbles\webapp\Request;
 use stubbles\webapp\auth\AuthenticationProvider;
@@ -27,27 +31,18 @@ use function stubbles\reflect\annotationsOfConstructorParameter;
  * Tests for stubbles\webapp\auth\session\CachingAuthenticationProvider
  *
  * @since  5.0.0
- * @group  auth
- * @group  auth_session
  */
+#[Group('auth')]
+#[Group('auth_session')]
 class CachingAuthenticationProviderTest extends TestCase
 {
-    /**
-     * @var  \stubbles\webapp\auth\session\CachingAuthenticationProvider
-     */
-    private $cachingAuthenticationProvider;
-    /**
-     * @var  Session&\bovigo\callmap\ClassProxy
-     */
-    private $session;
-    /**
-     * @var  AuthenticationProvider&\bovigo\callmap\ClassProxy
-     */
-    private $authenticationProvider;
+    private CachingAuthenticationProvider $cachingAuthenticationProvider;
+    private Session&ClassProxy $session;
+    private AuthenticationProvider&ClassProxy $authenticationProvider;
 
     protected function setUp(): void
     {
-        $this->session                = NewInstance::of(Session::class);
+        $this->session = NewInstance::of(Session::class);
         $this->authenticationProvider = NewInstance::of(AuthenticationProvider::class);
         $this->cachingAuthenticationProvider = new CachingAuthenticationProvider(
             $this->session,
@@ -55,9 +50,7 @@ class CachingAuthenticationProviderTest extends TestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function annotationsPresentOnConstructor(): void
     {
         $parameterAnnotations = annotationsOfConstructorParameter(
@@ -71,9 +64,7 @@ class CachingAuthenticationProviderTest extends TestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function usesSessionValueIfUserStoredInSession(): void
     {
         $user = NewInstance::of(User::class);
@@ -85,9 +76,7 @@ class CachingAuthenticationProviderTest extends TestCase
         verify($this->authenticationProvider, 'authenticate')->wasNeverCalled();
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function doesNotStoreReturnValueWhenOriginalAuthenticationProviderReturnsNull(): void
     {
         $this->session->returns(['hasValue' => false]);
@@ -97,9 +86,7 @@ class CachingAuthenticationProviderTest extends TestCase
         verify($this->session, 'putValue')->wasNeverCalled();
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function storeReturnValueInSessionWhenOriginalAuthenticationProviderReturnsUser(): void
     {
         $user = NewInstance::of(User::class);
@@ -114,9 +101,7 @@ class CachingAuthenticationProviderTest extends TestCase
         verify($this->session, 'putValue')->received(User::SESSION_KEY, $user);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function returnsLoginUriFromOriginalAuthenticationProvider(): void
     {
         $this->authenticationProvider->returns([
@@ -131,10 +116,10 @@ class CachingAuthenticationProviderTest extends TestCase
     }
 
     /**
-     * @test
-     * @group  issue_73
      * @since  8.0.0
      */
+    #[Test]
+    #[Group('issue_73')]
     public function returnsChallengesFromOriginalAuthenticationProvider(): void
     {
         $this->authenticationProvider->returns([

@@ -7,7 +7,14 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 namespace stubbles\webapp\response\mimetypes;
+
+use bovigo\callmap\ClassProxy;
 use bovigo\callmap\NewInstance;
+use Exception;
+use GdImage;
+use Generator;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\RequiresPhpExtension;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -29,20 +36,14 @@ use function stubbles\reflect\annotationsOfConstructorParameter;
 /**
  * Tests for stubbles\webapp\response\mimetypes\Image.
  *
- * @group  response
- * @group  mimetypes
  * @since  6.0.0
  */
+#[Group('response')]
+#[Group('mimetypes')]
 class ImageTest extends TestCase
 {
-    /**
-     * @var  \stubbles\webapp\response\mimetypes\Image
-     */
-    private $image;
-    /**
-     * @var  ResourceLoader&\bovigo\callmap\ClassProxy
-     */
-    private $resourceLoader;
+    private Image $image;
+    private ResourceLoader&ClassProxy $resourceLoader;
 
     protected function setUp(): void
     {
@@ -50,33 +51,27 @@ class ImageTest extends TestCase
         $this->image = new Image($this->resourceLoader, 'error.png');
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function annotationsPresent(): void
     {
         $annotations = annotationsOfConstructorParameter(
-                'errorImgResource',
-                $this->image
+            'errorImgResource',
+            $this->image
         );
         assertTrue($annotations->contain('Property'));
         assertThat(
-                $annotations->firstNamed('Property')->getName(),
-                equals('stubbles.img.error')
+            $annotations->firstNamed('Property')->getName(),
+            equals('stubbles.img.error')
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function defaultMimeType(): void
     {
         assertThat((string) $this->image, equals('image/*'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function mimeTypeCanBeSpecialised(): void
     {
         assertThat(
@@ -85,41 +80,42 @@ class ImageTest extends TestCase
         );
     }
 
-    /**
-     * @return  array<mixed[]>
-     */
-    public static function emptyValues(): array
+    public static function emptyValues(): Generator
     {
-        return [[null], ['']];
+        yield [null];
+        yield [''];
     }
 
-    /**
-     * @param  mixed  $empty
-     * @test
-     * @dataProvider  emptyValues
-     */
-    public function doesNothingWhenPassedResourceIsEmpty($empty): void
+    #[Test]
+    #[DataProvider('emptyValues')]
+    public function doesNothingWhenPassedResourceIsEmpty(?string $empty): void
     {
         $out = new MemoryOutputStream();
         $this->image->serialize($empty, $out);
         assertEmptyString($out->buffer());
     }
 
-    #[Test]
-    #[RequiresPhpExtension('gd')]
-    public function usesErrorImgResourceWhenResourceIsError(): void
+    private function loadImage(): GdImage
     {
         $handle = imagecreatefrompng(dirname(__DIR__) . '/../../resources/' . 'empty.png');
         if (false === $handle) {
             fail('Could not create file handle');
         }
 
-        $dummyDriver = new DummyDriver($handle);
+        return $handle;
+    }
+
+    #[Test]
+    #[RequiresPhpExtension('gd')]
+    public function usesErrorImgResourceWhenResourceIsError(): void
+    {
+        $imageHandle = $this->loadImage();
+        $dummyDriver = new DummyDriver($imageHandle);
         $this->resourceLoader->returns(
             ['loadWith' => ImageSource::load('error.png', $dummyDriver)]
         );
         $this->image->serialize(new Error('ups'), new MemoryOutputStream());
-        assertThat($dummyDriver->lastDisplayedHandle(), equals($handle));
+        assertThat($dummyDriver->lastDisplayedHandle(), equals($imageHandle));
         verify($this->resourceLoader, 'loadWith')->received('error.png');
     }
 
@@ -127,17 +123,13 @@ class ImageTest extends TestCase
     #[RequiresPhpExtension('gd')]
     public function displaysImageLoadedFromFilename(): void
     {
-        $handle = imagecreatefrompng(dirname(__DIR__) . '/../../resources/' . 'empty.png');
-        if (false === $handle) {
-            fail('Could not create file handle');
-        }
-
-        $dummyDriver = new DummyDriver($handle);
+        $imageHandle = $this->loadImage();
+        $dummyDriver = new DummyDriver($imageHandle);
         $this->resourceLoader->returns(
-                ['loadWith' => ImageSource::load('error.png', $dummyDriver)]
+            ['loadWith' => ImageSource::load('error.png', $dummyDriver)]
         );
         $this->image->serialize('pixel.png', new MemoryOutputStream());
-        assertThat($dummyDriver->lastDisplayedHandle(), equals($handle));
+        assertThat($dummyDriver->lastDisplayedHandle(), equals($imageHandle));
         verify($this->resourceLoader, 'loadWith')->received('pixel.png');
     }
 
@@ -145,34 +137,25 @@ class ImageTest extends TestCase
     #[RequiresPhpExtension('gd')]
     public function displaysImagePassedAsResource(): void
     {
-        $handle = imagecreatefrompng(dirname(__DIR__) . '/../../resources/' . 'empty.png');
-        if (false === $handle) {
-            fail('Could not create file handle');
-        }
-
-        $dummyDriver = new DummyDriver($handle);
+        $imageHandle = $this->loadImage();
+        $dummyDriver = new DummyDriver($imageHandle);
         $this->image->serialize(
-                ImageSource::load(
-                        'pixel.png',
-                        $dummyDriver
-                ),
-                new MemoryOutputStream()
+            ImageSource::load('pixel.png', $dummyDriver),
+            new MemoryOutputStream()
         );
-        assertThat($dummyDriver->lastDisplayedHandle(), equals($handle));
+        assertThat($dummyDriver->lastDisplayedHandle(), equals($imageHandle));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function triggersUserErrorWhenImageLoadingFails(): void
     {
         $this->resourceLoader->returns(
-                ['loadWith' => throws(new \Exception('hm...'))]
+            ['loadWith' => throws(new Exception('hm...'))]
         );
         expect(function() {
-                $this->image->serialize('pixel.png', new MemoryOutputStream());
+            $this->image->serialize('pixel.png', new MemoryOutputStream());
         })
-                ->triggers(E_USER_ERROR)
-                ->withMessage('Can not load image "pixel.png": hm...');
+            ->triggers(E_USER_ERROR)
+            ->withMessage('Can not load image "pixel.png": hm...');
     }
 }

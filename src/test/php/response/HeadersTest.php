@@ -7,6 +7,9 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 namespace stubbles\webapp\response;
+
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use stubbles\peer\http\HttpUri;
 
@@ -21,68 +24,53 @@ use function bovigo\assert\{
 /**
  * Tests for stubbles\webapp\response\Headers.
  *
- * @group  response
  * @sicne  4.0.0
  */
+#[Group('response')]
 class HeadersTest extends TestCase
 {
-    /**
-     * @var  Headers
-     */
-    private $headers;
+    private Headers $headers;
 
     protected function setUp(): void
     {
         $this->headers = new Headers();
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function doesNotContainHeaderWhenNotAdded(): void
     {
         assertFalse($this->headers->contain('X-Foo'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function doesNotContainHeaderWhenNotAddedWithArrayAccess(): void
     {
         assertFalse(isset($this->headers['X-Foo']));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function containsHeaderWhenAdded(): void
     {
         assertTrue(
-                $this->headers->add('X-Foo', 'bar')->contain('X-Foo')
+            $this->headers->add('X-Foo', 'bar')->contain('X-Foo')
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function containsHeaderWhenAddedWithArrayAccess(): void
     {
         $this->headers->add('X-Foo', 'bar');
         assertTrue(isset($this->headers['X-Foo']));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function containsHeaderWhenAddedWithArrayAccess2(): void
     {
         $this->headers['X-Foo'] = 'bar';
         assertTrue(isset($this->headers['X-Foo']));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function locationHeaderAcceptsUriAsString(): void
     {
         $this->headers->location('http://example.com/');
@@ -90,9 +78,7 @@ class HeadersTest extends TestCase
         assertThat($this->headers['Location'], equals('http://example.com/'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function locationHeaderAcceptsUriAsHttpUri(): void
     {
         $this->headers->location(HttpUri::fromString('http://example.com/'));
@@ -100,9 +86,7 @@ class HeadersTest extends TestCase
         assertThat($this->headers['Location'], equals('http://example.com/'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function allowAddsListOfAllowedMethods(): void
     {
         $this->headers->allow(['POST', 'PUT']);
@@ -110,19 +94,15 @@ class HeadersTest extends TestCase
         assertThat($this->headers['Allow'], equals('POST, PUT'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function acceptableDoesNotAddListOfSupportedMimeTypesWhenListEmpty(): void
     {
         assertFalse(
-                $this->headers->acceptable([])->contain('X-Acceptable')
+            $this->headers->acceptable([])->contain('X-Acceptable')
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function acceptableAddsListOfSupportedMimeTypesWhenListNotEmpty(): void
     {
         $this->headers->acceptable(['text/csv', 'application/json']);
@@ -130,22 +110,18 @@ class HeadersTest extends TestCase
         assertThat($this->headers['X-Acceptable'], equals('text/csv, application/json'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function forceDownloadAddesContentDispositionHeaderWithGivenFilename(): void
     {
         $this->headers->forceDownload('example.csv');
         assertTrue(isset($this->headers['Content-Disposition']));
         assertThat(
-                $this->headers['Content-Disposition'],
-                equals('attachment; filename="example.csv"')
+            $this->headers['Content-Disposition'],
+            equals('attachment; filename="example.csv"')
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function isIterable(): void
     {
         $this->headers->add('X-Foo', 'bar');
@@ -155,21 +131,19 @@ class HeadersTest extends TestCase
         }
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function unsetViaArrayAccessThrowsBadMethodCallException(): void
     {
         $this->headers->add('X-Foo', 'bar');
         expect(function() { unset($this->headers['X-Foo']); })
-                ->throws(\BadMethodCallException::class);
+            ->throws(\BadMethodCallException::class);
     }
 
     /**
-     * @test
-     * @group  issue_71
      * @since  5.1.0
      */
+    #[Test]
+    #[Group('issue_71')]
     public function cacheControlAddsCacheControlHeaderWithDefaultValue(): void
     {
         $this->headers->cacheControl();
@@ -177,20 +151,20 @@ class HeadersTest extends TestCase
     }
 
     /**
-     * @test
-     * @group  issue_71
      * @since  5.1.0
      */
+    #[Test]
+    #[Group('issue_71')]
     public function cacheControlReturnsCacheControlInstance(): void
     {
         assertThat($this->headers->cacheControl(), isInstanceOf(CacheControl::class));
     }
 
     /**
-     * @test
-     * @group  issue_74
      * @since  5.1.0
      */
+    #[Test]
+    #[Group('issue_74')]
     public function requestIdAddsRequestIdHeader(): void
     {
         $this->headers->requestId('example-request-id-foo');
@@ -199,9 +173,9 @@ class HeadersTest extends TestCase
     }
 
     /**
-     * @test
      * @since  5.1.0
      */
+    #[Test]
     public function ageAddsAgeHeader(): void
     {
         $this->headers->age(12);

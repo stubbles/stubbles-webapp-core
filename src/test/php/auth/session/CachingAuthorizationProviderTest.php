@@ -7,7 +7,11 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 namespace stubbles\webapp\auth\session;
+
+use bovigo\callmap\ClassProxy;
 use bovigo\callmap\NewInstance;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use stubbles\webapp\auth\{AuthorizationProvider, Roles, User};
 use stubbles\webapp\session\Session;
@@ -26,80 +30,64 @@ use function stubbles\reflect\annotationsOfConstructorParameter;
  * Tests for stubbles\webapp\auth\session\CachingAuthorizationProvider
  *
  * @since  5.0.0
- * @group  auth
- * @group  auth_session
  */
+#[Group('auth')]
+#[Group('auth_session')]
 class CachingAuthorizationProviderTest extends TestCase
 {
-    /**
-     * @var  \stubbles\webapp\auth\session\CachingAuthorizationProvider
-     */
-    private $cachingAuthorizationProvider;
-    /**
-     * mocked session
-     * @var  Session&\bovigo\callmap\ClassProxy
-     */
-    private $session;
-    /**
-     * @var  AuthorizationProvider&\bovigo\callmap\ClassProxy
-     */
-    private $authorizationProvider;
+    private CachingAuthorizationProvider $cachingAuthorizationProvider;
+    private Session&ClassProxy $session;
+    private AuthorizationProvider&ClassProxy $authorizationProvider;
 
     protected function setUp(): void
     {
-        $this->session                  = NewInstance::of(Session::class);
-        $this->authorizationProvider    = NewInstance::of(AuthorizationProvider::class);
+        $this->session  = NewInstance::of(Session::class);
+        $this->authorizationProvider = NewInstance::of(AuthorizationProvider::class);
         $this->cachingAuthorizationProvider = new CachingAuthorizationProvider(
-                $this->session,
-                $this->authorizationProvider
+            $this->session,
+            $this->authorizationProvider
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function annotationsPresentOnConstructor(): void
     {
         $annotations = annotationsOfConstructorParameter(
-                'authorizationProvider',
-                $this->cachingAuthorizationProvider
+            'authorizationProvider',
+            $this->cachingAuthorizationProvider
         );
         assertTrue($annotations->contain('Named'));
         assertThat(
-                $annotations->firstNamed('Named')->getName(),
-                equals('original')
+            $annotations->firstNamed('Named')->getName(),
+            equals('original')
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function usesSessionValueIfRolesStoredInSession(): void
     {
         $roles = new Roles(['admin']);
         $this->session->returns(['hasValue' => true, 'value' => $roles]);
         assertThat(
-                $this->cachingAuthorizationProvider->roles(
-                        NewInstance::of(User::class)
-                ),
-                isSameAs($roles)
+            $this->cachingAuthorizationProvider->roles(
+                NewInstance::of(User::class)
+            ),
+            isSameAs($roles)
         );
         verify($this->authorizationProvider, 'roles')->wasNeverCalled();
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function storeReturnValueInSessionWhenOriginalAuthenticationProviderReturnsRoles(): void
     {
         $roles = new Roles(['admin']);
         $this->session->returns(['hasValue' => false]);
         $this->authorizationProvider->returns(['roles' => $roles]);
         assertThat(
-                $this->cachingAuthorizationProvider->roles(
-                        NewInstance::of(User::class)
-                ),
-                isSameAs($roles)
+            $this->cachingAuthorizationProvider->roles(
+                NewInstance::of(User::class)
+            ),
+            isSameAs($roles)
         );
         verify($this->session, 'putValue')->received(Roles::SESSION_KEY, $roles);
     }

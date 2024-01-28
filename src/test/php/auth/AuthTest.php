@@ -8,6 +8,8 @@ declare(strict_types=1);
  */
 namespace stubbles\webapp\auth;
 use bovigo\callmap\NewInstance;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use stubbles\Environment;
 use stubbles\ioc\Binder;
@@ -26,26 +28,15 @@ use function bovigo\assert\predicate\isInstanceOf;
  * Tests for stubbles\webapp\auth\Auth.
  *
  * @since  5.0.0
- * @group  auth
  */
+#[Group('auth')]
 class AuthTest extends TestCase
 {
-    /**
-     * an authentication provider which can be used for the tests
-     *
-     * @var  class-string<AuthenticationProvider>
-     */
-    private $authenticationProviderClass;
-    /**
-     * an authorization provider which can be used for the tests
-     *
-     * @var  class-string<AuthorizationProvider>
-     */
-    private $authorizationProviderClass;
-    /**
-     * @var  \stubbles\ioc\Binder
-     */
-    private $binder;
+    /** @var  class-string<AuthenticationProvider> */
+    private string $authenticationProviderClass;
+    /**  @var  class-string<AuthorizationProvider> */
+    private string $authorizationProviderClass;
+    private Binder $binder;
 
     protected function setUp(): void
     {
@@ -53,29 +44,26 @@ class AuthTest extends TestCase
         $this->authorizationProviderClass  = NewInstance::classname(AuthorizationProvider::class);
         $this->binder = new Binder();
         $this->binder->bind(Session::class)
-                ->toInstance(NewInstance::of(Session::class));
+            ->toInstance(NewInstance::of(Session::class));
         $this->binder->bindProperties(
-                new Properties(['config' => ['stubbles.webapp.auth.token.salt' => 'pepper']]),
-                'development'
+            new Properties(['config' => ['stubbles.webapp.auth.token.salt' => 'pepper']]),
+            'development'
         );
     }
-    /**
-     * @test
-     */
+
+    #[Test]
     public function bindsOriginalAuthenticationProviderOnlyIfSessionCachingNotEnabled(): void
     {
         Auth::with($this->authenticationProviderClass)
             ->configure($this->binder);
         $injector = $this->binder->getInjector();
         assertThat(
-                $injector->getInstance(AuthenticationProvider::class),
-                isInstanceOf($this->authenticationProviderClass)
+            $injector->getInstance(AuthenticationProvider::class),
+            isInstanceOf($this->authenticationProviderClass)
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function bindsNoAuthorizationProviderIfNoneGiven(): void
     {
         Auth::with($this->authenticationProviderClass)
@@ -84,23 +72,19 @@ class AuthTest extends TestCase
         assertFalse($injector->hasBinding(AuthorizationProvider::class));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function bindsOriginalAuthorizationProviderOnlyIfSessionCachingNotEnabled(): void
     {
         Auth::with($this->authenticationProviderClass, $this->authorizationProviderClass)
             ->configure($this->binder);
         $injector = $this->binder->getInjector();
         assertThat(
-                $injector->getInstance(AuthorizationProvider::class),
-                isInstanceOf($this->authorizationProviderClass)
+            $injector->getInstance(AuthorizationProvider::class),
+            isInstanceOf($this->authorizationProviderClass)
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function bindsAllAuthenticationProviderOnlyIfSessionCachingEnabled(): void
     {
         Auth::with($this->authenticationProviderClass)
@@ -108,18 +92,16 @@ class AuthTest extends TestCase
             ->configure($this->binder);
         $injector = $this->binder->getInjector();
         assertThat(
-                $injector->getInstance(AuthenticationProvider::class, 'original'),
-                isInstanceOf($this->authenticationProviderClass)
+            $injector->getInstance(AuthenticationProvider::class, 'original'),
+            isInstanceOf($this->authenticationProviderClass)
         );
         assertThat(
-                $injector->getInstance(AuthenticationProvider::class),
-                isInstanceOf(CachingAuthenticationProvider::class)
+            $injector->getInstance(AuthenticationProvider::class),
+            isInstanceOf(CachingAuthenticationProvider::class)
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function bindsAllAuthorizationProviderOnlyIfSessionCachingNotEnabled(): void
     {
         Auth::with($this->authenticationProviderClass, $this->authorizationProviderClass)
@@ -127,18 +109,16 @@ class AuthTest extends TestCase
             ->configure($this->binder);
         $injector = $this->binder->getInjector();
         assertThat(
-                $injector->getInstance(AuthorizationProvider::class, 'original'),
-                isInstanceOf($this->authorizationProviderClass)
+            $injector->getInstance(AuthorizationProvider::class, 'original'),
+            isInstanceOf($this->authorizationProviderClass)
         );
         assertThat(
-                $injector->getInstance(AuthorizationProvider::class),
-                isInstanceOf(CachingAuthorizationProvider::class)
+            $injector->getInstance(AuthorizationProvider::class),
+            isInstanceOf(CachingAuthorizationProvider::class)
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function usingTokensBindsTokenStore(): void
     {
         $tokenStoreClass = NewInstance::classname(TokenStore::class);
@@ -146,14 +126,12 @@ class AuthTest extends TestCase
             ->configure($this->binder);
         $injector = $this->binder->getInjector();
         assertThat(
-                $injector->getInstance(TokenStore::class),
-                isInstanceOf($tokenStoreClass)
+            $injector->getInstance(TokenStore::class),
+            isInstanceOf($tokenStoreClass)
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function usingTokensBindsLoginProvider(): void
     {
         $tokenStoreClass = NewInstance::classname(TokenStore::class);
@@ -161,42 +139,40 @@ class AuthTest extends TestCase
             ->configure($this->binder);
         $injector = $this->binder->getInjector();
         assertThat(
-                $injector->getInstance(AuthenticationProvider::class),
-                isInstanceOf(TokenAuthenticator::class)
+            $injector->getInstance(AuthenticationProvider::class),
+            isInstanceOf(TokenAuthenticator::class)
         );
         assertThat(
-                $injector->getInstance(
-                        AuthenticationProvider::class,
-                        'stubbles.webapp.auth.token.loginProvider'
-                ),
-                isInstanceOf($this->authenticationProviderClass)
+            $injector->getInstance(
+                AuthenticationProvider::class,
+                'stubbles.webapp.auth.token.loginProvider'
+            ),
+            isInstanceOf($this->authenticationProviderClass)
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function usingTokensWithSessionEnabledBindsLoginProvider(): void
     {
         $tokenStoreClass = NewInstance::classname(TokenStore::class);
         Auth::usingTokens($tokenStoreClass, $this->authenticationProviderClass)
-                ->enableSessionCaching()
-                ->configure($this->binder);
+            ->enableSessionCaching()
+            ->configure($this->binder);
         $injector = $this->binder->getInjector();
         assertThat(
-                $injector->getInstance(AuthenticationProvider::class),
-                isInstanceOf(CachingAuthenticationProvider::class)
+            $injector->getInstance(AuthenticationProvider::class),
+            isInstanceOf(CachingAuthenticationProvider::class)
         );
         assertThat(
-                $injector->getInstance(AuthenticationProvider::class, 'original'),
-                isInstanceOf(TokenAuthenticator::class)
+            $injector->getInstance(AuthenticationProvider::class, 'original'),
+            isInstanceOf(TokenAuthenticator::class)
         );
         assertThat(
-                $injector->getInstance(
-                        AuthenticationProvider::class,
-                        'stubbles.webapp.auth.token.loginProvider'
-                ),
-                isInstanceOf($this->authenticationProviderClass)
+            $injector->getInstance(
+                AuthenticationProvider::class,
+                'stubbles.webapp.auth.token.loginProvider'
+            ),
+            isInstanceOf($this->authenticationProviderClass)
         );
     }
 }
