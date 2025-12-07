@@ -12,6 +12,7 @@ use bovigo\callmap\ClassProxy;
 use bovigo\callmap\NewInstance;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\Attributes\WithoutErrorHandler;
 use PHPUnit\Framework\TestCase;
 use stubbles\ExceptionLogger;
 use stubbles\ioc\{Binder, Injector};
@@ -71,6 +72,7 @@ class WebAppTest extends TestCase
         unset($_SERVER['REQUEST_URI']);
         unset($_SERVER['HTTP_HOST']);
         restore_error_handler();
+        restore_exception_handler();
     }
 
     private function createResource(): UriResource&ClassProxy
@@ -99,6 +101,7 @@ class WebAppTest extends TestCase
     }
 
     #[Test]
+    #[WithoutErrorHandler]
     public function respondsWithRedirectHttpsUriIfRequiresHttps(): void
     {
         $resource = $this->createResource();
@@ -117,6 +120,7 @@ class WebAppTest extends TestCase
     }
 
     #[Test]
+    #[WithoutErrorHandler]
     public function doesNotExecuteInterceptorsAndResourceIfMimeTypeNegotiationFails(): void
     {
         $resource = NewInstance::of(UriResource::class);
@@ -136,6 +140,7 @@ class WebAppTest extends TestCase
      * @since  6.0.0
      */
     #[Test]
+    #[WithoutErrorHandler]
     public function enablesSessionScopeWhenSessionIsAvailable(): void
     {
         $session = NewInstance::of(Session::class);
@@ -166,6 +171,7 @@ class WebAppTest extends TestCase
      * @since  6.0.0
      */
     #[Test]
+    #[WithoutErrorHandler]
     public function doesNotEnableSessionScopeWhenSessionNotAvailable(): void
     {
         $this->createNonHttpsResource();
@@ -174,6 +180,7 @@ class WebAppTest extends TestCase
     }
 
     #[Test]
+    #[WithoutErrorHandler]
     public function doesNotExecuteRouteAndPostInterceptorsIfPreInterceptorCancelsRequest(): void
     {
         $resource = $this->createNonHttpsResource(['applyPreInterceptors' => false]);
@@ -191,6 +198,7 @@ class WebAppTest extends TestCase
     }
 
     #[Test]
+    #[WithoutErrorHandler]
     public function sendsInternalServerErrorIfExceptionThrownFromPreInterceptors(): void
     {
         $exception = new \Exception('some error');
@@ -206,6 +214,7 @@ class WebAppTest extends TestCase
     }
 
     #[Test]
+    #[WithoutErrorHandler]
     public function sendsInternalServerErrorIfExceptionThrownFromRoute(): void
     {
         $exception = new \Exception('some error');
@@ -221,6 +230,7 @@ class WebAppTest extends TestCase
     }
 
     #[Test]
+    #[WithoutErrorHandler]
     public function sendsInternalServerErrorIfExceptionThrownFromPostInterceptors(): void
     {
         $exception = new \Exception('some error');
@@ -236,6 +246,7 @@ class WebAppTest extends TestCase
     }
 
     #[Test]
+    #[WithoutErrorHandler]
     public function executesEverythingIfRequestNotCancelled(): void
     {
         $resource = $this->createNonHttpsResource([
@@ -261,6 +272,7 @@ class WebAppTest extends TestCase
      */
     #[Test]
     #[Group('issue_70')]
+    #[WithoutErrorHandler]
     public function malformedUriInRequestLeadsToResponse400BadRequest(): void
     {
         $_SERVER['REQUEST_URI'] = '/hello';

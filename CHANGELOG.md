@@ -4,7 +4,12 @@
 
 ### BC breaks
 
+* raised minimum required PHP version to 8.3
 * `\stubbles\webapp\response\mimetypes\Csv` doesn't use default escape character \ anymore
+
+### Other changes
+
+* ensured compatibility with PHP 8.5
 
 ## 10.0.0 (2024-01-29)
 

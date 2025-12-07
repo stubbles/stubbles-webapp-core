@@ -4,29 +4,29 @@
     "license": "BSD-3-Clause",
     "description": "Base classes for Stubbles based web applications.",
     "require": {
-        "php": "^8.2",
+        "php": "^8.3",
         "ext-json": "*",
-        "stubbles/ioc": "^11.0",
-        "stubbles/input": "^9.0",
-        "stubbles/peer": "^10.0",
-        "stubbles/reflect": "^10.0",
-        "stubbles/sequence": "^10.1",
-        "stubbles/streams": "^10.0",
-        "stubbles/values": "^11.0"
+        "stubbles/ioc": "^12.0",
+        "stubbles/input": "^10.0",
+        "stubbles/peer": "^11.0",
+        "stubbles/reflect": "^11.0",
+        "stubbles/sequence": "^11.0",
+        "stubbles/streams": "^11.0",
+        "stubbles/values": "^12.0"
     },
     "suggest": {
-        "stubbles/xml": "^9.0",
-        "stubbles/image": "^7.0"
+        "stubbles/xml": "^10.0",
+        "stubbles/image": "^8.0"
     },
     "require-dev": {
         "ext-fileinfo": "*",
         "ext-session": "*",
-        "stubbles/xml": "^9.0",
-        "stubbles/image": "^7.0",
-        "phpunit/phpunit": "^10.5",
-        "mikey179/vfsstream": "^1.6.11",
-        "bovigo/callmap": "^8.0",
-        "bovigo/assert": "^8.0"
+        "stubbles/xml": "^10.0",
+        "stubbles/image": "^8.0",
+        "phpunit/phpunit": "^12.5",
+        "mikey179/vfsstream": "^1.6.12",
+        "bovigo/callmap": "^9.0",
+        "bovigo/assert": "^8.1"
     },
     "autoload": {
         "psr-4": {
@@ -42,7 +42,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "10.0.x-dev"
+            "dev-master": "11.0.x-dev"
         }
     },
     "minimum-stability": "dev",
