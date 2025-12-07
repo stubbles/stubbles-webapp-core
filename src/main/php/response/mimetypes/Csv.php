@@ -112,7 +112,13 @@ class Csv extends MimeType
     {
         ftruncate($memory, 0);
         rewind($memory);
-        fputcsv($memory, $elements, $this->delimiter, $this->enclosure);
+        fputcsv(
+            $memory,
+            $elements,
+            separator: $this->delimiter,
+            enclosure: $this->enclosure,
+            escape: ''
+        );
         rewind($memory);
         $result = stream_get_contents($memory);
         if (false === $result) {

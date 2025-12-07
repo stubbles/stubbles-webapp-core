@@ -1,5 +1,11 @@
 # Changelog
 
+## 11.0.0 (2025-12-??)
+
+### BC breaks
+
+* `\stubbles\webapp\response\mimetypes\Csv` doesn't use default escape character \ anymore
+
 ## 10.0.0 (2024-01-29)
 
 ### BC breaks
