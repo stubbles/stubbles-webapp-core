@@ -122,7 +122,7 @@ class HeadersTest extends TestCase
     }
 
     #[Test]
-    public function isIterable(): void
+    public function headersAreIterable(): void
     {
         $this->headers->add('X-Foo', 'bar');
         foreach ($this->headers as $name => $value) {
