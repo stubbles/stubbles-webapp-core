@@ -25,7 +25,7 @@
         "stubbles/image": "^8.0",
         "phpunit/phpunit": "^12.5",
         "mikey179/vfsstream": "^1.6.12",
-        "bovigo/callmap": "^9.0",
+        "bovigo/callmap": "^9.1",
         "bovigo/assert": "^8.1"
     },
     "autoload": {

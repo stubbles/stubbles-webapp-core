@@ -5,6 +5,7 @@
 ### BC breaks
 
 * raised minimum required PHP version to 8.3
+* added return type hint `void` to `\stubbles\webapp\auth\token\TokenStore::store()`
 * `\stubbles\webapp\response\mimetypes\Csv` doesn't use default escape character \ anymore
 
 ### Other changes

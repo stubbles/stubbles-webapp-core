@@ -23,7 +23,7 @@ interface TokenStore
     /**
      * store token for given user
      */
-    public function store(Request $request, Token $token, User $user);
+    public function store(Request $request, Token $token, User $user): void;
 
     /**
      * returns the user for the given token if it is valid
