@@ -48,7 +48,7 @@ class WebResponse implements Response
      */
     public function __construct(
         private Request $request,
-        MimeType $mimeType = null,
+        ?MimeType $mimeType = null,
         private string $sapi = PHP_SAPI)
     {
         $this->mimeType = null !== $mimeType ? $mimeType : new PassThrough();
@@ -86,7 +86,7 @@ class WebResponse implements Response
      * This needs only to be done if another status code then the default one
      * 200 OK should be send.
      */
-    public function setStatusCode(int $statusCode, string $reasonPhrase = null): Response
+    public function setStatusCode(int $statusCode, ?string $reasonPhrase = null): Response
     {
         $this->status->setCode($statusCode, $reasonPhrase);
         return $this;
@@ -138,7 +138,7 @@ class WebResponse implements Response
      * @param  string  $value  optional  if given the value is checked as well
      * @since  4.0.0
      */
-    public function containsHeader(string $name, string $value = null): bool
+    public function containsHeader(string $name, ?string $value = null): bool
     {
         if ($this->headers->contain($name)) {
             if (null !== $value) {
@@ -180,7 +180,7 @@ class WebResponse implements Response
      * @param  string  $value  optional  if given the value is checked as well
      * @since  4.0.0
      */
-    public function containsCookie(string $name, string $value = null): bool
+    public function containsCookie(string $name, ?string $value = null): bool
     {
         if (isset($this->cookies[$name])) {
             if (null !== $value) {
@@ -324,7 +324,7 @@ class WebResponse implements Response
      * body was set the return value is null because no standard stream will be
      * created in such a case.
      */
-    public function send(OutputStream $out = null): ?OutputStream
+    public function send(?OutputStream $out = null): ?OutputStream
     {
         $this->sendHead();
         if (!$this->requestAllowsBody() || null == $this->resource) {

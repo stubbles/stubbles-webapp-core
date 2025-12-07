@@ -26,7 +26,7 @@ abstract class AuthProviderException extends \Exception
      */
     const EXTERNAL = 504;
 
-    public function __construct(string $message, Throwable $cause = null, $code = 0)
+    public function __construct(string $message, ?Throwable $cause = null, $code = 0)
     {
         parent::__construct($message, $code, $cause);
 

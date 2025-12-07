@@ -40,7 +40,8 @@ class CalledUri
      * @since  4.0.0
      */
     public static function castFrom(
-        string|self|HttpUri $requestUri, string $requestMethod = null
+        string|self|HttpUri $requestUri,
+        ?string $requestMethod = null
     ): self {
         if ($requestUri instanceof self) {
             return $requestUri;

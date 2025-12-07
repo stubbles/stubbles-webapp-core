@@ -98,7 +98,7 @@ class UploadedFile
      * @return  string   full path of moved uploaded file
      * @throws  RuntimeException  in case moving fails
      */
-    public function move(string $targetDirectory, string $fileName = null): string
+    public function move(string $targetDirectory, ?string $fileName = null): string
     {
         $targetFile = $targetDirectory . DIRECTORY_SEPARATOR . ($fileName ?? $this->name);
         $moveUploadedFile = $this->moveUploadedFile;

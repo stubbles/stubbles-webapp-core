@@ -43,7 +43,7 @@ interface Response extends SendableResponse
      * If reason phrase is null it will use the default reason phrase for given
      * status code.
      */
-    public function setStatusCode(int $statusCode, string $reasonPhrase = null): self;
+    public function setStatusCode(int $statusCode, ?string $reasonPhrase = null): self;
 
     /**
      * provide direct access to set a status code

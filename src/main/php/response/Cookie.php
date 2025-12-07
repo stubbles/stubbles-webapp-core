@@ -35,7 +35,7 @@ class Cookie
     /**
      * creates the cookie
      */
-    public static function create(string $name, string $value = null): self
+    public static function create(string $name, ?string $value = null): self
     {
         return new self($name, $value);
     }

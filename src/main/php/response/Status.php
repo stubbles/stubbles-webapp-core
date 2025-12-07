@@ -40,10 +40,10 @@ class Status
      *
      * @throws  InvalidArgumentException when no reason phrase supplied and code is unknown
      */
-    public function setCode(int $code, string $reasonPhrase = null): self
+    public function setCode(int $code, ?string $reasonPhrase = null): self
     {
         $this->code         = $code;
-        $this->reasonPhrase = null === $reasonPhrase ? Http::reasonPhraseFor($code) : $reasonPhrase;
+        $this->reasonPhrase = $reasonPhrase ?? Http::reasonPhraseFor($code);
         return $this;
     }
 
@@ -63,7 +63,7 @@ class Status
      * @param   string|HttpUri  $uri   uri under which created resource can be found
      * @param   string          $etag  entity-tag of the newly created resource's representation
      */
-    public function created(string|HttpUri $uri, string $etag = null): self
+    public function created(string|HttpUri $uri, ?string $etag = null): self
     {
         $this->headers->location($uri);
         if (null !== $etag) {

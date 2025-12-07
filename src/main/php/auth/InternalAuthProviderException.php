@@ -18,7 +18,7 @@ use Throwable;
  */
 class InternalAuthProviderException extends AuthProviderException
 {
-    public function __construct(string $message, Throwable $cause = null)
+    public function __construct(string $message, ?Throwable $cause = null)
     {
         parent::__construct($message, $cause, AuthProviderException::INTERNAL);
     }

@@ -180,7 +180,7 @@ class AuthConstraint implements JsonSerializable
     /**
      * checks whether route is satisfied by the given roles
      */
-    public function satisfiedByRoles(Roles $roles = null): bool
+    public function satisfiedByRoles(?Roles $roles = null): bool
     {
         if (null === $roles) {
             return false;

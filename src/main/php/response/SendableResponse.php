@@ -23,12 +23,12 @@ interface SendableResponse
     /**
      * check if response contains a certain header
      */
-    public function containsHeader(string $name, string $value = null): bool;
+    public function containsHeader(string $name, ?string $value = null): bool;
 
     /**
      * checks if response contains a certain cookie
      */
-    public function containsCookie(string $name, string $value = null): bool;
+    public function containsCookie(string $name, ?string $value = null): bool;
 
     /**
      * sends response
@@ -41,5 +41,5 @@ interface SendableResponse
      * body was set the return value is null because no standard stream will be
      * created in such a case.
      */
-    public function send(OutputStream $out = null): ?OutputStream;
+    public function send(?OutputStream $out = null): ?OutputStream;
 }

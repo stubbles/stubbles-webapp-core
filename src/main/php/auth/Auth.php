@@ -51,7 +51,7 @@ class Auth implements BindingModule
      */
     public static function with(
         string $authenticationProvider,
-        string $authorizationProvider = null
+        ?string $authorizationProvider = null
     ): self {
         return new self($authenticationProvider, $authorizationProvider);
     }
@@ -65,7 +65,7 @@ class Auth implements BindingModule
     public static function usingTokens(
         string $tokenStore,
         string $loginProvider,
-        string $authorizationProvider = null
+        ?string $authorizationProvider = null
     ): self {
         $self = new self(TokenAuthenticator::class, $authorizationProvider);
         $self->loginProvider = $loginProvider;
@@ -82,7 +82,7 @@ class Auth implements BindingModule
         return $this;
     }
 
-    public function configure(Binder $binder, string $projectPath = null): void
+    public function configure(Binder $binder, ?string $projectPath = null): void
     {
         if ($this->enableSessionCaching) {
             $this->configureWithSessionCaching($binder);
